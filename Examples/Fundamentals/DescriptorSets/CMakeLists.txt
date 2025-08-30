@@ -1,0 +1,10 @@
+set(SUBCATEGORY_NAME DescriptorSets)
+
+add_subdirectory(Base)
+include_directories(Base)
+
+add_subdirectory(ChangingColorWithUB)
+add_subdirectory(MultipleUniformBuffers)
+add_subdirectory(Transformation2dWithUB)
+add_subdirectory(BasicPushConstants)
+add_subdirectory(ArrayOfUB)

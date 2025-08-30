@@ -1,0 +1,14 @@
+set(SUBCATEGORY_NAME Basics)
+
+add_subdirectory(Base)
+include_directories(Base)
+
+add_subdirectory(CreatingWindow)
+add_subdirectory(GetDeviceInfo)
+add_subdirectory(ClearScreenWithColor)
+add_subdirectory(DrawingSingleColorTriangle)
+add_subdirectory(DrawingMultipleTriangles)
+add_subdirectory(DrawingMulticolorTriangles)
+add_subdirectory(DrawingQuad)
+add_subdirectory(DrawingWithDifferentTopology)
+add_subdirectory(UsingStagingBuffer)
