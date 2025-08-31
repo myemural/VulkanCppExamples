@@ -4,3 +4,5 @@ add_subdirectory(Base)
 include_directories(Base)
 
 add_subdirectory(TexturedQuad)
+add_subdirectory(CombinedImageSampler)
+add_subdirectory(WrapAndFilteringModes)
