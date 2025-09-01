@@ -9,7 +9,7 @@ layout(push_constant) uniform Push {
 } pc;
 
 layout(location = 0) out vec2 fragUV;
-layout(location = 1) flat out int samplerIdx;
+layout(location=1) flat out int samplerIdx;
 
 void main()
 {
