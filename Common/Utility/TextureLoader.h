@@ -11,12 +11,17 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
 #include "stb_image.h"
 
 namespace common::utility
 {
+
+enum class TextureChannelFormat
+{
+    RGB,
+    RGBA
+};
 
 struct TextureHandler
 {
@@ -24,10 +29,17 @@ struct TextureHandler
     std::uint32_t Width = UINT32_MAX;
     std::uint32_t Height = UINT32_MAX;
     std::uint32_t Channels = UINT32_MAX;
+    TextureChannelFormat Format = TextureChannelFormat::RGBA;
 
     [[nodiscard]] std::uint32_t GetByteSize() const
     {
-        return Width * Height * (Channels + 1);
+        switch (Format) {
+            case TextureChannelFormat::RGB:
+                return Width * Height * 3;
+            case TextureChannelFormat::RGBA:
+            default:
+                return Width * Height * 4;
+        }
     }
 
     void Clear()
@@ -45,7 +57,8 @@ class TextureLoader
 public:
     static void SetBasePath(const std::string& path);
 
-    static TextureHandler Load(const std::string& path);
+    static TextureHandler Load(const std::string &path,
+                               const TextureChannelFormat &channelFormat = TextureChannelFormat::RGBA);
 
 private:
     static std::string basePath_;

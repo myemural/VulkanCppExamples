@@ -18,13 +18,23 @@ void TextureLoader::SetBasePath(const std::string &path)
     basePath_ = path;
 }
 
-TextureHandler TextureLoader::Load(const std::string &path)
+TextureHandler TextureLoader::Load(const std::string &path, const TextureChannelFormat &channelFormat)
 {
     int width, height, channels;
 
     const std::string fileFullPath = basePath_ + path;
-    // stbi_set_flip_vertically_on_load(false);
-    unsigned char* data = stbi_load(fileFullPath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+
+    int desiredChannels;
+    switch(channelFormat) {
+        case TextureChannelFormat::RGB:
+            desiredChannels = STBI_rgb;
+            break;
+        case TextureChannelFormat::RGBA:
+        default:
+            desiredChannels = STBI_rgb_alpha;
+    }
+
+    unsigned char* data = stbi_load(fileFullPath.c_str(), &width, &height, &channels, desiredChannels);
     if (!data) {
         throw std::runtime_error("Failed to load texture: " + fileFullPath);
     }
@@ -33,7 +43,8 @@ TextureHandler TextureLoader::Load(const std::string &path)
         data,
         static_cast<std::uint32_t>(width),
         static_cast<std::uint32_t>(height),
-        static_cast<std::uint32_t>(channels)
+        static_cast<std::uint32_t>(channels),
+        channelFormat
     };
 }
 
