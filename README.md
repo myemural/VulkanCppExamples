@@ -16,18 +16,42 @@ Currently only tested on Windows. Other operating systems will be added.
 | Android          | No        | -                      |
 | iOS              | No        | -                      |
 
+### Prerequisites
 
-### Cloning
+Vulkan dependencies:
+- LunarG VulkanSDK 1.3.268.0 (currently tested)
 
-TBD
+3rd party libraries (repos) that are dependent on:
+- GLFW
+- glm (OpenGL Mathematics)
+- stb (Single-file Public Domain Libraries)
 
-### Building
+For compiling and testing:
+- CMake 3.31+
+- MSVC 19.40+ (for Windows)
 
-TBD
+### Clone
+
+To clone this repository, you should run this command on your local terminal:
+
+~~~bash
+git clone --recursive https://github.com/myemural/VulkanCppExamples.git
+~~~
+
+Since this project contains various submodule dependencies, you will then need to run the following commands:
+
+~~~bash
+git submodule init
+git submodule update
+~~~
+
+### Build
+
+Every example has its own directory and CMake target. You can build what you want with CMake command line tools or IDE tools.
 
 ## Examples
 
-### Fundamentals
+### [Fundamentals](/Examples/Fundamentals)
 
 - **[Basics](/Examples/Fundamentals/Basics)**
   - [Creating a Window](/Examples/Fundamentals/Basics/CreatingWindow)
@@ -47,3 +71,7 @@ TBD
   - [Multiple Transform with Descriptor Arrays](/Examples/Fundamentals/DescriptorSets/ArrayOfUB)
 - **[Images and Samplers](/Examples/Fundamentals/ImagesAndSamplers)**
   - [Textured Quad](/Examples/Fundamentals/ImagesAndSamplers/TexturedQuad)
+  - [Combined Image Sampler](/Examples/Fundamentals/ImagesAndSamplers/CombinedImageSampler)
+  - [Using Different Wrap and Filtering Modes](/Examples/Fundamentals/ImagesAndSamplers/WrapAndFilteringModes)
+  - [Using Multiple Textures](/Examples/Fundamentals/ImagesAndSamplers/UsingMultipleTextures)
+  - [Drawing Transparent Texture to Quads](/Examples/Fundamentals/ImagesAndSamplers/SimpleBlending)
