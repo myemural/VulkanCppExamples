@@ -75,3 +75,4 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Using Different Wrap and Filtering Modes](/Examples/Fundamentals/ImagesAndSamplers/WrapAndFilteringModes)
   - [Using Multiple Textures](/Examples/Fundamentals/ImagesAndSamplers/UsingMultipleTextures)
   - [Drawing Transparent Texture to Quads](/Examples/Fundamentals/ImagesAndSamplers/SimpleBlending)
+  - [Using Texture Atlases](/Examples/Fundamentals/ImagesAndSamplers/TextureAtlases)
