@@ -25,9 +25,9 @@ VulkanApplication::VulkanApplication(const ApplicationCreateConfig &config, cons
 : ApplicationImagesAndSamplers(config), settings_(settings)
 {
     // Pre-load textures
-    TextureLoader::SetBasePath(ASSETS_DIR);
-    bricksTextureHandler_ = TextureLoader::Load(kTextureBricksPath);
-    wallTextureHandler_ = TextureLoader::Load(kTextureWallPath);
+    const TextureLoader textureLoader{ASSETS_DIR};
+    bricksTextureHandler_ = textureLoader.Load(kTextureBricksPath);
+    wallTextureHandler_ = textureLoader.Load(kTextureWallPath);
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2Uv2);

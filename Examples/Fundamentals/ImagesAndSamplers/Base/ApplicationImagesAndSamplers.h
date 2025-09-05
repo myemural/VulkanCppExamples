@@ -50,7 +50,7 @@ struct ShaderModulesCreateInfo
     };
 
     std::string BasePath;
-    common::utility::ShaderType ShaderType;
+    common::utility::ShaderBaseType ShaderType;
     std::vector<Module> Modules;
 };
 

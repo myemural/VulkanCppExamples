@@ -8,17 +8,36 @@
 
 #include <stdexcept>
 
+#include "stb_image.h"
+
 namespace common::utility
 {
-
-std::string TextureLoader::basePath_;
-
-void TextureLoader::SetBasePath(const std::string &path)
+std::uint32_t TextureHandler::GetByteSize() const
 {
-    basePath_ = path;
+    switch (Format) {
+        case TextureChannelFormat::RGB:
+            return Width * Height * 3;
+        case TextureChannelFormat::RGBA:
+        default:
+            return Width * Height * 4;
+    }
 }
 
-TextureHandler TextureLoader::Load(const std::string &path, const TextureChannelFormat &channelFormat)
+void TextureHandler::Clear()
+{
+    stbi_image_free(Data);
+    Data = nullptr;
+    Width = UINT32_MAX;
+    Height = UINT32_MAX;
+    Channels = UINT32_MAX;
+}
+
+TextureLoader::TextureLoader(const std::string &basePath)
+    : basePath_{basePath}
+{
+}
+
+TextureHandler TextureLoader::Load(const std::string &path, const TextureChannelFormat &channelFormat) const
 {
     int width, height, channels;
 

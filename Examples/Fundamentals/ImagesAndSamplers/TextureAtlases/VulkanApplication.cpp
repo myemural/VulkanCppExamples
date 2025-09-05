@@ -39,8 +39,8 @@ VulkanApplication::VulkanApplication(const ApplicationCreateConfig &config, cons
 : ApplicationImagesAndSamplers(config), settings_(settings)
 {
     // Pre-load textures
-    TextureLoader::SetBasePath(ASSETS_DIR);
-    atlasTextureHandler_ = TextureLoader::Load(kTextureAtlasPath);
+    const TextureLoader textureLoader{ASSETS_DIR};
+    atlasTextureHandler_ = textureLoader.Load(kTextureAtlasPath);
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2Uv2);

@@ -34,7 +34,7 @@ struct ApplicationSettings
 
 // Project constants
 inline constexpr std::uint32_t kMaxFramesInFlight = 2;
-inline constexpr auto kCurrentShaderType = common::utility::ShaderType::GLSL;
+inline constexpr auto kCurrentShaderType = common::utility::ShaderBaseType::GLSL;
 inline constexpr auto kVertexShaderFileName = "push_constants.vert.spv";
 inline constexpr auto kFragmentShaderFileName = "push_constants.frag.spv";
 inline constexpr auto kVertexShaderHash = "vert_main";

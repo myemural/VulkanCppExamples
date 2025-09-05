@@ -16,7 +16,7 @@
 
 namespace common::utility
 {
-enum class ShaderType
+enum class ShaderBaseType
 {
     GLSL,
     HLSL
@@ -27,9 +27,9 @@ class ShaderLoader
 public:
     /**
      * @param rootPath Root path.
-     * @param shaderType Specifies which shading language (GLSL, HLSL etc.) the .spv file was converted from.
+     * @param shaderBaseType Specifies which shading language (GLSL, HLSL etc.) the .spv file was converted from.
      */
-    ShaderLoader(const std::string &rootPath, const ShaderType &shaderType);
+    ShaderLoader(const std::string &rootPath, const ShaderBaseType &shaderBaseType);
 
     ~ShaderLoader() = default;
 
@@ -44,6 +44,6 @@ private:
     [[nodiscard]] std::string GenerateBasePath(const std::string &rootPath) const;
 
     std::string basePath_;
-    ShaderType shaderType_;
+    ShaderBaseType shaderType_;
 };
 } // namespace common::utility

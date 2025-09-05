@@ -26,8 +26,8 @@ VulkanApplication::VulkanApplication(const ApplicationCreateConfig &config, cons
 : ApplicationImagesAndSamplers(config), settings_(settings)
 {
     // Pre-load textures
-    TextureLoader::SetBasePath(ASSETS_DIR);
-    leafTextureHandler_ = TextureLoader::Load(kTextureLeafPath);
+    const TextureLoader textureLoader{ASSETS_DIR};
+    leafTextureHandler_ = textureLoader.Load(kTextureLeafPath);
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2Uv2);

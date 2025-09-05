@@ -17,8 +17,8 @@ namespace
     constexpr auto kHlslSpirvOutPath = "hlsl/spirv/";
 }
 
-ShaderLoader::ShaderLoader(const std::string &rootPath, const ShaderType &shaderType)
-    : shaderType_{shaderType}
+ShaderLoader::ShaderLoader(const std::string &rootPath, const ShaderBaseType &shaderBaseType)
+    : shaderType_{shaderBaseType}
 {
     basePath_ = GenerateBasePath(rootPath);
 }
@@ -62,10 +62,10 @@ std::string ShaderLoader::GenerateBasePath(const std::string &rootPath) const
     std::string intermediatePath;
 
     switch (shaderType_) {
-        case ShaderType::GLSL:
+        case ShaderBaseType::GLSL:
             intermediatePath = kGlslSpirvOutPath;
             break;
-        case ShaderType::HLSL:
+        case ShaderBaseType::HLSL:
             intermediatePath = kHlslSpirvOutPath;
             break;
         default:

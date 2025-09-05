@@ -209,7 +209,7 @@ void ApplicationDescriptorSets::SetBuffer(const std::string &name, const void *d
 void ApplicationDescriptorSets::CreateShaderModules(const ShaderModulesCreateInfo& modulesInfo)
 {
     const std::string basePath = modulesInfo.BasePath;
-    const common::utility::ShaderType shaderType = modulesInfo.ShaderType;
+    const common::utility::ShaderBaseType shaderType = modulesInfo.ShaderType;
 
     for (const auto&[name, fileName] : modulesInfo.Modules) {
         const common::utility::ShaderLoader shaderLoader{basePath, shaderType};
