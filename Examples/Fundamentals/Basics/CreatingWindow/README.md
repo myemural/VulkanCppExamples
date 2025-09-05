@@ -8,7 +8,7 @@ This example creates a simple window.
 
 ## Screenshots / Recordings
 
-TBD
+![](/Docs/ExampleMedia/Fundamentals/Basics/CreatingWindow.png?raw=true)
 
 ## Inputs
 
