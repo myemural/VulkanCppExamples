@@ -26,7 +26,7 @@ int main()
     constexpr auto windowTitle = EXAMPLE_APPLICATION_NAME;
 
     // Create a window
-    const auto window = std::make_shared<Window>(windowTitle);
+    const auto window = std::make_shared<common::window_wrapper::Window>(windowTitle);
     if (!window->Init(windowWidth, windowHeight, false, 1)) {
         std::cerr << "Failed to initialize window." << std::endl;
         return -1;
@@ -35,7 +35,7 @@ int main()
     common::vulkan_framework::ApplicationCreateConfig config;
     config.ApplicationName = windowTitle;
     config.InstanceLayers = {"VK_LAYER_KHRONOS_validation"};
-    config.InstanceExtensions = Window::GetVulkanInstanceExtensions();
+    config.InstanceExtensions = common::window_wrapper::Window::GetVulkanInstanceExtensions();
 
     // Customize the example settings
     ApplicationSettings settings;

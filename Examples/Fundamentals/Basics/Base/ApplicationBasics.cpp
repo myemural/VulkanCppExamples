@@ -14,6 +14,7 @@ namespace examples::fundamentals::basics::base
 {
 
 using namespace common::vulkan_wrapper;
+using namespace common::window_wrapper;
 
 void ApplicationBasics::SetWindow(const std::shared_ptr<Window> &window)
 {

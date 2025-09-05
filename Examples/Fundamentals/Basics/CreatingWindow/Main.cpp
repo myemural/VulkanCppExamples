@@ -18,7 +18,7 @@ int main() {
     constexpr uint32_t windowHeight = 600;
     constexpr auto windowTitle = EXAMPLE_APPLICATION_NAME;
 
-    const auto window = std::make_shared<Window>(windowTitle);
+    const auto window = std::make_shared<common::window_wrapper::Window>(windowTitle);
     window->Init(windowWidth, windowHeight, false, 1);
 
     while (!window->CheckWindowCloseFlag()) {

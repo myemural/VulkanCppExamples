@@ -33,7 +33,7 @@ class ApplicationBasics : public common::vulkan_framework::VulkanApplicationBase
 public:
     using VulkanApplicationBase::VulkanApplicationBase;
 
-    void SetWindow(const std::shared_ptr<Window> &window);
+    void SetWindow(const std::shared_ptr<common::window_wrapper::Window> &window);
 
 protected:
     void Update() override;
@@ -62,7 +62,7 @@ protected:
 
     void CreateDefaultSyncObjects(std::uint32_t maxFramesInFlight);
 
-    std::shared_ptr<Window> window_;
+    std::shared_ptr<common::window_wrapper::Window> window_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSurface> surface_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPhysicalDevice> physicalDevice_;
     std::uint32_t currentQueueFamilyIndex_ = UINT32_MAX;

@@ -16,6 +16,7 @@ namespace examples::fundamentals::descriptor_sets::base
 
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
+using namespace common::window_wrapper;
 
 void ApplicationDescriptorSets::SetWindow(const std::shared_ptr<Window> &window)
 {

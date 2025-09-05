@@ -82,7 +82,7 @@ public:
 
     ~ApplicationImagesAndSamplers() override = default;
 
-    void SetWindow(const std::shared_ptr<Window> &window);
+    void SetWindow(const std::shared_ptr<common::window_wrapper::Window> &window);
 
 protected:
     void Update() override;
@@ -124,7 +124,7 @@ protected:
     void ChangeImageLayout(const std::shared_ptr<common::vulkan_wrapper::VulkanImage> &image, VkImageLayout oldLayout,
                            VkImageLayout newLayout) const;
 
-    std::shared_ptr<Window> window_;
+    std::shared_ptr<common::window_wrapper::Window> window_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSurface> surface_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPhysicalDevice> physicalDevice_;
     std::uint32_t currentQueueFamilyIndex_ = UINT32_MAX;

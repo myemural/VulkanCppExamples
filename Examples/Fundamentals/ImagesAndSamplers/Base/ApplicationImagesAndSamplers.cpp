@@ -18,6 +18,7 @@ namespace examples::fundamentals::images_and_samplers::base
 
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
+using namespace common::window_wrapper;
 
 void ApplicationImagesAndSamplers::SetWindow(const std::shared_ptr<Window> &window)
 {

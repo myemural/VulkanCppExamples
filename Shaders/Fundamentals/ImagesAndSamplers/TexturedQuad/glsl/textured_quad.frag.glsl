@@ -8,5 +8,5 @@ layout(set = 0, binding = 1) uniform texture2D uImage;
 
 void main()
 {
-    outColor = texture(uCombinedSampler, fragUV);
+    outColor = texture(sampler2D(uImage, uSampler), fragUV);
 }

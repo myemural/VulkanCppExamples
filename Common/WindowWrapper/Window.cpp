@@ -9,6 +9,9 @@
 #include <iostream>
 #include <utility>
 
+namespace common::window_wrapper
+{
+
 Window::Window(std::string  windowName)
     : windowName_{std::move(windowName)}, window_{nullptr}
 {
@@ -25,12 +28,13 @@ bool Window::Init(const uint32_t windowWidth, const uint32_t windowHeight, const
 {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, isResizable ? GLFW_TRUE : GLFW_FALSE);
-    glfwWindowHint(GLFW_SAMPLES, sampleCount);
+    glfwWindowHint(GLFW_SAMPLES, static_cast<int>(sampleCount));
 
     windowWidth_ = windowWidth;
     windowHeight_ = windowHeight;
 
-    window_ = glfwCreateWindow(windowWidth, windowHeight, windowName_.c_str(), nullptr, nullptr);
+    window_ = glfwCreateWindow(static_cast<int>(windowWidth), static_cast<int>(windowHeight), windowName_.c_str(),
+                               nullptr, nullptr);
 
     if(!window_)
     {
@@ -54,16 +58,25 @@ std::vector<std::string> Window::GetVulkanInstanceExtensions() {
     return extensions;
 }
 
-VkSurfaceKHR Window::CreateVulkanSurface(VkInstance const instance) const
+VkSurfaceKHR Window::CreateVulkanSurface(VkInstance instance) const
 {
     VkSurfaceKHR surface;
-    auto test = glfwCreateWindowSurface(instance, window_, nullptr, &surface);
-    if (test != VK_SUCCESS) {
+    if (const auto test = glfwCreateWindowSurface(instance, window_, nullptr, &surface); test != VK_SUCCESS) {
         std::cout << "Failed to create window surface!" << '\n';
         return VK_NULL_HANDLE;
     }
 
     return surface;
+}
+
+void Window::SetWindowResizeCallback(const GLFWframebuffersizefun callback) const
+{
+    glfwSetFramebufferSizeCallback(window_, callback);
+}
+
+void Window::SetMouseCallback(const GLFWcursorposfun callback) const
+{
+    glfwSetCursorPosCallback(window_, callback);
 }
 
 bool Window::CheckWindowCloseFlag() const
@@ -76,3 +89,4 @@ void Window::OnUpdate() const
     glfwSwapBuffers(window_);
     glfwPollEvents();
 }
+} // namespace common::window_wrapper

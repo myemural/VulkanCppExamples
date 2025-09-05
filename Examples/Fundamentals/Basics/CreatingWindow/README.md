@@ -10,6 +10,10 @@ This example creates a simple window.
 
 TBD
 
+## Inputs
+
+None
+
 ## Learning Objectives
 
 - Creating a simple window with using GLFW

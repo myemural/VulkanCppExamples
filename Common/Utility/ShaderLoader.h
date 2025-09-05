@@ -26,7 +26,6 @@ class ShaderLoader
 {
 public:
     /**
-     * @brief Constructs a ShaderLoader.
      * @param rootPath Root path.
      * @param shaderType Specifies which shading language (GLSL, HLSL etc.) the .spv file was converted from.
      */
