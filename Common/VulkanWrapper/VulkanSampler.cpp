@@ -10,7 +10,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 inline VkSamplerCreateInfo GetDefaultSamplerCreateInfo()
 {
     VkSamplerCreateInfo createInfo{};
@@ -55,27 +54,28 @@ VulkanSamplerBuilder::VulkanSamplerBuilder()
 {
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::SetCreateFlags(const VkSamplerCreateFlags &flags)
+VulkanSamplerBuilder &VulkanSamplerBuilder::SetCreateFlags(const VkSamplerCreateFlags &flags)
 {
     createInfo_.flags = flags;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::SetFilters(const VkFilter &magFilter, const VkFilter &minFilter)
+VulkanSamplerBuilder &VulkanSamplerBuilder::SetFilters(const VkFilter &magFilter, const VkFilter &minFilter)
 {
     createInfo_.magFilter = magFilter;
     createInfo_.minFilter = minFilter;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::SetMipmapMode(const VkSamplerMipmapMode &mipmapMode)
+VulkanSamplerBuilder &VulkanSamplerBuilder::SetMipmapMode(const VkSamplerMipmapMode &mipmapMode)
 {
     createInfo_.mipmapMode = mipmapMode;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::SetAddressModes(const VkSamplerAddressMode &addressModeU,
-    const VkSamplerAddressMode &addressModeV, const VkSamplerAddressMode &addressModeW)
+VulkanSamplerBuilder &VulkanSamplerBuilder::SetAddressModes(const VkSamplerAddressMode &addressModeU,
+                                                            const VkSamplerAddressMode &addressModeV,
+                                                            const VkSamplerAddressMode &addressModeW)
 {
     createInfo_.addressModeU = addressModeU;
     createInfo_.addressModeV = addressModeV;
@@ -83,50 +83,50 @@ VulkanSamplerBuilder & VulkanSamplerBuilder::SetAddressModes(const VkSamplerAddr
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::SetMipmapLodBias(const float mipLodBias)
+VulkanSamplerBuilder &VulkanSamplerBuilder::SetMipmapLodBias(const float mipLodBias)
 {
     createInfo_.mipLodBias = mipLodBias;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::EnableAnisotropy(const bool isEnabled)
+VulkanSamplerBuilder &VulkanSamplerBuilder::EnableAnisotropy(const bool isEnabled)
 {
     createInfo_.anisotropyEnable = isEnabled;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::SetMaxAnisotropy(const float maxAnisotropy)
+VulkanSamplerBuilder &VulkanSamplerBuilder::SetMaxAnisotropy(const float maxAnisotropy)
 {
     createInfo_.maxAnisotropy = maxAnisotropy;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::EnableComparing(const bool isEnabled)
+VulkanSamplerBuilder &VulkanSamplerBuilder::EnableComparing(const bool isEnabled)
 {
     createInfo_.compareEnable = isEnabled;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::SetCompareOp(const VkCompareOp &compareOp)
+VulkanSamplerBuilder &VulkanSamplerBuilder::SetCompareOp(const VkCompareOp &compareOp)
 {
     createInfo_.compareOp = compareOp;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::SetMipmapLodRange(const float minLod, const float maxLod)
+VulkanSamplerBuilder &VulkanSamplerBuilder::SetMipmapLodRange(const float minLod, const float maxLod)
 {
     createInfo_.minLod = minLod;
     createInfo_.maxLod = maxLod;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::SetBorderColor(const VkBorderColor &borderColor)
+VulkanSamplerBuilder &VulkanSamplerBuilder::SetBorderColor(const VkBorderColor &borderColor)
 {
     createInfo_.borderColor = borderColor;
     return *this;
 }
 
-VulkanSamplerBuilder & VulkanSamplerBuilder::EnableUnnormalizedCoordinates(const bool isEnabled)
+VulkanSamplerBuilder &VulkanSamplerBuilder::EnableUnnormalizedCoordinates(const bool isEnabled)
 {
     createInfo_.unnormalizedCoordinates = isEnabled;
     return *this;

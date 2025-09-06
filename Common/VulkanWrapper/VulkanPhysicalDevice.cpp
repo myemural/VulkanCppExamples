@@ -15,13 +15,13 @@
 
 namespace common::vulkan_wrapper
 {
-
-VulkanPhysicalDevice::VulkanPhysicalDevice(VkPhysicalDevice const physicalDevice)
+VulkanPhysicalDevice::VulkanPhysicalDevice(VkPhysicalDevice physicalDevice)
     : VulkanObject(nullptr, physicalDevice)
 {
 }
 
-std::uint32_t VulkanPhysicalDevice::FindMemoryType(std::uint32_t typeFilter, const VkMemoryPropertyFlags &properties) const
+std::uint32_t VulkanPhysicalDevice::FindMemoryType(std::uint32_t typeFilter,
+                                                   const VkMemoryPropertyFlags &properties) const
 {
     VkPhysicalDeviceMemoryProperties memoryProperties{};
     vkGetPhysicalDeviceMemoryProperties(handle_, &memoryProperties);
@@ -89,7 +89,8 @@ std::optional<VkSurfaceCapabilitiesKHR> VulkanPhysicalDevice::GetSurfaceCapabili
 
 std::optional<VkSurfaceFormatKHR> VulkanPhysicalDevice::GetSurfaceFormat(const VkSurfaceKHR &surface,
                                                                          const VkFormat &selectedFormat,
-                                                                         const VkColorSpaceKHR &selectedColorSpace) const
+                                                                         const VkColorSpaceKHR &selectedColorSpace)
+const
 {
     uint32_t formatCount;
     vkGetPhysicalDeviceSurfaceFormatsKHR(handle_, surface, &formatCount, nullptr);

@@ -19,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 
 class VulkanShaderModule final : public VulkanObject<VulkanDevice, VkShaderModule>

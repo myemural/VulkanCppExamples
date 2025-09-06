@@ -20,7 +20,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 
 class VulkanDeviceMemory final : public VulkanObject<VulkanDevice, VkDeviceMemory>
@@ -30,10 +29,10 @@ public:
 
     ~VulkanDeviceMemory() override;
 
-    [[nodiscard]] void* MapMemory(VkDeviceSize size, VkDeviceSize offset, const VkMemoryMapFlags& flags = 0) const;
+    [[nodiscard]] void *MapMemory(VkDeviceSize size, VkDeviceSize offset, const VkMemoryMapFlags &flags = 0) const;
 
     // Pair: size, offset
-    void FlushMappedMemoryRanges(const std::vector<std::pair<VkDeviceSize, VkDeviceSize>>& mappedMemoryRanges) const;
+    void FlushMappedMemoryRanges(const std::vector<std::pair<VkDeviceSize, VkDeviceSize> > &mappedMemoryRanges) const;
 
     void UnmapMemory() const;
 };

@@ -16,24 +16,31 @@
 
 namespace common::vulkan_wrapper
 {
-
 template<typename ParentType, typename HandleType>
-class VulkanObject {
+class VulkanObject
+{
 public:
     VulkanObject() = default;
+
     VulkanObject(std::shared_ptr<ParentType> parent, HandleType handle)
-        : parentObject_(std::move(parent)), handle_(handle) {}
+        : parentObject_(std::move(parent)), handle_(handle)
+    {
+    }
 
     virtual ~VulkanObject() = default;
 
-    VulkanObject(const VulkanObject&) = delete;
-    VulkanObject& operator=(const VulkanObject&) = delete;
+    VulkanObject(const VulkanObject &) = delete;
 
-    VulkanObject(VulkanObject&& o) noexcept
-        : parentObject_(o.parentObject_), handle_(o.handle_) {
+    VulkanObject &operator=(const VulkanObject &) = delete;
+
+    VulkanObject(VulkanObject &&o) noexcept
+        : parentObject_(o.parentObject_), handle_(o.handle_)
+    {
         o.handle_ = nullptr;
     }
-    VulkanObject& operator=(VulkanObject&& o) noexcept {
+
+    VulkanObject &operator=(VulkanObject &&o) noexcept
+    {
         if (this != &o) {
             parentObject_ = o.parentObject_;
             handle_ = o.handle_;
@@ -44,6 +51,7 @@ public:
 
 
     HandleType GetHandle() const { return handle_; }
+
     std::shared_ptr<ParentType> GetParent() const
     {
         auto parentObject = parentObject_.lock();

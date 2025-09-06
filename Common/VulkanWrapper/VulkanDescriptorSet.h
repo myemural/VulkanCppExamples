@@ -21,7 +21,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDescriptorPool;
 
 class VulkanDescriptorSet final : public VulkanObject<VulkanDescriptorPool, VkDescriptorSet>
@@ -33,8 +32,8 @@ public:
                                                   std::uint32_t dstArrayElement,
                                                   std::uint32_t descCount,
                                                   const VkDescriptorType &descType,
-                                                  const std::vector<VkDescriptorBufferInfo>& descBufferInfos = {},
-                                                  const std::vector<VkDescriptorImageInfo>&descImageInfos = {}) const;
+                                                  const std::vector<VkDescriptorBufferInfo> &descBufferInfos = {},
+                                                  const std::vector<VkDescriptorImageInfo> &descImageInfos = {}) const;
 
     ~VulkanDescriptorSet() override;
 };

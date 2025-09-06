@@ -29,7 +29,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 inline VkDeviceCreateInfo GetDefaultDeviceCreateInfo()
 {
     VkDeviceCreateInfo createInfo{};
@@ -58,9 +57,10 @@ inline VkDeviceQueueCreateInfo GetDefaultQueueCreateInfo()
     return createInfo;
 }
 
-VulkanDevice::VulkanDevice(std::shared_ptr<VulkanPhysicalDevice> physicalDevice, VkDevice const device)
-        : VulkanObject(std::move(physicalDevice), device)
-{}
+VulkanDevice::VulkanDevice(std::shared_ptr<VulkanPhysicalDevice> physicalDevice, VkDevice device)
+    : VulkanObject(std::move(physicalDevice), device)
+{
+}
 
 VulkanDevice::~VulkanDevice()
 {
@@ -69,7 +69,8 @@ VulkanDevice::~VulkanDevice()
     }
 }
 
-std::shared_ptr<VulkanQueue> VulkanDevice::CreateQueue(const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex)
+std::shared_ptr<VulkanQueue> VulkanDevice::CreateQueue(const std::uint32_t queueFamilyIndex,
+                                                       const std::uint32_t queueIndex)
 {
     auto device = shared_from_this();
 
@@ -94,7 +95,7 @@ std::shared_ptr<VulkanSemaphore> VulkanDevice::CreateSemaphore()
     return std::make_shared<VulkanSemaphore>(device, semaphore);
 }
 
-std::shared_ptr<VulkanFence> VulkanDevice::CreateFence(const VkFenceCreateFlags& flags)
+std::shared_ptr<VulkanFence> VulkanDevice::CreateFence(const VkFenceCreateFlags &flags)
 {
     auto device = shared_from_this();
 
@@ -108,11 +109,11 @@ std::shared_ptr<VulkanFence> VulkanDevice::CreateFence(const VkFenceCreateFlags&
         return nullptr;
     }
 
-    // Add to list
     return std::make_shared<VulkanFence>(device, fence);
 }
 
-std::shared_ptr<VulkanCommandPool> VulkanDevice::CreateCommandPool(const std::uint32_t queueFamilyIndex, const VkCommandPoolCreateFlags& flags)
+std::shared_ptr<VulkanCommandPool> VulkanDevice::CreateCommandPool(const std::uint32_t queueFamilyIndex,
+                                                                   const VkCommandPoolCreateFlags &flags)
 {
     auto device = shared_from_this();
 
@@ -132,7 +133,9 @@ std::shared_ptr<VulkanCommandPool> VulkanDevice::CreateCommandPool(const std::ui
 }
 
 std::shared_ptr<VulkanDescriptorPool> VulkanDevice::CreateDescriptorPool(const std::uint32_t maxSets,
-    const std::vector<VkDescriptorPoolSize>& poolSizes, const VkDescriptorPoolCreateFlags &flags)
+                                                                         const std::vector<VkDescriptorPoolSize> &
+                                                                         poolSizes,
+                                                                         const VkDescriptorPoolCreateFlags &flags)
 {
     auto device = shared_from_this();
 
@@ -145,7 +148,8 @@ std::shared_ptr<VulkanDescriptorPool> VulkanDevice::CreateDescriptorPool(const s
     descriptorPoolCreateInfo.pPoolSizes = poolSizes.empty() ? nullptr : poolSizes.data();
 
     VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
-    if (vkCreateDescriptorPool(device->GetHandle(), &descriptorPoolCreateInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
+    if (vkCreateDescriptorPool(device->GetHandle(), &descriptorPoolCreateInfo, nullptr, &descriptorPool) !=
+        VK_SUCCESS) {
         std::cout << "Failed to create descriptor pool!" << std::endl;
         return nullptr;
     }
@@ -166,7 +170,8 @@ std::shared_ptr<VulkanDescriptorSetLayout> VulkanDevice::CreateDescriptorSetLayo
     descriptorSetLayoutCreateInfo.pBindings = bindings.empty() ? nullptr : bindings.data();
 
     VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
-    if (vkCreateDescriptorSetLayout(device->GetHandle(), &descriptorSetLayoutCreateInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
+    if (vkCreateDescriptorSetLayout(device->GetHandle(), &descriptorSetLayoutCreateInfo, nullptr, &descriptorSetLayout)
+        != VK_SUCCESS) {
         std::cout << "Failed to create descriptor set layout!" << std::endl;
         return nullptr;
     }
@@ -174,8 +179,9 @@ std::shared_ptr<VulkanDescriptorSetLayout> VulkanDevice::CreateDescriptorSetLayo
     return std::make_shared<VulkanDescriptorSetLayout>(device, descriptorSetLayout);
 }
 
-std::shared_ptr<VulkanSwapChain> VulkanDevice::CreateSwapChain(const std::shared_ptr<VulkanSurface>& surface,
-                                                               const std::function<void(VulkanSwapChainBuilder &)> &builderFunc)
+std::shared_ptr<VulkanSwapChain> VulkanDevice::CreateSwapChain(const std::shared_ptr<VulkanSurface> &surface,
+                                                               const std::function<void(VulkanSwapChainBuilder &)> &
+                                                               builderFunc)
 {
     const auto device = shared_from_this();
 
@@ -196,8 +202,9 @@ std::shared_ptr<VulkanRenderPass> VulkanDevice::CreateRenderPass(
     return builder.Build(device);
 }
 
-std::shared_ptr<VulkanFramebuffer> VulkanDevice::CreateFramebuffer(const std::shared_ptr<VulkanRenderPass>& renderPass,
-                                                                   const std::vector<std::shared_ptr<VulkanImageView>>& attachments,
+std::shared_ptr<VulkanFramebuffer> VulkanDevice::CreateFramebuffer(const std::shared_ptr<VulkanRenderPass> &renderPass,
+                                                                   const std::vector<std::shared_ptr<VulkanImageView> >
+                                                                   &attachments,
                                                                    const std::function<void(VulkanFramebufferBuilder &)>
                                                                    &builderFunc)
 {
@@ -219,8 +226,8 @@ std::shared_ptr<VulkanImage> VulkanDevice::CreateImage(const std::function<void(
     return builder.Build(device);
 }
 
-std::shared_ptr<VulkanImageView> VulkanDevice::CreateImageView(const std::shared_ptr<VulkanImage>& image,
-                                                               const std::function<void(VulkanImageViewBuilder&)> &
+std::shared_ptr<VulkanImageView> VulkanDevice::CreateImageView(const std::shared_ptr<VulkanImage> &image,
+                                                               const std::function<void(VulkanImageViewBuilder &)> &
                                                                builderFunc)
 {
     const auto device = shared_from_this();
@@ -231,7 +238,7 @@ std::shared_ptr<VulkanImageView> VulkanDevice::CreateImageView(const std::shared
     return builder.Build(device, image);
 }
 
-std::shared_ptr<VulkanShaderModule> VulkanDevice::CreateShaderModule(const std::vector<std::uint32_t>& moduleCode)
+std::shared_ptr<VulkanShaderModule> VulkanDevice::CreateShaderModule(const std::vector<std::uint32_t> &moduleCode)
 {
     auto device = shared_from_this();
 
@@ -283,8 +290,10 @@ std::shared_ptr<VulkanPipelineLayout> VulkanDevice::CreatePipelineLayout(
     return std::make_shared<VulkanPipelineLayout>(device, pipelineLayout);
 }
 
-std::shared_ptr<VulkanPipeline> VulkanDevice::CreateGraphicsPipeline(std::shared_ptr<VulkanPipelineLayout> layout,
-    std::shared_ptr<VulkanRenderPass> renderPass, const std::function<void(VulkanGraphicsPipelineBuilder &)> &builderFunc)
+std::shared_ptr<VulkanPipeline> VulkanDevice::CreateGraphicsPipeline(
+    const std::shared_ptr<VulkanPipelineLayout> &layout,
+    const std::shared_ptr<VulkanRenderPass> &renderPass,
+    const std::function<void(VulkanGraphicsPipelineBuilder &)> &builderFunc)
 {
     const auto device = shared_from_this();
 
@@ -305,7 +314,7 @@ std::shared_ptr<VulkanBuffer> VulkanDevice::CreateBuffer(const std::function<voi
 }
 
 std::shared_ptr<VulkanDeviceMemory> VulkanDevice::AllocateMemory(const VkDeviceSize &size,
-    const std::uint32_t memoryTypeIndex)
+                                                                 const std::uint32_t memoryTypeIndex)
 {
     auto device = shared_from_this();
 
@@ -345,10 +354,11 @@ std::shared_ptr<VulkanSampler> VulkanDevice::CreateSampler(
 }
 
 VulkanDeviceBuilder::VulkanDeviceBuilder()
-        : createInfo(GetDefaultDeviceCreateInfo())
-{}
+    : createInfo(GetDefaultDeviceCreateInfo())
+{
+}
 
-VulkanDeviceBuilder & VulkanDeviceBuilder::AddQueueInfo(
+VulkanDeviceBuilder &VulkanDeviceBuilder::AddQueueInfo(
     const std::function<void(VkDeviceQueueCreateInfo &)> &setterFunc)
 {
     VkDeviceQueueCreateInfo queueCreateInfo = GetDefaultQueueCreateInfo();
@@ -357,56 +367,55 @@ VulkanDeviceBuilder & VulkanDeviceBuilder::AddQueueInfo(
     return *this;
 }
 
-VulkanDeviceBuilder & VulkanDeviceBuilder::AddLayer(const std::string &layerName)
+VulkanDeviceBuilder &VulkanDeviceBuilder::AddLayer(const std::string &layerName)
 {
     layers_.emplace_back(layerName);
     return *this;
 }
 
-VulkanDeviceBuilder & VulkanDeviceBuilder::AddLayers(const std::vector<std::string> &layerNames)
+VulkanDeviceBuilder &VulkanDeviceBuilder::AddLayers(const std::vector<std::string> &layerNames)
 {
     layers_.insert(layers_.end(), layerNames.begin(), layerNames.end());
     return *this;
 }
 
-VulkanDeviceBuilder & VulkanDeviceBuilder::AddExtension(const std::string &extensionName)
+VulkanDeviceBuilder &VulkanDeviceBuilder::AddExtension(const std::string &extensionName)
 {
     extensions_.emplace_back(extensionName);
     return *this;
 }
 
-VulkanDeviceBuilder & VulkanDeviceBuilder::AddExtensions(const std::vector<std::string> &extensionNames)
+VulkanDeviceBuilder &VulkanDeviceBuilder::AddExtensions(const std::vector<std::string> &extensionNames)
 {
     extensions_.insert(extensions_.end(), extensionNames.begin(), extensionNames.end());
     return *this;
 }
 
-VulkanDeviceBuilder & VulkanDeviceBuilder::SetDeviceFeatures(const VkPhysicalDeviceFeatures &features)
+VulkanDeviceBuilder &VulkanDeviceBuilder::SetDeviceFeatures(const VkPhysicalDeviceFeatures &features)
 {
     deviceFeatures_ = features;
     return *this;
 }
 
-std::shared_ptr<VulkanDevice> VulkanDeviceBuilder::Build(std::shared_ptr<VulkanPhysicalDevice> physicalDevice)
+std::shared_ptr<VulkanDevice> VulkanDeviceBuilder::Build(const std::shared_ptr<VulkanPhysicalDevice> &physicalDevice)
 {
     if (!queueCreateInfos_.empty()) {
         createInfo.queueCreateInfoCount = queueCreateInfos_.size();
         createInfo.pQueueCreateInfos = queueCreateInfos_.data();
     }
 
-    std::vector<const char*> layersStr;
+    std::vector<const char *> layersStr;
     if (!layers_.empty()) {
-
         std::ranges::transform(layers_, std::back_inserter(layersStr),
-                           [](const std::string& s) { return s.c_str(); });
+                               [](const std::string &s) { return s.c_str(); });
         createInfo.enabledLayerCount = layersStr.size();
         createInfo.ppEnabledLayerNames = layersStr.data();
     }
 
-    std::vector<const char*> extensionsStr;
+    std::vector<const char *> extensionsStr;
     if (!extensions_.empty()) {
         std::ranges::transform(extensions_, std::back_inserter(extensionsStr),
-                           [](const std::string& s) { return s.c_str(); });
+                               [](const std::string &s) { return s.c_str(); });
         createInfo.enabledExtensionCount = extensionsStr.size();
         createInfo.ppEnabledExtensionNames = extensionsStr.data();
     }

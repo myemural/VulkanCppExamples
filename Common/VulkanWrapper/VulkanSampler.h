@@ -12,7 +12,6 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include <vulkan/vulkan_core.h>
 
@@ -20,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 
 class VulkanSampler final : public VulkanObject<VulkanDevice, VkSampler>
@@ -40,9 +38,10 @@ public:
 
     VulkanSamplerBuilder &SetFilters(const VkFilter &magFilter, const VkFilter &minFilter);
 
-    VulkanSamplerBuilder &SetMipmapMode(const VkSamplerMipmapMode& mipmapMode);
+    VulkanSamplerBuilder &SetMipmapMode(const VkSamplerMipmapMode &mipmapMode);
 
-    VulkanSamplerBuilder &SetAddressModes(const VkSamplerAddressMode &addressModeU, const VkSamplerAddressMode &addressModeV,
+    VulkanSamplerBuilder &SetAddressModes(const VkSamplerAddressMode &addressModeU,
+                                          const VkSamplerAddressMode &addressModeV,
                                           const VkSamplerAddressMode &addressModeW);
 
     VulkanSamplerBuilder &SetMipmapLodBias(float mipLodBias);
@@ -66,5 +65,4 @@ public:
 private:
     VkSamplerCreateInfo createInfo_;
 };
-
 } // common::vulkan_wrapper

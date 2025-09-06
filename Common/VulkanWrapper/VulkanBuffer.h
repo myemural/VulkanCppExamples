@@ -19,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 class VulkanDeviceMemory;
 
@@ -32,7 +31,7 @@ public:
 
     [[nodiscard]] VkMemoryRequirements GetBufferMemoryRequirements() const;
 
-    void BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory, VkDeviceSize memoryOffset) const;
+    void BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory> &deviceMemory, VkDeviceSize memoryOffset) const;
 };
 
 class VulkanBufferBuilder

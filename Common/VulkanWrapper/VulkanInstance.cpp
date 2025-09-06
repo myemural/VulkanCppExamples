@@ -11,7 +11,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 inline VkInstanceCreateInfo GetDefaultInstanceCreateInfo()
 {
     VkInstanceCreateInfo createInfo{};
@@ -53,9 +52,10 @@ VulkanInstance::~VulkanInstance()
 
 VulkanInstanceBuilder::VulkanInstanceBuilder()
     : createInfo_{GetDefaultInstanceCreateInfo()}, appInfo_{GetDefaultApplicationInfo()}
-{}
+{
+}
 
-VulkanInstanceBuilder & VulkanInstanceBuilder::SetApplicationInfo(
+VulkanInstanceBuilder &VulkanInstanceBuilder::SetApplicationInfo(
     const std::function<void(VkApplicationInfo &)> &appInfoCallback)
 {
     appInfoCallback(appInfo_);
@@ -63,29 +63,29 @@ VulkanInstanceBuilder & VulkanInstanceBuilder::SetApplicationInfo(
     return *this;
 }
 
-VulkanInstanceBuilder & VulkanInstanceBuilder::AddLayer(const std::string &layerName)
+VulkanInstanceBuilder &VulkanInstanceBuilder::AddLayer(const std::string &layerName)
 {
     layers_.push_back(layerName.c_str());
     return *this;
 }
 
-VulkanInstanceBuilder & VulkanInstanceBuilder::AddLayers(const std::vector<std::string> &layerNames)
+VulkanInstanceBuilder &VulkanInstanceBuilder::AddLayers(const std::vector<std::string> &layerNames)
 {
     std::ranges::transform(layerNames, std::back_inserter(layers_),
-                           [](const std::string& s) { return s.c_str(); });
+                           [](const std::string &s) { return s.c_str(); });
     return *this;
 }
 
-VulkanInstanceBuilder & VulkanInstanceBuilder::AddExtension(const std::string &extensionName)
+VulkanInstanceBuilder &VulkanInstanceBuilder::AddExtension(const std::string &extensionName)
 {
     extensions_.push_back(extensionName.c_str());
     return *this;
 }
 
-VulkanInstanceBuilder & VulkanInstanceBuilder::AddExtensions(const std::vector<std::string> &extensionNames)
+VulkanInstanceBuilder &VulkanInstanceBuilder::AddExtensions(const std::vector<std::string> &extensionNames)
 {
     std::ranges::transform(extensionNames, std::back_inserter(extensions_),
-                           [](const std::string& s) { return s.c_str(); });
+                           [](const std::string &s) { return s.c_str(); });
     return *this;
 }
 

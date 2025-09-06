@@ -11,7 +11,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 inline VkImageViewCreateInfo GetDefaultImageViewCreateInfo()
 {
     VkImageViewCreateInfo imageViewCreateInfo{};
@@ -33,9 +32,10 @@ inline VkImageViewCreateInfo GetDefaultImageViewCreateInfo()
     return imageViewCreateInfo;
 }
 
-VulkanImageView::VulkanImageView(std::shared_ptr<VulkanDevice> device, VkImageView const imageView)
+VulkanImageView::VulkanImageView(std::shared_ptr<VulkanDevice> device, VkImageView imageView)
     : VulkanObject(std::move(device), imageView)
-{}
+{
+}
 
 VulkanImageView::~VulkanImageView()
 {
@@ -48,52 +48,53 @@ VulkanImageView::~VulkanImageView()
 }
 
 VulkanImageViewBuilder::VulkanImageViewBuilder()
-    : createInfo(GetDefaultImageViewCreateInfo())
-{}
-
-VulkanImageViewBuilder & VulkanImageViewBuilder::SetCreateFlags(const VkImageViewCreateFlags &flags)
+    : createInfo_(GetDefaultImageViewCreateInfo())
 {
-    createInfo.flags = flags;
+}
+
+VulkanImageViewBuilder &VulkanImageViewBuilder::SetCreateFlags(const VkImageViewCreateFlags &flags)
+{
+    createInfo_.flags = flags;
     return *this;
 }
 
-VulkanImageViewBuilder & VulkanImageViewBuilder::SetImageViewType(const VkImageViewType &viewType)
+VulkanImageViewBuilder &VulkanImageViewBuilder::SetImageViewType(const VkImageViewType &viewType)
 {
-    createInfo.viewType = viewType;
+    createInfo_.viewType = viewType;
     return *this;
 }
 
-VulkanImageViewBuilder & VulkanImageViewBuilder::SetFormat(const VkFormat &format)
+VulkanImageViewBuilder &VulkanImageViewBuilder::SetFormat(const VkFormat &format)
 {
-    createInfo.format = format;
+    createInfo_.format = format;
     return *this;
 }
 
-VulkanImageViewBuilder & VulkanImageViewBuilder::SetComponents(const VkComponentMapping &components)
+VulkanImageViewBuilder &VulkanImageViewBuilder::SetComponents(const VkComponentMapping &components)
 {
-    createInfo.components = components;
+    createInfo_.components = components;
     return *this;
 }
 
-VulkanImageViewBuilder & VulkanImageViewBuilder::SetSubresourceRange(const VkImageSubresourceRange &subresourceRange)
+VulkanImageViewBuilder &VulkanImageViewBuilder::SetSubresourceRange(const VkImageSubresourceRange &subresourceRange)
 {
-    createInfo.subresourceRange = subresourceRange;
+    createInfo_.subresourceRange = subresourceRange;
     return *this;
 }
 
-VulkanImageViewBuilder & VulkanImageViewBuilder::SetImage(const std::shared_ptr<VulkanImage> &image)
+VulkanImageViewBuilder &VulkanImageViewBuilder::SetImage(const std::shared_ptr<VulkanImage> &image)
 {
-    createInfo.image = image->GetHandle();
+    createInfo_.image = image->GetHandle();
     return *this;
 }
 
 std::shared_ptr<VulkanImageView> VulkanImageViewBuilder::Build(std::shared_ptr<VulkanDevice> device,
-    const std::shared_ptr<VulkanImage> &image)
+                                                               const std::shared_ptr<VulkanImage> &image)
 {
-    createInfo.image = image->GetHandle();
+    createInfo_.image = image->GetHandle();
 
     VkImageView imageView = VK_NULL_HANDLE;
-    if (vkCreateImageView(device->GetHandle(), &createInfo, nullptr, &imageView) != VK_SUCCESS) {
+    if (vkCreateImageView(device->GetHandle(), &createInfo_, nullptr, &imageView) != VK_SUCCESS) {
         std::cerr << "Failed to create image view!" << std::endl;
         return nullptr;
     }
@@ -101,17 +102,16 @@ std::shared_ptr<VulkanImageView> VulkanImageViewBuilder::Build(std::shared_ptr<V
     return std::make_shared<VulkanImageView>(std::move(device), imageView);
 }
 
-std::shared_ptr<VulkanImageView> VulkanImageViewBuilder::Build(std::shared_ptr<VulkanDevice> device, VkImage const image)
+std::shared_ptr<VulkanImageView> VulkanImageViewBuilder::Build(std::shared_ptr<VulkanDevice> device, VkImage image)
 {
-    createInfo.image = image;
+    createInfo_.image = image;
 
     VkImageView imageView = VK_NULL_HANDLE;
-    if (vkCreateImageView(device->GetHandle(), &createInfo, nullptr, &imageView) != VK_SUCCESS) {
+    if (vkCreateImageView(device->GetHandle(), &createInfo_, nullptr, &imageView) != VK_SUCCESS) {
         std::cerr << "Failed to create image view!" << std::endl;
         return nullptr;
     }
 
     return std::make_shared<VulkanImageView>(std::move(device), imageView);
 }
-
 } // common::vulkan_wrapper

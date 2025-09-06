@@ -11,7 +11,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 inline VkImageCreateInfo GetDefaultImageCreateInfo()
 {
     VkImageCreateInfo createInfo{};
@@ -33,7 +32,7 @@ inline VkImageCreateInfo GetDefaultImageCreateInfo()
     return createInfo;
 }
 
-VulkanImage::VulkanImage(std::shared_ptr<VulkanDevice> device, VkImage const image)
+VulkanImage::VulkanImage(std::shared_ptr<VulkanDevice> device, VkImage image)
     : VulkanObject(std::move(device), image)
 {
 }
@@ -74,7 +73,7 @@ VkImageMemoryBarrier VulkanImage::CreateImageMemoryBarrier(const VkAccessFlags &
 {
     VkImageMemoryBarrier barrier;
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-    barrier.pNext = nullptr;
+            barrier.pNext = nullptr;
     barrier.srcAccessMask = srcAccessMask;
     barrier.dstAccessMask = dstAccessMask;
     barrier.oldLayout = oldLayout;
@@ -84,7 +83,7 @@ VkImageMemoryBarrier VulkanImage::CreateImageMemoryBarrier(const VkAccessFlags &
     barrier.image = handle_;
 
     if (subresourceRange.has_value()) {
-        const VkImageSubresourceRange& currentSubresourceRange = subresourceRange.value();
+        const VkImageSubresourceRange &currentSubresourceRange = subresourceRange.value();
         barrier.subresourceRange.aspectMask = currentSubresourceRange.aspectMask;
         barrier.subresourceRange.baseMipLevel = currentSubresourceRange.baseMipLevel;
         barrier.subresourceRange.levelCount = currentSubresourceRange.levelCount;
@@ -102,81 +101,82 @@ VkImageMemoryBarrier VulkanImage::CreateImageMemoryBarrier(const VkAccessFlags &
 }
 
 VulkanImageBuilder::VulkanImageBuilder()
-    : createInfo(GetDefaultImageCreateInfo())
+    : createInfo_(GetDefaultImageCreateInfo())
 {
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetImageType(const VkImageType &imageType)
 {
-    createInfo.imageType = imageType;
+    createInfo_.imageType = imageType;
     return *this;
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetFormat(const VkFormat &format)
 {
-    createInfo.format = format;
+    createInfo_.format = format;
     return *this;
 }
 
-VulkanImageBuilder &VulkanImageBuilder::SetDimensions(const std::uint32_t width, const std::uint32_t height, const std::uint32_t depth)
+VulkanImageBuilder &VulkanImageBuilder::SetDimensions(const std::uint32_t width, const std::uint32_t height,
+                                                      const std::uint32_t depth)
 {
-    createInfo.extent = VkExtent3D{width, height, depth};
+    createInfo_.extent = VkExtent3D{width, height, depth};
     return *this;
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetMipLevels(const std::uint32_t mipLevels)
 {
-    createInfo.mipLevels = mipLevels;
+    createInfo_.mipLevels = mipLevels;
     return *this;
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetArrayLayers(const std::uint32_t arrayLayers)
 {
-    createInfo.arrayLayers = arrayLayers;
+    createInfo_.arrayLayers = arrayLayers;
     return *this;
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetSampleCount(const VkSampleCountFlagBits &sampleCountBits)
 {
-    createInfo.samples = sampleCountBits;
+    createInfo_.samples = sampleCountBits;
     return *this;
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetImageTiling(const VkImageTiling &tiling)
 {
-    createInfo.tiling = tiling;
+    createInfo_.tiling = tiling;
     return *this;
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetImageUsageFlags(const VkImageUsageFlags &usageFlags)
 {
-    createInfo.usage = usageFlags;
+    createInfo_.usage = usageFlags;
     return *this;
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetSharingMode(const VkSharingMode &sharingMode)
 {
-    createInfo.sharingMode = sharingMode;
+    createInfo_.sharingMode = sharingMode;
     return *this;
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetQueueFamilyIndices(const std::vector<std::uint32_t> &queueFamilyIndices)
 {
-    createInfo.queueFamilyIndexCount = queueFamilyIndices.size();
-    createInfo.pQueueFamilyIndices = queueFamilyIndices.data();
+    createInfo_.queueFamilyIndexCount = queueFamilyIndices.size();
+    createInfo_.pQueueFamilyIndices = queueFamilyIndices.data();
     return *this;
 }
 
 VulkanImageBuilder &VulkanImageBuilder::SetInitialImageLayout(const VkImageLayout &layout)
 {
-    createInfo.initialLayout = layout;
+    createInfo_.initialLayout = layout;
     return *this;
 }
 
 std::shared_ptr<VulkanImage> VulkanImageBuilder::Build(std::shared_ptr<VulkanDevice> device) const
 {
     VkImage image = VK_NULL_HANDLE;
-    if (vkCreateImage(device->GetHandle(), &createInfo, nullptr, &image) != VK_SUCCESS) {
+    if (vkCreateImage(device->GetHandle(), &createInfo_, nullptr, &image) != VK_SUCCESS) {
         std::cout << "Failed to create image!" << std::endl;
         return nullptr;
     }

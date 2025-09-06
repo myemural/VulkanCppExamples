@@ -18,7 +18,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 
 class VulkanDescriptorSetLayout final : public VulkanObject<VulkanDevice, VkDescriptorSetLayout>

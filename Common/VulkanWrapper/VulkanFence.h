@@ -19,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 
 class VulkanFence final : public VulkanObject<VulkanDevice, VkFence>

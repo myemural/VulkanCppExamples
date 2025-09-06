@@ -10,11 +10,11 @@
 
 namespace common::vulkan_wrapper
 {
-
 VulkanDescriptorSetLayout::VulkanDescriptorSetLayout(std::shared_ptr<VulkanDevice> device,
-    VkDescriptorSetLayout descriptorSetLayout)
+                                                     VkDescriptorSetLayout descriptorSetLayout)
     : VulkanObject(std::move(device), descriptorSetLayout)
-{}
+{
+}
 
 VulkanDescriptorSetLayout::~VulkanDescriptorSetLayout()
 {

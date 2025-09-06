@@ -19,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 class VulkanDescriptorSet;
 class VulkanDescriptorSetLayout;
@@ -31,9 +30,9 @@ public:
     explicit VulkanDescriptorPool(std::shared_ptr<VulkanDevice> device, VkDescriptorPool descriptorPool);
 
     std::vector<std::shared_ptr<VulkanDescriptorSet> > CreateDescriptorSets(
-        const std::vector<std::shared_ptr<VulkanDescriptorSetLayout>> &descriptorSetLayouts);
+        const std::vector<std::shared_ptr<VulkanDescriptorSetLayout> > &descriptorSetLayouts);
 
-    void ResetDescriptorPool(const VkDescriptorPoolResetFlags& resetFlags = 0) const;
+    void ResetDescriptorPool(const VkDescriptorPoolResetFlags &resetFlags = 0) const;
 
     ~VulkanDescriptorPool() override;
 };

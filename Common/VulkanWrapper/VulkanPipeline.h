@@ -20,7 +20,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 class VulkanPipelineLayout;
 class VulkanRenderPass;
@@ -38,29 +37,40 @@ class VulkanGraphicsPipelineBuilder
 public:
     VulkanGraphicsPipelineBuilder();
 
-    VulkanGraphicsPipelineBuilder& AddShaderStage(const std::function<void(VkPipelineShaderStageCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &AddShaderStage(
+        const std::function<void(VkPipelineShaderStageCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetVertexInputState(const std::function<void(VkPipelineVertexInputStateCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &SetVertexInputState(
+        const std::function<void(VkPipelineVertexInputStateCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetInputAssemblyState(const std::function<void(VkPipelineInputAssemblyStateCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &SetInputAssemblyState(
+        const std::function<void(VkPipelineInputAssemblyStateCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetTessellationState(const std::function<void(VkPipelineTessellationStateCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &SetTessellationState(
+        const std::function<void(VkPipelineTessellationStateCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetViewportState(const std::function<void(VkPipelineViewportStateCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &SetViewportState(
+        const std::function<void(VkPipelineViewportStateCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetRasterizationState(const std::function<void(VkPipelineRasterizationStateCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &SetRasterizationState(
+        const std::function<void(VkPipelineRasterizationStateCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetMultisampleState(const std::function<void(VkPipelineMultisampleStateCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &SetMultisampleState(
+        const std::function<void(VkPipelineMultisampleStateCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetDepthStencilState(const std::function<void(VkPipelineDepthStencilStateCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &SetDepthStencilState(
+        const std::function<void(VkPipelineDepthStencilStateCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetColorBlendState(const std::function<void(VkPipelineColorBlendStateCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &SetColorBlendState(
+        const std::function<void(VkPipelineColorBlendStateCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetDynamicState(const std::function<void(VkPipelineDynamicStateCreateInfo&)>& builderFunc);
+    VulkanGraphicsPipelineBuilder &SetDynamicState(
+        const std::function<void(VkPipelineDynamicStateCreateInfo &)> &builderFunc);
 
-    VulkanGraphicsPipelineBuilder& SetSubpassIndex(std::uint32_t subpassIndex);
+    VulkanGraphicsPipelineBuilder &SetSubpassIndex(std::uint32_t subpassIndex);
 
-    VulkanGraphicsPipelineBuilder& SetBasePipeline(const std::shared_ptr<VulkanPipeline>& basePipeline, std::int32_t basePipelineIndex);
+    VulkanGraphicsPipelineBuilder &SetBasePipeline(const std::shared_ptr<VulkanPipeline> &basePipeline,
+                                                   std::int32_t basePipelineIndex);
 
     std::shared_ptr<VulkanPipeline> Build(std::shared_ptr<VulkanDevice> device,
                                           const std::shared_ptr<VulkanPipelineLayout> &pipelineLayout,

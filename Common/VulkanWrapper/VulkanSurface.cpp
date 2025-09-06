@@ -10,7 +10,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 VulkanSurface::VulkanSurface(std::shared_ptr<VulkanInstance> instance, VkSurfaceKHR const surface)
     : VulkanObject(std::move(instance), surface)
 {

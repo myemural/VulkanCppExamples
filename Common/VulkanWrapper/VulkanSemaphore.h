@@ -19,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 
 class VulkanSemaphore final : public VulkanObject<VulkanDevice, VkSemaphore>

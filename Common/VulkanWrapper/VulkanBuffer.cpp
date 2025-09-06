@@ -26,7 +26,7 @@ inline VkBufferCreateInfo GetDefaultBufferCreateInfo()
     return createInfo;
 }
 
-VulkanBuffer::VulkanBuffer(std::shared_ptr<VulkanDevice> device, VkBuffer const buffer)
+VulkanBuffer::VulkanBuffer(std::shared_ptr<VulkanDevice> device, VkBuffer buffer)
     : VulkanObject(std::move(device), buffer)
 {
 }

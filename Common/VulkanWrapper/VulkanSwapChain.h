@@ -19,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 class VulkanImageView;
 class VulkanFence;
@@ -33,14 +32,16 @@ public:
 
     ~VulkanSwapChain() override;
 
-    void SetSwapChainImageViews(const std::shared_ptr<VulkanDevice> &device, const VkFormat& imageFormat);
+    void SetSwapChainImageViews(const std::shared_ptr<VulkanDevice> &device, const VkFormat &imageFormat);
 
-    [[nodiscard]] std::vector<std::shared_ptr<VulkanImageView>> GetSwapChainImageViews() const;
+    [[nodiscard]] std::vector<std::shared_ptr<VulkanImageView> > GetSwapChainImageViews() const;
 
-    [[nodiscard]] std::uint32_t AcquireNextImage(const std::shared_ptr<VulkanSemaphore> &semaphore, const std::shared_ptr<VulkanFence> &fence, std::uint64_t timeout = UINT64_MAX) const;
+    [[nodiscard]] std::uint32_t AcquireNextImage(const std::shared_ptr<VulkanSemaphore> &semaphore,
+                                                 const std::shared_ptr<VulkanFence> &fence,
+                                                 std::uint64_t timeout = UINT64_MAX) const;
 
 private:
-    std::vector<std::shared_ptr<VulkanImageView>> swapChainImageViews_;
+    std::vector<std::shared_ptr<VulkanImageView> > swapChainImageViews_;
 };
 
 class VulkanSwapChainBuilder
@@ -48,37 +49,38 @@ class VulkanSwapChainBuilder
 public:
     VulkanSwapChainBuilder();
 
-    VulkanSwapChainBuilder& SetCreateFlags(const VkSwapchainCreateFlagsKHR& flags);
+    VulkanSwapChainBuilder &SetCreateFlags(const VkSwapchainCreateFlagsKHR &flags);
 
-    VulkanSwapChainBuilder& SetMinImageCount(std::uint32_t minImageCount);
+    VulkanSwapChainBuilder &SetMinImageCount(std::uint32_t minImageCount);
 
-    VulkanSwapChainBuilder& SetImageFormat(const VkFormat& format);
+    VulkanSwapChainBuilder &SetImageFormat(const VkFormat &format);
 
-    VulkanSwapChainBuilder& SetImageColorSpace(const VkColorSpaceKHR& colorSpace);
+    VulkanSwapChainBuilder &SetImageColorSpace(const VkColorSpaceKHR &colorSpace);
 
-    VulkanSwapChainBuilder& SetImageExtent(std::uint32_t width, std::uint32_t height);
+    VulkanSwapChainBuilder &SetImageExtent(std::uint32_t width, std::uint32_t height);
 
-    VulkanSwapChainBuilder& SetImageArrayLayers(std::uint32_t imageArrayLayers);
+    VulkanSwapChainBuilder &SetImageArrayLayers(std::uint32_t imageArrayLayers);
 
-    VulkanSwapChainBuilder& SetImageUsageFlags(const VkImageUsageFlags& imageUsage);
+    VulkanSwapChainBuilder &SetImageUsageFlags(const VkImageUsageFlags &imageUsage);
 
-    VulkanSwapChainBuilder& SetImageSharingMode(const VkSharingMode& sharingMode);
+    VulkanSwapChainBuilder &SetImageSharingMode(const VkSharingMode &sharingMode);
 
-    VulkanSwapChainBuilder& SetQueueFamilyIndices(const std::vector<std::uint32_t>& familyIndices);
+    VulkanSwapChainBuilder &SetQueueFamilyIndices(const std::vector<std::uint32_t> &familyIndices);
 
-    VulkanSwapChainBuilder& SetPreTransformFlagBits(const VkSurfaceTransformFlagBitsKHR& flagBits);
+    VulkanSwapChainBuilder &SetPreTransformFlagBits(const VkSurfaceTransformFlagBitsKHR &flagBits);
 
-    VulkanSwapChainBuilder& SetCompositeAlphaFlagBits(const VkCompositeAlphaFlagBitsKHR& compositeAlpha);
+    VulkanSwapChainBuilder &SetCompositeAlphaFlagBits(const VkCompositeAlphaFlagBitsKHR &compositeAlpha);
 
-    VulkanSwapChainBuilder& SetPresentMode(const VkPresentModeKHR& presentMode);
+    VulkanSwapChainBuilder &SetPresentMode(const VkPresentModeKHR &presentMode);
 
-    VulkanSwapChainBuilder& SetClipped(bool isClipped);
+    VulkanSwapChainBuilder &SetClipped(bool isClipped);
 
-    VulkanSwapChainBuilder& SetOldSwapChain(const std::shared_ptr<VulkanSwapChain> &oldSwapChain);
+    VulkanSwapChainBuilder &SetOldSwapChain(const std::shared_ptr<VulkanSwapChain> &oldSwapChain);
 
-    std::shared_ptr<VulkanSwapChain> Build(std::shared_ptr<VulkanDevice> device, const std::shared_ptr<VulkanSurface> &surface);
+    std::shared_ptr<VulkanSwapChain> Build(const std::shared_ptr<VulkanDevice>& device,
+                                           const std::shared_ptr<VulkanSurface> &surface);
 
 private:
-    VkSwapchainCreateInfoKHR createInfo{};
+    VkSwapchainCreateInfoKHR createInfo_;
 };
 } // common::vulkan_wrapper

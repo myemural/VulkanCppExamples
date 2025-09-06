@@ -11,7 +11,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 VulkanDescriptorSet::VulkanDescriptorSet(std::shared_ptr<VulkanDescriptorPool> descPool,
                                          VkDescriptorSet descriptorSet)
     : VulkanObject(std::move(descPool), descriptorSet)

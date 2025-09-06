@@ -19,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanSwapChain;
 class VulkanDevice;
 class VulkanCommandBuffer;

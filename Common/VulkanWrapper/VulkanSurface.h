@@ -19,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanInstance;
 
 class VulkanSurface final : public VulkanObject<VulkanInstance, VkSurfaceKHR>

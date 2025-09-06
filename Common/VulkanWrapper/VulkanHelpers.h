@@ -58,4 +58,5 @@ VkVertexInputAttributeDescription GenerateAttributeDescriptionInternal(const uin
     return description;
 }
 
-#define GenerateAttributeDescription(VertexStruct, Attribute, BindingIndex) GenerateAttributeDescriptionInternal<decltype(VertexStruct::Attribute)>(BindingIndex, offsetof(VertexStruct, Attribute))
+#define GenerateAttributeDescription(VertexStruct, Attribute, BindingIndex) \
+    GenerateAttributeDescriptionInternal<decltype(VertexStruct::Attribute)>(BindingIndex, offsetof(VertexStruct, Attribute))

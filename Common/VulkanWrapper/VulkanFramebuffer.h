@@ -20,7 +20,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 class VulkanRenderPass;
 class VulkanImageView;
@@ -38,14 +37,15 @@ class VulkanFramebufferBuilder
 public:
     VulkanFramebufferBuilder();
 
-    VulkanFramebufferBuilder& SetCreateFlags(const VkFramebufferCreateFlags& flags);
+    VulkanFramebufferBuilder &SetCreateFlags(const VkFramebufferCreateFlags &flags);
 
-    VulkanFramebufferBuilder& SetDimensions(std::uint32_t width, std::uint32_t height, std::uint32_t layers = 1);
+    VulkanFramebufferBuilder &SetDimensions(std::uint32_t width, std::uint32_t height, std::uint32_t layers = 1);
 
     std::shared_ptr<VulkanFramebuffer> Build(std::shared_ptr<VulkanDevice> device,
                                              const std::shared_ptr<VulkanRenderPass> &renderPass,
-                                             const std::vector<std::shared_ptr<VulkanImageView>>& attachments);
+                                             const std::vector<std::shared_ptr<VulkanImageView> > &attachments);
+
 private:
-    VkFramebufferCreateInfo createInfo;
+    VkFramebufferCreateInfo createInfo_;
 };
 } // common::vulkan_wrapper

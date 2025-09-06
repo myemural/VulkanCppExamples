@@ -12,7 +12,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 inline VkGraphicsPipelineCreateInfo GetDefaultGraphicsPipelineCreateInfo()
 {
     VkGraphicsPipelineCreateInfo createInfo{};
@@ -180,7 +179,8 @@ inline VkPipelineDynamicStateCreateInfo GetDefaultDynamicStateCreateInfo()
 
 VulkanPipeline::VulkanPipeline(std::shared_ptr<VulkanDevice> device, VkPipeline pipeline)
     : VulkanObject(std::move(device), pipeline)
-{}
+{
+}
 
 VulkanPipeline::~VulkanPipeline()
 {
@@ -206,7 +206,7 @@ VulkanGraphicsPipelineBuilder::VulkanGraphicsPipelineBuilder()
 {
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::AddShaderStage(
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::AddShaderStage(
     const std::function<void(VkPipelineShaderStageCreateInfo &)> &builderFunc)
 {
     VkPipelineShaderStageCreateInfo shaderStageCreateInfo = GetDefaultShaderStageCreateInfo();
@@ -215,76 +215,77 @@ VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::AddShaderStage(
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetVertexInputState(
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetVertexInputState(
     const std::function<void(VkPipelineVertexInputStateCreateInfo &)> &builderFunc)
 {
     builderFunc(vertexInputState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetInputAssemblyState(
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetInputAssemblyState(
     const std::function<void(VkPipelineInputAssemblyStateCreateInfo &)> &builderFunc)
 {
     builderFunc(inputAssemblyState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetTessellationState(
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetTessellationState(
     const std::function<void(VkPipelineTessellationStateCreateInfo &)> &builderFunc)
 {
     builderFunc(tessellationState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetViewportState(
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetViewportState(
     const std::function<void(VkPipelineViewportStateCreateInfo &)> &builderFunc)
 {
     builderFunc(viewportState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetRasterizationState(
-const std::function<void(VkPipelineRasterizationStateCreateInfo &)> &builderFunc){
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetRasterizationState(
+    const std::function<void(VkPipelineRasterizationStateCreateInfo &)> &builderFunc)
+{
     builderFunc(rasterizationState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetMultisampleState(
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetMultisampleState(
     const std::function<void(VkPipelineMultisampleStateCreateInfo &)> &builderFunc)
 {
     builderFunc(multisampleState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetDepthStencilState(
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetDepthStencilState(
     const std::function<void(VkPipelineDepthStencilStateCreateInfo &)> &builderFunc)
 {
     builderFunc(depthStencilState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetColorBlendState(
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetColorBlendState(
     const std::function<void(VkPipelineColorBlendStateCreateInfo &)> &builderFunc)
 {
     builderFunc(colorBlendState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetDynamicState(
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetDynamicState(
     const std::function<void(VkPipelineDynamicStateCreateInfo &)> &builderFunc)
 {
     builderFunc(dynamicState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetSubpassIndex(std::uint32_t subpassIndex)
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetSubpassIndex(const std::uint32_t subpassIndex)
 {
     createInfo_.subpass = subpassIndex;
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetBasePipeline(
-    const std::shared_ptr<VulkanPipeline> &basePipeline, std::int32_t basePipelineIndex)
+VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetBasePipeline(
+    const std::shared_ptr<VulkanPipeline> &basePipeline, const std::int32_t basePipelineIndex)
 {
     createInfo_.basePipelineHandle = basePipeline->GetHandle();
     createInfo_.basePipelineIndex = basePipelineIndex;
@@ -292,7 +293,10 @@ VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetBasePipeline(
 }
 
 std::shared_ptr<VulkanPipeline> VulkanGraphicsPipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
-    const std::shared_ptr<VulkanPipelineLayout> &pipelineLayout, const std::shared_ptr<VulkanRenderPass> &renderPass)
+                                                                     const std::shared_ptr<VulkanPipelineLayout> &
+                                                                     pipelineLayout,
+                                                                     const std::shared_ptr<VulkanRenderPass> &
+                                                                     renderPass)
 {
     if (shaderStages_.empty()) {
         std::cout << "Please set at least 1 shader stage for pipeline!" << std::endl;
@@ -314,7 +318,8 @@ std::shared_ptr<VulkanPipeline> VulkanGraphicsPipelineBuilder::Build(std::shared
     createInfo_.renderPass = renderPass->GetHandle();
 
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
-    if (vkCreateGraphicsPipelines(device->GetHandle(), VK_NULL_HANDLE, 1, &createInfo_, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(device->GetHandle(), VK_NULL_HANDLE, 1, &createInfo_, nullptr, &graphicsPipeline) !=
+        VK_SUCCESS) {
         std::cout << "Failed to create graphics pipeline!" << std::endl;
         return nullptr;
     }

@@ -13,16 +13,16 @@
 
 namespace common::vulkan_wrapper
 {
-
 VulkanQueue::VulkanQueue(std::shared_ptr<VulkanDevice> device, VkQueue queue)
     : VulkanObject{std::move(device), queue}
-{}
+{
+}
 
-void VulkanQueue::Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer>> &cmdBuffers,
-    const std::vector<std::shared_ptr<VulkanSemaphore>> &waitSemaphores,
-    const std::vector<std::shared_ptr<VulkanSemaphore>> &signalSemaphores,
-    const std::shared_ptr<VulkanFence> &fence,
-    const std::vector<VkPipelineStageFlags>& waitStages) const
+void VulkanQueue::Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer> > &cmdBuffers,
+                         const std::vector<std::shared_ptr<VulkanSemaphore> > &waitSemaphores,
+                         const std::vector<std::shared_ptr<VulkanSemaphore> > &signalSemaphores,
+                         const std::shared_ptr<VulkanFence> &fence,
+                         const std::vector<VkPipelineStageFlags> &waitStages) const
 {
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -56,9 +56,9 @@ void VulkanQueue::Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer>>
     }
 }
 
-void VulkanQueue::Present(const std::vector<std::shared_ptr<VulkanSwapChain>> &swapChains,
-    const std::vector<std::uint32_t> &swapChainImageIndices,
-    const std::vector<std::shared_ptr<VulkanSemaphore>> &waitSemaphores) const
+void VulkanQueue::Present(const std::vector<std::shared_ptr<VulkanSwapChain> > &swapChains,
+                          const std::vector<std::uint32_t> &swapChainImageIndices,
+                          const std::vector<std::shared_ptr<VulkanSemaphore> > &waitSemaphores) const
 {
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -81,11 +81,13 @@ void VulkanQueue::Present(const std::vector<std::shared_ptr<VulkanSwapChain>> &s
     presentInfo.pImageIndices = swapChainImageIndices.data();
     presentInfo.pResults = nullptr; /// TODO: Advanced queue handling will be added later
 
+    /// TODO: Handle results
     vkQueuePresentKHR(handle_, &presentInfo);
 }
 
 void VulkanQueue::WaitIdle() const
 {
+    /// TODO: Handle results
     vkQueueWaitIdle(handle_);
 }
 } // common::vulkan_wrapper

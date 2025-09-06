@@ -20,7 +20,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 class VulkanDeviceMemory;
 
@@ -33,7 +32,7 @@ public:
 
     [[nodiscard]] VkMemoryRequirements GetImageMemoryRequirements() const;
 
-    void BindImageMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory, VkDeviceSize memoryOffset) const;
+    void BindImageMemory(const std::shared_ptr<VulkanDeviceMemory> &deviceMemory, VkDeviceSize memoryOffset) const;
 
     [[nodiscard]] VkImageMemoryBarrier CreateImageMemoryBarrier(const VkAccessFlags &srcAccessMask,
                                                                 const VkAccessFlags &dstAccessMask,
@@ -70,9 +69,9 @@ public:
 
     VulkanImageBuilder &SetInitialImageLayout(const VkImageLayout &layout);
 
-    std::shared_ptr<VulkanImage> Build(std::shared_ptr<VulkanDevice> device) const;
+    [[nodiscard]] std::shared_ptr<VulkanImage> Build(std::shared_ptr<VulkanDevice> device) const;
 
 private:
-    VkImageCreateInfo createInfo;
+    VkImageCreateInfo createInfo_;
 };
 } // common::vulkan_wrapper

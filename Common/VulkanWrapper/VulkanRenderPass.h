@@ -20,7 +20,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 
 class VulkanRenderPass final : public VulkanObject<VulkanDevice, VkRenderPass>
@@ -38,20 +37,20 @@ class VulkanRenderPassBuilder
 public:
     VulkanRenderPassBuilder();
 
-    VulkanRenderPassBuilder& SetCreateFlags(const VkRenderPassCreateFlags& flags);
+    VulkanRenderPassBuilder &SetCreateFlags(const VkRenderPassCreateFlags &flags);
 
-    VulkanRenderPassBuilder& AddAttachment(const std::function<void(VkAttachmentDescription&)>& setterFunc);
+    VulkanRenderPassBuilder &AddAttachment(const std::function<void(VkAttachmentDescription &)> &setterFunc);
 
-    VulkanRenderPassBuilder& AddSubpass(const std::function<void(VkSubpassDescription&)>& setterFunc);
+    VulkanRenderPassBuilder &AddSubpass(const std::function<void(VkSubpassDescription &)> &setterFunc);
 
-    VulkanRenderPassBuilder& AddDependency(const std::function<void(VkSubpassDependency&)>& setterFunc);
+    VulkanRenderPassBuilder &AddDependency(const std::function<void(VkSubpassDependency &)> &setterFunc);
 
     std::shared_ptr<VulkanRenderPass> Build(std::shared_ptr<VulkanDevice> device);
 
 private:
-    VkRenderPassCreateInfo createInfo{};
-    std::vector<VkAttachmentDescription> attachments{};
-    std::vector<VkSubpassDescription> subpasses{};
-    std::vector<VkSubpassDependency> dependencies{};
+    VkRenderPassCreateInfo createInfo_;
+    std::vector<VkAttachmentDescription> attachments_;
+    std::vector<VkSubpassDescription> subpasses_;
+    std::vector<VkSubpassDependency> dependencies_;
 };
 } // common::vulkan_wrapper

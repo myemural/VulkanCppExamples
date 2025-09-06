@@ -12,13 +12,13 @@
 
 namespace common::vulkan_wrapper
 {
-
 VulkanDescriptorPool::VulkanDescriptorPool(std::shared_ptr<VulkanDevice> device, VkDescriptorPool descriptorPool)
     : VulkanObject(std::move(device), descriptorPool)
-{}
+{
+}
 
-std::vector<std::shared_ptr<VulkanDescriptorSet>> VulkanDescriptorPool::CreateDescriptorSets(
-    const std::vector<std::shared_ptr<VulkanDescriptorSetLayout>> &descriptorSetLayouts)
+std::vector<std::shared_ptr<VulkanDescriptorSet> > VulkanDescriptorPool::CreateDescriptorSets(
+    const std::vector<std::shared_ptr<VulkanDescriptorSetLayout> > &descriptorSetLayouts)
 {
     VkDescriptorSetAllocateInfo allocateInfo{};
     allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -39,8 +39,8 @@ std::vector<std::shared_ptr<VulkanDescriptorSet>> VulkanDescriptorPool::CreateDe
         return {};
     }
 
-    std::vector<std::shared_ptr<VulkanDescriptorSet>> descriptorSets;
-    for (auto& descSet : vkDescSets) {
+    std::vector<std::shared_ptr<VulkanDescriptorSet> > descriptorSets;
+    for (auto &descSet: vkDescSets) {
         auto vulkanDescSet = std::make_shared<VulkanDescriptorSet>(shared_from_this(), descSet);
         descriptorSets.push_back(vulkanDescSet);
     }

@@ -10,8 +10,7 @@
 
 namespace common::vulkan_wrapper
 {
-
-VulkanDeviceMemory::VulkanDeviceMemory(std::shared_ptr<VulkanDevice> device, VkDeviceMemory const deviceMemory)
+VulkanDeviceMemory::VulkanDeviceMemory(std::shared_ptr<VulkanDevice> device, VkDeviceMemory deviceMemory)
     : VulkanObject(std::move(device), deviceMemory)
 {
 }
@@ -26,7 +25,8 @@ VulkanDeviceMemory::~VulkanDeviceMemory()
     }
 }
 
-void* VulkanDeviceMemory::MapMemory(const VkDeviceSize size, const VkDeviceSize offset, const VkMemoryMapFlags &flags) const
+void *VulkanDeviceMemory::MapMemory(const VkDeviceSize size, const VkDeviceSize offset,
+                                    const VkMemoryMapFlags &flags) const
 {
     const auto device = GetParent();
     if (!device) {
@@ -42,10 +42,10 @@ void* VulkanDeviceMemory::MapMemory(const VkDeviceSize size, const VkDeviceSize 
 }
 
 void VulkanDeviceMemory::FlushMappedMemoryRanges(
-    const std::vector<std::pair<VkDeviceSize, VkDeviceSize>> &mappedMemoryRanges) const
+    const std::vector<std::pair<VkDeviceSize, VkDeviceSize> > &mappedMemoryRanges) const
 {
     std::vector<VkMappedMemoryRange> memoryRanges;
-    for (const auto &[size, offset] : mappedMemoryRanges) {
+    for (const auto &[size, offset]: mappedMemoryRanges) {
         VkMappedMemoryRange memoryRange;
         memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
         memoryRange.pNext = nullptr;
@@ -56,7 +56,8 @@ void VulkanDeviceMemory::FlushMappedMemoryRanges(
     }
 
     const auto device = GetParent();
-    if (!device || vkFlushMappedMemoryRanges(device->GetHandle(), memoryRanges.size(), memoryRanges.data()) != VK_SUCCESS) {
+    if (!device || vkFlushMappedMemoryRanges(device->GetHandle(), memoryRanges.size(), memoryRanges.data()) !=
+        VK_SUCCESS) {
         throw std::runtime_error("Failed to flush mapped memory ranges!");
     }
 }

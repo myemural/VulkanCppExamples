@@ -10,10 +10,10 @@
 
 namespace common::vulkan_wrapper
 {
-
 VulkanPipelineLayout::VulkanPipelineLayout(std::shared_ptr<VulkanDevice> device, VkPipelineLayout pipelineLayout)
     : VulkanObject(std::move(device), pipelineLayout)
-{}
+{
+}
 
 VulkanPipelineLayout::~VulkanPipelineLayout()
 {
@@ -24,5 +24,4 @@ VulkanPipelineLayout::~VulkanPipelineLayout()
         }
     }
 }
-
 } // common::vulkan_wrapper

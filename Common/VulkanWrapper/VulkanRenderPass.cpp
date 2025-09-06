@@ -10,7 +10,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 inline VkRenderPassCreateInfo GetDefaultRenderPassCreateInfo()
 {
     VkRenderPassCreateInfo info{};
@@ -70,7 +69,7 @@ inline VkSubpassDependency GetDefaultSubpassDependency()
     return dependency;
 }
 
-VulkanRenderPass::VulkanRenderPass(std::shared_ptr<VulkanDevice> device, VkRenderPass const renderPass)
+VulkanRenderPass::VulkanRenderPass(std::shared_ptr<VulkanDevice> device, VkRenderPass renderPass)
     : VulkanObject(std::move(device), renderPass)
 {
 }
@@ -96,61 +95,62 @@ VkExtent2D VulkanRenderPass::GetRenderAreaGranularity() const
 }
 
 VulkanRenderPassBuilder::VulkanRenderPassBuilder()
-    : createInfo(GetDefaultRenderPassCreateInfo())
-{}
-
-VulkanRenderPassBuilder & VulkanRenderPassBuilder::SetCreateFlags(const VkRenderPassCreateFlags &flags)
+    : createInfo_(GetDefaultRenderPassCreateInfo())
 {
-    createInfo.flags = flags;
+}
+
+VulkanRenderPassBuilder &VulkanRenderPassBuilder::SetCreateFlags(const VkRenderPassCreateFlags &flags)
+{
+    createInfo_.flags = flags;
     return *this;
 }
 
-VulkanRenderPassBuilder & VulkanRenderPassBuilder::AddAttachment(
+VulkanRenderPassBuilder &VulkanRenderPassBuilder::AddAttachment(
     const std::function<void(VkAttachmentDescription &)> &setterFunc)
 {
     VkAttachmentDescription description = GetDefaultAttachmentDescription();
     setterFunc(description);
-    attachments.push_back(description);
+    attachments_.push_back(description);
     return *this;
 }
 
-VulkanRenderPassBuilder & VulkanRenderPassBuilder::AddSubpass(
+VulkanRenderPassBuilder &VulkanRenderPassBuilder::AddSubpass(
     const std::function<void(VkSubpassDescription &)> &setterFunc)
 {
     VkSubpassDescription description = GetDefaultSubpassDescription();
     setterFunc(description);
-    subpasses.push_back(description);
+    subpasses_.push_back(description);
     return *this;
 }
 
-VulkanRenderPassBuilder & VulkanRenderPassBuilder::AddDependency(
+VulkanRenderPassBuilder &VulkanRenderPassBuilder::AddDependency(
     const std::function<void(VkSubpassDependency &)> &setterFunc)
 {
     VkSubpassDependency dependency = GetDefaultSubpassDependency();
     setterFunc(dependency);
-    dependencies.push_back(dependency);
+    dependencies_.push_back(dependency);
     return *this;
 }
 
 std::shared_ptr<VulkanRenderPass> VulkanRenderPassBuilder::Build(std::shared_ptr<VulkanDevice> device)
 {
-    if (!attachments.empty()) {
-        createInfo.attachmentCount = attachments.size();
-        createInfo.pAttachments = attachments.data();
+    if (!attachments_.empty()) {
+        createInfo_.attachmentCount = attachments_.size();
+        createInfo_.pAttachments = attachments_.data();
     }
 
-    if (!subpasses.empty()) {
-        createInfo.subpassCount = subpasses.size();
-        createInfo.pSubpasses = subpasses.data();
+    if (!subpasses_.empty()) {
+        createInfo_.subpassCount = subpasses_.size();
+        createInfo_.pSubpasses = subpasses_.data();
     }
 
-    if (!dependencies.empty()) {
-        createInfo.dependencyCount = dependencies.size();
-        createInfo.pDependencies = dependencies.data();
+    if (!dependencies_.empty()) {
+        createInfo_.dependencyCount = dependencies_.size();
+        createInfo_.pDependencies = dependencies_.data();
     }
 
     VkRenderPass renderPass = VK_NULL_HANDLE;
-    if (vkCreateRenderPass(device->GetHandle(), &createInfo, nullptr, &renderPass) != VK_SUCCESS) {
+    if (vkCreateRenderPass(device->GetHandle(), &createInfo_, nullptr, &renderPass) != VK_SUCCESS) {
         std::cerr << "Failed to create render pass!" << std::endl;
         return nullptr;
     }

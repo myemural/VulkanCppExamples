@@ -20,7 +20,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 class VulkanCommandBuffer;
 
@@ -32,9 +31,10 @@ public:
 
     ~VulkanCommandPool() override;
 
-    std::vector<std::shared_ptr<VulkanCommandBuffer>> CreateCommandBuffers(std::uint32_t count, const VkCommandBufferLevel& level);
+    std::vector<std::shared_ptr<VulkanCommandBuffer> > CreateCommandBuffers(std::uint32_t count,
+                                                                            const VkCommandBufferLevel &level);
 
-    void ResetCommandPool(const VkCommandPoolResetFlags& resetFlags = 0) const;
+    bool ResetCommandPool(const VkCommandPoolResetFlags &resetFlags = 0) const;
 };
 
 class VulkanCommandPoolBuilder
@@ -49,6 +49,6 @@ public:
     [[nodiscard]] std::shared_ptr<VulkanCommandPool> Build(std::shared_ptr<VulkanDevice> device) const;
 
 private:
-    VkCommandPoolCreateInfo createInfo;
+    VkCommandPoolCreateInfo createInfo_;
 };
 } // common::vulkan_wrapper

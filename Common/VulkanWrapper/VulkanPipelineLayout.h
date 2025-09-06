@@ -19,7 +19,6 @@
 
 namespace common::vulkan_wrapper
 {
-
 class VulkanDevice;
 
 class VulkanPipelineLayout final : public VulkanObject<VulkanDevice, VkPipelineLayout>

@@ -19,43 +19,33 @@
 
 namespace common::vulkan_wrapper
 {
-class VulkanImageBuilder;
-class VulkanSamplerBuilder;
-}
-
-namespace common::vulkan_wrapper
-{
-class VulkanSampler;
-}
-
-namespace common::vulkan_wrapper
-{
-
-class VulkanDescriptorSetLayout;
-class VulkanDescriptorPool;
-class VulkanPipeline;
-class VulkanGraphicsPipelineBuilder;
-class VulkanPipelineLayout;
-class VulkanShaderModule;
-class VulkanPhysicalDevice;
-class VulkanImage;
-class VulkanImageView;
-class VulkanImageViewBuilder;
-class VulkanCommandPool;
-class Builder;
-class VulkanFence;
-class VulkanSemaphore;
-class VulkanSwapChain;
-class VulkanSurface;
-class VulkanQueue;
-class VulkanSwapChainBuilder;
-class VulkanRenderPass;
-class VulkanRenderPassBuilder;
-class VulkanFramebuffer;
-class VulkanFramebufferBuilder;
 class VulkanBuffer;
 class VulkanBufferBuilder;
+class VulkanCommandPool;
+class VulkanDescriptorPool;
+class VulkanDescriptorSetLayout;
 class VulkanDeviceMemory;
+class VulkanFence;
+class VulkanFramebuffer;
+class VulkanFramebufferBuilder;
+class VulkanGraphicsPipelineBuilder;
+class VulkanImage;
+class VulkanImageBuilder;
+class VulkanImageView;
+class VulkanImageViewBuilder;
+class VulkanPhysicalDevice;
+class VulkanPipeline;
+class VulkanPipelineLayout;
+class VulkanQueue;
+class VulkanRenderPass;
+class VulkanRenderPassBuilder;
+class VulkanSampler;
+class VulkanSamplerBuilder;
+class VulkanSemaphore;
+class VulkanShaderModule;
+class VulkanSurface;
+class VulkanSwapChain;
+class VulkanSwapChainBuilder;
 
 class VulkanDevice final : public VulkanObject<VulkanPhysicalDevice, VkDevice>,
                            public std::enable_shared_from_this<VulkanDevice>
@@ -69,9 +59,10 @@ public:
 
     std::shared_ptr<VulkanSemaphore> CreateSemaphore();
 
-    std::shared_ptr<VulkanFence> CreateFence(const VkFenceCreateFlags& flags);
+    std::shared_ptr<VulkanFence> CreateFence(const VkFenceCreateFlags &flags);
 
-    std::shared_ptr<VulkanCommandPool> CreateCommandPool(std::uint32_t queueFamilyIndex, const VkCommandPoolCreateFlags& flags = 0);
+    std::shared_ptr<VulkanCommandPool> CreateCommandPool(std::uint32_t queueFamilyIndex,
+                                                         const VkCommandPoolCreateFlags &flags = 0);
 
     std::shared_ptr<VulkanDescriptorPool> CreateDescriptorPool(std::uint32_t maxSets,
                                                                const std::vector<VkDescriptorPoolSize> &poolSizes,
@@ -81,12 +72,15 @@ public:
         const std::vector<VkDescriptorSetLayoutBinding> &bindings,
         const VkDescriptorSetLayoutCreateFlags &flags = 0);
 
-    std::shared_ptr<VulkanSwapChain> CreateSwapChain(const std::shared_ptr<VulkanSurface>& surface, const std::function<void(VulkanSwapChainBuilder&)>& builderFunc);
+    std::shared_ptr<VulkanSwapChain> CreateSwapChain(const std::shared_ptr<VulkanSurface> &surface,
+                                                     const std::function<void(VulkanSwapChainBuilder &)> &builderFunc);
 
-    std::shared_ptr<VulkanRenderPass> CreateRenderPass(const std::function<void(VulkanRenderPassBuilder&)>& builderFunc);
+    std::shared_ptr<VulkanRenderPass> CreateRenderPass(
+        const std::function<void(VulkanRenderPassBuilder &)> &builderFunc);
 
     std::shared_ptr<VulkanFramebuffer> CreateFramebuffer(const std::shared_ptr<VulkanRenderPass> &renderPass,
-                                                         const std::vector<std::shared_ptr<VulkanImageView>> &attachments,
+                                                         const std::vector<std::shared_ptr<VulkanImageView> > &
+                                                         attachments,
                                                          const std::function<void(VulkanFramebufferBuilder &)> &
                                                          builderFunc);
 
@@ -95,21 +89,21 @@ public:
     std::shared_ptr<VulkanImageView> CreateImageView(const std::shared_ptr<VulkanImage> &image,
                                                      const std::function<void(VulkanImageViewBuilder &)> &builderFunc);
 
-    std::shared_ptr<VulkanShaderModule> CreateShaderModule(const std::vector<std::uint32_t>& moduleCode);
+    std::shared_ptr<VulkanShaderModule> CreateShaderModule(const std::vector<std::uint32_t> &moduleCode);
 
     std::shared_ptr<VulkanPipelineLayout> CreatePipelineLayout(
         const std::vector<std::shared_ptr<VulkanDescriptorSetLayout> > &descSetLayouts = {},
         const std::vector<VkPushConstantRange> &pushConstantRanges = {},
         const VkPipelineLayoutCreateFlags &createFlags = 0);
 
-    std::shared_ptr<VulkanPipeline> CreateGraphicsPipeline(std::shared_ptr<VulkanPipelineLayout> layout,
-                                                           std::shared_ptr<VulkanRenderPass> renderPass,
+    std::shared_ptr<VulkanPipeline> CreateGraphicsPipeline(const std::shared_ptr<VulkanPipelineLayout>& layout,
+                                                           const std::shared_ptr<VulkanRenderPass>& renderPass,
                                                            const std::function<void(VulkanGraphicsPipelineBuilder &)> &
                                                            builderFunc);
 
-    std::shared_ptr<VulkanBuffer> CreateBuffer(const std::function<void(VulkanBufferBuilder&)>& builderFunc);
+    std::shared_ptr<VulkanBuffer> CreateBuffer(const std::function<void(VulkanBufferBuilder &)> &builderFunc);
 
-    std::shared_ptr<VulkanDeviceMemory> AllocateMemory(const VkDeviceSize& size, std::uint32_t memoryTypeIndex);
+    std::shared_ptr<VulkanDeviceMemory> AllocateMemory(const VkDeviceSize &size, std::uint32_t memoryTypeIndex);
 
     void UpdateDescriptorSets(const std::vector<VkWriteDescriptorSet> &writeDescriptorSets,
                               const std::vector<VkCopyDescriptorSet> &copyDescriptorSets = {}) const;
@@ -122,19 +116,19 @@ class VulkanDeviceBuilder
 public:
     VulkanDeviceBuilder();
 
-    VulkanDeviceBuilder& AddQueueInfo(const std::function<void(VkDeviceQueueCreateInfo&)>& setterFunc);
+    VulkanDeviceBuilder &AddQueueInfo(const std::function<void(VkDeviceQueueCreateInfo &)> &setterFunc);
 
-    VulkanDeviceBuilder& AddLayer(const std::string& layerName);
+    VulkanDeviceBuilder &AddLayer(const std::string &layerName);
 
-    VulkanDeviceBuilder& AddLayers(const std::vector<std::string>& layerNames);
+    VulkanDeviceBuilder &AddLayers(const std::vector<std::string> &layerNames);
 
-    VulkanDeviceBuilder& AddExtension(const std::string& extensionName);
+    VulkanDeviceBuilder &AddExtension(const std::string &extensionName);
 
-    VulkanDeviceBuilder& AddExtensions(const std::vector<std::string>& extensionNames);
+    VulkanDeviceBuilder &AddExtensions(const std::vector<std::string> &extensionNames);
 
-    VulkanDeviceBuilder& SetDeviceFeatures(const VkPhysicalDeviceFeatures& features);
+    VulkanDeviceBuilder &SetDeviceFeatures(const VkPhysicalDeviceFeatures &features);
 
-    std::shared_ptr<VulkanDevice> Build(std::shared_ptr<VulkanPhysicalDevice> physicalDevice);
+    std::shared_ptr<VulkanDevice> Build(const std::shared_ptr<VulkanPhysicalDevice>& physicalDevice);
 
 private:
     VkDeviceCreateInfo createInfo{};

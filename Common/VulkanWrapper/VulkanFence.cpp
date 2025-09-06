@@ -10,8 +10,7 @@
 
 namespace common::vulkan_wrapper
 {
-
-VulkanFence::VulkanFence(std::shared_ptr<VulkanDevice> device, VkFence const fence)
+VulkanFence::VulkanFence(std::shared_ptr<VulkanDevice> device, VkFence fence)
     : VulkanObject(std::move(device), fence)
 {
 }
@@ -27,6 +26,7 @@ VulkanFence::~VulkanFence()
     }
 }
 
+/// TODO: This can be moved to device or think again about waiting multiple fences
 void VulkanFence::WaitForFence(const bool waitAll, const uint64_t timeout) const
 {
     if (const auto device = GetParent()) {
@@ -34,6 +34,7 @@ void VulkanFence::WaitForFence(const bool waitAll, const uint64_t timeout) const
     }
 }
 
+/// TODO: This can be moved to device or think again about resetting multiple fences
 void VulkanFence::ResetFence() const
 {
     if (const auto device = GetParent()) {
