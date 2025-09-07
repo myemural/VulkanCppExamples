@@ -47,7 +47,7 @@ function(compile_shaders_for_target TARGET_NAME)
 
     # Compile HLSL Shaders
     set(HLSL_SHADERS_DIR "${SHADER_BASE_DIR}/hlsl")
-    if(IS_DIRECTORY "${HLSL_SHADERS_DIR}")
+    if(IS_DIRECTORY "${HLSL_SHADERS_DIR}" AND DEFINED ENV{VULKAN_SDK})
         file(GLOB HLSL_SHADERS ${HLSL_SHADERS_DIR}/*.hlsl)
         set(HLSL_SPIRV_OUTPUT_DIR "${HLSL_SHADERS_DIR}/spirv")
         file(MAKE_DIRECTORY "${HLSL_SPIRV_OUTPUT_DIR}")
@@ -78,8 +78,8 @@ function(compile_shaders_for_target TARGET_NAME)
             add_custom_command(
                     OUTPUT "${HLSL_SPIRV_SHADER_PATH}"
                     COMMAND ${CMAKE_COMMAND} -E echo "Started compiling for ${FILE_NAME}"
-                    COMMAND dxc -T ${STAGE}_6_0 -E main "${SHADER}" -Fo "${SPIRV_PATH}"
-                    COMMAND ${CMAKE_COMMAND} -E echo "Compilation finished for ${FILE_NAME} -> ${SPIRV_PATH}"
+                    COMMAND "$ENV{VULKAN_SDK}/bin/dxc" -spirv -T ${STAGE}_6_0 -E main "${SHADER}" -Fo "${HLSL_SPIRV_SHADER_PATH}"
+                    COMMAND ${CMAKE_COMMAND} -E echo "Compilation finished for ${FILE_NAME} -> ${HLSL_SPIRV_SHADER_PATH}"
                     DEPENDS "${SHADER}"
                     COMMENT "Compiling HLSL shader ${FILE_NAME}"
                     VERBATIM
