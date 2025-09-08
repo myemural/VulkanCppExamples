@@ -115,6 +115,25 @@ VkPhysicalDeviceFeatures VulkanPhysicalDevice::GetSupportedFeatures() const
     return supportedFeatures;
 }
 
+VkFormat VulkanPhysicalDevice::FindSupportedFormat(const std::vector<VkFormat> &candidateFormats,
+                                                   const VkFormatFeatureFlags &features,
+                                                   const VkImageTiling &tiling) const
+{
+    for (const auto format : candidateFormats) {
+        VkFormatProperties props;
+        vkGetPhysicalDeviceFormatProperties(handle_, format, &props);
+
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+            return format;
+        }
+        if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+            return format;
+        }
+    }
+
+    throw std::runtime_error("Appropriate target format couldn't be detected!");
+}
+
 std::shared_ptr<VulkanDevice> VulkanPhysicalDevice::CreateDevice(
     const std::function<void(VulkanDeviceBuilder &)> &builderFunc)
 {
@@ -122,7 +141,6 @@ std::shared_ptr<VulkanDevice> VulkanPhysicalDevice::CreateDevice(
     builderFunc(builder);
 
     auto device = builder.Build(shared_from_this());
-    // devices_.push_back(device);
     return device;
 }
 

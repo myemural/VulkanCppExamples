@@ -47,6 +47,8 @@ class VulkanImageBuilder
 public:
     VulkanImageBuilder();
 
+    VulkanImageBuilder &SetCreateFlags(const VkImageCreateFlags &flags);
+
     VulkanImageBuilder &SetImageType(const VkImageType &imageType);
 
     VulkanImageBuilder &SetFormat(const VkFormat &format);

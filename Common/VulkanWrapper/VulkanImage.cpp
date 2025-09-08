@@ -105,6 +105,12 @@ VulkanImageBuilder::VulkanImageBuilder()
 {
 }
 
+VulkanImageBuilder & VulkanImageBuilder::SetCreateFlags(const VkImageCreateFlags &flags)
+{
+    createInfo_.flags = flags;
+    return *this;
+}
+
 VulkanImageBuilder &VulkanImageBuilder::SetImageType(const VkImageType &imageType)
 {
     createInfo_.imageType = imageType;

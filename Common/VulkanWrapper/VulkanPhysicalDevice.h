@@ -49,6 +49,10 @@ public:
 
     VkPhysicalDeviceFeatures GetSupportedFeatures() const;
 
+    VkFormat FindSupportedFormat(const std::vector<VkFormat> &candidateFormats,
+                                 const VkFormatFeatureFlags &features,
+                                 const VkImageTiling &tiling = VK_IMAGE_TILING_OPTIMAL) const;
+
     std::shared_ptr<VulkanDevice> CreateDevice(const std::function<void(VulkanDeviceBuilder &)> &builderFunc);
 };
 
