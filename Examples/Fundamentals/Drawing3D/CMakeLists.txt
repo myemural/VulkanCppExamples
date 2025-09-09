@@ -4,3 +4,4 @@ add_subdirectory(Base)
 include_directories(Base)
 
 add_subdirectory(DrawingCube)
+add_subdirectory(BasicCameraControl)

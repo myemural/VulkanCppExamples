@@ -10,6 +10,7 @@
  */
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
 #include <vulkan/vulkan_core.h>
@@ -70,17 +71,16 @@ public:
      */
     VkSurfaceKHR CreateVulkanSurface(VkInstance instance) const;
 
-    /**
-     * @brief Sets a callback function for resizing window event.
-     * @param callback Callback function pointer that calling when window is resized.
-     */
-    void SetWindowResizeCallback(GLFWframebuffersizefun callback) const;
 
-    /**
-     * @brief Sets a callback function for mouse events.
-     * @param callback Callback function pointer that calling when mouse event is occurred.
-     */
-    void SetMouseCallback(GLFWcursorposfun callback) const;
+    void SetKeyCallback(const std::function<void(int, int, int, int)>& callback);
+
+    void CallKeyCallback(int key, int scancode, int action, int mods) const;
+
+    void SetMouseCallback(const std::function<void(double, double)>& callback);
+
+    void CallMouseCallback(double x, double y) const;
+
+    void DisableCursor() const;
 
     /**
      * @brief Checks window close event has occurred or not.
@@ -92,11 +92,14 @@ public:
      * @brief Window related update function that will call in every frame.
      */
     void OnUpdate() const ;
+
 private:
     std::string windowName_;
     std::uint32_t windowWidth_ = 0;
     std::uint32_t windowHeight_ = 0;
     GLFWwindow *window_;
+    std::function<void(int, int, int, int)> keyCallback_;
+    std::function<void(double, double)> mouseCallback_;
 };
 
 } // namespace common::window_wrapper

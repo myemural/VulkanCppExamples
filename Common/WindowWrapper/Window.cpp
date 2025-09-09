@@ -45,6 +45,24 @@ bool Window::Init(const uint32_t windowWidth, const uint32_t windowHeight, const
 
     glfwMakeContextCurrent(window_);
 
+    glfwSetWindowUserPointer(window_, this);
+
+    glfwSetKeyCallback(window_, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
+        if (const auto self = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
+            self->CallKeyCallback(key, scancode, action, mods);
+        }
+
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
+    });
+
+    glfwSetCursorPosCallback(window_, [](GLFWwindow* window, double x, double y) {
+        if (const auto self = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
+            self->CallMouseCallback(x, y);
+        }
+    });
+
     return true;
 }
 
@@ -69,14 +87,33 @@ VkSurfaceKHR Window::CreateVulkanSurface(VkInstance instance) const
     return surface;
 }
 
-void Window::SetWindowResizeCallback(const GLFWframebuffersizefun callback) const
+void Window::SetKeyCallback(const std::function<void(int, int, int, int)> &callback)
 {
-    glfwSetFramebufferSizeCallback(window_, callback);
+    keyCallback_ = callback;
 }
 
-void Window::SetMouseCallback(const GLFWcursorposfun callback) const
+void Window::CallKeyCallback(int key, int scancode, int action, int mods) const
 {
-    glfwSetCursorPosCallback(window_, callback);
+    if (keyCallback_) {
+        keyCallback_(key, scancode, action, mods);
+    }
+}
+
+void Window::SetMouseCallback(const std::function<void(double, double)>& callback)
+{
+    mouseCallback_ = callback;
+}
+
+void Window::CallMouseCallback(double x, double y) const
+{
+    if (mouseCallback_) {
+        mouseCallback_(x, y);
+    }
+}
+
+void Window::DisableCursor() const
+{
+    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 bool Window::CheckWindowCloseFlag() const
