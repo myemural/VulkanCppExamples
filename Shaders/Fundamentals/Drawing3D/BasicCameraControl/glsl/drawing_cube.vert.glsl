@@ -5,14 +5,12 @@ layout(location = 1) in vec2 inUV;
 
 layout(location = 0) out vec2 fragUV;
 
-layout(set = 0, binding = 1) uniform UBO {
-    mat4 model;
-    mat4 view;
-    mat4 proj;
-} ubo;
+layout(push_constant) uniform PushConstants {
+    mat4 mvpMatrix;
+} pc;
 
 void main()
 {
     fragUV = inUV;
-    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
+    gl_Position = pc.mvpMatrix * vec4(inPosition, 1.0);
 }

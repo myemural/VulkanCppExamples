@@ -62,7 +62,6 @@ bool VulkanApplication::Init()
         SetBuffer(kVertexBufferKey, vertices.data(), vertices.size() * sizeof(VertexPos3Uv2));
         SetBuffer(kIndexBufferKey, indices.data(), indices.size() * sizeof(indices[0]));
         SetBuffer(kTextureStagingBufferKey, crateTextureHandler_.Data, crateTextureHandler_.GetByteSize());
-        SetBuffer(kMvpUniformBufferKey, &mvpUbObject, sizeof(MvpData));
         SetImageFromBuffer(kCrateImageKey, buffers_[kTextureStagingBufferKey]->GetBuffer(), {
                                crateTextureHandler_.Width, crateTextureHandler_.Height, 1
                            });
@@ -72,9 +71,6 @@ bool VulkanApplication::Init()
         CreateDefaultFramebuffers(images_[kDepthImageKey]->GetImageView(kDepthImageViewKey));
         CreateDefaultSyncObjects(kMaxFramesInFlight);
         CreateCommandBuffers();
-
-        const uint32_t indexCount = indices.size();
-        RecordPresentCommandBuffers(indexCount);
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
         return false;
@@ -90,13 +86,15 @@ void VulkanApplication::DrawFrame()
 
     uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
 
+    const uint32_t indexCount = indices.size();
+    CalculateAndSetMvp();
+    RecordPresentCommandBuffers(imageIndex, indexCount);
+
     if (swapImagesFences_[imageIndex] != nullptr) {
         swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
     }
 
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
-
-    CalculateAndSetMvp();
 
     queue_->Submit({cmdBuffersPresent_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
                    {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
@@ -198,10 +196,6 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
         {
             kTextureStagingBufferKey, crateTextureHandler_.GetByteSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        },
-        {
-            kMvpUniformBufferKey, sizeof(MvpData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         }
     };
 
@@ -237,13 +231,6 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
                         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                         1,
                         VK_SHADER_STAGE_FRAGMENT_BIT,
-                        nullptr
-                    },
-                    {
-                        1,
-                        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                        1,
-                        VK_SHADER_STAGE_VERTEX_BIT,
                         nullptr
                     }
                 }
@@ -339,7 +326,13 @@ void VulkanApplication::CreatePipeline()
     const auto windowWidth = window_->GetWindowWidth();
     const auto windowHeight = window_->GetWindowHeight();
 
-    pipelineLayout_ = device_->CreatePipelineLayout({descriptorRegistry_->GetDescriptorLayout(kMainDescSetLayoutKey)});
+    VkPushConstantRange mvpPushConstant;
+    mvpPushConstant.offset = 0;
+    mvpPushConstant.size = sizeof(MvpData);
+    mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    pipelineLayout_ = device_->CreatePipelineLayout({descriptorRegistry_->GetDescriptorLayout(kMainDescSetLayoutKey)},
+                                                    {mvpPushConstant});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -412,23 +405,13 @@ void VulkanApplication::UpdateDescriptorSets()
                                    images_[kCrateImageKey]->GetImageView(kCrateImageViewKey)->GetHandle(),
                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    std::vector<VkDescriptorBufferInfo> bufferInfos;
-    bufferInfos.emplace_back(buffers_[kMvpUniformBufferKey]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
-
     ImageWriteRequest samplerUpdateRequest;
     samplerUpdateRequest.LayoutName = kMainDescSetLayoutKey;
     samplerUpdateRequest.BindingIndex = 0;
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    BufferWriteRequest ubUpdateRequest;
-    ubUpdateRequest.LayoutName = kMainDescSetLayoutKey;
-    ubUpdateRequest.BindingIndex = 1;
-    ubUpdateRequest.Buffers = bufferInfos;
-    ubUpdateRequest.Type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-
     descriptorSetUpdateInfo_ = {
-        .BufferWriteRequests = {ubUpdateRequest},
         .ImageWriteRequests = {samplerUpdateRequest}
     };
 
@@ -461,66 +444,86 @@ void VulkanApplication::CreateCommandBuffers()
     }
 }
 
-void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t indexCount)
+void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex,
+                                                    const std::uint32_t indexCount)
 {
     const auto windowWidth = window_->GetWindowWidth();
     const auto windowHeight = window_->GetWindowHeight();
 
-    for (size_t i = 0; i < framebuffers_.size(); ++i) {
-        std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = settings_.ClearColor;
-        clearValues[1].depthStencil = {1.0f, 0};
-        if (!cmdBuffersPresent_[i]->BeginCommandBuffer(nullptr)) {
-            throw std::runtime_error("Failed to begin recording command buffer!");
-        }
-        cmdBuffersPresent_[i]->BeginRenderPass([&](auto &beginInfo) {
-            beginInfo.renderPass = renderPass_->GetHandle();
-            beginInfo.framebuffer = framebuffers_[i]->GetHandle();
-            beginInfo.renderArea.offset = {0, 0};
-            beginInfo.renderArea.extent = VkExtent2D(windowWidth, windowHeight);
-            beginInfo.clearValueCount = clearValues.size();
-            beginInfo.pClearValues = clearValues.data();
-        }, VK_SUBPASS_CONTENTS_INLINE);
-        cmdBuffersPresent_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        cmdBuffersPresent_[i]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
-                                                  {descriptorRegistry_->GetDescriptorSet(kMainDescSetLayoutKey)});
-        cmdBuffersPresent_[i]->BindVertexBuffers({buffers_[kVertexBufferKey]->GetBuffer()}, 0, 1, {0});
-        cmdBuffersPresent_[i]->BindIndexBuffer(buffers_[kIndexBufferKey]->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
-        cmdBuffersPresent_[i]->DrawIndexed(indexCount, 1, 0, 0, 0);
-        cmdBuffersPresent_[i]->EndRenderPass();
-        if (!cmdBuffersPresent_[i]->EndCommandBuffer()) {
-            throw std::runtime_error("Failed to end recording command buffer!");
-        }
+    std::array<VkClearValue, 2> clearValues{};
+    clearValues[0].color = settings_.ClearColor;
+    clearValues[1].depthStencil = {1.0f, 0};
+    if (!cmdBuffersPresent_[currentImageIndex]->BeginCommandBuffer(nullptr)) {
+        throw std::runtime_error("Failed to begin recording command buffer!");
+    }
+    cmdBuffersPresent_[currentImageIndex]->BeginRenderPass([&](auto &beginInfo) {
+        beginInfo.renderPass = renderPass_->GetHandle();
+        beginInfo.framebuffer = framebuffers_[currentImageIndex]->GetHandle();
+        beginInfo.renderArea.offset = {0, 0};
+        beginInfo.renderArea.extent = VkExtent2D(windowWidth, windowHeight);
+        beginInfo.clearValueCount = clearValues.size();
+        beginInfo.pClearValues = clearValues.data();
+    }, VK_SUBPASS_CONTENTS_INLINE);
+    cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
+                                                              {
+                                                                  descriptorRegistry_->GetDescriptorSet(
+                                                                      kMainDescSetLayoutKey)
+                                                              });
+    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers({buffers_[kVertexBufferKey]->GetBuffer()}, 0, 1, {0});
+    cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(buffers_[kIndexBufferKey]->GetBuffer(), 0,
+                                                           VK_INDEX_TYPE_UINT16);
+
+    for (size_t i = 0; i < NUM_CUBES; ++i) {
+        cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
+                                                             sizeof(MvpData), &mvpData[i]);
+        cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
+    }
+
+    cmdBuffersPresent_[currentImageIndex]->EndRenderPass();
+    if (!cmdBuffersPresent_[currentImageIndex]->EndCommandBuffer()) {
+        throw std::runtime_error("Failed to end recording command buffer!");
     }
 }
 
 void VulkanApplication::CalculateAndSetMvp()
 {
     const auto currentTime = static_cast<float>(glfwGetTime());
-    auto model = glm::mat4(1.0f);
-    model = glm::rotate(model, currentTime * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::rotate(model, currentTime * glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    mvpUbObject.model = model;
 
-    const glm::mat4 view = glm::lookAt(
-        cameraPos_,
-        cameraPos_ + cameraFront_,
-        cameraUp_
-    );
-    mvpUbObject.view = view;
+    for (size_t i = 0; i < NUM_CUBES; i++) {
+        auto model = glm::mat4(1.0f);
+        model = glm::translate(model, modelPositions[i]);
 
-    const float aspectRatio = static_cast<float>(window_->GetWindowWidth()) / static_cast<float>(window_->
-                                  GetWindowHeight());
-    glm::mat4 proj = glm::perspective(
-        glm::radians(45.0f), // FOV
-        aspectRatio, // Aspect ratio
-        0.1f, // Near clipping-plane
-        10.0f // Far clipping plane
-    );
-    proj[1][1] *= -1; // Vulkan trick for projection
-    mvpUbObject.projection = proj;
+        // Change rotation axis to the cube index
+        auto axis = glm::vec3(
+            (i % 1 == 0 || i % 2 == 0) ? 1.0f : 0.0f,
+            (i % 3 == 0) ? 1.0f : 0.0f,
+            (i % 5 == 0 || i % 7 == 0) ? 1.0f : 0.0f
+        );
+        model = glm::rotate(model, currentTime * glm::radians(45.0f), axis);
+        model = glm::rotate(model, currentTime * glm::radians(45.0f), axis);
+        model = glm::rotate(model, currentTime * glm::radians(30.0f), axis);
 
-    SetBuffer(kMvpUniformBufferKey, &mvpUbObject, sizeof(MvpData));
+        const glm::mat4 view = glm::lookAt(
+            cameraPos_,
+            cameraPos_ + cameraFront_,
+            cameraUp_
+        );
+
+        const float aspectRatio = static_cast<float>(window_->GetWindowWidth()) / static_cast<float>(window_->
+                                      GetWindowHeight());
+        glm::mat4 proj = glm::perspective(
+            glm::radians(45.0f), // FOV
+            aspectRatio, // Aspect ratio
+            0.1f, // Near clipping-plane
+            20.0f // Far clipping plane
+        );
+        proj[1][1] *= -1; // Vulkan trick for projection
+
+
+        // Calculate MVP matrix
+        mvpData[i].mvpMatrix = proj * view * model;
+    }
 }
 
 void VulkanApplication::ProcessInput()

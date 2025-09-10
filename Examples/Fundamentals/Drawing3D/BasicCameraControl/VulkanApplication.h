@@ -46,7 +46,6 @@ inline constexpr auto kFragmentShaderHash = "fragMain";
 inline constexpr auto kVertexBufferKey = "mainVertexBuffer";
 inline constexpr auto kIndexBufferKey = "mainIndexBuffer";
 inline constexpr auto kTextureStagingBufferKey = "textureStagingBuffer";
-inline constexpr auto kMvpUniformBufferKey = "mvpUniformBuffer";
 
 // Image and image view keys
 inline constexpr auto kCrateImageKey = "createImage";
@@ -90,7 +89,7 @@ protected:
 
     void CreateCommandBuffers();
 
-    void RecordPresentCommandBuffers(std::uint32_t indexCount);
+    void RecordPresentCommandBuffers(std::uint32_t currentImageIndex, std::uint32_t indexCount);
 
     void CalculateAndSetMvp();
 
@@ -99,7 +98,7 @@ protected:
     ApplicationSettings settings_;
     std::uint32_t currentIndex_ = 0;
     bool keys_[1024]= {};
-    MvpData mvpUbObject {glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0)};
+    MvpData mvpData[NUM_CUBES] = {glm::mat4(1.0)};
 
     // Create infos
     std::vector<base::BufferCreateInfo> bufferCreateInfos_;
@@ -121,7 +120,7 @@ protected:
     std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> cmdBufferTransfer_;
 
     // Camera values
-    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 2.0f);   // Camera position
+    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f);   // Camera position
     glm::vec3 cameraFront_ = glm::vec3(0.0f, 0.0f, -1.0f); // Front position
     glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f);    // Up vector
 
