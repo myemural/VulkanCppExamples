@@ -1,6 +1,6 @@
 /**
  * @file    VulkanApplication.cpp
- * @brief   This file contains VulkanApplication and VulkanApplicationSettings implementations.
+ * @brief   This file contains VulkanApplication class declaration.
  * @author  Mustafa Yemural (myemural)
  * @date    11.08.2025
  *
@@ -14,22 +14,14 @@
 #include <memory>
 
 #include "ApplicationBasics.h"
+#include "ParameterServer.h"
 
 namespace examples::fundamentals::basics::clear_screen_with_color
 {
-// Application constants
-inline constexpr std::uint32_t kMaxFramesInFlight = 2;
-
-// User customizable settings
-struct ApplicationSettings
-{
-    VkClearColorValue ClearColor = {0.0f, 0.0f, 0.0f, 1.0f};
-};
-
 class VulkanApplication final : public base::ApplicationBasics
 {
 public:
-    VulkanApplication(const common::vulkan_framework::ApplicationCreateConfig &config, const ApplicationSettings& settings);
+    explicit VulkanApplication(common::utility::ParameterServer &&params);
 
 protected:
     bool Init() override;
@@ -40,9 +32,11 @@ protected:
 
     void RecordCommandBuffers();
 
-    ApplicationSettings settings_;
+    common::utility::ParameterServer params_;
     std::uint32_t currentIndex_ = 0;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
-};
+    std::uint32_t currentWindowWidth_ = UINT32_MAX;
+    std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
+};
 } // namespace examples::fundamentals::basics::clear_screen_with_color

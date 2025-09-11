@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps key names for user-provided config key names.
  * @author  Mustafa Yemural (myemural)
- * @date    7.09.2025
+ * @date    11.09.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::fundamentals::basics::drawing_single_color_triangle
+namespace examples::fundamentals::basics::clear_screen_with_color
 {
 
 // Parameter server key names
@@ -31,13 +31,7 @@ namespace VulkanParams
 namespace ProjectParams
 {
     constexpr auto MaxFramesInFlight = "Project.MaxFramesInFlight";
-    constexpr auto VertexCount = "Project.VertexCount";
-    constexpr auto BaseShaderType = "Project.BaseShaderType";
-    constexpr auto MainVertexShaderFile = "Project.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "Project.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "Project.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "Project.MainFragmentShaderKey";
     constexpr auto ClearColor = "Project.ClearColor";
 } // namespace ProjectParams
 
-} // namespace examples::fundamentals::basics::drawing_single_color_triangle
+} // namespace examples::fundamentals::basics::clear_screen_with_color

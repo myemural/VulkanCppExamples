@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps key names for user-provided config key names.
  * @author  Mustafa Yemural (myemural)
- * @date    7.09.2025
+ * @date    11.09.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::fundamentals::basics::drawing_single_color_triangle
+namespace examples::fundamentals::basics::drawing_multiple_triangles
 {
 
 // Parameter server key names
@@ -40,4 +40,4 @@ namespace ProjectParams
     constexpr auto ClearColor = "Project.ClearColor";
 } // namespace ProjectParams
 
-} // namespace examples::fundamentals::basics::drawing_single_color_triangle
+} // namespace examples::fundamentals::basics::drawing_multiple_triangles
