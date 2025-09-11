@@ -19,6 +19,7 @@
 #include "ImageResource.h"
 #include "DescriptorRegistry.h"
 #include "DescriptorUpdater.h"
+#include "SamplerResource.h"
 #include "ShaderLoader.h"
 #include "VulkanCommandPool.h"
 #include "VulkanSurface.h"
@@ -116,6 +117,8 @@ protected:
 
     void CreateImages(const std::vector<common::vulkan_framework::ImageResourceCreateInfo> &imageCreateInfos);
 
+    void CreateSamplers(const std::vector<common::vulkan_framework::SamplerResourceCreateInfo> &samplerCreateInfos);
+
     void SetImageFromBuffer(const std::string &name,
                             const std::shared_ptr<common::vulkan_wrapper::VulkanBuffer> &stagingBuffer,
                             const VkExtent3D &dimensions);
@@ -145,6 +148,7 @@ protected:
     // All resources
     std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::BufferResource>> buffers_;
     std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::ImageResource>> images_;
+    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::SamplerResource>> samplers_;
     std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule>> shaderModules_;
     std::unique_ptr<common::vulkan_framework::DescriptorRegistry> descriptorRegistry_;
     std::unique_ptr<common::vulkan_framework::DescriptorUpdater> descriptorUpdater_;

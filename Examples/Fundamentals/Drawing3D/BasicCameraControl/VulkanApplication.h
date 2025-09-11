@@ -47,11 +47,12 @@ inline constexpr auto kVertexBufferKey = "mainVertexBuffer";
 inline constexpr auto kIndexBufferKey = "mainIndexBuffer";
 inline constexpr auto kTextureStagingBufferKey = "textureStagingBuffer";
 
-// Image and image view keys
+// Image, image view and sampler keys
 inline constexpr auto kCrateImageKey = "createImage";
 inline constexpr auto kCrateImageViewKey = "crateImageView";
 inline constexpr auto kDepthImageKey = "depthImage";
 inline constexpr auto kDepthImageViewKey = "depthImageView";
+inline constexpr auto kMainSamplerKey = "mainSampler";
 
 // Descriptor layout keys
 inline constexpr auto kMainDescSetLayoutKey = "mainDescSetLayout";
@@ -85,8 +86,6 @@ protected:
 
     void UpdateDescriptorSets();
 
-    void CreateSampler();
-
     void CreateCommandBuffers();
 
     void RecordPresentCommandBuffers(std::uint32_t currentImageIndex, std::uint32_t indexCount);
@@ -103,13 +102,13 @@ protected:
     // Create infos
     std::vector<base::BufferCreateInfo> bufferCreateInfos_;
     std::vector<common::vulkan_framework::ImageResourceCreateInfo> imageResourceCreateInfos_;
+    std::vector<common::vulkan_framework::SamplerResourceCreateInfo> samplerResourceCreateInfos_;
     base::ShaderModulesCreateInfo shaderModuleCreateInfo_{};
     base::DescriptorSetCreateInfo descriptorSetCreateInfo_{};
     base::DescriptorSetUpdateInfo descriptorSetUpdateInfo_{};
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};
-    std::shared_ptr<common::vulkan_wrapper::VulkanSampler> sampler_;
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;

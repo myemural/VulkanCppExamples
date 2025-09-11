@@ -189,6 +189,14 @@ void ApplicationDrawing3D::CreateImages(const std::vector<ImageResourceCreateInf
     }
 }
 
+void ApplicationDrawing3D::CreateSamplers(const std::vector<SamplerResourceCreateInfo> &samplerCreateInfos)
+{
+    for (const auto& createInfo : samplerCreateInfos) {
+        samplers_[createInfo.Name] = std::make_unique<SamplerResource>(device_);
+        samplers_[createInfo.Name]->CreateSampler(createInfo);
+    }
+}
+
 void ApplicationDrawing3D::SetImageFromBuffer(const std::string &name,
                                               const std::shared_ptr<VulkanBuffer> &stagingBuffer,
                                               const VkExtent3D &dimensions)

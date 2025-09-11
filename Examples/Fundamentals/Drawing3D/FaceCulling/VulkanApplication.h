@@ -2,7 +2,7 @@
  * @file    VulkanApplication.h
  * @brief   This file contains VulkanApplication and ApplicationSettings implementations.
  * @author  Mustafa Yemural (myemural)
- * @date    08.09.2025
+ * @date    11.09.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -16,20 +16,23 @@
 #include "ApplicationData.h"
 #include "ApplicationDrawing3D.h"
 #include "ShaderLoader.h"
-#include "VulkanInstance.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 #include "TextureLoader.h"
 
-namespace examples::fundamentals::drawing_3d::drawing_cube
+namespace examples::fundamentals::drawing_3d::face_culling
 {
 
 // User customizable settings
 struct ApplicationSettings
 {
     VkClearColorValue ClearColor = {0.0f, 0.0f, 0.0f, 1.0f};
+    float MouseSensitivity = 1.0f;
+    float CameraSpeed = 1.0f;
+    VkCullModeFlags CullMode = VK_CULL_MODE_NONE;
+    VkFrontFace FrontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 };
 
 // Project constants
@@ -44,7 +47,6 @@ inline constexpr auto kFragmentShaderHash = "fragMain";
 inline constexpr auto kVertexBufferKey = "mainVertexBuffer";
 inline constexpr auto kIndexBufferKey = "mainIndexBuffer";
 inline constexpr auto kTextureStagingBufferKey = "textureStagingBuffer";
-inline constexpr auto kMvpUniformBufferKey = "mvpUniformBuffer";
 
 // Image, image view and sampler keys
 inline constexpr auto kCrateImageKey = "createImage";
@@ -71,7 +73,11 @@ protected:
 
     void DrawFrame() override;
 
+    void Update() override;
+
     void Cleanup() override;
+
+    void InitInputSystem();
 
     void InitResources(const VkFormat& depthImageFormat);
 
@@ -83,13 +89,16 @@ protected:
 
     void CreateCommandBuffers();
 
-    void RecordPresentCommandBuffers(std::uint32_t indexCount);
+    void RecordPresentCommandBuffers(std::uint32_t currentImageIndex, std::uint32_t indexCount);
 
     void CalculateAndSetMvp();
 
+    void ProcessInput();
+
     ApplicationSettings settings_;
     std::uint32_t currentIndex_ = 0;
-    MvpData mvpUbObject {glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0)};
+    bool keys_[1024]= {};
+    MvpData mvpData[NUM_CUBES] = {glm::mat4(1.0)};
 
     // Create infos
     std::vector<base::BufferCreateInfo> bufferCreateInfos_;
@@ -109,5 +118,21 @@ protected:
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
     std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> cmdBufferTransfer_;
+
+    // Camera values
+    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f);   // Camera position
+    glm::vec3 cameraFront_ = glm::vec3(0.0f, 0.0f, -1.0f); // Front position
+    glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f);    // Up vector
+
+    // Delta time related values
+    float deltaTime_ = 0.0f;
+    float lastFrame_ = 0.0f;
+
+    // Mouse related values
+    bool firstMouseTriggered_ = true;
+    float yawAngle_ = -90.0f;
+    float pitchAngle_ = 0.0f;
+    float lastX_ = 0.0f;
+    float lastY_ = 0.0f;
 };
-} // namespace examples::fundamentals::drawing_3d::drawing_cube
+} // namespace examples::fundamentals::drawing_3d::face_culling

@@ -273,9 +273,19 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
         }
     };
 
+    samplerResourceCreateInfos_ = {
+        {
+            .Name = kMainSamplerKey,
+            .FilteringBehavior = {
+                .MagFilter = VK_FILTER_LINEAR,
+                .MinFilter = VK_FILTER_LINEAR
+            }
+        }
+    };
+
     CreateBuffers(bufferCreateInfos_);
     CreateImages(imageResourceCreateInfos_);
-    CreateSampler();
+    CreateSamplers(samplerResourceCreateInfos_);
     CreateShaderModules(shaderModuleCreateInfo_);
     CreateDescriptorSets(descriptorSetCreateInfo_);
     UpdateDescriptorSets();
@@ -401,7 +411,7 @@ void VulkanApplication::CreatePipeline()
 void VulkanApplication::UpdateDescriptorSets()
 {
     std::vector<VkDescriptorImageInfo> imageSamplerInfos;
-    imageSamplerInfos.emplace_back(sampler_->GetHandle(),
+    imageSamplerInfos.emplace_back(samplers_[kMainSamplerKey]->GetSampler()->GetHandle(),
                                    images_[kCrateImageKey]->GetImageView(kCrateImageViewKey)->GetHandle(),
                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -416,17 +426,6 @@ void VulkanApplication::UpdateDescriptorSets()
     };
 
     UpdateDescriptorSet(descriptorSetUpdateInfo_);
-}
-
-void VulkanApplication::CreateSampler()
-{
-    sampler_ = device_->CreateSampler([](auto& builder) {
-       builder.SetFilters(VK_FILTER_LINEAR, VK_FILTER_LINEAR);
-    });
-
-    if (!sampler_) {
-        throw std::runtime_error("Failed to create sampler!");
-    }
 }
 
 void VulkanApplication::CreateCommandBuffers()
