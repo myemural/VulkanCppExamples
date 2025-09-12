@@ -17,7 +17,7 @@
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::fundamentals::drawing_3d::basic_camera_control
+namespace examples::fundamentals::drawing_3d::instanced_rendering
 {
 
 using namespace common::utility;
@@ -61,6 +61,7 @@ bool VulkanApplication::Init()
 
         SetBuffer(kVertexBufferKey, vertices.data(), vertices.size() * sizeof(VertexPos3Uv2));
         SetBuffer(kIndexBufferKey, indices.data(), indices.size() * sizeof(indices[0]));
+        SetBuffer(kUniformBufferKey, mvpData, sizeof(mvpData));
         SetBuffer(kTextureStagingBufferKey, crateTextureHandler_.Data, crateTextureHandler_.GetByteSize());
         SetImageFromBuffer(kCrateImageKey, buffers_[kTextureStagingBufferKey]->GetBuffer(), {
                                crateTextureHandler_.Width, crateTextureHandler_.Height, 1
@@ -139,8 +140,8 @@ void VulkanApplication::InitInputSystem()
 
 
     window_->SetMouseCallback([&](const double x, const double y) {
-        const float xPos = static_cast<float>(x);
-        const float yPos = static_cast<float>(y);
+        const auto xPos = static_cast<float>(x);
+        const auto yPos = static_cast<float>(y);
 
         if (firstMouseTriggered_)
         {
@@ -194,6 +195,10 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         },
         {
+            kUniformBufferKey, sizeof(mvpData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        },
+        {
             kTextureStagingBufferKey, crateTextureHandler_.GetByteSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         }
@@ -219,7 +224,8 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
     descriptorSetCreateInfo_ = {
         .MaxSets = 1,
         .PoolSizes = {
-            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}
         },
         .Layouts = {
             {
@@ -230,6 +236,13 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
                         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                         1,
                         VK_SHADER_STAGE_FRAGMENT_BIT,
+                        nullptr
+                    },
+                    {
+                        1,
+                        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                        1,
+                        VK_SHADER_STAGE_VERTEX_BIT,
                         nullptr
                     }
                 }
@@ -335,13 +348,7 @@ void VulkanApplication::CreatePipeline()
     const auto windowWidth = window_->GetWindowWidth();
     const auto windowHeight = window_->GetWindowHeight();
 
-    VkPushConstantRange mvpPushConstant;
-    mvpPushConstant.offset = 0;
-    mvpPushConstant.size = sizeof(MvpData);
-    mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-    pipelineLayout_ = device_->CreatePipelineLayout({descriptorRegistry_->GetDescriptorLayout(kMainDescSetLayoutKey)},
-                                                    {mvpPushConstant});
+    pipelineLayout_ = device_->CreatePipelineLayout({descriptorRegistry_->GetDescriptorLayout(kMainDescSetLayoutKey)});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -414,13 +421,24 @@ void VulkanApplication::UpdateDescriptorSets()
                                    images_[kCrateImageKey]->GetImageView(kCrateImageViewKey)->GetHandle(),
                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
+    std::vector<VkDescriptorBufferInfo> bufferInfos;
+    bufferInfos.emplace_back(buffers_[kUniformBufferKey]->GetBuffer()->GetHandle(), 0,
+                                   sizeof(mvpData));
+
     ImageWriteRequest samplerUpdateRequest;
     samplerUpdateRequest.LayoutName = kMainDescSetLayoutKey;
     samplerUpdateRequest.BindingIndex = 0;
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
+    BufferWriteRequest bufferUpdateRequest;
+    bufferUpdateRequest.LayoutName = kMainDescSetLayoutKey;
+    bufferUpdateRequest.BindingIndex = 1;
+    bufferUpdateRequest.Buffers = bufferInfos;
+    bufferUpdateRequest.Type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
     descriptorSetUpdateInfo_ = {
+        .BufferWriteRequests = {bufferUpdateRequest},
         .ImageWriteRequests = {samplerUpdateRequest}
     };
 
@@ -463,20 +481,16 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         beginInfo.pClearValues = clearValues.data();
     }, VK_SUBPASS_CONTENTS_INLINE);
     cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers({buffers_[kVertexBufferKey]->GetBuffer()}, 0, 1, {0});
+    cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(buffers_[kIndexBufferKey]->GetBuffer(), 0,
+                                                           VK_INDEX_TYPE_UINT16);
+
     cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
                                                               {
                                                                   descriptorRegistry_->GetDescriptorSet(
                                                                       kMainDescSetLayoutKey)
                                                               });
-    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers({buffers_[kVertexBufferKey]->GetBuffer()}, 0, 1, {0});
-    cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(buffers_[kIndexBufferKey]->GetBuffer(), 0,
-                                                           VK_INDEX_TYPE_UINT16);
-
-    for (size_t i = 0; i < NUM_CUBES; ++i) {
-        cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
-                                                             sizeof(MvpData), &mvpData[i]);
-        cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
-    }
+    cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, NUM_CUBES, 0, 0, settings_.FirstInstanceIndex);
 
     cmdBuffersPresent_[currentImageIndex]->EndRenderPass();
     if (!cmdBuffersPresent_[currentImageIndex]->EndCommandBuffer()) {
@@ -494,9 +508,9 @@ void VulkanApplication::CalculateAndSetMvp()
 
         // Change rotation axis to the cube index
         auto axis = glm::vec3(
-            (i % 1 == 0 || i % 2 == 0) ? 1.0f : 0.0f,
-            (i % 3 == 0) ? 1.0f : 0.0f,
-            (i % 5 == 0 || i % 7 == 0) ? 1.0f : 0.0f
+            (i % 2 == 0) ? 1.0f : 0.0f,
+            (i % 5 == 0) ? 1.0f : 0.0f,
+            (i % 2 == 0) ? 0.0f : 1.0f
         );
         model = glm::rotate(model, currentTime * glm::radians(45.0f), axis);
         model = glm::rotate(model, currentTime * glm::radians(45.0f), axis);
@@ -514,7 +528,7 @@ void VulkanApplication::CalculateAndSetMvp()
             glm::radians(45.0f), // FOV
             aspectRatio, // Aspect ratio
             0.1f, // Near clipping-plane
-            20.0f // Far clipping plane
+            30.0f // Far clipping plane
         );
         proj[1][1] *= -1; // Vulkan trick for projection
 
@@ -522,6 +536,8 @@ void VulkanApplication::CalculateAndSetMvp()
         // Calculate MVP matrix
         mvpData[i].mvpMatrix = proj * view * model;
     }
+
+    SetBuffer(kUniformBufferKey, mvpData, sizeof(mvpData));
 }
 
 void VulkanApplication::ProcessInput()
@@ -540,4 +556,4 @@ void VulkanApplication::ProcessInput()
         cameraPos_ += glm::normalize(glm::cross(cameraFront_, cameraUp_)) * cameraSpeed;
     }
 }
-} // namespace examples::fundamentals::drawing_3d::basic_camera_control
+} // namespace examples::fundamentals::drawing_3d::instanced_rendering
