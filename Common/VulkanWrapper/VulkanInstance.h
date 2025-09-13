@@ -27,6 +27,8 @@ public:
     explicit VulkanInstance(VkInstance instance);
 
     ~VulkanInstance() override;
+
+    [[nodiscard]] PFN_vkVoidFunction GetInstanceProcAddr(const std::string& name) const;
 };
 
 class VulkanInstanceBuilder
@@ -49,7 +51,9 @@ public:
 private:
     VkInstanceCreateInfo createInfo_;
     VkApplicationInfo appInfo_;
-    std::vector<const char *> layers_;
-    std::vector<const char *> extensions_;
+    std::vector<std::string> layers_;
+    std::vector<const char *> layersStr_;
+    std::vector<std::string> extensions_;
+    std::vector<const char *> extensionsStr_;
 };
 } // common::vulkan_wrapper

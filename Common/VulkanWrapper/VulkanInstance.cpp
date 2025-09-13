@@ -50,6 +50,11 @@ VulkanInstance::~VulkanInstance()
     }
 }
 
+PFN_vkVoidFunction VulkanInstance::GetInstanceProcAddr(const std::string &name) const
+{
+    return vkGetInstanceProcAddr(handle_, name.c_str());
+}
+
 VulkanInstanceBuilder::VulkanInstanceBuilder()
     : createInfo_{GetDefaultInstanceCreateInfo()}, appInfo_{GetDefaultApplicationInfo()}
 {
@@ -65,40 +70,42 @@ VulkanInstanceBuilder &VulkanInstanceBuilder::SetApplicationInfo(
 
 VulkanInstanceBuilder &VulkanInstanceBuilder::AddLayer(const std::string &layerName)
 {
-    layers_.push_back(layerName.c_str());
+    layers_.emplace_back(layerName);
     return *this;
 }
 
 VulkanInstanceBuilder &VulkanInstanceBuilder::AddLayers(const std::vector<std::string> &layerNames)
 {
-    std::ranges::transform(layerNames, std::back_inserter(layers_),
-                           [](const std::string &s) { return s.c_str(); });
+    layers_.insert(layers_.end(), layerNames.begin(), layerNames.end());
     return *this;
 }
 
 VulkanInstanceBuilder &VulkanInstanceBuilder::AddExtension(const std::string &extensionName)
 {
-    extensions_.push_back(extensionName.c_str());
+    extensions_.emplace_back(extensionName);
     return *this;
 }
 
 VulkanInstanceBuilder &VulkanInstanceBuilder::AddExtensions(const std::vector<std::string> &extensionNames)
 {
-    std::ranges::transform(extensionNames, std::back_inserter(extensions_),
-                           [](const std::string &s) { return s.c_str(); });
+    extensions_.insert(extensions_.end(), extensionNames.begin(), extensionNames.end());
     return *this;
 }
 
 std::shared_ptr<VulkanInstance> VulkanInstanceBuilder::Build()
 {
     if (!layers_.empty()) {
-        createInfo_.enabledLayerCount = static_cast<uint32_t>(layers_.size());
-        createInfo_.ppEnabledLayerNames = layers_.data();
+        std::ranges::transform(layers_, std::back_inserter(layersStr_),
+                               [](const std::string &s) { return s.c_str(); });
+        createInfo_.enabledLayerCount = static_cast<uint32_t>(layersStr_.size());
+        createInfo_.ppEnabledLayerNames = layersStr_.data();
     }
 
     if (!extensions_.empty()) {
-        createInfo_.enabledExtensionCount = static_cast<uint32_t>(extensions_.size());
-        createInfo_.ppEnabledExtensionNames = extensions_.data();
+        std::ranges::transform(extensions_, std::back_inserter(extensionsStr_),
+                               [](const std::string &s) { return s.c_str(); });
+        createInfo_.enabledExtensionCount = static_cast<uint32_t>(extensionsStr_.size());
+        createInfo_.ppEnabledExtensionNames = extensionsStr_.data();
     }
 
     VkInstance instance;

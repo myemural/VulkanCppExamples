@@ -52,7 +52,7 @@ void VulkanQueue::Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer> 
 
     VkFence queueSubmitFence = fence != nullptr ? fence->GetHandle() : VK_NULL_HANDLE;
     if (vkQueueSubmit(handle_, 1, &submitInfo, queueSubmitFence) != VK_SUCCESS) {
-        std::cerr << "Failed to submit command buffer to queue!" << std::endl;
+        throw std::runtime_error("Failed to submit command buffer to queue!");
     }
 }
 
@@ -81,13 +81,15 @@ void VulkanQueue::Present(const std::vector<std::shared_ptr<VulkanSwapChain> > &
     presentInfo.pImageIndices = swapChainImageIndices.data();
     presentInfo.pResults = nullptr; /// TODO: Advanced queue handling will be added later
 
-    /// TODO: Handle results
-    vkQueuePresentKHR(handle_, &presentInfo);
+    if (vkQueuePresentKHR(handle_, &presentInfo) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to present queue!");
+    }
 }
 
 void VulkanQueue::WaitIdle() const
 {
-    /// TODO: Handle results
-    vkQueueWaitIdle(handle_);
+    if (vkQueueWaitIdle(handle_) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to wait queue!");
+    }
 }
 } // common::vulkan_wrapper

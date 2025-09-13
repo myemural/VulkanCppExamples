@@ -25,7 +25,7 @@ class BufferResource
 public:
     /**
      * @param physicalDevice Refers VulkanPhysicalDevice object.
-     * @param device Refers VulkanPhysicalDevice object.
+     * @param device Refers VulkanDevice object.
      */
     BufferResource(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice> &physicalDevice,
                    const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device);

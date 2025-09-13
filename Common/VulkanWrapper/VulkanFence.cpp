@@ -29,16 +29,18 @@ VulkanFence::~VulkanFence()
 /// TODO: This can be moved to device or think again about waiting multiple fences
 void VulkanFence::WaitForFence(const bool waitAll, const uint64_t timeout) const
 {
-    if (const auto device = GetParent()) {
-        vkWaitForFences(device->GetHandle(), 1, &handle_, waitAll, timeout);
+    const auto device = GetParent();
+    if (!device || vkWaitForFences(device->GetHandle(), 1, &handle_, waitAll, timeout) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to wait for fences!");
     }
 }
 
 /// TODO: This can be moved to device or think again about resetting multiple fences
 void VulkanFence::ResetFence() const
 {
-    if (const auto device = GetParent()) {
-        vkResetFences(device->GetHandle(), 1, &handle_);
+    const auto device = GetParent();
+    if (!device || vkResetFences(device->GetHandle(), 1, &handle_) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to reset fences!");
     }
 }
 } // common::vulkan_wrapper

@@ -16,12 +16,11 @@
 
 namespace examples::fundamentals::basics::drawing_multicolor_triangles
 {
-
 // Vertex Attribute Layout
 struct VertexPos2Color3
 {
     common::utility::Attribute<common::utility::Vec2, 0> Position; // layout(location=0) in vec2 position;
-    common::utility::Attribute<common::utility::Color3, 1> Color;  // layout(location=1) in vec3 color;
+    common::utility::Attribute<common::utility::Color3, 1> Color; // layout(location=1) in vec3 color;
 };
 
 // Vertex Data
@@ -46,5 +45,4 @@ const std::vector vertices{
     VertexPos2Color3{{0.8, 0.8}, {1.0f, 1.0f, 0.0f}},
     VertexPos2Color3{{0.2, 0.8}, {1.0f, 1.0f, 0.0f}}
 };
-
 } // namespace examples::fundamentals::basics::drawing_multicolor_triangles

@@ -136,7 +136,7 @@ std::shared_ptr<VulkanSampler> VulkanSamplerBuilder::Build(std::shared_ptr<Vulka
 {
     VkSampler sampler = VK_NULL_HANDLE;
     if (vkCreateSampler(device->GetHandle(), &createInfo_, nullptr, &sampler) != VK_SUCCESS) {
-        std::cout << "Failed to create sampler!" << std::endl;
+        std::cerr << "Failed to create sampler!" << std::endl;
         return nullptr;
     }
 

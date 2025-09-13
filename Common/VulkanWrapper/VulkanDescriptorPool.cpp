@@ -35,8 +35,7 @@ std::vector<std::shared_ptr<VulkanDescriptorSet> > VulkanDescriptorPool::CreateD
     std::vector<VkDescriptorSet> vkDescSets(descriptorSetLayouts.size());
     const auto device = GetParent();
     if (!device || vkAllocateDescriptorSets(device->GetHandle(), &allocateInfo, vkDescSets.data()) != VK_SUCCESS) {
-        std::cout << "Failed to allocate descriptor sets!" << std::endl;
-        return {};
+        throw std::runtime_error("Failed to allocate descriptor sets!");
     }
 
     std::vector<std::shared_ptr<VulkanDescriptorSet> > descriptorSets;
@@ -52,7 +51,7 @@ void VulkanDescriptorPool::ResetDescriptorPool(const VkDescriptorPoolResetFlags 
 {
     const auto device = GetParent();
     if (!device || vkResetDescriptorPool(device->GetHandle(), handle_, resetFlags) != VK_SUCCESS) {
-        std::cerr << "Failed to reset descriptor pool!" << std::endl;
+        throw std::runtime_error("Failed to reset descriptor pool!");
     }
 }
 

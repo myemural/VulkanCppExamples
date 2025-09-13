@@ -14,8 +14,8 @@
 #include <memory>
 
 #include "ApplicationBasics.h"
+#include "ParameterServer.h"
 #include "ShaderLoader.h"
-#include "VulkanInstance.h"
 #include "VulkanShaderModule.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -26,25 +26,10 @@
 
 namespace examples::fundamentals::basics::using_staging_buffer
 {
-
-// User customizable settings
-struct ApplicationSettings
-{
-    VkClearColorValue ClearColor = {0.0f, 0.0f, 0.0f, 1.0f};
-};
-
-// Project constants
-inline constexpr std::uint32_t kMaxFramesInFlight = 2;
-inline constexpr auto kCurrentShaderType = common::utility::ShaderBaseType::GLSL;
-inline constexpr auto kVertexShaderFileName = "triangle.vert.spv";
-inline constexpr auto kFragmentShaderFileName = "triangle.frag.spv";
-inline constexpr auto kVertexShaderHash = "vert_main";
-inline constexpr auto kFragmentShaderHash = "frag_main";
-
 class VulkanApplication final : public base::ApplicationBasics
 {
 public:
-    VulkanApplication(const common::vulkan_framework::ApplicationCreateConfig &config, const ApplicationSettings& settings);
+    explicit VulkanApplication(common::utility::ParameterServer &&params);
 
 protected:
     bool Init() override;
@@ -55,7 +40,7 @@ protected:
 
     void CreateStagingBuffer(std::uint64_t dataSize);
 
-    void FillStagingBuffer(const void* data, std::uint64_t dataSize) const;
+    void FillStagingBuffer(const void *data, std::uint64_t dataSize) const;
 
     void CreateShaderModules();
 
@@ -63,21 +48,23 @@ protected:
 
     void CreateCommandBuffers();
 
-    void RecordCommandBuffers(std::uint32_t indexCount);
+    void RecordCommandBuffers(std::uint32_t vertexCount);
 
     void CopyStagingBuffer(std::uint64_t dataSize);
 
-    ApplicationSettings settings_;
+    common::utility::ParameterServer params_;
     std::uint32_t currentIndex_ = 0;
+    std::uint32_t currentWindowWidth_ = UINT32_MAX;
+    std::uint32_t currentWindowHeight_ = UINT32_MAX;
+
     std::shared_ptr<common::vulkan_wrapper::VulkanBuffer> vertexBuffer_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDeviceMemory> vertexBufferMemory_;
     std::shared_ptr<common::vulkan_wrapper::VulkanBuffer> stagingBuffer_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDeviceMemory> stagingBufferMemory_;
-    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule>> shaderModules_;
+    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule> > shaderModules_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffersPresent_;
     std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> cmdBufferTransfer_;
-
 };
 } // namespace examples::fundamentals::basics::using_staging_buffer

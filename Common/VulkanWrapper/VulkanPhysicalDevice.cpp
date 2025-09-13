@@ -93,11 +93,17 @@ std::optional<VkSurfaceFormatKHR> VulkanPhysicalDevice::GetSurfaceFormat(const V
 const
 {
     uint32_t formatCount;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(handle_, surface, &formatCount, nullptr);
+    if (vkGetPhysicalDeviceSurfaceFormatsKHR(handle_, surface, &formatCount, nullptr) != VK_SUCCESS) {
+        std::cerr << "Failed to get surface format count!" << std::endl;
+        return std::nullopt;
+    }
 
     std::vector<VkSurfaceFormatKHR> surfaceFormats;
     surfaceFormats.resize(formatCount);
-    vkGetPhysicalDeviceSurfaceFormatsKHR(handle_, surface, &formatCount, surfaceFormats.data());
+    if (vkGetPhysicalDeviceSurfaceFormatsKHR(handle_, surface, &formatCount, surfaceFormats.data()) != VK_SUCCESS) {
+        std::cerr << "Failed to get surface formats!" << std::endl;
+        return std::nullopt;
+    }
 
     for (VkSurfaceFormatKHR &entry: surfaceFormats) {
         if (entry.format == selectedFormat && entry.colorSpace == selectedColorSpace) {
@@ -119,7 +125,7 @@ VkFormat VulkanPhysicalDevice::FindSupportedFormat(const std::vector<VkFormat> &
                                                    const VkFormatFeatureFlags &features,
                                                    const VkImageTiling &tiling) const
 {
-    for (const auto format : candidateFormats) {
+    for (const auto format: candidateFormats) {
         VkFormatProperties props;
         vkGetPhysicalDeviceFormatProperties(handle_, format, &props);
 

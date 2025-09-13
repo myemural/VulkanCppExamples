@@ -59,8 +59,10 @@ VkMemoryRequirements VulkanImage::GetImageMemoryRequirements() const
 void VulkanImage::BindImageMemory(const std::shared_ptr<VulkanDeviceMemory> &deviceMemory,
                                   VkDeviceSize memoryOffset) const
 {
-    if (const auto device = GetParent()) {
-        vkBindImageMemory(device->GetHandle(), handle_, deviceMemory->GetHandle(), memoryOffset);
+    const auto device = GetParent();
+    if (!device || vkBindImageMemory(device->GetHandle(), handle_, deviceMemory->GetHandle(), memoryOffset) !=
+        VK_SUCCESS) {
+        throw std::runtime_error("Failed to bind image memory!");
     }
 }
 
@@ -183,7 +185,7 @@ std::shared_ptr<VulkanImage> VulkanImageBuilder::Build(std::shared_ptr<VulkanDev
 {
     VkImage image = VK_NULL_HANDLE;
     if (vkCreateImage(device->GetHandle(), &createInfo_, nullptr, &image) != VK_SUCCESS) {
-        std::cout << "Failed to create image!" << std::endl;
+        std::cerr << "Failed to create image!" << std::endl;
         return nullptr;
     }
 

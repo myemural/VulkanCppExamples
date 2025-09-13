@@ -33,8 +33,9 @@ public:
         params_ = std::move(other.params_);
     }
 
-    ParameterServer& operator=(ParameterServer&& other) noexcept {
-        if(this != &other) {
+    ParameterServer &operator=(ParameterServer &&other) noexcept
+    {
+        if (this != &other) {
             std::lock_guard lock1(mutex_);
             std::lock_guard lock2(other.mutex_);
             params_ = std::move(other.params_);
@@ -42,11 +43,18 @@ public:
         return *this;
     }
 
+    /**
+     * @brief Sets a parameter with a specified name with a value of a specified type.
+     * @tparam T Type of the parameter.
+     * @param key Key name of the parameter.
+     * @param val Value of the parameter.
+     * @param writeOnce Specifies whether the parameter will be set only once.
+     */
     template<typename T>
-    void Set(const std::string& key, T val, const bool writeOnce = false)
+    void Set(const std::string &key, T val, const bool writeOnce = false)
     {
         std::lock_guard lock(mutex_);
-        Parameter& param = params_[key];
+        Parameter &param = params_[key];
         if (param.writeOnce && param.isSet) {
             std::cout << "Warning: Attempt to modify write-once parameter ignored.\n";
             return;
@@ -57,12 +65,18 @@ public:
         param.isSet = true;
     }
 
+    /**
+     * @brief Gets a parameter with a specific name.
+     * @tparam T Type of the parameter.
+     * @param key Key name of the parameter.
+     * @return Value of the parameter in specified type.
+     */
     template<typename T>
-    T Get(const std::string& key) const
+    T Get(const std::string &key) const
     {
         std::lock_guard lock(mutex_);
         const auto it = params_.find(key);
-        if(it == params_.end() || !it->second.value.has_value()) {
+        if (it == params_.end() || !it->second.value.has_value()) {
             throw std::runtime_error("Parameter not found or not set: " + key);
         }
         return std::any_cast<T>(it->second.value);

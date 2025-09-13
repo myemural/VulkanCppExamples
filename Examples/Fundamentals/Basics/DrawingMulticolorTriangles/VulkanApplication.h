@@ -14,8 +14,8 @@
 #include <memory>
 
 #include "ApplicationBasics.h"
+#include "ParameterServer.h"
 #include "ShaderLoader.h"
-#include "VulkanInstance.h"
 #include "VulkanShaderModule.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -26,24 +26,11 @@
 
 namespace examples::fundamentals::basics::drawing_multicolor_triangles
 {
-// User customizable settings
-struct ApplicationSettings
-{
-    VkClearColorValue ClearColor = {0.0f, 0.0f, 0.0f, 1.0f};
-};
-
-// Project constants
-inline constexpr std::uint32_t kMaxFramesInFlight = 2;
-inline constexpr auto kCurrentShaderType = common::utility::ShaderBaseType::GLSL;
-inline constexpr auto kVertexShaderFileName = "multicolor_triangle.vert.spv";
-inline constexpr auto kFragmentShaderFileName = "multicolor_triangle.frag.spv";
-inline constexpr auto kVertexShaderHash = "vert_main";
-inline constexpr auto kFragmentShaderHash = "frag_main";
 
 class VulkanApplication final : public base::ApplicationBasics
 {
 public:
-    VulkanApplication(const common::vulkan_framework::ApplicationCreateConfig &config, const ApplicationSettings& settings);
+    explicit VulkanApplication(common::utility::ParameterServer&& params);
 
 protected:
     bool Init() override;
@@ -62,8 +49,11 @@ protected:
 
     void RecordCommandBuffers(std::uint32_t vertexCount);
 
-    ApplicationSettings settings_;
+    common::utility::ParameterServer params_;
     std::uint32_t currentIndex_ = 0;
+    std::uint32_t currentWindowWidth_ = UINT32_MAX;
+    std::uint32_t currentWindowHeight_ = UINT32_MAX;
+
     std::shared_ptr<common::vulkan_wrapper::VulkanBuffer> vertexBuffer_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDeviceMemory> vertexBufferMemory_;
     std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule>> shaderModules_;

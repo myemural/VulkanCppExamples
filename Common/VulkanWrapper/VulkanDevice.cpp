@@ -404,20 +404,18 @@ std::shared_ptr<VulkanDevice> VulkanDeviceBuilder::Build(const std::shared_ptr<V
         createInfo.pQueueCreateInfos = queueCreateInfos_.data();
     }
 
-    std::vector<const char *> layersStr;
     if (!layers_.empty()) {
-        std::ranges::transform(layers_, std::back_inserter(layersStr),
+        std::ranges::transform(layers_, std::back_inserter(layersStr_),
                                [](const std::string &s) { return s.c_str(); });
-        createInfo.enabledLayerCount = layersStr.size();
-        createInfo.ppEnabledLayerNames = layersStr.data();
+        createInfo.enabledLayerCount = layersStr_.size();
+        createInfo.ppEnabledLayerNames = layersStr_.data();
     }
 
-    std::vector<const char *> extensionsStr;
     if (!extensions_.empty()) {
-        std::ranges::transform(extensions_, std::back_inserter(extensionsStr),
+        std::ranges::transform(extensions_, std::back_inserter(extensionsStr_),
                                [](const std::string &s) { return s.c_str(); });
-        createInfo.enabledExtensionCount = extensionsStr.size();
-        createInfo.ppEnabledExtensionNames = extensionsStr.data();
+        createInfo.enabledExtensionCount = extensionsStr_.size();
+        createInfo.ppEnabledExtensionNames = extensionsStr_.data();
     }
 
     if (deviceFeatures_.has_value()) {

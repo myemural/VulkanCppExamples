@@ -116,8 +116,8 @@ void VulkanCommandBuffer::BindVertexBuffers(const std::vector<std::shared_ptr<Vu
                                             const std::uint32_t firstBinding, const std::uint32_t bindingCount,
                                             const std::vector<VkDeviceSize> &offsets) const
 {
-    std::vector<VkBuffer> vkVertexBuffers;
-    std::ranges::transform(vertexBuffers, std::back_inserter(vkVertexBuffers),
+    std::vector<VkBuffer> vkVertexBuffers(vertexBuffers.size());
+    std::ranges::transform(vertexBuffers, vkVertexBuffers.begin(),
                            [](const auto &buffer) { return buffer->GetHandle(); });
 
     vkCmdBindVertexBuffers(handle_, firstBinding, bindingCount, vkVertexBuffers.data(), offsets.data());

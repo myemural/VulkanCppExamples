@@ -57,9 +57,14 @@ void VulkanSwapChain::SetSwapChainImageViews(const std::shared_ptr<VulkanDevice>
 {
     std::vector<VkImage> swapImages;
     uint32_t swapChainImageCount;
-    vkGetSwapchainImagesKHR(device->GetHandle(), handle_, &swapChainImageCount, nullptr);
+
+    if (vkGetSwapchainImagesKHR(device->GetHandle(), handle_, &swapChainImageCount, nullptr) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to get swap chain image count!");
+    }
     swapImages.resize(swapChainImageCount);
-    vkGetSwapchainImagesKHR(device->GetHandle(), handle_, &swapChainImageCount, swapImages.data());
+    if (vkGetSwapchainImagesKHR(device->GetHandle(), handle_, &swapChainImageCount, swapImages.data()) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to get swap chain images!");
+    }
 
     for (const auto swapImage: swapImages) {
         std::shared_ptr<VulkanImageView> imageView = VulkanImageViewBuilder()
@@ -81,8 +86,11 @@ std::uint32_t VulkanSwapChain::AcquireNextImage(const std::shared_ptr<VulkanSema
     const auto device = GetParent();
 
     std::uint32_t imageIndex = 0;
-    vkAcquireNextImageKHR(device->GetHandle(), handle_, timeout, semaphore ? semaphore->GetHandle() : VK_NULL_HANDLE,
-                          fence ? fence->GetHandle() : VK_NULL_HANDLE, &imageIndex);
+    if (vkAcquireNextImageKHR(device->GetHandle(), handle_, timeout,
+                              semaphore ? semaphore->GetHandle() : VK_NULL_HANDLE,
+                              fence ? fence->GetHandle() : VK_NULL_HANDLE, &imageIndex) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to acquire next swap chain image!");
+    }
     return imageIndex;
 }
 
@@ -184,7 +192,7 @@ std::shared_ptr<VulkanSwapChain> VulkanSwapChainBuilder::Build(const std::shared
 
     VkSwapchainKHR swapChain = VK_NULL_HANDLE;
     if (vkCreateSwapchainKHR(device->GetHandle(), &createInfo_, nullptr, &swapChain) != VK_SUCCESS) {
-        std::cout << "Failed to create swap chain!" << std::endl;
+        std::cerr << "Failed to create swap chain!" << std::endl;
         return nullptr;
     }
 

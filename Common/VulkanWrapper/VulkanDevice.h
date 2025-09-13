@@ -133,7 +133,9 @@ public:
 private:
     VkDeviceCreateInfo createInfo{};
     std::vector<std::string> layers_;
+    std::vector<const char *> layersStr_;
     std::vector<std::string> extensions_;
+    std::vector<const char *> extensionsStr_;
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos_;
     std::optional<VkPhysicalDeviceFeatures> deviceFeatures_;
 };

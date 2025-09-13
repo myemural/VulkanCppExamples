@@ -299,7 +299,7 @@ std::shared_ptr<VulkanPipeline> VulkanGraphicsPipelineBuilder::Build(std::shared
                                                                      renderPass)
 {
     if (shaderStages_.empty()) {
-        std::cout << "Please set at least 1 shader stage for pipeline!" << std::endl;
+        std::cerr << "Please set at least 1 shader stage for pipeline!" << std::endl;
         return nullptr;
     }
     createInfo_.stageCount = shaderStages_.size();
@@ -320,7 +320,7 @@ std::shared_ptr<VulkanPipeline> VulkanGraphicsPipelineBuilder::Build(std::shared
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
     if (vkCreateGraphicsPipelines(device->GetHandle(), VK_NULL_HANDLE, 1, &createInfo_, nullptr, &graphicsPipeline) !=
         VK_SUCCESS) {
-        std::cout << "Failed to create graphics pipeline!" << std::endl;
+        std::cerr << "Failed to create graphics pipeline!" << std::endl;
         return nullptr;
     }
 

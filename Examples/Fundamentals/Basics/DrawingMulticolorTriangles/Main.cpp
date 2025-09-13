@@ -9,38 +9,56 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include <thread>
-
+#include "ParameterServer.h"
 #include "VulkanApplication.h"
 #include "Window.h"
+#include "AppConfig.h"
 
+using namespace common::utility;
+using namespace common::window_wrapper;
 using namespace examples::fundamentals::basics::drawing_multicolor_triangles;
 
 int main()
 {
-    // Window settings
-    constexpr uint32_t windowWidth = 800;
-    constexpr uint32_t windowHeight = 600;
-    constexpr auto windowTitle = EXAMPLE_APPLICATION_NAME;
+    ParameterServer params;
+
+    // Initial window settings
+    params.Set<std::uint32_t>(WindowParams::Width, 800, true);
+    params.Set<std::uint32_t>(WindowParams::Height, 600, true);
+    params.Set(WindowParams::Title, std::string(EXAMPLE_APPLICATION_NAME), true);
+    params.Set(WindowParams::Resizable, false, true);
+    params.Set(WindowParams::SampleCount, 1U, true);
 
     // Create a window
-    const auto window = std::make_shared<common::window_wrapper::Window>(windowTitle);
-    if (!window->Init(windowWidth, windowHeight, false, 1)) {
+    const auto window = std::make_shared<Window>(params.Get<std::string>(WindowParams::Title));
+    if (!window->Init(params.Get<std::uint32_t>(WindowParams::Width),
+                      params.Get<std::uint32_t>(WindowParams::Height),
+                      params.Get<bool>(WindowParams::Resizable),
+                      params.Get<unsigned int>(WindowParams::SampleCount))) {
         std::cerr << "Failed to initialize window." << std::endl;
         return -1;
     }
 
-    common::vulkan_framework::ApplicationCreateConfig config;
-    config.ApplicationName = windowTitle;
-    config.InstanceLayers = {"VK_LAYER_KHRONOS_validation"};
-    config.InstanceExtensions = common::window_wrapper::Window::GetVulkanInstanceExtensions();
+    // Vulkan settings
+    common::vulkan_framework::ApplicationCreateConfig createConfig;
+    createConfig.ApplicationName = params.Get<std::string>(WindowParams::Title);
+    createConfig.InstanceLayers = {"VK_LAYER_KHRONOS_validation"};
+    createConfig.InstanceExtensions = Window::GetVulkanInstanceExtensions();
+    params.Set(VulkanParams::AppCreateConfig, createConfig, true);
 
-    // Customize the example settings
-    ApplicationSettings settings;
-    settings.ClearColor = {0.0f, 0.6f, 0.2f, 1.0f};
+    // Project constants
+    params.Set<std::uint32_t>(ProjectParams::MaxFramesInFlight, 2, true);
+    params.Set(ProjectParams::BaseShaderType, ShaderBaseType::GLSL, true);
+    params.Set(ProjectParams::MainVertexShaderFile, std::string("multicolor_triangle.vert.spv"), true);
+    params.Set(ProjectParams::MainFragmentShaderFile, std::string("multicolor_triangle.frag.spv"), true);
+    params.Set(ProjectParams::MainVertexShaderKey, std::string("vertMain"), true);
+    params.Set(ProjectParams::MainFragmentShaderKey, std::string("fragMain"), true);
+
+    // Project customizable settings
+    params.Set(ProjectParams::ClearColor, VkClearColorValue{0.0f, 0.6f, 0.2f, 1.0f});
 
     // Init Vulkan application
-    VulkanApplication app{config, settings};
+    VulkanApplication app{std::move(params)};
     app.SetWindow(window);
     app.Run();
 

@@ -16,7 +16,6 @@
 
 namespace examples::fundamentals::basics::drawing_quad
 {
-
 // Vertex Attribute Layout
 struct VertexPos2Color3
 {
@@ -38,5 +37,4 @@ const std::vector<uint16_t> indices{
     0, 1, 2, // First triangle of quad
     2, 3, 0  // Second triangle of quad
 };
-
 } // namespace examples::fundamentals::basics::drawing_quad
