@@ -10,7 +10,13 @@ This example creates a simple window.
 
 ![](/Docs/ExampleMedia/Fundamentals/Basics/CreatingWindow.png?raw=true)
 
-## Inputs
+## Controls
+
+| Input | Action           |
+|-------|------------------|
+| Esc   | Close the window |
+
+## Application Parameters
 
 None
 
