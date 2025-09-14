@@ -13,13 +13,14 @@
 #include "ApplicationData.h"
 #include "VulkanDescriptorPool.h"
 #include "VulkanShaderModule.h"
+#include "AppConfig.h"
 
 namespace examples::fundamentals::descriptor_sets::basic_push_constants
 {
-
 using namespace common::utility;
 
-void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
     if (action == GLFW_PRESS) {
         switch (key) {
             case GLFW_KEY_1:
@@ -38,34 +39,34 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
 }
 
-VulkanApplication::VulkanApplication(const common::vulkan_framework::ApplicationCreateConfig &config,
-    const ApplicationSettings &settings)
-: ApplicationDescriptorSets(config), settings_(settings)
+VulkanApplication::VulkanApplication(ParameterServer &&params)
+    : ApplicationDescriptorSets(std::move(params))
 {
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
     const std::uint32_t indexBufferSize = indices.size() * sizeof(uint16_t);
     bufferCreateInfos_ = {
         {
-            kVertexBufferKey, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+            params_.Get<std::string>(AppConstants::MainVertexBuffer), vertexBufferSize,
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         },
         {
-            kIndexBufferKey, indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+            params_.Get<std::string>(AppConstants::MainIndexBuffer), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         }
     };
 
     shaderModuleCreateInfo_ = {
         .BasePath = SHADERS_DIR,
-        .ShaderType = kCurrentShaderType,
+        .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
         .Modules = {
             {
-                .Name = kVertexShaderHash,
-                .FileName = kVertexShaderFileName
+                .Name = params_.Get<std::string>(AppConstants::MainVertexShaderKey),
+                .FileName = params_.Get<std::string>(AppConstants::MainVertexShaderFile)
             },
             {
-                .Name = kFragmentShaderHash,
-                .FileName = kFragmentShaderFileName
+                .Name = params_.Get<std::string>(AppConstants::MainFragmentShaderKey),
+                .FileName = params_.Get<std::string>(AppConstants::MainFragmentShaderFile)
             }
         }
     };
@@ -87,15 +88,17 @@ bool VulkanApplication::Init()
         CreateDefaultSwapChain();
 
         CreateBuffers(bufferCreateInfos_);
-        SetBuffer(kVertexBufferKey, vertices.data(), vertices.size() * sizeof(VertexPos2));
-        SetBuffer(kIndexBufferKey, indices.data(), indices.size() * sizeof(uint16_t));
+        SetBuffer(params_.Get<std::string>(AppConstants::MainVertexBuffer), vertices.data(),
+                  vertices.size() * sizeof(VertexPos2));
+        SetBuffer(params_.Get<std::string>(AppConstants::MainIndexBuffer), indices.data(),
+                  indices.size() * sizeof(uint16_t));
 
         CreateDefaultRenderPass();
         CreateShaderModules(shaderModuleCreateInfo_);
         CreatePipeline();
         CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(kMaxFramesInFlight);
+        CreateDefaultSyncObjects(params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight));
         CreateCommandBuffers();
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
@@ -128,7 +131,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
 
-    currentIndex_ = (currentIndex_ + 1) % kMaxFramesInFlight;
+    currentIndex_ = (currentIndex_ + 1) % params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight);
 }
 
 void VulkanApplication::CreatePipeline()
@@ -143,7 +146,9 @@ void VulkanApplication::CreatePipeline()
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    VkViewport viewport{0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f};
+    VkViewport viewport{
+        0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f
+    };
     VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
@@ -165,21 +170,23 @@ void VulkanApplication::CreatePipeline()
     };
 
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderModules_[kVertexShaderHash]->GetHandle();
+            shaderStageCreateInfo.module = shaderModules_[params_.Get<std::string>(AppConstants::MainVertexShaderKey)]->
+                    GetHandle();
         });
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderModules_[kFragmentShaderHash]->GetHandle();
+            shaderStageCreateInfo.module = shaderModules_[params_.Get<std::string>(AppConstants::MainFragmentShaderKey)]
+                    ->GetHandle();
         });
-        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
+        builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
             vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
             vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
             vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         });
-        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
+        builder.SetViewportState([&](auto &viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
             viewportStateCreateInfo.pViewports = &viewport;
             viewportStateCreateInfo.scissorCount = 1;
@@ -208,7 +215,7 @@ void VulkanApplication::CreateCommandBuffers()
 void VulkanApplication::RecordCommandBuffers(const std::uint32_t currentImageIndex, const std::uint32_t indexCount)
 {
     VkClearValue clearColor;
-    clearColor.color = settings_.ClearColor;
+    clearColor.color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
     if (!cmdBuffers_[currentImageIndex]->BeginCommandBuffer(nullptr)) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
@@ -223,8 +230,12 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t currentImageInd
     cmdBuffers_[currentImageIndex]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
     cmdBuffers_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                   sizeof(PushConstantObject), &currentColor);
-    cmdBuffers_[currentImageIndex]->BindVertexBuffers({buffers_[kVertexBufferKey]->GetBuffer()}, 0, 1, {0});
-    cmdBuffers_[currentImageIndex]->BindIndexBuffer(buffers_[kIndexBufferKey]->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
+    cmdBuffers_[currentImageIndex]->BindVertexBuffers({
+                                                          buffers_[params_.Get<std::string>(
+                                                              AppConstants::MainVertexBuffer)]->GetBuffer()
+                                                      }, 0, 1, {0});
+    cmdBuffers_[currentImageIndex]->BindIndexBuffer(
+        buffers_[params_.Get<std::string>(AppConstants::MainIndexBuffer)]->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
     cmdBuffers_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
     cmdBuffers_[currentImageIndex]->EndRenderPass();
     if (!cmdBuffers_[currentImageIndex]->EndCommandBuffer()) {

@@ -52,7 +52,6 @@ protected:
 
     void CopyStagingBuffer(std::uint64_t dataSize);
 
-    common::utility::ParameterServer params_;
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;

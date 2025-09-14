@@ -16,7 +16,6 @@
 
 namespace examples::fundamentals::descriptor_sets::changing_color_with_ub
 {
-
 // Vertex Attribute Layout
 struct VertexPos2
 {
@@ -30,5 +29,4 @@ const std::vector vertices{
     VertexPos2{{0.5, 0.5}},
     VertexPos2{{-0.5, 0.5}}
 };
-
 } // namespace examples::fundamentals::descriptor_sets::changing_color_with_ub

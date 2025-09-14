@@ -16,12 +16,11 @@
 
 namespace examples::fundamentals::images_and_samplers::texture_atlases
 {
-
 // Vertex Attribute Layout
 struct VertexPos2Uv2
 {
     common::utility::Attribute<common::utility::Vec2, 0> Position; // layout(location=0) in vec2 position;
-    common::utility::Attribute<common::utility::Vec2, 1> Uv;       // layout(location=1) in vec2 texCoord;
+    common::utility::Attribute<common::utility::Vec2, 1> Uv; // layout(location=1) in vec2 texCoord;
 };
 
 // Vertex Data
@@ -36,7 +35,7 @@ const std::vector vertices{
 // Index Data
 const std::vector<uint16_t> indices{
     0, 1, 2, // First triangle of quad
-    2, 3, 0  // Second triangle of quad
+    2, 3, 0 // Second triangle of quad
 };
 
 // Push Constant Data
@@ -55,5 +54,4 @@ enum QuadIndex
     BOTTOM_RIGHT_QUAD_INDEX,
     QUAD_COUNT
 };
-
 } // namespace examples::fundamentals::images_and_samplers::texture_atlases

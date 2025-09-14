@@ -13,11 +13,9 @@
 
 #include "VulkanSampler.h"
 #include "VulkanDevice.h"
-#include "VulkanDeviceMemory.h"
 
 namespace common::vulkan_framework
 {
-
 struct SamplerResourceCreateInfo
 {
     std::string Name;

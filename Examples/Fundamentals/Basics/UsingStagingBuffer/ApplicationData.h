@@ -16,7 +16,6 @@
 
 namespace examples::fundamentals::basics::using_staging_buffer
 {
-
 // Vertex Attribute Layout
 struct VertexPos2
 {
@@ -26,14 +25,13 @@ struct VertexPos2
 // Vertex Data
 const std::vector vertices{
     // Octagon (using TRIANGLE_FAN)
-    VertexPos2{{0.8,  0.0}},
-    VertexPos2{{0.6,  0.6}},
-    VertexPos2{{0.0,  0.80}},
-    VertexPos2{{-0.6,  0.6}},
-    VertexPos2{{-0.80,  0.0}},
+    VertexPos2{{0.8, 0.0}},
+    VertexPos2{{0.6, 0.6}},
+    VertexPos2{{0.0, 0.80}},
+    VertexPos2{{-0.6, 0.6}},
+    VertexPos2{{-0.80, 0.0}},
     VertexPos2{{-0.6, -0.6}},
     VertexPos2{{0.0, -0.80}},
-    VertexPos2{{ 0.6, -0.6}}
+    VertexPos2{{0.6, -0.6}}
 };
-
 } // namespace examples::fundamentals::basics::using_staging_buffer

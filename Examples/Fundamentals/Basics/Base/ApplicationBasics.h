@@ -27,7 +27,6 @@
 
 namespace examples::fundamentals::basics::base
 {
-
 class ApplicationBasics : public common::vulkan_framework::VulkanApplicationBase
 {
 public:
@@ -69,14 +68,13 @@ protected:
     std::shared_ptr<common::vulkan_wrapper::VulkanDevice> device_;
     std::shared_ptr<common::vulkan_wrapper::VulkanQueue> queue_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSwapChain> swapChain_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanImageView>> swapChainImageViews_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanImageView> > swapChainImageViews_;
     std::shared_ptr<common::vulkan_wrapper::VulkanRenderPass> renderPass_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> framebuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer> > framebuffers_;
     std::shared_ptr<common::vulkan_wrapper::VulkanCommandPool> cmdPool_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> imageAvailableSemaphores_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> renderFinishedSemaphores_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence>> inFlightFences_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence>> swapImagesFences_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore> > imageAvailableSemaphores_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore> > renderFinishedSemaphores_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence> > inFlightFences_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence> > swapImagesFences_;
 };
-
 } // namespace examples::fundamentals::basics::base

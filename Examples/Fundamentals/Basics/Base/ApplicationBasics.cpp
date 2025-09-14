@@ -9,11 +9,12 @@
 #include <thread>
 
 #include "VulkanInstance.h"
+#include "AppCommonConfig.h"
 
 namespace examples::fundamentals::basics::base
 {
-
 using namespace common::vulkan_wrapper;
+using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
 void ApplicationBasics::SetWindow(const std::shared_ptr<Window> &window)
@@ -24,7 +25,7 @@ void ApplicationBasics::SetWindow(const std::shared_ptr<Window> &window)
 void ApplicationBasics::Update()
 {
     window_->OnUpdate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(applicationConfig_.RenderLoopMs));
+    std::this_thread::sleep_for(std::chrono::milliseconds(params_.Get<long long>(VulkanParams::RenderLoopMs)));
 }
 
 bool ApplicationBasics::ShouldClose()

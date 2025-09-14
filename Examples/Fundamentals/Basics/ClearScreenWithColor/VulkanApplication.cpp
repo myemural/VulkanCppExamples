@@ -18,7 +18,7 @@ using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 
 VulkanApplication::VulkanApplication(ParameterServer &&params)
-    : ApplicationBasics(params.Get<ApplicationCreateConfig>(VulkanParams::AppCreateConfig)), params_(std::move(params))
+    : ApplicationBasics(std::move(params))
 {
     currentWindowWidth_ = params_.Get<std::uint32_t>(WindowParams::Width);
     currentWindowHeight_ = params_.Get<std::uint32_t>(WindowParams::Height);
@@ -36,7 +36,7 @@ bool VulkanApplication::Init()
         CreateDefaultRenderPass();
         CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(params_.Get<std::uint32_t>(ProjectParams::MaxFramesInFlight));
+        CreateDefaultSyncObjects(params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight));
 
         CreateCommandBuffers();
         RecordCommandBuffers(); // Recording in Init for this example
@@ -68,7 +68,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
 
-    currentIndex_ = (currentIndex_ + 1) % params_.Get<std::uint32_t>(ProjectParams::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight);
 }
 
 void VulkanApplication::CreateCommandBuffers()
@@ -84,7 +84,7 @@ void VulkanApplication::RecordCommandBuffers()
 {
     for (size_t i = 0; i < framebuffers_.size(); ++i) {
         VkClearValue clearColor;
-        clearColor.color = params_.Get<VkClearColorValue>(ProjectParams::ClearColor);
+        clearColor.color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
         if (!cmdBuffers_[i]->BeginCommandBuffer(nullptr)) {
             throw std::runtime_error("Failed to begin recording command buffer!");
         }

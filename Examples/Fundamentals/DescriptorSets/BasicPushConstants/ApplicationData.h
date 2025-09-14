@@ -17,7 +17,6 @@
 
 namespace examples::fundamentals::descriptor_sets::basic_push_constants
 {
-
 // Vertex Attribute Layout
 struct VertexPos2
 {
@@ -28,9 +27,9 @@ struct VertexPos2
 const std::vector vertices{
     // Top-left triangle (Clockwise)
     VertexPos2{{-0.25, -0.25}}, // 0
-    VertexPos2{{0.25, -0.25}},  // 1
-    VertexPos2{{0.25, 0.25}},   // 2
-    VertexPos2{{-0.25, 0.25}}   // 3
+    VertexPos2{{0.25, -0.25}}, // 1
+    VertexPos2{{0.25, 0.25}}, // 2
+    VertexPos2{{-0.25, 0.25}} // 3
 };
 
 // Index Data
@@ -40,13 +39,13 @@ const std::vector<std::uint16_t> indices{
 };
 
 // Model Matrix (for Uniform Buffer)
-struct PushConstantObject {
+struct PushConstantObject
+{
     common::utility::Color3 color;
 };
 
-inline PushConstantObject currentColor {1.0f, 1.0f, 1.0f};
+inline PushConstantObject currentColor{1.0f, 1.0f, 1.0f};
 inline PushConstantObject firstColor = {1.0f, 0.0f, 0.0f};
 inline PushConstantObject secondColor = {0.0f, 1.0f, 0.0f};
 inline PushConstantObject thirdColor = {0.0f, 0.0f, 1.0f};
-
 } // namespace examples::fundamentals::descriptor_sets::basic_push_constants

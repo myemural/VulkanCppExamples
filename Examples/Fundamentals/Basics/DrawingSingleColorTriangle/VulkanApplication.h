@@ -27,7 +27,7 @@ namespace examples::fundamentals::basics::drawing_single_color_triangle
 class VulkanApplication final : public base::ApplicationBasics
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer&& params);
+    explicit VulkanApplication(common::utility::ParameterServer &&params);
 
 protected:
     bool Init() override;
@@ -42,15 +42,13 @@ protected:
 
     void RecordCommandBuffers();
 
-    common::utility::ParameterServer params_;
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
-    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule>> shaderModules_;
+    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule> > shaderModules_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
 };
-
 } // namespace examples::fundamentals::basics::drawing_single_color_triangle

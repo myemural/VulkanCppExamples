@@ -9,25 +9,38 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include "AppConfig.h"
 #include "ParameterServer.h"
+#include "AppConfig.h"
 #include "VulkanApplication.h"
 #include "Window.h"
 
 using namespace common::utility;
 using namespace common::window_wrapper;
+using namespace common::vulkan_framework;
 using namespace examples::fundamentals::basics::clear_screen_with_color;
+
+inline ParameterSchema GetParameterSchema()
+{
+    ParameterSchema schema;
+    SetCommonParamSchema(schema);
+
+    // Register Constants
+    schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
+
+    // Register Customizable Settings
+    schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
+
+    return schema;
+}
 
 int main()
 {
-    common::utility::ParameterServer params;
+    ParameterServer params{GetParameterSchema()};
 
     // Initial window settings
-    params.Set<std::uint32_t>(WindowParams::Width, 800, true);
-    params.Set<std::uint32_t>(WindowParams::Height, 600, true);
-    params.Set(WindowParams::Title, std::string(EXAMPLE_APPLICATION_NAME), true);
-    params.Set(WindowParams::Resizable, false, true);
-    params.Set(WindowParams::SampleCount, 1U, true);
+    params.Set<std::uint32_t>(WindowParams::Width, 800);
+    params.Set<std::uint32_t>(WindowParams::Height, 600);
+    params.Set(WindowParams::Title, std::string(EXAMPLE_APPLICATION_NAME));
 
     // Create a window
     const auto window = std::make_shared<Window>(params.Get<std::string>(WindowParams::Title));
@@ -40,17 +53,12 @@ int main()
     }
 
     // Vulkan settings
-    common::vulkan_framework::ApplicationCreateConfig createConfig;
-    createConfig.ApplicationName = params.Get<std::string>(WindowParams::Title);
-    createConfig.InstanceLayers = {"VK_LAYER_KHRONOS_validation"};
-    createConfig.InstanceExtensions = Window::GetVulkanInstanceExtensions();
-    params.Set(VulkanParams::AppCreateConfig, createConfig, true);
-
-    // Project constants
-    params.Set<std::uint32_t>(ProjectParams::MaxFramesInFlight, 2, true);
+    params.Set<std::string>(VulkanParams::ApplicationName, params.Get<std::string>(WindowParams::Title));
+    params.Set<std::vector<std::string> >(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
+    params.Set<std::vector<std::string> >(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
 
     // Project customizable settings
-    params.Set(ProjectParams::ClearColor, VkClearColorValue{0.0f, 0.6f, 0.2f, 1.0f});
+    params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.6f, 0.2f, 1.0f});
 
     // Init Vulkan application
     VulkanApplication app{std::move(params)};

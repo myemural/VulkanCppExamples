@@ -20,7 +20,7 @@ namespace examples::fundamentals::basics::drawing_quad
 struct VertexPos2Color3
 {
     common::utility::Attribute<common::utility::Vec2, 0> Position; // layout(location=0) in vec2 position;
-    common::utility::Attribute<common::utility::Color3, 1> Color;  // layout(location=1) in vec3 color;
+    common::utility::Attribute<common::utility::Color3, 1> Color; // layout(location=1) in vec3 color;
 };
 
 // Vertex Data
@@ -35,6 +35,6 @@ const std::vector vertices{
 // Index Data
 const std::vector<uint16_t> indices{
     0, 1, 2, // First triangle of quad
-    2, 3, 0  // Second triangle of quad
+    2, 3, 0 // Second triangle of quad
 };
 } // namespace examples::fundamentals::basics::drawing_quad

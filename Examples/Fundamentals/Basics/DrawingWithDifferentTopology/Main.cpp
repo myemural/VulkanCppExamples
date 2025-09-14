@@ -19,18 +19,39 @@
 
 using namespace common::utility;
 using namespace common::window_wrapper;
+using namespace common::vulkan_framework;
 using namespace examples::fundamentals::basics::drawing_with_different_topology;
+
+inline ParameterSchema GetParameterSchema()
+{
+    ParameterSchema schema;
+    SetCommonParamSchema(schema);
+
+    // Register Constants
+    schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
+    schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "quad.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "quad.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
+
+    // Register Customizable Settings
+    schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
+    schema.RegisterParam<bool>(AppSettings::PrimitiveRestartEnabled);
+    schema.RegisterParam<VkPolygonMode>(AppSettings::PolygonMode);
+    schema.RegisterParam<float>(AppSettings::LineWidth);
+
+    return schema;
+}
 
 int main()
 {
-    ParameterServer params;
+    ParameterServer params{GetParameterSchema()};
 
     // Initial window settings
-    params.Set<std::uint32_t>(WindowParams::Width, 800, true);
-    params.Set<std::uint32_t>(WindowParams::Height, 600, true);
-    params.Set(WindowParams::Title, std::string(EXAMPLE_APPLICATION_NAME), true);
-    params.Set(WindowParams::Resizable, false, true);
-    params.Set(WindowParams::SampleCount, 1U, true);
+    params.Set<std::uint32_t>(WindowParams::Width, 800);
+    params.Set<std::uint32_t>(WindowParams::Height, 600);
+    params.Set(WindowParams::Title, std::string(EXAMPLE_APPLICATION_NAME));
 
     // Create a window
     const auto window = std::make_shared<Window>(params.Get<std::string>(WindowParams::Title));
@@ -43,25 +64,15 @@ int main()
     }
 
     // Vulkan settings
-    common::vulkan_framework::ApplicationCreateConfig createConfig;
-    createConfig.ApplicationName = params.Get<std::string>(WindowParams::Title);
-    createConfig.InstanceLayers = {"VK_LAYER_KHRONOS_validation"};
-    createConfig.InstanceExtensions = Window::GetVulkanInstanceExtensions();
-    params.Set(VulkanParams::AppCreateConfig, createConfig, true);
-
-    // Project constants
-    params.Set<std::uint32_t>(ProjectParams::MaxFramesInFlight, 2, true);
-    params.Set(ProjectParams::BaseShaderType, ShaderBaseType::GLSL, true);
-    params.Set(ProjectParams::MainVertexShaderFile, std::string("quad.vert.spv"), true);
-    params.Set(ProjectParams::MainFragmentShaderFile, std::string("quad.frag.spv"), true);
-    params.Set(ProjectParams::MainVertexShaderKey, std::string("vertMain"), true);
-    params.Set(ProjectParams::MainFragmentShaderKey, std::string("fragMain"), true);
+    params.Set<std::string>(VulkanParams::ApplicationName, params.Get<std::string>(WindowParams::Title));
+    params.Set<std::vector<std::string> >(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
+    params.Set<std::vector<std::string> >(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
 
     // Project customizable settings
-    params.Set(ProjectParams::ClearColor, VkClearColorValue{0.0f, 0.6f, 0.2f, 1.0f});
-    params.Set(ProjectParams::PrimitiveRestartEnabled, true);
-    params.Set<VkPolygonMode>(ProjectParams::PolygonMode, VK_POLYGON_MODE_FILL);
-    params.Set(ProjectParams::LineWidth, 1.0f);
+    params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.6f, 0.2f, 1.0f});
+    params.Set(AppSettings::PrimitiveRestartEnabled, true);
+    params.Set<VkPolygonMode>(AppSettings::PolygonMode, VK_POLYGON_MODE_FILL);
+    params.Set(AppSettings::LineWidth, 1.0f);
 
     // Init Vulkan application
     VulkanApplication app{std::move(params)};

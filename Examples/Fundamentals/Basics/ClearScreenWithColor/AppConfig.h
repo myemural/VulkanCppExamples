@@ -10,28 +10,17 @@
  */
 #pragma once
 
+#include "AppCommonConfig.h"
+
 namespace examples::fundamentals::basics::clear_screen_with_color
 {
-
-// Parameter server key names
-namespace WindowParams
+namespace AppConstants
 {
-    constexpr auto Width = "Window.Width";
-    constexpr auto Height = "Window.Height";
-    constexpr auto Title = "Window.Title";
-    constexpr auto Resizable = "Window.Resizable";
-    constexpr auto SampleCount = "Window.SampleCount";
-}
+    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
+} // namespace AppConstants
 
-namespace VulkanParams
+namespace AppSettings
 {
-    constexpr auto AppCreateConfig = "Vulkan.AppCreateConfig";
-}
-
-namespace ProjectParams
-{
-    constexpr auto MaxFramesInFlight = "Project.MaxFramesInFlight";
-    constexpr auto ClearColor = "Project.ClearColor";
-} // namespace ProjectParams
-
+    constexpr auto ClearColor = "AppSettings.ClearColor";
+} // namespace AppSettings
 } // namespace examples::fundamentals::basics::clear_screen_with_color

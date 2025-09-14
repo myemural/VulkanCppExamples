@@ -8,13 +8,14 @@
 
 #include <utility>
 
-#include "VulkanInstance.h"
+#include "AppCommonConfig.h"
 
 namespace common::vulkan_framework
 {
-VulkanApplicationBase::VulkanApplicationBase(ApplicationCreateConfig  cfg)
-    : applicationConfig_(std::move(cfg))
-{}
+VulkanApplicationBase::VulkanApplicationBase(utility::ParameterServer params)
+    : params_{std::move(params)}
+{
+}
 
 bool VulkanApplicationBase::Run()
 {
@@ -42,14 +43,13 @@ bool VulkanApplicationBase::CreateInstance()
 {
     instance_ = vulkan_wrapper::VulkanInstanceBuilder()
             .SetApplicationInfo([=](auto &info) {
-                info.pApplicationName = applicationConfig_.ApplicationName.c_str();
-                info.applicationVersion = applicationConfig_.ApplicationVersion;
-                info.pEngineName = applicationConfig_.EngineName.c_str();
-                info.engineVersion = applicationConfig_.EngineVersion;
-                info.apiVersion = applicationConfig_.VulkanApiVersion;
+                info.pApplicationName = params_.Get<std::string>(VulkanParams::ApplicationName).c_str();
+                info.pEngineName = params_.Get<std::string>(VulkanParams::EngineName).c_str();
+                info.engineVersion = params_.Get<std::uint32_t>(VulkanParams::EngineVersion);
+                info.apiVersion = params_.Get<std::uint32_t>(VulkanParams::VulkanApiVersion);
             })
-            .AddLayers(applicationConfig_.InstanceLayers)
-            .AddExtensions(applicationConfig_.InstanceExtensions)
+            .AddLayers(params_.Get<std::vector<std::string> >(VulkanParams::InstanceLayers))
+            .AddExtensions(params_.Get<std::vector<std::string> >(VulkanParams::InstanceExtensions))
             .Build();
 
     if (!instance_) {

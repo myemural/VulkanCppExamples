@@ -10,42 +10,22 @@
  */
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
 #include <memory>
-#include <ostream>
 
-#include <vulkan/vulkan_core.h>
-
-namespace common::vulkan_wrapper
-{
-class VulkanInstance;
-}
+#include "ParameterServer.h"
+#include "VulkanInstance.h"
 
 namespace common::vulkan_framework
 {
-
-struct ApplicationCreateConfig
+class VulkanApplicationBase
 {
-    std::string ApplicationName;
-    std::uint32_t VulkanApiVersion = VK_API_VERSION_1_0;
-    std::uint32_t ApplicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    std::string EngineName = "DefaultEngine";
-    std::uint32_t EngineVersion = VK_MAKE_VERSION(1, 0, 0);
-    std::vector<std::string> InstanceLayers;
-    std::vector<std::string> InstanceExtensions;
-    long long RenderLoopMs = 8LL;
-};
-
-class VulkanApplicationBase {
 public:
     virtual ~VulkanApplicationBase() = default;
 
     /**
-     * @param cfg Contains creation related configs for the application.
+     * @param params Contains application parameters.
      */
-    explicit VulkanApplicationBase(ApplicationCreateConfig  cfg);
+    explicit VulkanApplicationBase(utility::ParameterServer params);
 
     /**
      * @brief This function executes init, render loop and cleanup steps of the application.
@@ -81,11 +61,10 @@ protected:
      */
     virtual bool ShouldClose() = 0;
 
+    utility::ParameterServer params_;
     std::shared_ptr<vulkan_wrapper::VulkanInstance> instance_;
-    ApplicationCreateConfig applicationConfig_;
 
 private:
     bool CreateInstance();
 };
-
 } // common::vulkan_framework

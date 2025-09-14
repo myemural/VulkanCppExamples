@@ -16,7 +16,7 @@ using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 
 VulkanApplication::VulkanApplication(ParameterServer &&params)
-    : ApplicationBasics(params.Get<ApplicationCreateConfig>(VulkanParams::AppCreateConfig)), params_(std::move(params))
+    : ApplicationBasics(std::move(params))
 {
     currentWindowWidth_ = params_.Get<std::uint32_t>(WindowParams::Width);
     currentWindowHeight_ = params_.Get<std::uint32_t>(WindowParams::Height);
@@ -37,7 +37,7 @@ bool VulkanApplication::Init()
 
         CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(params_.Get<std::uint32_t>(ProjectParams::MaxFramesInFlight));
+        CreateDefaultSyncObjects(params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight));
 
         CreateCommandBuffers();
         RecordCommandBuffers(); // Recording in Init for this example
@@ -69,28 +69,28 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
 
-    currentIndex_ = (currentIndex_ + 1) % params_.Get<std::uint32_t>(ProjectParams::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight);
 }
 
 void VulkanApplication::CreateShaderModules()
 {
-    const ShaderLoader shaderLoader{SHADERS_DIR, params_.Get<ShaderBaseType>(ProjectParams::BaseShaderType)};
+    const ShaderLoader shaderLoader{SHADERS_DIR, params_.Get<ShaderBaseType>(AppConstants::BaseShaderType)};
     // Vertex Shader
-    const auto vertexShaderCode = shaderLoader.LoadSpirV(params_.Get<std::string>(ProjectParams::MainVertexShaderFile));
+    const auto vertexShaderCode = shaderLoader.LoadSpirV(params_.Get<std::string>(AppConstants::MainVertexShaderFile));
     const auto vertexShaderModule = device_->CreateShaderModule(vertexShaderCode);
     if (!vertexShaderModule) {
         throw std::runtime_error("Failed to create vertex shader module!");
     }
-    shaderModules_[params_.Get<std::string>(ProjectParams::MainVertexShaderKey)] = vertexShaderModule;
+    shaderModules_[params_.Get<std::string>(AppConstants::MainVertexShaderKey)] = vertexShaderModule;
 
     // Fragment Shader
     const auto fragmentShaderCode = shaderLoader.LoadSpirV(
-        params_.Get<std::string>(ProjectParams::MainFragmentShaderFile));
+        params_.Get<std::string>(AppConstants::MainFragmentShaderFile));
     const auto fragmentShaderModule = device_->CreateShaderModule(fragmentShaderCode);
     if (!fragmentShaderModule) {
         throw std::runtime_error("Failed to create fragment shader module!");
     }
-    shaderModules_[params_.Get<std::string>(ProjectParams::MainFragmentShaderKey)] = fragmentShaderModule;
+    shaderModules_[params_.Get<std::string>(AppConstants::MainFragmentShaderKey)] = fragmentShaderModule;
 }
 
 void VulkanApplication::CreatePipeline()
@@ -123,12 +123,12 @@ void VulkanApplication::CreatePipeline()
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
             shaderStageCreateInfo.module = shaderModules_[params_.Get<
-                std::string>(ProjectParams::MainVertexShaderKey)]->GetHandle();
+                std::string>(AppConstants::MainVertexShaderKey)]->GetHandle();
         });
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
             shaderStageCreateInfo.module = shaderModules_[params_.Get<
-                std::string>(ProjectParams::MainFragmentShaderKey)]->GetHandle();
+                std::string>(AppConstants::MainFragmentShaderKey)]->GetHandle();
         });
         builder.SetViewportState([&](auto &viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
@@ -160,7 +160,7 @@ void VulkanApplication::RecordCommandBuffers()
 {
     for (size_t i = 0; i < framebuffers_.size(); ++i) {
         VkClearValue clearColor;
-        clearColor.color = params_.Get<VkClearColorValue>(ProjectParams::ClearColor);
+        clearColor.color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
         if (!cmdBuffers_[i]->BeginCommandBuffer(nullptr)) {
             throw std::runtime_error("Failed to begin recording command buffer!");
         }
@@ -173,7 +173,7 @@ void VulkanApplication::RecordCommandBuffers()
             beginInfo.pClearValues = &clearColor;
         }, VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffers_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        cmdBuffers_[i]->Draw(params_.Get<std::uint32_t>(ProjectParams::VertexCount), 1, 0, 0);
+        cmdBuffers_[i]->Draw(params_.Get<std::uint32_t>(AppConstants::VertexCount), 1, 0, 0);
         cmdBuffers_[i]->EndRenderPass();
         if (!cmdBuffers_[i]->EndCommandBuffer()) {
             throw std::runtime_error("Failed to end recording command buffer!");

@@ -15,8 +15,6 @@
 
 #include "ApplicationData.h"
 #include "ApplicationImagesAndSamplers.h"
-#include "ShaderLoader.h"
-#include "VulkanInstance.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -25,32 +23,10 @@
 
 namespace examples::fundamentals::images_and_samplers::texture_atlases
 {
-
-// User customizable settings
-struct ApplicationSettings
-{
-    VkClearColorValue ClearColor = {0.0f, 0.0f, 0.0f, 1.0f};
-};
-
-// Project constants
-inline constexpr std::uint32_t kMaxFramesInFlight = 2;
-inline constexpr auto kCurrentShaderType = common::utility::ShaderBaseType::GLSL;
-inline constexpr auto kVertexShaderFileName = "texture_atlas.vert.spv";
-inline constexpr auto kFragmentShaderFileName = "texture_atlas.frag.spv";
-inline constexpr auto kVertexShaderHash = "vertMain";
-inline constexpr auto kFragmentShaderHash = "fragMain";
-inline constexpr auto kVertexBufferKey = "mainVertexBuffer";
-inline constexpr auto kIndexBufferKey = "mainIndexBuffer";
-inline constexpr auto kTextureStagingBufferKey = "textureStagingBuffer";
-
-inline constexpr auto kMainDescSetLayoutKey = "mainDescSetLayout";
-
-inline constexpr auto kTextureAtlasPath = "Textures/texture_atlas.jpg";
-
 class VulkanApplication final : public base::ApplicationImagesAndSamplers
 {
 public:
-    VulkanApplication(const common::vulkan_framework::ApplicationCreateConfig &config, const ApplicationSettings& settings);
+    explicit VulkanApplication(common::utility::ParameterServer &&params);
 
     ~VulkanApplication() override = default;
 
@@ -77,7 +53,6 @@ protected:
 
     void CopyStagingBuffer();
 
-    ApplicationSettings settings_;
     std::uint32_t currentIndex_ = 0;
     PushConstantData pushConstantData_[4] = {};
 
@@ -99,7 +74,7 @@ protected:
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
 
     // Command buffers
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffersPresent_;
     std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> cmdBufferTransfer_;
 };
 } // namespace examples::fundamentals::images_and_samplers::texture_atlases

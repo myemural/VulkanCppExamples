@@ -17,12 +17,11 @@
 
 namespace examples::fundamentals::drawing_3d::drawing_cube
 {
-
 // Vertex Attribute Layout
 struct VertexPos3Uv2
 {
     common::utility::Attribute<common::utility::Vec3, 0> Position; // layout(location=0) in vec3 position;
-    common::utility::Attribute<common::utility::Vec2, 1> Uv;       // layout(location=1) in vec2 texCoord;
+    common::utility::Attribute<common::utility::Vec2, 1> Uv; // layout(location=1) in vec2 texCoord;
 };
 
 // Vertex Data
@@ -66,12 +65,12 @@ const std::vector vertices{
 
 // Index Data
 const std::vector<uint16_t> indices{
-    0, 1, 2, 2, 3, 0,       // Front
-    4, 5, 6, 6, 7, 4,       // Back
-    8, 9, 10, 10, 11, 8,    // Left
+    0, 1, 2, 2, 3, 0, // Front
+    4, 5, 6, 6, 7, 4, // Back
+    8, 9, 10, 10, 11, 8, // Left
     12, 13, 14, 14, 15, 12, // Right
     16, 17, 18, 18, 19, 16, // Top
-    20, 21, 22, 22, 23, 20  // Bottom
+    20, 21, 22, 22, 23, 20 // Bottom
 };
 
 // MVP Matrices (for Uniform Buffer)
@@ -81,5 +80,4 @@ struct MvpData
     glm::mat4 view;
     glm::mat4 projection;
 };
-
 } // namespace examples::fundamentals::drawing_3d::drawing_cube

@@ -34,7 +34,6 @@
 
 namespace examples::fundamentals::drawing_3d::base
 {
-
 struct BufferCreateInfo
 {
     std::string Name;
@@ -105,15 +104,15 @@ protected:
 
     void CreateDefaultSwapChain();
 
-    void CreateDefaultFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView>& depthImageView);
+    void CreateDefaultFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView> &depthImageView);
 
     void CreateDefaultCommandPool();
 
     void CreateDefaultSyncObjects(std::uint32_t maxFramesInFlight);
 
-    void CreateBuffers(const std::vector<BufferCreateInfo>& bufferCreateInfos);
+    void CreateBuffers(const std::vector<BufferCreateInfo> &bufferCreateInfos);
 
-    void SetBuffer(const std::string& name, const void* data, std::uint64_t dataSize);
+    void SetBuffer(const std::string &name, const void *data, std::uint64_t dataSize);
 
     void CreateImages(const std::vector<common::vulkan_framework::ImageResourceCreateInfo> &imageCreateInfos);
 
@@ -123,11 +122,11 @@ protected:
                             const std::shared_ptr<common::vulkan_wrapper::VulkanBuffer> &stagingBuffer,
                             const VkExtent3D &dimensions);
 
-    void CreateShaderModules(const ShaderModulesCreateInfo& modulesInfo);
+    void CreateShaderModules(const ShaderModulesCreateInfo &modulesInfo);
 
-    void CreateDescriptorSets(const DescriptorSetCreateInfo& descriptorSetInfo);
+    void CreateDescriptorSets(const DescriptorSetCreateInfo &descriptorSetInfo);
 
-    void UpdateDescriptorSet(const DescriptorSetUpdateInfo& descriptorSetUpdateInfo) const;
+    void UpdateDescriptorSet(const DescriptorSetUpdateInfo &descriptorSetUpdateInfo) const;
 
     std::shared_ptr<common::window_wrapper::Window> window_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSurface> surface_;
@@ -136,22 +135,21 @@ protected:
     std::shared_ptr<common::vulkan_wrapper::VulkanDevice> device_;
     std::shared_ptr<common::vulkan_wrapper::VulkanQueue> queue_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSwapChain> swapChain_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanImageView>> swapChainImageViews_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanImageView> > swapChainImageViews_;
     std::shared_ptr<common::vulkan_wrapper::VulkanRenderPass> renderPass_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> framebuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer> > framebuffers_;
     std::shared_ptr<common::vulkan_wrapper::VulkanCommandPool> cmdPool_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> imageAvailableSemaphores_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> renderFinishedSemaphores_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence>> inFlightFences_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence>> swapImagesFences_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore> > imageAvailableSemaphores_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore> > renderFinishedSemaphores_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence> > inFlightFences_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence> > swapImagesFences_;
 
     // All resources
-    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::BufferResource>> buffers_;
-    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::ImageResource>> images_;
-    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::SamplerResource>> samplers_;
-    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule>> shaderModules_;
+    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::BufferResource> > buffers_;
+    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::ImageResource> > images_;
+    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::SamplerResource> > samplers_;
+    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule> > shaderModules_;
     std::unique_ptr<common::vulkan_framework::DescriptorRegistry> descriptorRegistry_;
     std::unique_ptr<common::vulkan_framework::DescriptorUpdater> descriptorUpdater_;
 };
-
 } // namespace examples::fundamentals::drawing_3d::base

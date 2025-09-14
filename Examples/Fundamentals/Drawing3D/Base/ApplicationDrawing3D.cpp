@@ -11,11 +11,10 @@
 #include "ShaderLoader.h"
 #include "VulkanInstance.h"
 #include "VulkanCommandBuffer.h"
-#include "VulkanImage.h"
+#include "AppCommonConfig.h"
 
 namespace examples::fundamentals::drawing_3d::base
 {
-
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
@@ -28,7 +27,7 @@ void ApplicationDrawing3D::SetWindow(const std::shared_ptr<Window> &window)
 void ApplicationDrawing3D::Update()
 {
     window_->OnUpdate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(applicationConfig_.RenderLoopMs));
+    std::this_thread::sleep_for(std::chrono::milliseconds(params_.Get<long long>(VulkanParams::RenderLoopMs)));
 }
 
 bool ApplicationDrawing3D::ShouldClose()
@@ -123,7 +122,7 @@ void ApplicationDrawing3D::CreateDefaultSwapChain()
     }
 }
 
-void ApplicationDrawing3D::CreateDefaultFramebuffers(const std::shared_ptr<VulkanImageView>& depthImageView)
+void ApplicationDrawing3D::CreateDefaultFramebuffers(const std::shared_ptr<VulkanImageView> &depthImageView)
 {
     const auto windowWidth = window_->GetWindowWidth();
     const auto windowHeight = window_->GetWindowHeight();
@@ -183,7 +182,7 @@ void ApplicationDrawing3D::SetBuffer(const std::string &name, const void *data, 
 
 void ApplicationDrawing3D::CreateImages(const std::vector<ImageResourceCreateInfo> &imageCreateInfos)
 {
-    for (const auto& createInfo : imageCreateInfos) {
+    for (const auto &createInfo: imageCreateInfos) {
         images_[createInfo.Name] = std::make_unique<ImageResource>(physicalDevice_, device_);
         images_[createInfo.Name]->CreateImage(createInfo);
     }
@@ -191,7 +190,7 @@ void ApplicationDrawing3D::CreateImages(const std::vector<ImageResourceCreateInf
 
 void ApplicationDrawing3D::CreateSamplers(const std::vector<SamplerResourceCreateInfo> &samplerCreateInfos)
 {
-    for (const auto& createInfo : samplerCreateInfos) {
+    for (const auto &createInfo: samplerCreateInfos) {
         samplers_[createInfo.Name] = std::make_unique<SamplerResource>(device_);
         samplers_[createInfo.Name]->CreateSampler(createInfo);
     }
@@ -222,12 +221,12 @@ void ApplicationDrawing3D::SetImageFromBuffer(const std::string &name,
                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 
-void ApplicationDrawing3D::CreateShaderModules(const ShaderModulesCreateInfo& modulesInfo)
+void ApplicationDrawing3D::CreateShaderModules(const ShaderModulesCreateInfo &modulesInfo)
 {
     const std::string basePath = modulesInfo.BasePath;
     const common::utility::ShaderBaseType shaderType = modulesInfo.ShaderType;
 
-    for (const auto&[name, fileName] : modulesInfo.Modules) {
+    for (const auto &[name, fileName]: modulesInfo.Modules) {
         const common::utility::ShaderLoader shaderLoader{basePath, shaderType};
         const auto shaderCode = shaderLoader.LoadSpirV(fileName);
         const auto shaderModule = device_->CreateShaderModule(shaderCode);
@@ -251,21 +250,21 @@ void ApplicationDrawing3D::CreateDescriptorSets(const DescriptorSetCreateInfo &d
     descriptorUpdater_ = std::make_unique<DescriptorUpdater>(device_, *descriptorRegistry_);
 }
 
-void ApplicationDrawing3D::UpdateDescriptorSet(const DescriptorSetUpdateInfo& descriptorSetUpdateInfo) const
+void ApplicationDrawing3D::UpdateDescriptorSet(const DescriptorSetUpdateInfo &descriptorSetUpdateInfo) const
 {
-    for (const auto& bufferUpdateInfo : descriptorSetUpdateInfo.BufferWriteRequests) {
+    for (const auto &bufferUpdateInfo: descriptorSetUpdateInfo.BufferWriteRequests) {
         descriptorUpdater_->AddBufferUpdate(bufferUpdateInfo);
     }
 
-    for (const auto& imageUpdateInfo : descriptorSetUpdateInfo.ImageWriteRequests) {
+    for (const auto &imageUpdateInfo: descriptorSetUpdateInfo.ImageWriteRequests) {
         descriptorUpdater_->AddImageUpdate(imageUpdateInfo);
     }
 
-    for (const auto& texelUpdateInfo : descriptorSetUpdateInfo.TexelBufferWriteRequests) {
+    for (const auto &texelUpdateInfo: descriptorSetUpdateInfo.TexelBufferWriteRequests) {
         descriptorUpdater_->AddTexelBufferUpdate(texelUpdateInfo);
     }
 
-    for (const auto& copyInfo : descriptorSetUpdateInfo.CopySetRequests) {
+    for (const auto &copyInfo: descriptorSetUpdateInfo.CopySetRequests) {
         descriptorUpdater_->AddCopyRequest(copyInfo);
     }
 

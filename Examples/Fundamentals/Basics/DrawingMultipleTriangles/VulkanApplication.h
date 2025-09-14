@@ -28,7 +28,7 @@ namespace examples::fundamentals::basics::drawing_multiple_triangles
 class VulkanApplication final : public base::ApplicationBasics
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer&& params);
+    explicit VulkanApplication(common::utility::ParameterServer &&params);
 
 protected:
     bool Init() override;
@@ -47,7 +47,6 @@ protected:
 
     void RecordCommandBuffers(std::uint32_t vertexCount);
 
-    common::utility::ParameterServer params_;
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;

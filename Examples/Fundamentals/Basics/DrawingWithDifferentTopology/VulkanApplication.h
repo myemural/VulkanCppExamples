@@ -29,7 +29,7 @@ namespace examples::fundamentals::basics::drawing_with_different_topology
 class VulkanApplication final : public base::ApplicationBasics
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer&& params);
+    explicit VulkanApplication(common::utility::ParameterServer &&params);
 
 protected:
     bool Init() override;
@@ -38,7 +38,7 @@ protected:
 
     void CreateVertexBuffer(std::uint64_t dataSize);
 
-    void FillVertexBuffer(const void* data, std::uint64_t dataSize) const;
+    void FillVertexBuffer(const void *data, std::uint64_t dataSize) const;
 
     void CreateIndexBuffer(std::uint64_t dataSize);
 
@@ -52,7 +52,6 @@ protected:
 
     void RecordCommandBuffers(std::uint32_t indexCount);
 
-    common::utility::ParameterServer params_;
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
@@ -61,9 +60,9 @@ protected:
     std::shared_ptr<common::vulkan_wrapper::VulkanDeviceMemory> vertexBufferMemory_;
     std::shared_ptr<common::vulkan_wrapper::VulkanBuffer> indexBuffer_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDeviceMemory> indexBufferMemory_;
-    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule>> shaderModules_;
+    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule> > shaderModules_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
 };
 } // namespace examples::fundamentals::basics::drawing_with_different_topology

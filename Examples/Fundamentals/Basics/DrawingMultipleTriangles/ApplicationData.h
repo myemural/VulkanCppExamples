@@ -16,7 +16,6 @@
 
 namespace examples::fundamentals::basics::drawing_multiple_triangles
 {
-
 // Vertex Attribute Layout
 struct VertexPos2
 {
@@ -45,5 +44,4 @@ const std::vector vertices{
     VertexPos2{{0.8, 0.8}},
     VertexPos2{{0.2, 0.8}}
 };
-
 } // namespace examples::fundamentals::basics::drawing_multiple_triangles

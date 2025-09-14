@@ -9,39 +9,70 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include <thread>
-
 #include "VulkanApplication.h"
 #include "Window.h"
+#include "AppConfig.h"
+#include "ShaderLoader.h"
+#include "Vertex.h"
 
+using namespace common::utility;
+using namespace common::window_wrapper;
+using namespace common::vulkan_framework;
 using namespace examples::fundamentals::descriptor_sets::changing_color_with_ub;
+
+inline ParameterSchema GetParameterSchema()
+{
+    ParameterSchema schema;
+    SetCommonParamSchema(schema);
+
+    // Register Constants
+    schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
+    schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "color_ub.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "color_ub.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
+
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexBuffer, "mainVertexBuffer");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainUniformBuffer, "mainUniformBuffer");
+
+    // Register Customizable Settings
+    schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
+    schema.RegisterParam<Color3>(AppSettings::TriangleColor);
+
+    return schema;
+}
 
 int main()
 {
-    // Window settings
-    constexpr uint32_t windowWidth = 800;
-    constexpr uint32_t windowHeight = 600;
-    constexpr auto windowTitle = EXAMPLE_APPLICATION_NAME;
+    ParameterServer params{GetParameterSchema()};
+
+    // Initial window settings
+    params.Set<std::uint32_t>(WindowParams::Width, 800);
+    params.Set<std::uint32_t>(WindowParams::Height, 600);
+    params.Set(WindowParams::Title, std::string(EXAMPLE_APPLICATION_NAME));
 
     // Create a window
-    const auto window = std::make_shared<common::window_wrapper::Window>(windowTitle);
-    if (!window->Init(windowWidth, windowHeight, false, 1)) {
+    const auto window = std::make_shared<Window>(params.Get<std::string>(WindowParams::Title));
+    if (!window->Init(params.Get<std::uint32_t>(WindowParams::Width),
+                      params.Get<std::uint32_t>(WindowParams::Height),
+                      params.Get<bool>(WindowParams::Resizable),
+                      params.Get<unsigned int>(WindowParams::SampleCount))) {
         std::cerr << "Failed to initialize window." << std::endl;
         return -1;
     }
 
-    common::vulkan_framework::ApplicationCreateConfig config;
-    config.ApplicationName = windowTitle;
-    config.InstanceLayers = {"VK_LAYER_KHRONOS_validation"};
-    config.InstanceExtensions = common::window_wrapper::Window::GetVulkanInstanceExtensions();
+    // Vulkan settings
+    params.Set<std::string>(VulkanParams::ApplicationName, params.Get<std::string>(WindowParams::Title));
+    params.Set<std::vector<std::string> >(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
+    params.Set<std::vector<std::string> >(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
 
-    // Customize the example settings
-    ApplicationSettings settings;
-    settings.ClearColor = {0.0f, 0.6f, 0.2f, 1.0f};
-    settings.TriangleColor = {1.0f, 0.0f, 1.0f};
+    // Project customizable settings
+    params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.6f, 0.2f, 1.0f});
+    params.Set(AppSettings::TriangleColor, Color3{1.0f, 0.0f, 1.0f});
 
     // Init Vulkan application
-    VulkanApplication app{config, settings};
+    VulkanApplication app{std::move(params)};
     app.SetWindow(window);
     app.Run();
 

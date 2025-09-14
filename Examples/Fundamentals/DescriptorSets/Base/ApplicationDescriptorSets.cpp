@@ -10,10 +10,10 @@
 
 #include "ShaderLoader.h"
 #include "VulkanInstance.h"
+#include "AppCommonConfig.h"
 
 namespace examples::fundamentals::descriptor_sets::base
 {
-
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
@@ -26,7 +26,7 @@ void ApplicationDescriptorSets::SetWindow(const std::shared_ptr<Window> &window)
 void ApplicationDescriptorSets::Update()
 {
     window_->OnUpdate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(applicationConfig_.RenderLoopMs));
+    std::this_thread::sleep_for(std::chrono::milliseconds(params_.Get<long long>(VulkanParams::RenderLoopMs)));
 }
 
 bool ApplicationDescriptorSets::ShouldClose()
@@ -206,12 +206,12 @@ void ApplicationDescriptorSets::SetBuffer(const std::string &name, const void *d
     buffers_[name]->UnmapMemory();
 }
 
-void ApplicationDescriptorSets::CreateShaderModules(const ShaderModulesCreateInfo& modulesInfo)
+void ApplicationDescriptorSets::CreateShaderModules(const ShaderModulesCreateInfo &modulesInfo)
 {
     const std::string basePath = modulesInfo.BasePath;
     const common::utility::ShaderBaseType shaderType = modulesInfo.ShaderType;
 
-    for (const auto&[name, fileName] : modulesInfo.Modules) {
+    for (const auto &[name, fileName]: modulesInfo.Modules) {
         const common::utility::ShaderLoader shaderLoader{basePath, shaderType};
         const auto shaderCode = shaderLoader.LoadSpirV(fileName);
         const auto shaderModule = device_->CreateShaderModule(shaderCode);

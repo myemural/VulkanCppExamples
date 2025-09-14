@@ -13,7 +13,8 @@
 
 #include "Window.h"
 
-int main() {
+int main()
+{
     constexpr uint32_t windowWidth = 800;
     constexpr uint32_t windowHeight = 600;
     constexpr auto windowTitle = EXAMPLE_APPLICATION_NAME;

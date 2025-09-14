@@ -17,7 +17,6 @@
 
 namespace examples::fundamentals::descriptor_sets::array_of_ub
 {
-
 // Vertex Attribute Layout
 struct VertexPos2
 {
@@ -28,9 +27,9 @@ struct VertexPos2
 const std::vector vertices{
     // Square
     VertexPos2{{-0.25, -0.25}}, // 0
-    VertexPos2{{0.25, -0.25}},  // 1
-    VertexPos2{{0.25, 0.25}},   // 2
-    VertexPos2{{-0.25, 0.25}}   // 3
+    VertexPos2{{0.25, -0.25}}, // 1
+    VertexPos2{{0.25, 0.25}}, // 2
+    VertexPos2{{-0.25, 0.25}} // 3
 };
 
 // Index Data
@@ -40,10 +39,10 @@ const std::vector<std::uint16_t> indices{
 };
 
 // Model Matrix (for Uniform Buffer)
-struct UniformBufferObject {
+struct UniformBufferObject
+{
     glm::mat4 model;
 };
 
 inline UniformBufferObject modelUbObject[4] = {glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0)};
-
 } // namespace examples::fundamentals::descriptor_sets::array_of_ub

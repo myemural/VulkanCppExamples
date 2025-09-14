@@ -14,8 +14,6 @@
 #include <memory>
 
 #include "ApplicationDescriptorSets.h"
-#include "ShaderLoader.h"
-#include "VulkanInstance.h"
 #include "VulkanDevice.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -25,31 +23,10 @@
 
 namespace examples::fundamentals::descriptor_sets::array_of_ub
 {
-
-// User customizable settings
-struct ApplicationSettings
-{
-    VkClearColorValue ClearColor = {0.0f, 0.0f, 0.0f, 1.0f};
-};
-
-// Project constants
-inline constexpr std::uint32_t kMaxFramesInFlight = 2;
-inline constexpr auto kCurrentShaderType = common::utility::ShaderBaseType::GLSL;
-inline constexpr auto kVertexShaderFileName = "array_ub.vert.spv";
-inline constexpr auto kFragmentShaderFileName = "array_ub.frag.spv";
-inline constexpr auto kVertexShaderHash = "vert_main";
-inline constexpr auto kFragmentShaderHash = "frag_main";
-inline constexpr auto kVertexBufferKey = "mainVertexBuffer";
-inline constexpr auto kIndexBufferKey = "mainIndexBuffer";
-inline constexpr auto kTopLeftModelUBKey = "topLeftModelUB";
-inline constexpr auto kTopRightModelUBKey = "topRightModelUB";
-inline constexpr auto kBottomLeftModelUBKey = "bottomLeftModelUB";
-inline constexpr auto kBottomRightModelUBKey = "bottomRightModelUB";
-
 class VulkanApplication final : public base::ApplicationDescriptorSets
 {
 public:
-    VulkanApplication(const common::vulkan_framework::ApplicationCreateConfig &config, const ApplicationSettings& settings);
+    explicit VulkanApplication(common::utility::ParameterServer &&params);
 
 protected:
     bool Init() override;
@@ -70,7 +47,6 @@ protected:
 
     void UpdateUniformBuffers(float currentTime);
 
-    ApplicationSettings settings_;
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = 0;
     std::uint32_t currentWindowHeight_ = 0;
@@ -81,6 +57,6 @@ protected:
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorSet> descriptorSet_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
 };
 } // namespace examples::fundamentals::descriptor_sets::array_of_ub

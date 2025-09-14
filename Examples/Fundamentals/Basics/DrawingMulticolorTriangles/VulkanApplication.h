@@ -15,7 +15,6 @@
 
 #include "ApplicationBasics.h"
 #include "ParameterServer.h"
-#include "ShaderLoader.h"
 #include "VulkanShaderModule.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -26,11 +25,10 @@
 
 namespace examples::fundamentals::basics::drawing_multicolor_triangles
 {
-
 class VulkanApplication final : public base::ApplicationBasics
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer&& params);
+    explicit VulkanApplication(common::utility::ParameterServer &&params);
 
 protected:
     bool Init() override;
@@ -39,7 +37,7 @@ protected:
 
     void CreateVertexBuffer(std::uint64_t dataSize);
 
-    void FillVertexBuffer(const void* data, std::uint64_t dataSize) const;
+    void FillVertexBuffer(const void *data, std::uint64_t dataSize) const;
 
     void CreateShaderModules();
 
@@ -49,16 +47,15 @@ protected:
 
     void RecordCommandBuffers(std::uint32_t vertexCount);
 
-    common::utility::ParameterServer params_;
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
     std::shared_ptr<common::vulkan_wrapper::VulkanBuffer> vertexBuffer_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDeviceMemory> vertexBufferMemory_;
-    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule>> shaderModules_;
+    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule> > shaderModules_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
 };
 } // namespace examples::fundamentals::basics::drawing_multicolor_triangles

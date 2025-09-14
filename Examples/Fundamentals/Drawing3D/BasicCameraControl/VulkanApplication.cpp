@@ -16,10 +16,10 @@
 #include "ApplicationData.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
+#include "AppConfig.h"
 
 namespace examples::fundamentals::drawing_3d::basic_camera_control
 {
-
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -32,8 +32,8 @@ float GetCurrentTime()
     return std::chrono::duration<float>(now).count();
 }
 
-VulkanApplication::VulkanApplication(const ApplicationCreateConfig &config, const ApplicationSettings& settings)
-    : ApplicationDrawing3D(config), settings_(settings)
+VulkanApplication::VulkanApplication(ParameterServer &&params)
+    : ApplicationDrawing3D(std::move(params))
 {
 }
 
@@ -59,17 +59,23 @@ bool VulkanApplication::Init()
 
         InitResources(depthFormat);
 
-        SetBuffer(kVertexBufferKey, vertices.data(), vertices.size() * sizeof(VertexPos3Uv2));
-        SetBuffer(kIndexBufferKey, indices.data(), indices.size() * sizeof(indices[0]));
-        SetBuffer(kTextureStagingBufferKey, crateTextureHandler_.Data, crateTextureHandler_.GetByteSize());
-        SetImageFromBuffer(kCrateImageKey, buffers_[kTextureStagingBufferKey]->GetBuffer(), {
+        SetBuffer(params_.Get<std::string>(AppConstants::MainVertexBuffer), vertices.data(),
+                  vertices.size() * sizeof(VertexPos3Uv2));
+        SetBuffer(params_.Get<std::string>(AppConstants::MainIndexBuffer), indices.data(),
+                  indices.size() * sizeof(indices[0]));
+        SetBuffer(params_.Get<std::string>(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data,
+                  crateTextureHandler_.GetByteSize());
+        SetImageFromBuffer(params_.Get<std::string>(AppConstants::CrateImage),
+                           buffers_[params_.Get<std::string>(AppConstants::ImageStagingBuffer)]->GetBuffer(), {
                                crateTextureHandler_.Width, crateTextureHandler_.Height, 1
                            });
 
         CreateRenderPass(depthFormat);
         CreatePipeline();
-        CreateDefaultFramebuffers(images_[kDepthImageKey]->GetImageView(kDepthImageViewKey));
-        CreateDefaultSyncObjects(kMaxFramesInFlight);
+        CreateDefaultFramebuffers(
+            images_[params_.Get<std::string>(AppConstants::DepthImage)]->GetImageView(
+                params_.Get<std::string>(AppConstants::DepthImageView)));
+        CreateDefaultSyncObjects(params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight));
         CreateCommandBuffers();
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
@@ -103,7 +109,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
 
-    currentIndex_ = (currentIndex_ + 1) % kMaxFramesInFlight;
+    currentIndex_ = (currentIndex_ + 1) % params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight);
 }
 
 void VulkanApplication::Update()
@@ -139,11 +145,10 @@ void VulkanApplication::InitInputSystem()
 
 
     window_->SetMouseCallback([&](const double x, const double y) {
-        const float xPos = static_cast<float>(x);
-        const float yPos = static_cast<float>(y);
+        const auto xPos = static_cast<float>(x);
+        const auto yPos = static_cast<float>(y);
 
-        if (firstMouseTriggered_)
-        {
+        if (firstMouseTriggered_) {
             lastX_ = xPos;
             lastY_ = yPos;
             firstMouseTriggered_ = false;
@@ -154,7 +159,7 @@ void VulkanApplication::InitInputSystem()
         lastX_ = xPos;
         lastY_ = yPos;
 
-        const float sensitivity = settings_.MouseSensitivity * deltaTime_;
+        const float sensitivity = params_.Get<float>(AppSettings::MouseSensitivity) * deltaTime_;
         xOffset *= sensitivity;
         yOffset *= sensitivity;
 
@@ -163,7 +168,7 @@ void VulkanApplication::InitInputSystem()
 
         pitchAngle_ = std::clamp(pitchAngle_, -89.0f, 89.0f);
 
-        const float yawRad   = glm::radians(yawAngle_);
+        const float yawRad = glm::radians(yawAngle_);
         const float pitchRad = glm::radians(pitchAngle_);
 
         const glm::vec3 front{
@@ -179,22 +184,24 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
 {
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    crateTextureHandler_ = textureLoader.Load(kTextureCratePath);
+    crateTextureHandler_ = textureLoader.Load(params_.Get<std::string>(AppConstants::CrateTexturePath));
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
     bufferCreateInfos_ = {
         {
-            kVertexBufferKey, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+            params_.Get<std::string>(AppConstants::MainVertexBuffer), vertexBufferSize,
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         },
         {
-            kIndexBufferKey, indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+            params_.Get<std::string>(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         },
         {
-            kTextureStagingBufferKey, crateTextureHandler_.GetByteSize(), VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            params_.Get<std::string>(AppConstants::ImageStagingBuffer), crateTextureHandler_.GetByteSize(),
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         }
     };
@@ -202,15 +209,15 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
     // Fill shader module create infos
     shaderModuleCreateInfo_ = {
         .BasePath = SHADERS_DIR,
-        .ShaderType = kCurrentShaderType,
+        .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
         .Modules = {
             {
-                .Name = kVertexShaderHash,
-                .FileName = kVertexShaderFileName
+                .Name = params_.Get<std::string>(AppConstants::MainVertexShaderKey),
+                .FileName = params_.Get<std::string>(AppConstants::MainVertexShaderFile)
             },
             {
-                .Name = kFragmentShaderHash,
-                .FileName = kFragmentShaderFileName
+                .Name = params_.Get<std::string>(AppConstants::MainFragmentShaderKey),
+                .FileName = params_.Get<std::string>(AppConstants::MainFragmentShaderFile)
             }
         }
     };
@@ -223,7 +230,7 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
         },
         .Layouts = {
             {
-                .Name = kMainDescSetLayoutKey,
+                .Name = params_.Get<std::string>(AppConstants::MainDescSetLayout),
                 .Bindings = {
                     {
                         0,
@@ -239,26 +246,26 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
 
     imageResourceCreateInfos_ = {
         ImageResourceCreateInfo{
-            .Name = kCrateImageKey,
+            .Name = params_.Get<std::string>(AppConstants::CrateImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .Format = VK_FORMAT_R8G8B8A8_SRGB,
             .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
             .Views = {
                 ImageViewCreateInfo{
-                    .ViewName = kCrateImageViewKey,
+                    .ViewName = params_.Get<std::string>(AppConstants::CrateImageView),
                     .Format = VK_FORMAT_R8G8B8A8_SRGB
                 }
             }
         },
         ImageResourceCreateInfo{
-            .Name = kDepthImageKey,
+            .Name = params_.Get<std::string>(AppConstants::DepthImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .Format = depthImageFormat,
             .Dimensions = {window_->GetWindowWidth(), window_->GetWindowHeight(), 1},
             .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
             .Views = {
                 ImageViewCreateInfo{
-                    .ViewName = kDepthImageViewKey,
+                    .ViewName = params_.Get<std::string>(AppConstants::DepthImageView),
                     .Format = depthImageFormat,
                     .SubresourceRange = {
                         .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
@@ -274,7 +281,7 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
 
     samplerResourceCreateInfos_ = {
         {
-            .Name = kMainSamplerKey,
+            .Name = params_.Get<std::string>(AppConstants::MainSampler),
             .FilteringBehavior = {
                 .MagFilter = VK_FILTER_LINEAR,
                 .MinFilter = VK_FILTER_LINEAR
@@ -290,7 +297,7 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
     UpdateDescriptorSets();
 }
 
-void VulkanApplication::CreateRenderPass(const VkFormat& depthImageFormat)
+void VulkanApplication::CreateRenderPass(const VkFormat &depthImageFormat)
 {
     VkAttachmentReference colorAttachmentRef{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
@@ -340,7 +347,10 @@ void VulkanApplication::CreatePipeline()
     mvpPushConstant.size = sizeof(MvpData);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    pipelineLayout_ = device_->CreatePipelineLayout({descriptorRegistry_->GetDescriptorLayout(kMainDescSetLayoutKey)},
+    pipelineLayout_ = device_->CreatePipelineLayout({
+                                                        descriptorRegistry_->GetDescriptorLayout(
+                                                            params_.Get<std::string>(AppConstants::MainDescSetLayout))
+                                                    },
                                                     {mvpPushConstant});
 
     if (!pipelineLayout_) {
@@ -371,21 +381,23 @@ void VulkanApplication::CreatePipeline()
     };
 
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderModules_[kVertexShaderHash]->GetHandle();
+            shaderStageCreateInfo.module = shaderModules_[params_.Get<std::string>(AppConstants::MainVertexShaderKey)]->
+                    GetHandle();
         });
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderModules_[kFragmentShaderHash]->GetHandle();
+            shaderStageCreateInfo.module = shaderModules_[params_.Get<std::string>(AppConstants::MainFragmentShaderKey)]
+                    ->GetHandle();
         });
-        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
+        builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
             vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
             vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
             vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         });
-        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
+        builder.SetViewportState([&](auto &viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
             viewportStateCreateInfo.pViewports = &viewport;
             viewportStateCreateInfo.scissorCount = 1;
@@ -410,12 +422,14 @@ void VulkanApplication::CreatePipeline()
 void VulkanApplication::UpdateDescriptorSets()
 {
     std::vector<VkDescriptorImageInfo> imageSamplerInfos;
-    imageSamplerInfos.emplace_back(samplers_[kMainSamplerKey]->GetSampler()->GetHandle(),
-                                   images_[kCrateImageKey]->GetImageView(kCrateImageViewKey)->GetHandle(),
-                                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    imageSamplerInfos.emplace_back(
+        samplers_[params_.Get<std::string>(AppConstants::MainSampler)]->GetSampler()->GetHandle(),
+        images_[params_.Get<std::string>(AppConstants::CrateImage)]->GetImageView(
+            params_.Get<std::string>(AppConstants::CrateImageView))->GetHandle(),
+        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.LayoutName = kMainDescSetLayoutKey;
+    samplerUpdateRequest.LayoutName = params_.Get<std::string>(AppConstants::MainDescSetLayout);
     samplerUpdateRequest.BindingIndex = 0;
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -449,7 +463,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     const auto windowHeight = window_->GetWindowHeight();
 
     std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = settings_.ClearColor;
+    clearValues[0].color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
     clearValues[1].depthStencil = {1.0f, 0};
     if (!cmdBuffersPresent_[currentImageIndex]->BeginCommandBuffer(nullptr)) {
         throw std::runtime_error("Failed to begin recording command buffer!");
@@ -466,15 +480,20 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
                                                               {
                                                                   descriptorRegistry_->GetDescriptorSet(
-                                                                      kMainDescSetLayoutKey)
+                                                                      params_.Get<std::string>(
+                                                                          AppConstants::MainDescSetLayout))
                                                               });
-    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers({buffers_[kVertexBufferKey]->GetBuffer()}, 0, 1, {0});
-    cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(buffers_[kIndexBufferKey]->GetBuffer(), 0,
-                                                           VK_INDEX_TYPE_UINT16);
+    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers({
+                                                                 buffers_[params_.Get<std::string>(
+                                                                     AppConstants::MainVertexBuffer)]->GetBuffer()
+                                                             }, 0, 1, {0});
+    cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(
+        buffers_[params_.Get<std::string>(AppConstants::MainIndexBuffer)]->GetBuffer(), 0,
+        VK_INDEX_TYPE_UINT16);
 
-    for (size_t i = 0; i < NUM_CUBES; ++i) {
+    for (auto &mvp: mvpData) {
         cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
-                                                             sizeof(MvpData), &mvpData[i]);
+                                                             sizeof(MvpData), &mvp);
         cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
     }
 
@@ -526,7 +545,7 @@ void VulkanApplication::CalculateAndSetMvp()
 
 void VulkanApplication::ProcessInput()
 {
-    const float cameraSpeed = settings_.CameraSpeed * deltaTime_;
+    const float cameraSpeed = params_.Get<float>(AppSettings::CameraSpeed) * deltaTime_;
     if (keys_[GLFW_KEY_W]) {
         cameraPos_ += cameraSpeed * cameraFront_;
     }

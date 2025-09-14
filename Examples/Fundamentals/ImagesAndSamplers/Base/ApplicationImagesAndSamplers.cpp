@@ -12,10 +12,10 @@
 #include "VulkanInstance.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanImage.h"
+#include "AppCommonConfig.h"
 
 namespace examples::fundamentals::images_and_samplers::base
 {
-
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
@@ -28,7 +28,7 @@ void ApplicationImagesAndSamplers::SetWindow(const std::shared_ptr<Window> &wind
 void ApplicationImagesAndSamplers::Update()
 {
     window_->OnUpdate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(applicationConfig_.RenderLoopMs));
+    std::this_thread::sleep_for(std::chrono::milliseconds(params_.Get<long long>(VulkanParams::RenderLoopMs)));
 }
 
 bool ApplicationImagesAndSamplers::ShouldClose()
@@ -208,12 +208,12 @@ void ApplicationImagesAndSamplers::SetBuffer(const std::string &name, const void
     buffers_[name]->UnmapMemory();
 }
 
-void ApplicationImagesAndSamplers::CreateShaderModules(const ShaderModulesCreateInfo& modulesInfo)
+void ApplicationImagesAndSamplers::CreateShaderModules(const ShaderModulesCreateInfo &modulesInfo)
 {
     const std::string basePath = modulesInfo.BasePath;
     const common::utility::ShaderBaseType shaderType = modulesInfo.ShaderType;
 
-    for (const auto&[name, fileName] : modulesInfo.Modules) {
+    for (const auto &[name, fileName]: modulesInfo.Modules) {
         const common::utility::ShaderLoader shaderLoader{basePath, shaderType};
         const auto shaderCode = shaderLoader.LoadSpirV(fileName);
         const auto shaderModule = device_->CreateShaderModule(shaderCode);
@@ -237,21 +237,21 @@ void ApplicationImagesAndSamplers::CreateDescriptorSets(const DescriptorSetCreat
     descriptorUpdater_ = std::make_unique<DescriptorUpdater>(device_, *descriptorRegistry_);
 }
 
-void ApplicationImagesAndSamplers::UpdateDescriptorSet(const DescriptorSetUpdateInfo& descriptorSetUpdateInfo) const
+void ApplicationImagesAndSamplers::UpdateDescriptorSet(const DescriptorSetUpdateInfo &descriptorSetUpdateInfo) const
 {
-    for (const auto& bufferUpdateInfo : descriptorSetUpdateInfo.BufferWriteRequests) {
+    for (const auto &bufferUpdateInfo: descriptorSetUpdateInfo.BufferWriteRequests) {
         descriptorUpdater_->AddBufferUpdate(bufferUpdateInfo);
     }
 
-    for (const auto& imageUpdateInfo : descriptorSetUpdateInfo.ImageWriteRequests) {
+    for (const auto &imageUpdateInfo: descriptorSetUpdateInfo.ImageWriteRequests) {
         descriptorUpdater_->AddImageUpdate(imageUpdateInfo);
     }
 
-    for (const auto& texelUpdateInfo : descriptorSetUpdateInfo.TexelBufferWriteRequests) {
+    for (const auto &texelUpdateInfo: descriptorSetUpdateInfo.TexelBufferWriteRequests) {
         descriptorUpdater_->AddTexelBufferUpdate(texelUpdateInfo);
     }
 
-    for (const auto& copyInfo : descriptorSetUpdateInfo.CopySetRequests) {
+    for (const auto &copyInfo: descriptorSetUpdateInfo.CopySetRequests) {
         descriptorUpdater_->AddCopyRequest(copyInfo);
     }
 
