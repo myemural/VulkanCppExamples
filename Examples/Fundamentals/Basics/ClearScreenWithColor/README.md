@@ -18,33 +18,17 @@ This example shows how to create a render pass and framebuffer, along with basic
 
 ## Application Parameters
 
-### Window Parameters
+### Constants
 
-| Parameter / Key    | Type          | Usage in Code             | Description                             | Rewritable? |
-|--------------------|---------------|---------------------------|-----------------------------------------|-------------|
-| Window.Width       | std::uint32_t | WindowParams::Width       | Initial width of the window (in pixel)  | No          |
-| Window.Height      | std::uint32_t | WindowParams::Height      | Initial height of the window (in pixel) | No          |
-| Window.Title       | std::string   | WindowParams::Title       | Title of the window                     | No          |
-| Window.Resizable   | bool          | WindowParams::Resizable   | Whether the window is resizable or not  | No          |
-| Window.SampleCount | unsigned int  | WindowParams::SampleCount | Sample count of the window              | No          |
+| Parameter / Key           | Type          | Usage in Code                    | Description                                                                             | Default Value |
+|---------------------------|---------------|----------------------------------|-----------------------------------------------------------------------------------------|---------------|
+| AppConstants.MaxFramesInFlight | std::uint32_t | AppConstants::MaxFramesInFlight | Specifies the maximum number of images to be processed at each step in the render loop. | 2             |
 
-### Vulkan Parameters
+### Settings
 
-| Parameter / Key        | Type                    | Usage in Code                 | Description                                                                        | Rewritable? |
-|------------------------|-------------------------|-------------------------------|------------------------------------------------------------------------------------|-------------|
-| Vulkan.AppCreateConfig | ApplicationCreateConfig | VulkanParams::AppCreateConfig | Contains Vulkan related configs like app name, Vulkan version, render loop ms etc. | No          |
-
-### Project Constants
-
-| Parameter / Key           | Type          | Usage in Code                    | Description                                                                             | Rewritable? |
-|---------------------------|---------------|----------------------------------|-----------------------------------------------------------------------------------------|-------------|
-| Project.MaxFramesInFlight | std::uint32_t | ProjectParams::MaxFramesInFlight | Specifies the maximum number of images to be processed at each step in the render loop. | No          |
-
-### Project Customizable Settings
-
-| Parameter / Key           | Type          | Usage in Code                    | Description                                                                             | Rewritable? |
-|---------------------------|---------------|----------------------------------|-----------------------------------------------------------------------------------------|-------------|
-| Project.ClearColor | VkClearColorValue | ProjectParams::ClearColor | Specifies which color the screen will be cleared with. | Yes         |
+| Parameter / Key        | Type              | Usage in Code           | Description                                            | Default Value |
+|------------------------|-------------------|-------------------------|--------------------------------------------------------|---------------|
+| AppSettings.ClearColor | VkClearColorValue | AppSettings::ClearColor | Specifies which color the screen will be cleared with. | Yes           |
 
 
 ## Learning Objectives

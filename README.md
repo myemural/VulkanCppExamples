@@ -49,6 +49,33 @@ git submodule update
 
 Every example has its own directory and CMake target. You can build what you want with CMake command line tools or IDE tools.
 
+## General Info
+
+### Common Parameters
+
+**Window Parameters**
+
+| Parameter / Key    | Type          | Usage in Code             | Description                             | Default Value |
+|--------------------|---------------|---------------------------|-----------------------------------------|---------------|
+| Window.Width       | std::uint32_t | WindowParams::Width       | Initial width of the window (in pixel)  | 800           |
+| Window.Height      | std::uint32_t | WindowParams::Height      | Initial height of the window (in pixel) | 600           |
+| Window.Title       | std::string   | WindowParams::Title       | Title of the window                     |               |
+| Window.Resizable   | bool          | WindowParams::Resizable   | Specifies window is resizable or not    | false         |
+| Window.SampleCount | unsigned int  | WindowParams::SampleCount | Sample count of the window              | 1             |
+
+**Vulkan Parameters**
+
+| Parameter / Key           | Type                           | Usage in Code                    | Description                                          | Default Value            |
+|---------------------------|--------------------------------|----------------------------------|------------------------------------------------------|--------------------------|
+| Vulkan.ApplicationName    | std::string                    | VulkanParams::ApplicationName    | Name of the Vulkan application                       |                          |
+| Vulkan.VulkanApiVersion   | std::uint32_t                  | VulkanParams::VulkanApiVersion   | Version of the Vulkan API                            | VK_API_VERSION_1_0       |
+| Vulkan.ApplicationVersion | std::uint32_t                  | VulkanParams::ApplicationVersion | Version of the Vulkan application                    | VK_MAKE_VERSION(1, 0, 0) |
+| Vulkan.EngineName         | std::string                    | VulkanParams::EngineName         | Name of the engine                                   | "DefaultEngine"          |
+| Vulkan.EngineVersion      | std::uint32_t                  | VulkanParams::EngineVersion      | Version of the engine                                | VK_MAKE_VERSION(1, 0, 0) |
+| Vulkan.InstanceLayers     | std::vector&lt;std::string&gt; | VulkanParams::InstanceLayers     | List of the instance layers                          |                          |
+| Vulkan.InstanceExtensions | std::vector&lt;std::string&gt; | VulkanParams::InstanceExtensions | List of the instance extensions                      |                          |
+| Vulkan.RenderLoopMs       | long long                      | VulkanParams::RenderLoopMs       | How long each render cycle will take in milliseconds | 8LL                      |
+
 ## Examples
 
 ### [Fundamentals](/Examples/Fundamentals)
