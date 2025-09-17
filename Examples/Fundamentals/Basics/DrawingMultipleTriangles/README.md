@@ -1,14 +1,14 @@
-# Drawing a Single Color Triangle
+# Drawing Multiple Triangles
 
-**Code Name:** DrawingSingleColorTriangle
+**Code Name:** DrawingMultipleTriangles
 
 ## Description
 
-This example shows hot to draw a single colored triangle to the screen to demonstrate pipeline and simple vertex and fragment shader usages.
+This example draws 4 identical triangles to the screen to show how to draw something to the screen with using vertex buffer.
 
 ## Screenshots / Recordings
 
-![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingSingleColorTriangle.png?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingMultipleTriangles.png?raw=true)
 
 ## Controls
 
@@ -23,7 +23,6 @@ This example shows hot to draw a single colored triangle to the screen to demons
 | Parameter / Key                     | Type           | Usage in Code                        | Description                                                  | Default Value        |
 |-------------------------------------|----------------|--------------------------------------|--------------------------------------------------------------|----------------------|
 | AppConstants.MaxFramesInFlight      | std::uint32_t  | AppConstants::MaxFramesInFlight      | Maximum number of images to be processed in the render loop. | 2                    |
-| AppConstants.VertexCount            | std::uint32_t  | AppConstants::VertexCount            | Specifies the vertex count that will be drawn.               | 3                    |
 | AppConstants.BaseShaderType         | ShaderBaseType | AppConstants::BaseShaderType         | Base shader type of the SPIR-V shader.                       | ShaderBaseType::GLSL |
 | AppConstants.MainVertexShaderFile   | std::string    | AppConstants::MainVertexShaderFile   | Main vertex shader file path.                                | "triangle.vert.spv"  |
 | AppConstants.MainFragmentShaderFile | std::string    | AppConstants::MainFragmentShaderFile | Main fragment shader file path.                              | "triangle.frag.spv"  |
@@ -39,10 +38,9 @@ This example shows hot to draw a single colored triangle to the screen to demons
 
 ## Learning Objectives
 
-- Creating and managing shader modules
-- Writing simple vertex and fragment shaders
-- Creating a simple graphics pipeline
-- Binding pipeline and drawing to framebuffers using it
+- Creating a vertex buffer and fill it with data
+- Binding vertex buffer with command
+- Using vertex buffer in a shader with vertex attributes
 
 ## Theoretical Background
 
