@@ -33,7 +33,7 @@ This example draws a quad to the screen with using index buffer in addition to v
 
 | Parameter / Key        | Type              | Usage in Code           | Description                                            | Default Value |
 |------------------------|-------------------|-------------------------|--------------------------------------------------------|---------------|
-| AppSettings.ClearColor | VkClearColorValue | AppSettings::ClearColor | Specifies which color the screen will be cleared with. | Yes           |
+| AppSettings.ClearColor | VkClearColorValue | AppSettings::ClearColor | Specifies which color the screen will be cleared with. |               |
 
 
 ## Learning Objectives

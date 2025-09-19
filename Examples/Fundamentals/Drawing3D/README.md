@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `FaceCulling`
 4. [Instanced Rendering](/Examples/Fundamentals/Drawing3D/InstancedRendering)
    - `InstancedRendering`
+5. [Depth Testing Operations](/Examples/Fundamentals/Drawing3D/DepthTestingOperations)
+   - `DepthTestingOperations`
 
 ## Architecture of the Subsection
 

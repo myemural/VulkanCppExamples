@@ -1,14 +1,14 @@
-# Drawing Multiple Triangles
+# Using Staging Buffer
 
-**Code Name:** DrawingMultipleTriangles
+**Code Name:** UsingStagingBuffer
 
 ## Description
 
-This example draws 4 identical triangles to the screen to show how to draw something to the screen with using vertex buffer.
+This example draws a blue octagon to the screen with using an additional staging buffer.
 
 ## Screenshots / Recordings
 
-![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingMultipleTriangles.png?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/Basics/UsingStagingBuffer.png?raw=true)
 
 ## Controls
 
@@ -38,9 +38,8 @@ This example draws 4 identical triangles to the screen to show how to draw somet
 
 ## Learning Objectives
 
-- Creating a vertex buffer and fill it with data
-- Binding vertex buffer with command
-- Using vertex buffer in a shader with vertex attributes
+- Demonstrate transferring data to the GPU using a staging buffer
+- Exploring different kind of memory properties
 
 ## Theoretical Background
 

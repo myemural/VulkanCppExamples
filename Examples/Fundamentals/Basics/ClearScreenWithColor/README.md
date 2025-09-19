@@ -20,15 +20,15 @@ This example shows how to create a render pass and framebuffer, along with basic
 
 ### Constants
 
-| Parameter / Key           | Type          | Usage in Code                    | Description                                                                             | Default Value |
-|---------------------------|---------------|----------------------------------|-----------------------------------------------------------------------------------------|---------------|
+| Parameter / Key                | Type          | Usage in Code                   | Description                                                                             | Default Value |
+|--------------------------------|---------------|---------------------------------|-----------------------------------------------------------------------------------------|---------------|
 | AppConstants.MaxFramesInFlight | std::uint32_t | AppConstants::MaxFramesInFlight | Specifies the maximum number of images to be processed at each step in the render loop. | 2             |
 
 ### Settings
 
 | Parameter / Key        | Type              | Usage in Code           | Description                                            | Default Value |
 |------------------------|-------------------|-------------------------|--------------------------------------------------------|---------------|
-| AppSettings.ClearColor | VkClearColorValue | AppSettings::ClearColor | Specifies which color the screen will be cleared with. | Yes           |
+| AppSettings.ClearColor | VkClearColorValue | AppSettings::ClearColor | Specifies which color the screen will be cleared with. |               |
 
 
 ## Learning Objectives

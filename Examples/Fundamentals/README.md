@@ -37,4 +37,3 @@ The topics covered by this subsection:
 - Setting face culling
 - Drawing with instanced rendering
 - Managing other depth testing operations
-- Basic stencil testing application

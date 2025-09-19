@@ -1,14 +1,14 @@
-# Drawing Multiple Triangles
+# Drawing with Different Topologies
 
-**Code Name:** DrawingMultipleTriangles
+**Code Name:** DrawingWithDifferentTopology
 
 ## Description
 
-This example draws 4 identical triangles to the screen to show how to draw something to the screen with using vertex buffer.
+This example draws 2 quads to the screen to demonstrate primitive restart index usage. Also, user can set polygon mode and line width (if line mode has been selected).
 
 ## Screenshots / Recordings
 
-![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingMultipleTriangles.png?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingWithDifferentTopology.png?raw=true)
 
 ## Controls
 
@@ -31,16 +31,20 @@ This example draws 4 identical triangles to the screen to show how to draw somet
 
 ### Settings
 
-| Parameter / Key        | Type              | Usage in Code           | Description                                            | Default Value |
-|------------------------|-------------------|-------------------------|--------------------------------------------------------|---------------|
-| AppSettings.ClearColor | VkClearColorValue | AppSettings::ClearColor | Specifies which color the screen will be cleared with. |               |
+| Parameter / Key                     | Type              | Usage in Code                        | Description                                            | Default Value |
+|-------------------------------------|-------------------|--------------------------------------|--------------------------------------------------------|---------------|
+| AppSettings.ClearColor              | VkClearColorValue | AppSettings::ClearColor              | Specifies which color the screen will be cleared with. |               |
+| AppSettings.PrimitiveRestartEnabled | bool              | AppSettings::PrimitiveRestartEnabled | Toggle primitive restart index setting for pipeline.   |               |
+| AppSettings.PolygonMode             | VkPolygonMode     | AppSettings::PolygonMode             | Specifies which polygon mode will be applied.          |               |
+| AppSettings.LineWidth               | float             | AppSettings::LineWidth               | Specifies line width (if line mode has been selected). |               |
 
 
 ## Learning Objectives
 
-- Creating a vertex buffer and fill it with data
-- Binding vertex buffer with command
-- Using vertex buffer in a shader with vertex attributes
+- Changing some rasterization related values in pipeline
+- Drawing lines or points instead of filled drawings
+- Understanding the use of primitive restart index
+- Adjusting line width in line drawing mode
 
 ## Theoretical Background
 
