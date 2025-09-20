@@ -37,7 +37,7 @@ struct TextureHandler
     /**
      * @brief Clears the data that hold.
      */
-    void Clear();
+    void Clear() noexcept;
 };
 
 class TextureLoader

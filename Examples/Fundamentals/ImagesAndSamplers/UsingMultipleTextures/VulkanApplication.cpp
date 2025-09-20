@@ -176,10 +176,11 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }
 
-void VulkanApplication::Cleanup()
+void VulkanApplication::Cleanup() noexcept
 {
     ApplicationImagesAndSamplers::Cleanup();
     bricksTextureHandler_.Clear();
+    wallTextureHandler_.Clear();
 }
 
 void VulkanApplication::CreatePipeline()

@@ -20,7 +20,7 @@ using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
 using namespace examples::fundamentals::images_and_samplers::texture_atlases;
 
-inline ParameterSchema GetParameterSchema()
+inline ParameterSchema CreateParameterSchema()
 {
     ParameterSchema schema;
     SetCommonParamSchema(schema);
@@ -45,14 +45,35 @@ inline ParameterSchema GetParameterSchema()
     return schema;
 }
 
+bool SetParams(ParameterServer &params)
+{
+    try {
+        // Initial window settings
+        params.Set<std::uint32_t>(WindowParams::Width, 800);
+        params.Set<std::uint32_t>(WindowParams::Height, 600);
+        params.Set(WindowParams::Title, std::string(EXAMPLE_APPLICATION_NAME));
+
+        // Vulkan settings
+        params.Set<std::string>(VulkanParams::ApplicationName, params.Get<std::string>(WindowParams::Title));
+        params.Set<std::vector<std::string> >(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
+
+        // Project customizable settings
+        params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.3f, 0.3f, 1.0f});
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << '\n';
+        return false;
+    }
+
+    return true;
+}
+
 int main()
 {
-    ParameterServer params{GetParameterSchema()};
-
-    // Initial window settings
-    params.Set<std::uint32_t>(WindowParams::Width, 800);
-    params.Set<std::uint32_t>(WindowParams::Height, 600);
-    params.Set(WindowParams::Title, std::string(EXAMPLE_APPLICATION_NAME));
+    ParameterServer params{CreateParameterSchema()};
+    if (!SetParams(params)) {
+        std::cerr << "Failed to set parameters!" << std::endl;
+        return -1;
+    }
 
     // Create a window
     const auto window = std::make_shared<Window>(params.Get<std::string>(WindowParams::Title));
@@ -63,14 +84,7 @@ int main()
         std::cerr << "Failed to initialize window." << std::endl;
         return -1;
     }
-
-    // Vulkan settings
-    params.Set<std::string>(VulkanParams::ApplicationName, params.Get<std::string>(WindowParams::Title));
-    params.Set<std::vector<std::string> >(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
     params.Set<std::vector<std::string> >(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
-
-    // Project customizable settings
-    params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.3f, 0.3f, 1.0f});
 
     // Init Vulkan application
     VulkanApplication app{std::move(params)};

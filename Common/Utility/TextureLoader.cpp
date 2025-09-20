@@ -23,7 +23,7 @@ std::uint32_t TextureHandler::GetByteSize() const
     }
 }
 
-void TextureHandler::Clear()
+void TextureHandler::Clear() noexcept
 {
     stbi_image_free(Data);
     Data = nullptr;

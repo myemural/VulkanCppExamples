@@ -53,7 +53,7 @@ protected:
     /**
      * @brief Contains the codes which executes completion after render loop.
      */
-    virtual void Cleanup() = 0;
+    virtual void Cleanup() noexcept = 0;
 
     /**
      * @brief Called in the render loop condition and checks application is done or not.

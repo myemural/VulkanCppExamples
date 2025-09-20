@@ -29,9 +29,15 @@ bool VulkanApplicationBase::Run()
         return false;
     }
 
-    while (!ShouldClose()) {
-        DrawFrame();
-        Update();
+    try {
+        while (!ShouldClose()) {
+            DrawFrame();
+            Update();
+        }
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << '\n';
+        Cleanup();
+        return false;
     }
 
     Cleanup();

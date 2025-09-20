@@ -34,7 +34,7 @@ protected:
 
     void DrawFrame() override;
 
-    void Cleanup() override;
+    void Cleanup() noexcept override;
 
     void CreatePipeline();
 

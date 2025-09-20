@@ -123,7 +123,7 @@ void VulkanApplication::Update()
     lastFrame_ = currentFrame;
 }
 
-void VulkanApplication::Cleanup()
+void VulkanApplication::Cleanup() noexcept
 {
     ApplicationDrawing3D::Cleanup();
     crateTextureHandler_.Clear();

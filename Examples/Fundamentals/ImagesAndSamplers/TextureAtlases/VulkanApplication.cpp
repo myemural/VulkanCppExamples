@@ -190,7 +190,7 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }
 
-void VulkanApplication::Cleanup()
+void VulkanApplication::Cleanup() noexcept
 {
     ApplicationImagesAndSamplers::Cleanup();
     atlasTextureHandler_.Clear();

@@ -13,6 +13,8 @@
 #include <unordered_map>
 #include <string>
 #include <any>
+#include <iostream>
+#include <ostream>
 #include <typeindex>
 #include <utility>
 #include <stdexcept>
@@ -40,7 +42,8 @@ public:
     void RegisterParam(const std::string &name, ParamType defaultValue)
     {
         if (params_.contains(name)) {
-            throw std::runtime_error("Parameter already registered: " + name);
+            std::cerr << "Parameter has already registered: " << name << std::endl;
+            return;
         }
 
         params_.emplace(name, ParameterInfo{typeid(ParamType), defaultValue, true, false});
@@ -55,7 +58,8 @@ public:
     void RegisterParam(const std::string &name)
     {
         if (params_.contains(name)) {
-            throw std::runtime_error("Parameter already registered: " + name);
+            std::cerr << "Parameter has already registered: " << name << std::endl;
+            return;
         }
 
         params_.emplace(name, ParameterInfo{typeid(ParamType), std::any{}, false, false});
@@ -71,7 +75,8 @@ public:
     void RegisterImmutableParam(const std::string &name, ParamType defaultValue)
     {
         if (params_.contains(name)) {
-            throw std::runtime_error("Parameter already registered: " + name);
+            std::cerr << "Parameter has already registered: " << name << std::endl;
+            return;
         }
 
         params_.emplace(name, ParameterInfo{typeid(ParamType), defaultValue, true, true});

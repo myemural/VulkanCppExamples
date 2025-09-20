@@ -86,7 +86,7 @@ public:
 protected:
     void Update() override;
 
-    void Cleanup() override
+    void Cleanup() noexcept override
     {
     }
 
