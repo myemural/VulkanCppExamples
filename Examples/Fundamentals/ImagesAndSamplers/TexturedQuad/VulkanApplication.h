@@ -53,6 +53,8 @@ protected:
     void CopyStagingBuffer();
 
     std::uint32_t currentIndex_ = 0;
+    std::uint32_t currentWindowWidth_ = UINT32_MAX;
+    std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
     // Create infos
     std::vector<base::BufferCreateInfo> bufferCreateInfos_;

@@ -13,23 +13,29 @@
 #include <unordered_map>
 #include <string>
 #include <any>
-#include <mutex>
 #include <typeindex>
 #include <utility>
+#include <stdexcept>
 
 namespace common::utility
 {
-struct ParameterInfo
-{
-    std::type_index Type;
-    std::any DefaultValue;
-    bool HasDefaultValue;
-    bool IsImmutable;
-};
-
 class ParameterSchema
 {
 public:
+    struct ParameterInfo
+    {
+        std::type_index Type;
+        std::any DefaultValue;
+        bool HasDefaultValue;
+        bool IsImmutable;
+    };
+
+    /**
+     * @brief Registers a parameter to the parameter schema.
+     * @tparam ParamType Type of the parameter.
+     * @param name Name of the parameter.
+     * @param defaultValue Default value of the parameter.
+     */
     template<typename ParamType>
     void RegisterParam(const std::string &name, ParamType defaultValue)
     {
@@ -40,6 +46,11 @@ public:
         params_.emplace(name, ParameterInfo{typeid(ParamType), defaultValue, true, false});
     }
 
+    /**
+     * @brief Registers a parameter to the parameter schema without default value.
+     * @tparam ParamType Type of the parameter.
+     * @param name Name of the parameter.
+     */
     template<typename ParamType>
     void RegisterParam(const std::string &name)
     {
@@ -50,6 +61,12 @@ public:
         params_.emplace(name, ParameterInfo{typeid(ParamType), std::any{}, false, false});
     }
 
+    /**
+     * @brief Registers an immutable parameter to the parameter schema.
+     * @tparam ParamType Type of the parameter.
+     * @param name Name of the parameter.
+     * @param defaultValue Default value of the parameter.
+     */
     template<typename ParamType>
     void RegisterImmutableParam(const std::string &name, ParamType defaultValue)
     {
@@ -60,6 +77,11 @@ public:
         params_.emplace(name, ParameterInfo{typeid(ParamType), defaultValue, true, true});
     }
 
+    /**
+     * @brief Gets info about the parameter.
+     * @param name Name of the parameter.
+     * @return Returns the parameter information (name, type, default value etc.)
+     */
     [[nodiscard]] const ParameterInfo &GetInfo(const std::string &name) const
     {
         const auto it = params_.find(name);
@@ -70,6 +92,11 @@ public:
         return it->second;
     }
 
+    /**
+     * @brief Queries whether the parameter exists in the schema.
+     * @param name Name of the parameter.
+     * @return If the parameter is in the schema, it returns true, otherwise it returns false.
+     */
     [[nodiscard]] bool HasParam(const std::string &name) const
     {
         return params_.contains(name);

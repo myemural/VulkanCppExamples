@@ -15,7 +15,6 @@
 
 #include "ApplicationData.h"
 #include "ApplicationDrawing3D.h"
-#include "ShaderLoader.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -53,6 +52,8 @@ protected:
     void CalculateAndSetMvp();
 
     std::uint32_t currentIndex_ = 0;
+    std::uint32_t currentWindowWidth_ = UINT32_MAX;
+    std::uint32_t currentWindowHeight_ = UINT32_MAX;
     MvpData mvpUbObject{glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0)};
 
     // Create infos

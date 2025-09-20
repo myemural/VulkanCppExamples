@@ -58,6 +58,8 @@ protected:
     void ProcessInput();
 
     std::uint32_t currentIndex_ = 0;
+    std::uint32_t currentWindowWidth_ = UINT32_MAX;
+    std::uint32_t currentWindowHeight_ = UINT32_MAX;
     bool keys_[1024] = {};
     MvpData mvpData[NUM_CUBES] = {glm::mat4(1.0)};
 

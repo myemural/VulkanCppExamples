@@ -54,6 +54,8 @@ protected:
     void CopyStagingBuffer();
 
     std::uint32_t currentIndex_ = 0;
+    std::uint32_t currentWindowWidth_ = UINT32_MAX;
+    std::uint32_t currentWindowHeight_ = UINT32_MAX;
     PushConstantData pushConstantData_[4] = {};
 
     // Create infos

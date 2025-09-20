@@ -21,8 +21,8 @@ using namespace common::vulkan_framework;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationBasics(std::move(params))
 {
-    currentWindowWidth_ = params_.Get<std::uint32_t>(WindowParams::Width);
-    currentWindowHeight_ = params_.Get<std::uint32_t>(WindowParams::Height);
+    currentWindowWidth_ = GetParamU32(WindowParams::Width);
+    currentWindowHeight_ = GetParamU32(WindowParams::Height);
 }
 
 bool VulkanApplication::Init()
@@ -43,7 +43,7 @@ bool VulkanApplication::Init()
         CreatePipeline();
         CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
         CreateCommandBuffers();
 
         const uint32_t vertexCount = vertices.size();
@@ -76,7 +76,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
 
-    currentIndex_ = (currentIndex_ + 1) % params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }
 
 void VulkanApplication::CreateVertexBuffer(std::uint64_t dataSize)
@@ -123,21 +123,21 @@ void VulkanApplication::CreateShaderModules()
 {
     const ShaderLoader shaderLoader{SHADERS_DIR, params_.Get<ShaderBaseType>(AppConstants::BaseShaderType)};
     // Vertex Shader
-    const auto vertexShaderCode = shaderLoader.LoadSpirV(params_.Get<std::string>(AppConstants::MainVertexShaderFile));
+    const auto vertexShaderCode = shaderLoader.LoadSpirV(GetParamStr(AppConstants::MainVertexShaderFile));
     const auto vertexShaderModule = device_->CreateShaderModule(vertexShaderCode);
     if (!vertexShaderModule) {
         throw std::runtime_error("Failed to create vertex shader module!");
     }
-    shaderModules_[params_.Get<std::string>(AppConstants::MainVertexShaderKey)] = vertexShaderModule;
+    shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)] = vertexShaderModule;
 
     // Fragment Shader
     const auto fragmentShaderCode = shaderLoader.LoadSpirV(
-        params_.Get<std::string>(AppConstants::MainFragmentShaderFile));
+        GetParamStr(AppConstants::MainFragmentShaderFile));
     const auto fragmentShaderModule = device_->CreateShaderModule(fragmentShaderCode);
     if (!fragmentShaderModule) {
         throw std::runtime_error("Failed to create fragment shader module!");
     }
-    shaderModules_[params_.Get<std::string>(AppConstants::MainFragmentShaderKey)] = fragmentShaderModule;
+    shaderModules_[GetParamStr(AppConstants::MainFragmentShaderKey)] = fragmentShaderModule;
 }
 
 void VulkanApplication::CreatePipeline()
@@ -174,7 +174,7 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderModules_[params_.Get<std::string>(AppConstants::MainVertexShaderKey)]
+            shaderStageCreateInfo.module = shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)]
                     ->GetHandle();
         });
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {

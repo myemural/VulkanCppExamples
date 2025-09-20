@@ -46,8 +46,12 @@ protected:
     void RecordCommandBuffers(std::uint32_t vertexCount);
 
     std::uint32_t currentIndex_ = 0;
+    std::uint32_t currentWindowWidth_ = UINT32_MAX;
+    std::uint32_t currentWindowHeight_ = UINT32_MAX;
+
     std::vector<base::BufferCreateInfo> bufferCreateInfos_;
     base::ShaderModulesCreateInfo shaderModuleCreateInfo_;
+
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorSetLayout> descriptorSetLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorPool> descriptorPool_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorSet> descriptorSet_;

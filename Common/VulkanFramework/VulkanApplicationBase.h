@@ -61,6 +61,27 @@ protected:
      */
     virtual bool ShouldClose() = 0;
 
+    /**
+     * @brief Returns std::string parameter from parameter server.
+     * @param key Key name of the parameter.
+     * @return Returns value of the parameter.
+     */
+    [[nodiscard]] std::string GetParamStr(const std::string& key) const;
+
+    /**
+     * @brief Returns std::uint32_t parameter from parameter server.
+     * @param key Key name of the parameter.
+     * @return Returns value of the parameter.
+     */
+    [[nodiscard]] std::uint32_t GetParamU32(const std::string& key) const;
+
+    /**
+     * @brief Returns float parameter from parameter server.
+     * @param key Key name of the parameter.
+     * @return Returns value of the parameter.
+     */
+    [[nodiscard]] float GetParamFloat(const std::string& key) const;
+
     utility::ParameterServer params_;
     std::shared_ptr<vulkan_wrapper::VulkanInstance> instance_;
 

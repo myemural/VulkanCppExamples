@@ -19,36 +19,41 @@
 namespace examples::fundamentals::descriptor_sets::multiple_uniform_buffers
 {
 using namespace common::utility;
+using namespace common::vulkan_wrapper;
+using namespace common::vulkan_framework;
 
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationDescriptorSets(std::move(params))
 {
+    currentWindowWidth_ = GetParamU32(WindowParams::Width);
+    currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
     constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<Color3>(AppSettings::InitialTriangleColor));
     bufferCreateInfos_ = {
         {
-            params_.Get<std::string>(AppConstants::MainVertexBuffer), vertexBufferSize,
+            GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         },
         {
-            params_.Get<std::string>(AppConstants::ScreenSizeUB), 2 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            GetParamStr(AppConstants::ScreenSizeUB), 2 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         },
         {
-            params_.Get<std::string>(AppConstants::TopLeftUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            GetParamStr(AppConstants::TopLeftUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         },
         {
-            params_.Get<std::string>(AppConstants::TopRightUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            GetParamStr(AppConstants::TopRightUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         },
         {
-            params_.Get<std::string>(AppConstants::BottomLeftUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            GetParamStr(AppConstants::BottomLeftUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         },
         {
-            params_.Get<std::string>(AppConstants::BottomRightUB), uniformBufferSize,
+            GetParamStr(AppConstants::BottomRightUB), uniformBufferSize,
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         }
@@ -59,12 +64,12 @@ VulkanApplication::VulkanApplication(ParameterServer &&params)
         .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
         .Modules = {
             {
-                .Name = params_.Get<std::string>(AppConstants::MainVertexShaderKey),
-                .FileName = params_.Get<std::string>(AppConstants::MainVertexShaderFile)
+                .Name = GetParamStr(AppConstants::MainVertexShaderKey),
+                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)
             },
             {
-                .Name = params_.Get<std::string>(AppConstants::MainFragmentShaderKey),
-                .FileName = params_.Get<std::string>(AppConstants::MainFragmentShaderFile)
+                .Name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)
             }
         }
     };
@@ -83,14 +88,14 @@ bool VulkanApplication::Init()
         const auto windowHeight = window_->GetWindowHeight();
         const std::array screenSizes = {static_cast<float>(windowWidth), static_cast<float>(windowHeight)};
         CreateBuffers(bufferCreateInfos_);
-        SetBuffer(params_.Get<std::string>(AppConstants::MainVertexBuffer), vertices.data(),
+        SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(),
                   vertices.size() * sizeof(VertexPos2));
-        SetBuffer(params_.Get<std::string>(AppConstants::ScreenSizeUB), &screenSizes, sizeof(screenSizes));
+        SetBuffer(GetParamStr(AppConstants::ScreenSizeUB), &screenSizes, sizeof(screenSizes));
         const auto initialTriangleColor = params_.Get<Color3>(AppSettings::InitialTriangleColor);
-        SetBuffer(params_.Get<std::string>(AppConstants::TopLeftUB), &initialTriangleColor, sizeof(Color3));
-        SetBuffer(params_.Get<std::string>(AppConstants::TopRightUB), &initialTriangleColor, sizeof(Color3));
-        SetBuffer(params_.Get<std::string>(AppConstants::BottomLeftUB), &initialTriangleColor, sizeof(Color3));
-        SetBuffer(params_.Get<std::string>(AppConstants::BottomRightUB), &initialTriangleColor, sizeof(Color3));
+        SetBuffer(GetParamStr(AppConstants::TopLeftUB), &initialTriangleColor, sizeof(Color3));
+        SetBuffer(GetParamStr(AppConstants::TopRightUB), &initialTriangleColor, sizeof(Color3));
+        SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &initialTriangleColor, sizeof(Color3));
+        SetBuffer(GetParamStr(AppConstants::BottomRightUB), &initialTriangleColor, sizeof(Color3));
 
         CreateDefaultRenderPass();
         CreateShaderModules(shaderModuleCreateInfo_);
@@ -100,7 +105,7 @@ bool VulkanApplication::Init()
         CreatePipeline();
         CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
         CreateCommandBuffers();
 
         const uint32_t vertexCount = vertices.size();
@@ -129,24 +134,24 @@ void VulkanApplication::DrawFrame()
     const auto currentTime = static_cast<float>(glfwGetTime());
     const auto currentValue = 0.5f + 0.5f * std::sin(currentTime * 1.1f);
     const Color3 topLeftColor{currentValue, 0.0f, 0.0f};
-    buffers_[params_.Get<std::string>(AppConstants::TopLeftUB)]->MapMemory();
-    buffers_[params_.Get<std::string>(AppConstants::TopLeftUB)]->FlushData(&topLeftColor, sizeof(Color3));
-    buffers_[params_.Get<std::string>(AppConstants::TopLeftUB)]->UnmapMemory();
+    buffers_[GetParamStr(AppConstants::TopLeftUB)]->MapMemory();
+    buffers_[GetParamStr(AppConstants::TopLeftUB)]->FlushData(&topLeftColor, sizeof(Color3));
+    buffers_[GetParamStr(AppConstants::TopLeftUB)]->UnmapMemory();
 
     const Color3 topRightColor{0.0f, currentValue, 0.0f};
-    buffers_[params_.Get<std::string>(AppConstants::TopRightUB)]->MapMemory();
-    buffers_[params_.Get<std::string>(AppConstants::TopRightUB)]->FlushData(&topRightColor, sizeof(Color3));
-    buffers_[params_.Get<std::string>(AppConstants::TopRightUB)]->UnmapMemory();
+    buffers_[GetParamStr(AppConstants::TopRightUB)]->MapMemory();
+    buffers_[GetParamStr(AppConstants::TopRightUB)]->FlushData(&topRightColor, sizeof(Color3));
+    buffers_[GetParamStr(AppConstants::TopRightUB)]->UnmapMemory();
 
     const Color3 bottomLeftColor{0.0f, 0.0f, currentValue};
-    buffers_[params_.Get<std::string>(AppConstants::BottomLeftUB)]->MapMemory();
-    buffers_[params_.Get<std::string>(AppConstants::BottomLeftUB)]->FlushData(&bottomLeftColor, sizeof(Color3));
-    buffers_[params_.Get<std::string>(AppConstants::BottomLeftUB)]->UnmapMemory();
+    buffers_[GetParamStr(AppConstants::BottomLeftUB)]->MapMemory();
+    buffers_[GetParamStr(AppConstants::BottomLeftUB)]->FlushData(&bottomLeftColor, sizeof(Color3));
+    buffers_[GetParamStr(AppConstants::BottomLeftUB)]->UnmapMemory();
 
     const Color3 bottomRightColor{currentValue, 0.0f, currentValue};
-    buffers_[params_.Get<std::string>(AppConstants::BottomRightUB)]->MapMemory();
-    buffers_[params_.Get<std::string>(AppConstants::BottomRightUB)]->FlushData(&bottomRightColor, sizeof(Color3));
-    buffers_[params_.Get<std::string>(AppConstants::BottomRightUB)]->UnmapMemory();
+    buffers_[GetParamStr(AppConstants::BottomRightUB)]->MapMemory();
+    buffers_[GetParamStr(AppConstants::BottomRightUB)]->FlushData(&bottomRightColor, sizeof(Color3));
+    buffers_[GetParamStr(AppConstants::BottomRightUB)]->UnmapMemory();
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
                    {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
@@ -155,7 +160,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
 
-    currentIndex_ = (currentIndex_ + 1) % params_.Get<std::uint32_t>(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }
 
 void VulkanApplication::CreateDescriptorPool()
@@ -195,23 +200,23 @@ void VulkanApplication::CreateDescriptorSet()
 
     std::vector<VkDescriptorBufferInfo> bufferInfoScreenSizes;
     bufferInfoScreenSizes.emplace_back(
-        buffers_[params_.Get<std::string>(AppConstants::ScreenSizeUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+        buffers_[GetParamStr(AppConstants::ScreenSizeUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> bufferInfoTopLeft;
     bufferInfoTopLeft.emplace_back(
-        buffers_[params_.Get<std::string>(AppConstants::TopLeftUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+        buffers_[GetParamStr(AppConstants::TopLeftUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> bufferInfoTopRight;
     bufferInfoTopRight.emplace_back(
-        buffers_[params_.Get<std::string>(AppConstants::TopRightUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+        buffers_[GetParamStr(AppConstants::TopRightUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> bufferInfoBottomLeft;
     bufferInfoBottomLeft.emplace_back(
-        buffers_[params_.Get<std::string>(AppConstants::BottomLeftUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+        buffers_[GetParamStr(AppConstants::BottomLeftUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> bufferInfoBottomRight;
     bufferInfoBottomRight.emplace_back(
-        buffers_[params_.Get<std::string>(AppConstants::BottomRightUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+        buffers_[GetParamStr(AppConstants::BottomRightUB)]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     const auto descriptorWriteScreenSize = descriptorSet_->CreateWriteDescriptorSet(
         0, 0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, bufferInfoScreenSizes);
@@ -232,17 +237,16 @@ void VulkanApplication::CreateDescriptorSet()
 
 void VulkanApplication::CreatePipeline()
 {
-    const auto windowWidth = window_->GetWindowWidth();
-    const auto windowHeight = window_->GetWindowHeight();
-
     pipelineLayout_ = device_->CreatePipelineLayout({descriptorSetLayout_});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    VkViewport viewport{0, 0, static_cast<float>(windowWidth), static_cast<float>(windowHeight), 0.0f, 1.0f};
-    VkRect2D scissor{0, 0, windowWidth, windowHeight};
+    VkViewport viewport{
+        0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f
+    };
+    VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
     colorBlendAttachment.blendEnable = VK_FALSE;
@@ -265,12 +269,12 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderModules_[params_.Get<std::string>(AppConstants::MainVertexShaderKey)]->
+            shaderStageCreateInfo.module = shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)]->
                     GetHandle();
         });
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderModules_[params_.Get<std::string>(AppConstants::MainFragmentShaderKey)]
+            shaderStageCreateInfo.module = shaderModules_[GetParamStr(AppConstants::MainFragmentShaderKey)]
                     ->GetHandle();
         });
         builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {
@@ -307,9 +311,6 @@ void VulkanApplication::CreateCommandBuffers()
 
 void VulkanApplication::RecordCommandBuffers(const std::uint32_t vertexCount)
 {
-    const auto windowWidth = window_->GetWindowWidth();
-    const auto windowHeight = window_->GetWindowHeight();
-
     for (size_t i = 0; i < framebuffers_.size(); ++i) {
         VkClearValue clearColor;
         clearColor.color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
@@ -320,16 +321,14 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t vertexCount)
             beginInfo.renderPass = renderPass_->GetHandle();
             beginInfo.framebuffer = framebuffers_[i]->GetHandle();
             beginInfo.renderArea.offset = {0, 0};
-            beginInfo.renderArea.extent = VkExtent2D(windowWidth, windowHeight);
+            beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
             beginInfo.clearValueCount = 1;
             beginInfo.pClearValues = &clearColor;
         }, VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffers_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         cmdBuffers_[i]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, {descriptorSet_});
-        cmdBuffers_[i]->BindVertexBuffers({
-                                              buffers_[params_.Get<std::string>(AppConstants::MainVertexBuffer)]->
-                                              GetBuffer()
-                                          }, 0, 1, {0});
+        cmdBuffers_[i]->BindVertexBuffers({buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()}, 0, 1,
+                                          {0});
         cmdBuffers_[i]->Draw(vertexCount, 1, 0, 0);
         cmdBuffers_[i]->EndRenderPass();
         if (!cmdBuffers_[i]->EndCommandBuffer()) {

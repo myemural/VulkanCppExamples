@@ -39,14 +39,29 @@ bool VulkanApplicationBase::Run()
     return true;
 }
 
+std::string VulkanApplicationBase::GetParamStr(const std::string &key) const
+{
+    return params_.Get<std::string>(key);
+}
+
+std::uint32_t VulkanApplicationBase::GetParamU32(const std::string &key) const
+{
+    return params_.Get<std::uint32_t>(key);
+}
+
+float VulkanApplicationBase::GetParamFloat(const std::string &key) const
+{
+    return params_.Get<float>(key);
+}
+
 bool VulkanApplicationBase::CreateInstance()
 {
     instance_ = vulkan_wrapper::VulkanInstanceBuilder()
             .SetApplicationInfo([=](auto &info) {
-                info.pApplicationName = params_.Get<std::string>(VulkanParams::ApplicationName).c_str();
-                info.pEngineName = params_.Get<std::string>(VulkanParams::EngineName).c_str();
-                info.engineVersion = params_.Get<std::uint32_t>(VulkanParams::EngineVersion);
-                info.apiVersion = params_.Get<std::uint32_t>(VulkanParams::VulkanApiVersion);
+                info.pApplicationName = GetParamStr(VulkanParams::ApplicationName).c_str();
+                info.pEngineName = GetParamStr(VulkanParams::EngineName).c_str();
+                info.engineVersion = GetParamU32(VulkanParams::EngineVersion);
+                info.apiVersion = GetParamU32(VulkanParams::VulkanApiVersion);
             })
             .AddLayers(params_.Get<std::vector<std::string> >(VulkanParams::InstanceLayers))
             .AddExtensions(params_.Get<std::vector<std::string> >(VulkanParams::InstanceExtensions))
