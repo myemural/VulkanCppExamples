@@ -22,10 +22,14 @@ void ApplicationBasics::SetWindow(const std::shared_ptr<Window> &window)
     window_ = window;
 }
 
-void ApplicationBasics::Update()
+void ApplicationBasics::PreUpdate()
 {
-    window_->OnUpdate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(params_.Get<long long>(VulkanParams::RenderLoopMs)));
+    window_->PollEvents();
+}
+
+void ApplicationBasics::PostUpdate()
+{
+    window_->SwapBuffers();
 }
 
 bool ApplicationBasics::ShouldClose()

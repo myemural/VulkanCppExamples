@@ -17,20 +17,14 @@
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
 #include "AppConfig.h"
+#include "TimeUtils.h"
 
 namespace examples::fundamentals::drawing_3d::instanced_rendering
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
-
-/// TODO: Will be move into utils
-float GetCurrentTime()
-{
-    using clock = std::chrono::steady_clock;
-    const auto now = clock::now().time_since_epoch();
-    return std::chrono::duration<float>(now).count();
-}
+using namespace common::window_wrapper;
 
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationDrawing3D(std::move(params))
@@ -115,13 +109,18 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }
 
-void VulkanApplication::Update()
+void VulkanApplication::PreUpdate()
 {
-    ProcessInput();
-    ApplicationDrawing3D::Update();
-    const float currentFrame = GetCurrentTime();
+    // Calculate delta time
+    const double currentFrame = GetCurrentTime();
     deltaTime_ = currentFrame - lastFrame_;
     lastFrame_ = currentFrame;
+
+    // Poll events
+    ApplicationDrawing3D::PreUpdate();
+
+    // Process continuous inputs
+    ProcessInput();
 }
 
 void VulkanApplication::Cleanup() noexcept
@@ -137,19 +136,9 @@ void VulkanApplication::InitInputSystem()
 
     window_->DisableCursor();
 
-    window_->SetKeyCallback([&](const int key, [[maybe_unused]] const int scancode, const int action,
-                                [[maybe_unused]] const int mods) {
-        if (action == GLFW_PRESS) {
-            keys_[key] = true;
-        } else if (action == GLFW_RELEASE) {
-            keys_[key] = false;
-        }
-    });
-
-
-    window_->SetMouseCallback([&](const double x, const double y) {
-        const auto xPos = static_cast<float>(x);
-        const auto yPos = static_cast<float>(y);
+    window_->OnMouseMove([&](const MouseMoveEvent& event) {
+        const auto xPos = static_cast<float>(event.X);
+        const auto yPos = static_cast<float>(event.Y);
 
         if (firstMouseTriggered_) {
             lastX_ = xPos;
@@ -162,7 +151,7 @@ void VulkanApplication::InitInputSystem()
         lastX_ = xPos;
         lastY_ = yPos;
 
-        const float sensitivity = GetParamFloat(AppSettings::MouseSensitivity) * deltaTime_;
+        const float sensitivity = GetParamFloat(AppSettings::MouseSensitivity) * static_cast<float>(deltaTime_);
         xOffset *= sensitivity;
         yOffset *= sensitivity;
 
@@ -558,17 +547,17 @@ void VulkanApplication::CalculateAndSetMvp()
 
 void VulkanApplication::ProcessInput()
 {
-    const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * deltaTime_;
-    if (keys_[GLFW_KEY_W]) {
+    const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
+    if (window_->IsKeyPressed(GLFW_KEY_W)) {
         cameraPos_ += cameraSpeed * cameraFront_;
     }
-    if (keys_[GLFW_KEY_S]) {
+    if (window_->IsKeyPressed(GLFW_KEY_S)) {
         cameraPos_ -= cameraSpeed * cameraFront_;
     }
-    if (keys_[GLFW_KEY_A]) {
+    if (window_->IsKeyPressed(GLFW_KEY_A)) {
         cameraPos_ -= glm::normalize(glm::cross(cameraFront_, cameraUp_)) * cameraSpeed;
     }
-    if (keys_[GLFW_KEY_D]) {
+    if (window_->IsKeyPressed(GLFW_KEY_D)) {
         cameraPos_ += glm::normalize(glm::cross(cameraFront_, cameraUp_)) * cameraSpeed;
     }
 }

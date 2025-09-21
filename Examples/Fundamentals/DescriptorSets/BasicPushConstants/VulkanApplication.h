@@ -33,6 +33,8 @@ protected:
 
     void DrawFrame() override;
 
+    void InitInputSystem() const;
+
     void CreatePipeline();
 
     void CreateCommandBuffers();

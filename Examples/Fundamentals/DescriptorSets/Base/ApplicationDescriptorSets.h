@@ -59,7 +59,9 @@ public:
     void SetWindow(const std::shared_ptr<common::window_wrapper::Window> &window);
 
 protected:
-    void Update() override;
+    void PreUpdate() override;
+
+    void PostUpdate() override;
 
     void Cleanup() noexcept override
     {

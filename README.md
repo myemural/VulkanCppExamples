@@ -74,7 +74,6 @@ Every example has its own directory and CMake target. You can build what you wan
 | Vulkan.EngineVersion      | std::uint32_t                  | VulkanParams::EngineVersion      | Version of the engine                                | VK_MAKE_VERSION(1, 0, 0) |
 | Vulkan.InstanceLayers     | std::vector&lt;std::string&gt; | VulkanParams::InstanceLayers     | List of the instance layers                          |                          |
 | Vulkan.InstanceExtensions | std::vector&lt;std::string&gt; | VulkanParams::InstanceExtensions | List of the instance extensions                      |                          |
-| Vulkan.RenderLoopMs       | long long                      | VulkanParams::RenderLoopMs       | How long each render cycle will take in milliseconds | 8LL                      |
 
 ## Examples
 

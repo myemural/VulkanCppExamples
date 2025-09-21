@@ -45,10 +45,9 @@ protected:
      */
     virtual void DrawFrame() = 0;
 
-    /**
-     * @brief Contains the codes which is not related to render but executes every end of the render loop.
-     */
-    virtual void Update() = 0;
+    virtual void PreUpdate() = 0;
+
+    virtual void PostUpdate() = 0;
 
     /**
      * @brief Contains the codes which executes completion after render loop.

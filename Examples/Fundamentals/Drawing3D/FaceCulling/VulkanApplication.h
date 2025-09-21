@@ -35,7 +35,7 @@ protected:
 
     void DrawFrame() override;
 
-    void Update() override;
+    void PreUpdate() override;
 
     void Cleanup() noexcept override;
 
@@ -60,7 +60,6 @@ protected:
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
-    bool keys_[1024] = {};
     MvpData mvpData[NUM_CUBES] = {glm::mat4(1.0)};
 
     // Create infos
@@ -88,8 +87,8 @@ protected:
     glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f); // Up vector
 
     // Delta time related values
-    float deltaTime_ = 0.0f;
-    float lastFrame_ = 0.0f;
+    double deltaTime_ = 0.0f;
+    double lastFrame_ = 0.0f;
 
     // Mouse related values
     bool firstMouseTriggered_ = true;

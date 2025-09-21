@@ -25,10 +25,14 @@ void ApplicationImagesAndSamplers::SetWindow(const std::shared_ptr<Window> &wind
     window_ = window;
 }
 
-void ApplicationImagesAndSamplers::Update()
+void ApplicationImagesAndSamplers::PreUpdate()
 {
-    window_->OnUpdate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(params_.Get<long long>(VulkanParams::RenderLoopMs)));
+    window_->PollEvents();
+}
+
+void ApplicationImagesAndSamplers::PostUpdate()
+{
+    window_->SwapBuffers();
 }
 
 bool ApplicationImagesAndSamplers::ShouldClose()

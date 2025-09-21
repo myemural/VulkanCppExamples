@@ -23,7 +23,8 @@ int main()
     window->Init(windowWidth, windowHeight, false, 1);
 
     while (!window->CheckWindowCloseFlag()) {
-        window->OnUpdate();
+        window->PollEvents();
+        window->SwapBuffers();
     }
 
     return 0;

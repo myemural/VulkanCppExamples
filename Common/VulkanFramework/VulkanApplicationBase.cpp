@@ -31,8 +31,9 @@ bool VulkanApplicationBase::Run()
 
     try {
         while (!ShouldClose()) {
+            PreUpdate();
             DrawFrame();
-            Update();
+            PostUpdate();
         }
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';

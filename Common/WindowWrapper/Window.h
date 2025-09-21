@@ -17,6 +17,8 @@
 
 #include "GLFW/glfw3.h"
 
+#include "InputDispatcher.h"
+
 namespace common::window_wrapper
 {
 
@@ -71,15 +73,9 @@ public:
      */
     VkSurfaceKHR CreateVulkanSurface(VkInstance instance) const;
 
-
-    void SetKeyCallback(const std::function<void(int, int, int, int)>& callback);
-
-    void CallKeyCallback(int key, int scancode, int action, int mods) const;
-
-    void SetMouseCallback(const std::function<void(double, double)>& callback);
-
-    void CallMouseCallback(double x, double y) const;
-
+    /**
+     * @brief Disables cursor on the window.
+     */
     void DisableCursor() const;
 
     /**
@@ -89,17 +85,59 @@ public:
     [[nodiscard]] bool CheckWindowCloseFlag() const ;
 
     /**
-     * @brief Window related update function that will call in every frame.
+     * @brief Used to polling call of the input events.
      */
-    void OnUpdate() const ;
+    void PollEvents() const;
+
+    /**
+     * @brief Used for swapping buffers of the window.
+     */
+    void SwapBuffers() const;
+
+    /**
+     * @brief Checks the state of a keyboard key.
+     * @param key Specifies keyboard key code.
+     * @return Returns true if keyboard key is pressed, otherwise false.
+     */
+    [[nodiscard]] bool IsKeyPressed(int key) const;
+
+    /**
+     * @brief Checks the state of a mouse button.
+     * @param button Specifies mouse button code.
+     * @return Returns true if mouse button is pressed, otherwise false.
+     */
+    [[nodiscard]] bool IsMouseButtonPressed(int button) const;
+
+    /**
+     * @brief Assigns a callback to the window that will be invoked when any keyboard key is pressed.
+     * @param callback Specifies the callback that will be invoked when any keyboard key is pressed.
+     */
+    void OnKey(std::function<void(const KeyEvent&)> callback);
+
+    /**
+     * @brief Assigns a callback to the window that will be invoked when any mouse button is pressed.
+     * @param callback Specifies the callback that will be called when any mouse button is pressed.
+     */
+    void OnMouseButton(std::function<void(const MouseButtonEvent&)> callback);
+
+    /**
+     * @brief Assigns a callback to the window that will be invoked when the mouse moves on the screen.
+     * @param callback Specifies the callback to be called when the mouse moves on the screen.
+     */
+    void OnMouseMove(std::function<void(const MouseMoveEvent&)> callback);
+
+    /**
+     * @brief Assigns a callback to the window that will be invoked when the mouse is scrolled.
+     * @param callback Specifies the callback to be called when the mouse is scrolled.
+     */
+    void OnMouseScroll(std::function<void(const MouseScrollEvent&)> callback);
 
 private:
     std::string windowName_;
     std::uint32_t windowWidth_ = 0;
     std::uint32_t windowHeight_ = 0;
     GLFWwindow *window_;
-    std::function<void(int, int, int, int)> keyCallback_;
-    std::function<void(double, double)> mouseCallback_;
+    InputDispatcher inputDispatcher_;
 };
 
 } // namespace common::window_wrapper

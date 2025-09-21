@@ -23,10 +23,14 @@ void ApplicationDescriptorSets::SetWindow(const std::shared_ptr<Window> &window)
     window_ = window;
 }
 
-void ApplicationDescriptorSets::Update()
+void ApplicationDescriptorSets::PreUpdate()
 {
-    window_->OnUpdate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(params_.Get<long long>(VulkanParams::RenderLoopMs)));
+    window_->PollEvents();
+}
+
+void ApplicationDescriptorSets::PostUpdate()
+{
+    window_->SwapBuffers();
 }
 
 bool ApplicationDescriptorSets::ShouldClose()

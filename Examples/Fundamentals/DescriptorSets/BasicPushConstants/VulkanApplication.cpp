@@ -20,26 +20,7 @@ namespace examples::fundamentals::descriptor_sets::basic_push_constants
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
-
-void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
-    if (action == GLFW_PRESS) {
-        switch (key) {
-            case GLFW_KEY_1:
-                currentColor = firstColor;
-                break;
-            case GLFW_KEY_2:
-                currentColor = secondColor;
-                break;
-            case GLFW_KEY_3:
-                currentColor = thirdColor;
-                break;
-            case GLFW_KEY_ESCAPE:
-                glfwSetWindowShouldClose(window, GLFW_TRUE);
-                break;
-        }
-    }
-}
+using namespace common::window_wrapper;
 
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationDescriptorSets(std::move(params))
@@ -79,10 +60,9 @@ VulkanApplication::VulkanApplication(ParameterServer &&params)
 
 bool VulkanApplication::Init()
 {
-    // Bind input callback
-    glfwSetKeyCallback(window_->GetGLFWWindow(), KeyCallback);
-
     try {
+        InitInputSystem();
+
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
         CreateDefaultLogicalDevice();
@@ -134,6 +114,23 @@ void VulkanApplication::DrawFrame()
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
 
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+}
+
+void VulkanApplication::InitInputSystem() const
+{
+    window_->OnKey([&](const KeyEvent& event) {
+        switch (event.Key) {
+             case GLFW_KEY_1:
+                currentColor = firstColor;
+                break;
+            case GLFW_KEY_2:
+                currentColor = secondColor;
+                break;
+            case GLFW_KEY_3:
+                currentColor = thirdColor;
+                break;
+        }
+    });
 }
 
 void VulkanApplication::CreatePipeline()

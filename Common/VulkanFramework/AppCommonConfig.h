@@ -35,7 +35,6 @@ namespace VulkanParams
     constexpr auto EngineVersion = "Vulkan.EngineVersion";
     constexpr auto InstanceLayers = "Vulkan.InstanceLayers";
     constexpr auto InstanceExtensions = "Vulkan.InstanceExtensions";
-    constexpr auto RenderLoopMs = "Vulkan.RenderLoopMs";
 }
 
 inline void SetCommonParamSchema(common::utility::ParameterSchema& schema)
@@ -53,7 +52,6 @@ inline void SetCommonParamSchema(common::utility::ParameterSchema& schema)
     schema.RegisterParam<std::uint32_t>(VulkanParams::EngineVersion, VK_MAKE_VERSION(1, 0, 0));
     schema.RegisterParam<std::vector<std::string>>(VulkanParams::InstanceLayers);
     schema.RegisterParam<std::vector<std::string>>(VulkanParams::InstanceExtensions);
-    schema.RegisterParam<long long>(VulkanParams::RenderLoopMs, 8LL);
 }
 
 } // namespace common::vulkan_framework

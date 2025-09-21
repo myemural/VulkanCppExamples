@@ -24,10 +24,14 @@ void ApplicationDrawing3D::SetWindow(const std::shared_ptr<Window> &window)
     window_ = window;
 }
 
-void ApplicationDrawing3D::Update()
+void ApplicationDrawing3D::PreUpdate()
 {
-    window_->OnUpdate();
-    std::this_thread::sleep_for(std::chrono::milliseconds(params_.Get<long long>(VulkanParams::RenderLoopMs)));
+    window_->PollEvents();
+}
+
+void ApplicationDrawing3D::PostUpdate()
+{
+    window_->SwapBuffers();
 }
 
 bool ApplicationDrawing3D::ShouldClose()
