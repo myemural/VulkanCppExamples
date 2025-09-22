@@ -7,7 +7,6 @@
 #include "VulkanApplication.h"
 
 #include "AppConfig.h"
-#include "VulkanInstance.h"
 #include "VulkanCommandBuffer.h"
 #include "Window.h"
 

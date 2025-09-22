@@ -13,28 +13,32 @@ using namespace common::vulkan_wrapper;
 
 BufferResource::BufferResource(const std::shared_ptr<VulkanPhysicalDevice> &physicalDevice,
                                const std::shared_ptr<VulkanDevice> &device)
-    : physicalDevice_{physicalDevice}, device_{device}
+    : physicalDevice_{physicalDevice}, device_{device}, createInfo_{}
 {
 }
 
-void BufferResource::CreateBuffer(uint32_t size, const VkBufferUsageFlags &usageFlags)
+void BufferResource::CreateBuffer(const BufferResourceCreateInfo &createInfo)
 {
+    createInfo_ = createInfo;
+
     const auto devicePtr = device_.lock();
     if (!devicePtr) {
         throw std::runtime_error("Device object not found!");
     }
 
     buffer_ = devicePtr->CreateBuffer([&](auto &builder) {
-        builder.SetSize(size);
-        builder.SetUsage(usageFlags);
+        builder.SetSize(createInfo_.BufferSizeInBytes);
+        builder.SetUsage(createInfo_.UsageFlags);
     });
 
     if (!buffer_) {
         throw std::runtime_error("Failed to create buffer!");
     }
+
+    AllocateBufferMemory();
 }
 
-void BufferResource::AllocateBufferMemory(const VkMemoryPropertyFlags &properties)
+void BufferResource::AllocateBufferMemory()
 {
     const auto devicePtr = device_.lock();
     if (!devicePtr) {
@@ -48,7 +52,7 @@ void BufferResource::AllocateBufferMemory(const VkMemoryPropertyFlags &propertie
 
     const auto memoryReq = buffer_->GetBufferMemoryRequirements();
 
-    const uint32_t memoryTypeIndex = physicalDevicePtr->FindMemoryType(memoryReq.memoryTypeBits, properties);
+    const uint32_t memoryTypeIndex = physicalDevicePtr->FindMemoryType(memoryReq.memoryTypeBits, createInfo_.MemoryProperties);
 
     deviceMemory_ = devicePtr->AllocateMemory(memoryReq.size, memoryTypeIndex);
 

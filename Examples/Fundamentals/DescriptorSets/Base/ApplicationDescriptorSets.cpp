@@ -194,12 +194,11 @@ void ApplicationDescriptorSets::CreateDefaultSyncObjects(const std::uint32_t max
     }
 }
 
-void ApplicationDescriptorSets::CreateBuffers(const std::vector<BufferCreateInfo> &bufferCreateInfos)
+void ApplicationDescriptorSets::CreateBuffers(const std::vector<BufferResourceCreateInfo> &bufferCreateInfos)
 {
-    for (const auto &[name, bufferSize, usage, memoryProps]: bufferCreateInfos) {
-        buffers_[name] = std::make_unique<BufferResource>(physicalDevice_, device_);
-        buffers_[name]->CreateBuffer(bufferSize, usage);
-        buffers_[name]->AllocateBufferMemory(memoryProps);
+    for (const auto& createInfo: bufferCreateInfos) {
+        buffers_[createInfo.Name] = std::make_unique<BufferResource>(physicalDevice_, device_);
+        buffers_[createInfo.Name]->CreateBuffer(createInfo);
     }
 }
 

@@ -64,7 +64,7 @@ protected:
     MvpData planeMvpData[NUM_PLANES] = {glm::mat4(1.0)};
 
     // Create infos
-    std::vector<base::BufferCreateInfo> bufferCreateInfos_;
+    std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
     std::vector<common::vulkan_framework::ImageResourceCreateInfo> imageResourceCreateInfos_;
     std::vector<common::vulkan_framework::SamplerResourceCreateInfo> samplerResourceCreateInfos_;
     base::ShaderModulesCreateInfo shaderModuleCreateInfo_{};

@@ -49,7 +49,7 @@ protected:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
-    std::vector<base::BufferCreateInfo> bufferCreateInfos_;
+    std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
     base::ShaderModulesCreateInfo shaderModuleCreateInfo_;
 
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorSetLayout> descriptorSetLayout_;

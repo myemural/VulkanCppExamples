@@ -57,7 +57,7 @@ protected:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
     // Create infos
-    std::vector<base::BufferCreateInfo> bufferCreateInfos_;
+    std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
     base::ShaderModulesCreateInfo shaderModuleCreateInfo_;
     base::DescriptorSetCreateInfo descriptorSetCreateInfo_;
     base::DescriptorSetUpdateInfo descriptorSetUpdateInfo_;

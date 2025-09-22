@@ -30,13 +30,6 @@
 
 namespace examples::fundamentals::descriptor_sets::base
 {
-struct BufferCreateInfo
-{
-    std::string Name;
-    std::uint32_t BufferSizeInBytes;
-    VkBufferUsageFlags UsageFlags;
-    VkMemoryPropertyFlags MemoryProperties;
-};
 
 struct ShaderModulesCreateInfo
 {
@@ -87,7 +80,7 @@ protected:
 
     void CreateDefaultSyncObjects(std::uint32_t maxFramesInFlight);
 
-    void CreateBuffers(const std::vector<BufferCreateInfo> &bufferCreateInfos);
+    void CreateBuffers(const std::vector<common::vulkan_framework::BufferResourceCreateInfo> &bufferCreateInfos);
 
     void SetBuffer(const std::string &name, const void *data, std::uint64_t dataSize);
 

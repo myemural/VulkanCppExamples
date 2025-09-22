@@ -20,6 +20,15 @@
 
 namespace common::vulkan_framework
 {
+
+struct BufferResourceCreateInfo
+{
+    std::string Name;
+    std::uint32_t BufferSizeInBytes;
+    VkBufferUsageFlags UsageFlags;
+    VkMemoryPropertyFlags MemoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+};
+
 class BufferResource
 {
 public:
@@ -32,18 +41,11 @@ public:
 
     /**
      * @brief Creates a Vulkan buffer with specified type and usage.
-     * @param size Size of the buffer.
-     * @param usageFlags Buffer usage flags.
+     * @param createInfo Buffer create information.
      */
-    void CreateBuffer(uint32_t size, const VkBufferUsageFlags &usageFlags);
+    void CreateBuffer(const BufferResourceCreateInfo &createInfo);
 
     /// TODO: Creating buffer with concurrency support will be added later.
-
-    /**
-     * @brief Allocates appropriate memory for the buffer.
-     * @param properties Memory properties for allocating buffer memory.
-     */
-    void AllocateBufferMemory(const VkMemoryPropertyFlags &properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
     /**
      * @brief Maps memory region to read/write it easily on host side.
@@ -73,9 +75,15 @@ public:
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanBuffer> GetBuffer() const { return buffer_; }
 
 private:
+    /**
+     * @brief Allocates appropriate memory for the buffer.
+     */
+    void AllocateBufferMemory();
+
     std::weak_ptr<vulkan_wrapper::VulkanPhysicalDevice> physicalDevice_;
     std::weak_ptr<vulkan_wrapper::VulkanDevice> device_;
 
+    BufferResourceCreateInfo createInfo_;
     std::shared_ptr<vulkan_wrapper::VulkanBuffer> buffer_ = nullptr;
     std::shared_ptr<vulkan_wrapper::VulkanDeviceMemory> deviceMemory_ = nullptr;
     void *mappedData_ = nullptr;
