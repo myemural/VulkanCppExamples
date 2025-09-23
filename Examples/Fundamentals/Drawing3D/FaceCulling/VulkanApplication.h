@@ -66,9 +66,9 @@ protected:
     std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
     std::vector<common::vulkan_framework::ImageResourceCreateInfo> imageResourceCreateInfos_;
     std::vector<common::vulkan_framework::SamplerResourceCreateInfo> samplerResourceCreateInfos_;
-    base::ShaderModulesCreateInfo shaderModuleCreateInfo_{};
-    base::DescriptorSetCreateInfo descriptorSetCreateInfo_{};
-    base::DescriptorSetUpdateInfo descriptorSetUpdateInfo_{};
+    common::vulkan_framework::ShaderModulesCreateInfo shaderModuleCreateInfo_;
+    common::vulkan_framework::DescriptorResourceCreateInfo descriptorSetCreateInfo_;
+    common::vulkan_framework::DescriptorUpdateInfo descriptorSetUpdateInfo_;
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};

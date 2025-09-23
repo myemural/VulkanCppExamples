@@ -12,8 +12,18 @@ DescriptorRegistry::DescriptorRegistry(const std::shared_ptr<vulkan_wrapper::Vul
     : device_{device}
 {}
 
+void DescriptorRegistry::CreateDescriptors(const DescriptorResourceCreateInfo &createInfo)
+{
+    CreatePool(createInfo.MaxSets, createInfo.PoolSizes);
+
+    for (const auto &[name, bindings]: createInfo.Layouts) {
+        AddLayout(name, bindings);
+        CreateDescriptorSet(name);
+    }
+}
+
 void DescriptorRegistry::CreatePool(const std::uint32_t maxSets, const std::vector<VkDescriptorPoolSize> &poolSizes,
-    const VkDescriptorPoolCreateFlags &flags)
+                                    const VkDescriptorPoolCreateFlags &flags)
 {
     descPool_ = device_->CreateDescriptorPool(maxSets, poolSizes, flags);
 

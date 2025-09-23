@@ -16,7 +16,7 @@
 
 #include "VulkanApplicationBase.h"
 #include "BufferResource.h"
-#include "ShaderLoader.h"
+#include "ShaderResource.h"
 #include "VulkanCommandPool.h"
 #include "VulkanSurface.h"
 #include "VulkanPhysicalDevice.h"
@@ -30,19 +30,6 @@
 
 namespace examples::fundamentals::descriptor_sets::base
 {
-
-struct ShaderModulesCreateInfo
-{
-    struct Module
-    {
-        std::string Name;
-        std::string FileName;
-    };
-
-    std::string BasePath;
-    common::utility::ShaderBaseType ShaderType;
-    std::vector<Module> Modules;
-};
 
 class ApplicationDescriptorSets : public common::vulkan_framework::VulkanApplicationBase
 {
@@ -84,7 +71,7 @@ protected:
 
     void SetBuffer(const std::string &name, const void *data, std::uint64_t dataSize);
 
-    void CreateShaderModules(const ShaderModulesCreateInfo &modulesInfo);
+    void CreateShaderModules(const common::vulkan_framework::ShaderModulesCreateInfo &modulesInfo);
 
     std::shared_ptr<common::window_wrapper::Window> window_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSurface> surface_;
@@ -103,7 +90,7 @@ protected:
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence> > swapImagesFences_;
 
     // Resources
-    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule> > shaderModules_;
+    std::unique_ptr<common::vulkan_framework::ShaderResource> shaderResources_;
     std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::BufferResource> > buffers_;
 };
 } // namespace examples::fundamentals::descriptor_sets::base

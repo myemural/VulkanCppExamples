@@ -52,6 +52,14 @@ struct CopySetRequest
     uint32_t Count;
 };
 
+struct DescriptorUpdateInfo
+{
+    std::vector<BufferWriteRequest> BufferWriteRequests;
+    std::vector<ImageWriteRequest> ImageWriteRequests;
+    std::vector<TexelBufferWriteRequest> TexelBufferWriteRequests;
+    std::vector<CopySetRequest> CopySetRequests;
+};
+
 class DescriptorUpdater
 {
 public:

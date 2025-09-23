@@ -20,7 +20,7 @@
 #include "DescriptorRegistry.h"
 #include "DescriptorUpdater.h"
 #include "SamplerResource.h"
-#include "ShaderLoader.h"
+#include "ShaderResource.h"
 #include "VulkanCommandPool.h"
 #include "VulkanSurface.h"
 #include "VulkanPhysicalDevice.h"
@@ -34,40 +34,6 @@
 
 namespace examples::fundamentals::drawing_3d::base
 {
-
-struct ShaderModulesCreateInfo
-{
-    struct Module
-    {
-        std::string Name;
-        std::string FileName;
-    };
-
-    std::string BasePath;
-    common::utility::ShaderBaseType ShaderType;
-    std::vector<Module> Modules;
-};
-
-struct DescriptorSetCreateInfo
-{
-    struct Layout
-    {
-        std::string Name;
-        std::vector<VkDescriptorSetLayoutBinding> Bindings;
-    };
-
-    std::uint32_t MaxSets;
-    std::vector<VkDescriptorPoolSize> PoolSizes;
-    std::vector<Layout> Layouts;
-};
-
-struct DescriptorSetUpdateInfo
-{
-    std::vector<common::vulkan_framework::BufferWriteRequest> BufferWriteRequests;
-    std::vector<common::vulkan_framework::ImageWriteRequest> ImageWriteRequests;
-    std::vector<common::vulkan_framework::TexelBufferWriteRequest> TexelBufferWriteRequests;
-    std::vector<common::vulkan_framework::CopySetRequest> CopySetRequests;
-};
 
 class ApplicationDrawing3D : public common::vulkan_framework::VulkanApplicationBase
 {
@@ -117,11 +83,11 @@ protected:
                             const std::shared_ptr<common::vulkan_wrapper::VulkanBuffer> &stagingBuffer,
                             const VkExtent3D &dimensions);
 
-    void CreateShaderModules(const ShaderModulesCreateInfo &modulesInfo);
+    void CreateShaderModules(const common::vulkan_framework::ShaderModulesCreateInfo &modulesInfo);
 
-    void CreateDescriptorSets(const DescriptorSetCreateInfo &descriptorSetInfo);
+    void CreateDescriptorSets(const common::vulkan_framework::DescriptorResourceCreateInfo &descriptorSetInfo);
 
-    void UpdateDescriptorSet(const DescriptorSetUpdateInfo &descriptorSetUpdateInfo) const;
+    void UpdateDescriptorSet(const common::vulkan_framework::DescriptorUpdateInfo &descriptorSetUpdateInfo) const;
 
     std::shared_ptr<common::window_wrapper::Window> window_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSurface> surface_;
@@ -143,7 +109,7 @@ protected:
     std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::BufferResource> > buffers_;
     std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::ImageResource> > images_;
     std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::SamplerResource> > samplers_;
-    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule> > shaderModules_;
+    std::unique_ptr<common::vulkan_framework::ShaderResource> shaderResources_;
     std::unique_ptr<common::vulkan_framework::DescriptorRegistry> descriptorRegistry_;
     std::unique_ptr<common::vulkan_framework::DescriptorUpdater> descriptorUpdater_;
 };

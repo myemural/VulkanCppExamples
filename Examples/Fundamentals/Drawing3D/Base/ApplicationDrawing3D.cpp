@@ -226,34 +226,19 @@ void ApplicationDrawing3D::SetImageFromBuffer(const std::string &name,
 
 void ApplicationDrawing3D::CreateShaderModules(const ShaderModulesCreateInfo &modulesInfo)
 {
-    const std::string basePath = modulesInfo.BasePath;
-    const common::utility::ShaderBaseType shaderType = modulesInfo.ShaderType;
-
-    for (const auto &[name, fileName]: modulesInfo.Modules) {
-        const common::utility::ShaderLoader shaderLoader{basePath, shaderType};
-        const auto shaderCode = shaderLoader.LoadSpirV(fileName);
-        const auto shaderModule = device_->CreateShaderModule(shaderCode);
-        if (!shaderModule) {
-            throw std::runtime_error("Failed to create vertex shader module!");
-        }
-        shaderModules_[name] = shaderModule;
-    }
+    shaderResources_ = std::make_unique<ShaderResource>(device_);
+    shaderResources_->CreateShaders(modulesInfo);
 }
 
-void ApplicationDrawing3D::CreateDescriptorSets(const DescriptorSetCreateInfo &descriptorSetInfo)
+void ApplicationDrawing3D::CreateDescriptorSets(const DescriptorResourceCreateInfo &descriptorSetInfo)
 {
     descriptorRegistry_ = std::make_unique<DescriptorRegistry>(device_);
-    descriptorRegistry_->CreatePool(descriptorSetInfo.MaxSets, descriptorSetInfo.PoolSizes);
-
-    for (const auto &[name, bindings]: descriptorSetInfo.Layouts) {
-        descriptorRegistry_->AddLayout(name, bindings);
-        descriptorRegistry_->CreateDescriptorSet(name);
-    }
+    descriptorRegistry_->CreateDescriptors(descriptorSetInfo);
 
     descriptorUpdater_ = std::make_unique<DescriptorUpdater>(device_, *descriptorRegistry_);
 }
 
-void ApplicationDrawing3D::UpdateDescriptorSet(const DescriptorSetUpdateInfo &descriptorSetUpdateInfo) const
+void ApplicationDrawing3D::UpdateDescriptorSet(const DescriptorUpdateInfo &descriptorSetUpdateInfo) const
 {
     for (const auto &bufferUpdateInfo: descriptorSetUpdateInfo.BufferWriteRequests) {
         descriptorUpdater_->AddBufferUpdate(bufferUpdateInfo);

@@ -18,6 +18,20 @@
 
 namespace common::vulkan_framework
 {
+
+struct DescriptorResourceCreateInfo
+{
+    struct Layout
+    {
+        std::string Name;
+        std::vector<VkDescriptorSetLayoutBinding> Bindings;
+    };
+
+    std::uint32_t MaxSets;
+    std::vector<VkDescriptorPoolSize> PoolSizes;
+    std::vector<Layout> Layouts;
+};
+
 class DescriptorRegistry
 {
 public:
@@ -25,6 +39,8 @@ public:
      * @param device Refers VulkanDevice object.
      */
     explicit DescriptorRegistry(const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device);
+
+    void CreateDescriptors(const DescriptorResourceCreateInfo& createInfo);
 
     /**
      * @brief Creates a descriptor pool with the specified settings.

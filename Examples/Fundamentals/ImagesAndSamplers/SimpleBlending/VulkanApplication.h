@@ -60,9 +60,9 @@ protected:
 
     // Create infos
     std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
-    base::ShaderModulesCreateInfo shaderModuleCreateInfo_;
-    base::DescriptorSetCreateInfo descriptorSetCreateInfo_;
-    base::DescriptorSetUpdateInfo descriptorSetUpdateInfo_;
+    common::vulkan_framework::ShaderModulesCreateInfo shaderModuleCreateInfo_;
+    common::vulkan_framework::DescriptorResourceCreateInfo descriptorSetCreateInfo_;
+    common::vulkan_framework::DescriptorUpdateInfo descriptorSetUpdateInfo_;
 
     // Texture resource
     common::utility::TextureHandler leafTextureHandler_{};

@@ -211,17 +211,7 @@ void ApplicationDescriptorSets::SetBuffer(const std::string &name, const void *d
 
 void ApplicationDescriptorSets::CreateShaderModules(const ShaderModulesCreateInfo &modulesInfo)
 {
-    const std::string basePath = modulesInfo.BasePath;
-    const common::utility::ShaderBaseType shaderType = modulesInfo.ShaderType;
-
-    for (const auto &[name, fileName]: modulesInfo.Modules) {
-        const common::utility::ShaderLoader shaderLoader{basePath, shaderType};
-        const auto shaderCode = shaderLoader.LoadSpirV(fileName);
-        const auto shaderModule = device_->CreateShaderModule(shaderCode);
-        if (!shaderModule) {
-            throw std::runtime_error("Failed to create vertex shader module!");
-        }
-        shaderModules_[name] = shaderModule;
-    }
+    shaderResources_ = std::make_unique<ShaderResource>(device_);
+    shaderResources_->CreateShaders(modulesInfo);
 }
 } // namespace examples::fundamentals::descriptor_sets::base
