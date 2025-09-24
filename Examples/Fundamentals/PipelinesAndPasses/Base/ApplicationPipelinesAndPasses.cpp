@@ -154,9 +154,12 @@ void ApplicationPipelinesAndPasses::CreateDefaultSyncObjects(const std::uint32_t
 {
     swapImagesFences_.resize(swapChainImageViews_.size(), nullptr);
 
-    for (size_t i = 0; i < maxFramesInFlight; i++) {
-        imageAvailableSemaphores_.emplace_back(device_->CreateSemaphore());
+    for (size_t i = 0; i < swapChainImageViews_.size(); ++i) {
         renderFinishedSemaphores_.emplace_back(device_->CreateSemaphore());
+    }
+
+    for (size_t i = 0; i < maxFramesInFlight; ++i) {
+        imageAvailableSemaphores_.emplace_back(device_->CreateSemaphore());
         inFlightFences_.emplace_back(device_->CreateFence(VK_FENCE_CREATE_SIGNALED_BIT));
     }
 

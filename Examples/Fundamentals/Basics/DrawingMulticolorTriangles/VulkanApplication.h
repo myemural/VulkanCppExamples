@@ -35,6 +35,11 @@ protected:
 
     void DrawFrame() override;
 
+private:
+    void CreateResources();
+
+    void InitResources() const;
+
     void CreateVertexBuffer(std::uint64_t dataSize);
 
     void FillVertexBuffer(const void *data, std::uint64_t dataSize) const;
@@ -58,4 +63,5 @@ protected:
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
 };
+
 } // namespace examples::fundamentals::basics::drawing_multicolor_triangles

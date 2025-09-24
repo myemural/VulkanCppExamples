@@ -33,7 +33,10 @@ protected:
 
     void DrawFrame() override;
 
-    void CreatePipeline();
+private:
+    void CreateResources();
+
+    void InitResources();
 
     void CreateDescriptorPool();
 
@@ -41,18 +44,17 @@ protected:
 
     void CreateDescriptorSet();
 
+    void CreatePipeline();
+
     void CreateCommandBuffers();
 
     void RecordCommandBuffers(std::uint32_t indexCount);
 
-    void UpdateUniformBuffers(float currentTime);
+    void UpdateUniformBuffers();
 
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = 0;
     std::uint32_t currentWindowHeight_ = 0;
-
-    std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
-    common::vulkan_framework::ShaderModulesCreateInfo shaderModuleCreateInfo_;
 
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorSetLayout> descriptorSetLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorPool> descriptorPool_;

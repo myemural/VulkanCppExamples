@@ -33,7 +33,12 @@ protected:
 
     void DrawFrame() override;
 
+private:
     void InitInputSystem() const;
+
+    void CreateResources();
+
+    void InitResources();
 
     void CreatePipeline();
 
@@ -44,9 +49,6 @@ protected:
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = 0;
     std::uint32_t currentWindowHeight_ = 0;
-
-    std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
-    common::vulkan_framework::ShaderModulesCreateInfo shaderModuleCreateInfo_;
 
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorSetLayout> descriptorSetLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorPool> descriptorPool_;

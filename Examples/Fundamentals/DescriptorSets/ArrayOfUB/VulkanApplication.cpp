@@ -13,6 +13,7 @@
 #include "ApplicationData.h"
 #include "VulkanDescriptorPool.h"
 #include "AppConfig.h"
+#include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
 #include "glm/gtc/matrix_transform.hpp"
@@ -26,13 +27,72 @@ using namespace common::vulkan_framework;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationDescriptorSets(std::move(params))
 {
-    currentWindowWidth_ = GetParamU32(WindowParams::Width);
-    currentWindowHeight_ = GetParamU32(WindowParams::Height);
+}
 
+bool VulkanApplication::Init()
+{
+    try {
+        currentWindowWidth_ = GetParamU32(WindowParams::Width);
+        currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
+        CreateDefaultSurface();
+        SelectDefaultPhysicalDevice();
+        CreateDefaultLogicalDevice();
+        CreateDefaultQueue();
+        CreateDefaultSwapChain();
+        CreateDefaultCommandPool();
+        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+
+        CreateResources();
+        InitResources();
+
+        CreateDefaultRenderPass();
+        CreatePipeline();
+        CreateDefaultFramebuffers();
+
+        const uint32_t indexCount = indices.size();
+        CreateCommandBuffers();
+        RecordCommandBuffers(indexCount); // Recording in Init for this example
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << '\n';
+        return false;
+    }
+
+    return true;
+}
+
+void VulkanApplication::DrawFrame()
+{
+    inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
+    inFlightFences_[currentIndex_]->ResetFence();
+
+    uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
+
+    if (swapImagesFences_[imageIndex] != nullptr) {
+        swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
+    }
+
+    swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
+
+    UpdateUniformBuffers();
+
+    queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
+                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+                   });
+
+    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
+
+    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+}
+
+void VulkanApplication::CreateResources()
+{
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
     const std::uint32_t indexBufferSize = indices.size() * sizeof(uint16_t);
     constexpr std::uint32_t uniformBufferSize = sizeof(UniformBufferObject);
-    bufferCreateInfos_ = {
+
+    const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
         {
             GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -64,8 +124,9 @@ VulkanApplication::VulkanApplication(ParameterServer &&params)
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         }
     };
+    CreateBuffers(bufferCreateInfos);
 
-    shaderModuleCreateInfo_ = {
+    const ShaderModulesCreateInfo shaderModuleCreateInfo = {
         .BasePath = SHADERS_DIR,
         .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
         .Modules = {
@@ -79,87 +140,26 @@ VulkanApplication::VulkanApplication(ParameterServer &&params)
             }
         }
     };
+    CreateShaderModules(shaderModuleCreateInfo);
+
+    CreateDescriptorPool();
+    CreateDescriptorSetLayout();
+    CreateDescriptorSet();
 }
 
-bool VulkanApplication::Init()
+void VulkanApplication::InitResources()
 {
-    try {
-        CreateDefaultSurface();
-        SelectDefaultPhysicalDevice();
-        CreateDefaultLogicalDevice();
-        CreateDefaultQueue();
-        CreateDefaultSwapChain();
+    modelUbObject[0].model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, 0.0f));
+    modelUbObject[1].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, -0.5f, 0.0f));
+    modelUbObject[2].model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.5f, 0.0f));
+    modelUbObject[3].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f));
 
-        CreateBuffers(bufferCreateInfos_);
-
-        modelUbObject[0].model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, 0.0f));
-        modelUbObject[1].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, -0.5f, 0.0f));
-        modelUbObject[2].model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.5f, 0.0f));
-        modelUbObject[3].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f));
-
-        SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
-        SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(uint16_t));
-        SetBuffer(GetParamStr(AppConstants::TopLeftUB), &modelUbObject[0], sizeof(UniformBufferObject));
-        SetBuffer(GetParamStr(AppConstants::TopRightUB), &modelUbObject[1], sizeof(UniformBufferObject));
-        SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &modelUbObject[2], sizeof(UniformBufferObject));
-        SetBuffer(GetParamStr(AppConstants::BottomRightUB), &modelUbObject[3], sizeof(UniformBufferObject));
-
-        CreateDefaultRenderPass();
-        CreateShaderModules(shaderModuleCreateInfo_);
-        CreateDescriptorSetLayout();
-        CreateDescriptorPool();
-        CreateDescriptorSet();
-        CreatePipeline();
-        CreateDefaultFramebuffers();
-        CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
-        CreateCommandBuffers();
-
-        const uint32_t indexCount = indices.size();
-        RecordCommandBuffers(indexCount); // Recording in Init for this example
-    } catch (const std::exception &e) {
-        std::cerr << e.what() << '\n';
-        return false;
-    }
-
-    return true;
-}
-
-void VulkanApplication::DrawFrame()
-{
-    inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
-    inFlightFences_[currentIndex_]->ResetFence();
-
-    uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
-
-    if (swapImagesFences_[imageIndex] != nullptr) {
-        swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
-    }
-
-    swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
-
-    const auto currentTime = static_cast<float>(glfwGetTime());
-    UpdateUniformBuffers(currentTime);
-
-    queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
-                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-                   });
-
-    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
-
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
-}
-
-void VulkanApplication::CreateDescriptorSetLayout()
-{
-    VkDescriptorSetLayoutBinding binding{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 4, VK_SHADER_STAGE_VERTEX_BIT, nullptr};
-
-    descriptorSetLayout_ = device_->CreateDescriptorSetLayout({binding});
-
-    if (!descriptorSetLayout_) {
-        throw std::runtime_error("Failed to create descriptor set layout!");
-    }
+    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
+    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(uint16_t));
+    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &modelUbObject[0], sizeof(UniformBufferObject));
+    SetBuffer(GetParamStr(AppConstants::TopRightUB), &modelUbObject[1], sizeof(UniformBufferObject));
+    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &modelUbObject[2], sizeof(UniformBufferObject));
+    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &modelUbObject[3], sizeof(UniformBufferObject));
 }
 
 void VulkanApplication::CreateDescriptorPool()
@@ -171,6 +171,17 @@ void VulkanApplication::CreateDescriptorPool()
 
     if (!descriptorPool_) {
         throw std::runtime_error("Failed to create descriptor pool!");
+    }
+}
+
+void VulkanApplication::CreateDescriptorSetLayout()
+{
+    VkDescriptorSetLayoutBinding binding{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 4, VK_SHADER_STAGE_VERTEX_BIT, nullptr};
+
+    descriptorSetLayout_ = device_->CreateDescriptorSetLayout({binding});
+
+    if (!descriptorSetLayout_) {
+        throw std::runtime_error("Failed to create descriptor set layout!");
     }
 }
 
@@ -233,7 +244,9 @@ void VulkanApplication::CreatePipeline()
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    VkViewport viewport{0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f};
+    VkViewport viewport{
+        0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f
+    };
     VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
@@ -257,12 +270,14 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainVertexShaderKey))->
                     GetHandle();
         });
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainFragmentShaderKey))
                     ->GetHandle();
         });
         builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {
@@ -330,32 +345,21 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t indexCount)
     }
 }
 
-void VulkanApplication::UpdateUniformBuffers(const float currentTime)
+void VulkanApplication::UpdateUniformBuffers()
 {
+    const auto currentTime = static_cast<float>(glfwGetTime());
     const float translation = std::sin(currentTime) * 0.2f;
     const float rotation = currentTime * 2.5f;
     const float scalingFactor = std::sin(currentTime) * 0.5f + 1.0f; // Range: 0.5 - 1.5
+
     UniformBufferObject tempObject{};
     tempObject.model = glm::rotate(modelUbObject[0].model, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-    buffers_[GetParamStr(AppConstants::TopLeftUB)]->MapMemory();
-    buffers_[GetParamStr(AppConstants::TopLeftUB)]->FlushData(&tempObject, sizeof(UniformBufferObject));
-    buffers_[GetParamStr(AppConstants::TopLeftUB)]->UnmapMemory();
-
-
+    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &tempObject, sizeof(UniformBufferObject));
     tempObject.model = glm::scale(modelUbObject[1].model, glm::vec3(scalingFactor, scalingFactor, 0.0f));
-    buffers_[GetParamStr(AppConstants::TopRightUB)]->MapMemory();
-    buffers_[GetParamStr(AppConstants::TopRightUB)]->FlushData(&tempObject, sizeof(UniformBufferObject));
-    buffers_[GetParamStr(AppConstants::TopRightUB)]->UnmapMemory();
-
+    SetBuffer(GetParamStr(AppConstants::TopRightUB), &tempObject, sizeof(UniformBufferObject));
     tempObject.model = glm::translate(modelUbObject[2].model, glm::vec3(translation, 0.0f, 0.0f));
-    buffers_[GetParamStr(AppConstants::BottomLeftUB)]->MapMemory();
-    buffers_[GetParamStr(AppConstants::BottomLeftUB)]->FlushData(&tempObject, sizeof(UniformBufferObject));
-    buffers_[GetParamStr(AppConstants::BottomLeftUB)]->UnmapMemory();
-
+    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &tempObject, sizeof(UniformBufferObject));
     tempObject.model = glm::translate(modelUbObject[3].model, glm::vec3(0.0f, translation, 0.0f));
-    buffers_[GetParamStr(AppConstants::BottomRightUB)]->MapMemory();
-    buffers_[GetParamStr(AppConstants::BottomRightUB)]->
-            FlushData(&tempObject, sizeof(UniformBufferObject));
-    buffers_[GetParamStr(AppConstants::BottomRightUB)]->UnmapMemory();
+    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &tempObject, sizeof(UniformBufferObject));
 }
 } // namespace examples::fundamentals::descriptor_sets::array_of_ub

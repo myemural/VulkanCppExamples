@@ -102,11 +102,11 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffersPresent_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
                    });
 
-    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
+    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }

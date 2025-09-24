@@ -36,6 +36,11 @@ protected:
 
     void DrawFrame() override;
 
+private:
+    void CreateResources(std::uint64_t indexDataSize);
+
+    void InitResources(const void *indexData, std::uint64_t indexDataSize) const;
+
     void CreateVertexBuffer(std::uint64_t dataSize);
 
     void FillVertexBuffer(const void *data, std::uint64_t dataSize) const;

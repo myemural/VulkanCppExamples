@@ -25,42 +25,14 @@ using namespace common::window_wrapper;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationDescriptorSets(std::move(params))
 {
-    currentWindowWidth_ = GetParamU32(WindowParams::Width);
-    currentWindowHeight_ = GetParamU32(WindowParams::Height);
-
-    const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
-    const std::uint32_t indexBufferSize = indices.size() * sizeof(uint16_t);
-    bufferCreateInfos_ = {
-        {
-            GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
-            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        },
-        {
-            GetParamStr(AppConstants::MainIndexBuffer), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        }
-    };
-
-    shaderModuleCreateInfo_ = {
-        .BasePath = SHADERS_DIR,
-        .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
-        .Modules = {
-            {
-                .Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)
-            },
-            {
-                .Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)
-            }
-        }
-    };
 }
 
 bool VulkanApplication::Init()
 {
     try {
+        currentWindowWidth_ = GetParamU32(WindowParams::Width);
+        currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
         InitInputSystem();
 
         CreateDefaultSurface();
@@ -68,19 +40,16 @@ bool VulkanApplication::Init()
         CreateDefaultLogicalDevice();
         CreateDefaultQueue();
         CreateDefaultSwapChain();
-
-        CreateBuffers(bufferCreateInfos_);
-        SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(),
-                  vertices.size() * sizeof(VertexPos2));
-        SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(),
-                  indices.size() * sizeof(uint16_t));
-
-        CreateDefaultRenderPass();
-        CreateShaderModules(shaderModuleCreateInfo_);
-        CreatePipeline();
-        CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+
+        CreateResources();
+        InitResources();
+
+        CreateDefaultRenderPass();
+        CreatePipeline();
+        CreateDefaultFramebuffers();
+
         CreateCommandBuffers();
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
@@ -107,20 +76,20 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
                    });
 
-    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
+    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }
 
 void VulkanApplication::InitInputSystem() const
 {
-    window_->OnKey([&](const KeyEvent& event) {
+    window_->OnKey([&](const KeyEvent &event) {
         switch (event.Key) {
-             case GLFW_KEY_1:
+            case GLFW_KEY_1:
                 currentColor = firstColor;
                 break;
             case GLFW_KEY_2:
@@ -131,6 +100,46 @@ void VulkanApplication::InitInputSystem() const
                 break;
         }
     });
+}
+
+void VulkanApplication::CreateResources()
+{
+    const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
+    const std::uint32_t indexBufferSize = indices.size() * sizeof(uint16_t);
+    const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
+        {
+            GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        },
+        {
+            GetParamStr(AppConstants::MainIndexBuffer), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        }
+    };
+    CreateBuffers(bufferCreateInfos);
+
+    const ShaderModulesCreateInfo shaderModuleCreateInfo = {
+        .BasePath = SHADERS_DIR,
+        .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
+        .Modules = {
+            {
+                .Name = GetParamStr(AppConstants::MainVertexShaderKey),
+                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)
+            },
+            {
+                .Name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)
+            }
+        }
+    };
+    CreateShaderModules(shaderModuleCreateInfo);
+}
+
+void VulkanApplication::InitResources()
+{
+    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
+    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(uint16_t));
 }
 
 void VulkanApplication::CreatePipeline()
@@ -171,12 +180,14 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainVertexShaderKey))->
                     GetHandle();
         });
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainFragmentShaderKey))
                     ->GetHandle();
         });
         builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {

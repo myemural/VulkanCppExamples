@@ -18,26 +18,27 @@ using namespace common::vulkan_framework;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationBasics(std::move(params))
 {
-    currentWindowWidth_ = GetParamU32(WindowParams::Width);
-    currentWindowHeight_ = GetParamU32(WindowParams::Height);
 }
 
 bool VulkanApplication::Init()
 {
     try {
+        currentWindowWidth_ = GetParamU32(WindowParams::Width);
+        currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
         CreateDefaultLogicalDevice();
         CreateDefaultQueue();
         CreateDefaultSwapChain();
-        CreateDefaultRenderPass();
-
-        CreateShaderModules();
-        CreatePipeline();
-
-        CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+
+        CreateShaderModules();
+
+        CreateDefaultRenderPass();
+        CreatePipeline();
+        CreateDefaultFramebuffers();
 
         CreateCommandBuffers();
         RecordCommandBuffers(); // Recording in Init for this example
@@ -63,11 +64,11 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
                    });
 
-    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
+    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }

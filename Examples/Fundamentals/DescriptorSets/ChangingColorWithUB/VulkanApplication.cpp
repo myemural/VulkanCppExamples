@@ -25,67 +25,31 @@ using namespace common::vulkan_framework;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationDescriptorSets(std::move(params))
 {
-    currentWindowWidth_ = GetParamU32(WindowParams::Width);
-    currentWindowHeight_ = GetParamU32(WindowParams::Height);
-
-    const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
-    constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<Color3>(AppSettings::TriangleColor));
-
-    bufferCreateInfos_ = {
-        {
-            GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
-            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        },
-        {
-            GetParamStr(AppConstants::MainUniformBuffer), uniformBufferSize,
-            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        }
-    };
-
-    shaderModuleCreateInfo_ = {
-        .BasePath = SHADERS_DIR,
-        .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
-        .Modules = {
-            {
-                .Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)
-            },
-            {
-                .Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)
-            }
-        }
-    };
 }
 
 bool VulkanApplication::Init()
 {
     try {
+        currentWindowWidth_ = GetParamU32(WindowParams::Width);
+        currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
         CreateDefaultLogicalDevice();
         CreateDefaultQueue();
         CreateDefaultSwapChain();
-
-        CreateBuffers(bufferCreateInfos_);
-        SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
-        const auto triangleColor = params_.Get<Color3>(AppSettings::TriangleColor);
-        SetBuffer(GetParamStr(AppConstants::MainUniformBuffer), &triangleColor, sizeof(Color3));
-
-        CreateDefaultRenderPass();
-        CreateShaderModules(shaderModuleCreateInfo_);
-        CreateDescriptorSetLayout();
-        CreateDescriptorPool();
-        CreateDescriptorSet();
-        CreatePipeline();
-        CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
-        CreateCommandBuffers();
+
+        CreateResources();
+        InitResources();
+
+        CreateDefaultRenderPass();
+        CreatePipeline();
+        CreateDefaultFramebuffers();
 
         const uint32_t vertexCount = vertices.size();
+        CreateCommandBuffers();
         RecordCommandBuffers(vertexCount); // Recording in Init for this example
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
@@ -109,13 +73,72 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
                    });
 
-    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
+    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+}
+
+void VulkanApplication::CreateResources()
+{
+    const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
+    constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<Color3>(AppSettings::TriangleColor));
+
+    const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
+        {
+            GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        },
+        {
+            GetParamStr(AppConstants::MainUniformBuffer), uniformBufferSize,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        }
+    };
+    CreateBuffers(bufferCreateInfos);
+
+    const ShaderModulesCreateInfo shaderModuleCreateInfo = {
+        .BasePath = SHADERS_DIR,
+        .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
+        .Modules = {
+            {
+                .Name = GetParamStr(AppConstants::MainVertexShaderKey),
+                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)
+            },
+            {
+                .Name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)
+            }
+        }
+    };
+    CreateShaderModules(shaderModuleCreateInfo);
+
+    CreateDescriptorPool();
+    CreateDescriptorSetLayout();
+    CreateDescriptorSet();
+}
+
+void VulkanApplication::InitResources()
+{
+    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
+    const auto triangleColor = params_.Get<Color3>(AppSettings::TriangleColor);
+    SetBuffer(GetParamStr(AppConstants::MainUniformBuffer), &triangleColor, sizeof(Color3));
+}
+
+void VulkanApplication::CreateDescriptorPool()
+{
+    VkDescriptorPoolSize poolSize;
+    poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSize.descriptorCount = 1;
+    descriptorPool_ = device_->CreateDescriptorPool(1, {poolSize}, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT);
+
+    if (!descriptorPool_) {
+        throw std::runtime_error("Failed to create descriptor pool!");
+    }
 }
 
 void VulkanApplication::CreateDescriptorSetLayout()
@@ -134,18 +157,6 @@ void VulkanApplication::CreateDescriptorSetLayout()
 
     if (!descriptorSetLayout_) {
         throw std::runtime_error("Failed to create descriptor set layout!");
-    }
-}
-
-void VulkanApplication::CreateDescriptorPool()
-{
-    VkDescriptorPoolSize poolSize;
-    poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSize.descriptorCount = 1;
-    descriptorPool_ = device_->CreateDescriptorPool(1, {poolSize}, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT);
-
-    if (!descriptorPool_) {
-        throw std::runtime_error("Failed to create descriptor pool!");
     }
 }
 
@@ -202,12 +213,14 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainVertexShaderKey))->
                     GetHandle();
         });
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainFragmentShaderKey))
                     ->GetHandle();
         });
         builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {

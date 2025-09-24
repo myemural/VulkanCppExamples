@@ -27,9 +27,14 @@ protected:
 
     void DrawFrame() override;
 
-    void CreateDescriptorSetLayout();
+private:
+    void CreateResources();
+
+    void InitResources();
 
     void CreateDescriptorPool();
+
+    void CreateDescriptorSetLayout();
 
     void CreateDescriptorSet();
 
@@ -42,9 +47,6 @@ protected:
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
-
-    std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
-    common::vulkan_framework::ShaderModulesCreateInfo shaderModuleCreateInfo_;
 
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorSetLayout> descriptorSetLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorPool> descriptorPool_;

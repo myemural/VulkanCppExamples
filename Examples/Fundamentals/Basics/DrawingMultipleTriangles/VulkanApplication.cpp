@@ -21,32 +21,32 @@ using namespace common::vulkan_framework;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationBasics(std::move(params))
 {
-    currentWindowWidth_ = GetParamU32(WindowParams::Width);
-    currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
 }
 
 bool VulkanApplication::Init()
 {
     try {
+        currentWindowWidth_ = GetParamU32(WindowParams::Width);
+        currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
         CreateDefaultLogicalDevice();
         CreateDefaultQueue();
         CreateDefaultSwapChain();
-
-        const uint32_t vertexDataSize = vertices.size() * sizeof(VertexPos2);
-        CreateVertexBuffer(vertexDataSize);
-        FillVertexBuffer(vertices.data(), vertexDataSize);
-
-        CreateDefaultRenderPass();
-        CreateShaderModules();
-        CreatePipeline();
-        CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
-        CreateCommandBuffers();
+
+        CreateResources();
+        InitResources();
+
+        CreateDefaultRenderPass();
+        CreatePipeline();
+        CreateDefaultFramebuffers();
 
         const uint32_t vertexCount = vertices.size();
+        CreateCommandBuffers();
         RecordCommandBuffers(vertexCount); // Recording in Init for this example
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
@@ -70,13 +70,27 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
                    });
 
-    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
+    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+}
+
+void VulkanApplication::CreateResources()
+{
+    const uint32_t vertexDataSize = vertices.size() * sizeof(vertices[0]);
+    CreateVertexBuffer(vertexDataSize);
+
+    CreateShaderModules();
+}
+
+void VulkanApplication::InitResources() const
+{
+    const uint32_t vertexDataSize = vertices.size() * sizeof(vertices[0]);
+    FillVertexBuffer(vertices.data(), vertexDataSize);
 }
 
 void VulkanApplication::CreateVertexBuffer(std::uint64_t dataSize)

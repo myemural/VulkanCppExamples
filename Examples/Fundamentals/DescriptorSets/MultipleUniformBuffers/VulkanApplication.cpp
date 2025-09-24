@@ -25,12 +25,82 @@ using namespace common::vulkan_framework;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationDescriptorSets(std::move(params))
 {
-    currentWindowWidth_ = GetParamU32(WindowParams::Width);
-    currentWindowHeight_ = GetParamU32(WindowParams::Height);
+}
 
+bool VulkanApplication::Init()
+{
+    try {
+        currentWindowWidth_ = GetParamU32(WindowParams::Width);
+        currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
+        CreateDefaultSurface();
+        SelectDefaultPhysicalDevice();
+        CreateDefaultLogicalDevice();
+        CreateDefaultQueue();
+        CreateDefaultSwapChain();
+        CreateDefaultCommandPool();
+        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+
+        CreateResources();
+        InitResources();
+
+        CreateDefaultRenderPass();
+        CreatePipeline();
+        CreateDefaultFramebuffers();
+
+        const uint32_t vertexCount = vertices.size();
+        CreateCommandBuffers();
+        RecordCommandBuffers(vertexCount); // Recording in Init for this example
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << '\n';
+        return false;
+    }
+
+    return true;
+}
+
+void VulkanApplication::DrawFrame()
+{
+    inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
+    inFlightFences_[currentIndex_]->ResetFence();
+
+    uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
+
+    if (swapImagesFences_[imageIndex] != nullptr) {
+        swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
+    }
+
+    swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
+
+    const auto currentTime = static_cast<float>(glfwGetTime());
+    const auto currentValue = 0.5f + 0.5f * std::sin(currentTime * 1.1f);
+    const Color3 topLeftColor{currentValue, 0.0f, 0.0f};
+    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &topLeftColor, sizeof(Color3));
+
+    const Color3 topRightColor{0.0f, currentValue, 0.0f};
+    SetBuffer(GetParamStr(AppConstants::TopRightUB), &topRightColor, sizeof(Color3));
+
+    const Color3 bottomLeftColor{0.0f, 0.0f, currentValue};
+    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &bottomLeftColor, sizeof(Color3));
+
+    const Color3 bottomRightColor{currentValue, 0.0f, currentValue};
+    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &bottomRightColor, sizeof(Color3));
+
+    queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
+                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+                   });
+
+    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
+
+    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+}
+
+void VulkanApplication::CreateResources()
+{
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
     constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<Color3>(AppSettings::InitialTriangleColor));
-    bufferCreateInfos_ = {
+    const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
         {
             GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -58,8 +128,9 @@ VulkanApplication::VulkanApplication(ParameterServer &&params)
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
         }
     };
+    CreateBuffers(bufferCreateInfos);
 
-    shaderModuleCreateInfo_ = {
+    const ShaderModulesCreateInfo shaderModuleCreateInfo = {
         .BasePath = SHADERS_DIR,
         .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
         .Modules = {
@@ -73,94 +144,24 @@ VulkanApplication::VulkanApplication(ParameterServer &&params)
             }
         }
     };
+    CreateShaderModules(shaderModuleCreateInfo);
+
+    CreateDescriptorPool();
+    CreateDescriptorSetLayout();
+    CreateDescriptorSet();
 }
 
-bool VulkanApplication::Init()
+void VulkanApplication::InitResources()
 {
-    try {
-        CreateDefaultSurface();
-        SelectDefaultPhysicalDevice();
-        CreateDefaultLogicalDevice();
-        CreateDefaultQueue();
-        CreateDefaultSwapChain();
+    const std::array screenSizes = {static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_)};
+    const auto initialTriangleColor = params_.Get<Color3>(AppSettings::InitialTriangleColor);
 
-        const auto windowWidth = window_->GetWindowWidth();
-        const auto windowHeight = window_->GetWindowHeight();
-        const std::array screenSizes = {static_cast<float>(windowWidth), static_cast<float>(windowHeight)};
-        CreateBuffers(bufferCreateInfos_);
-        SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(),
-                  vertices.size() * sizeof(VertexPos2));
-        SetBuffer(GetParamStr(AppConstants::ScreenSizeUB), &screenSizes, sizeof(screenSizes));
-        const auto initialTriangleColor = params_.Get<Color3>(AppSettings::InitialTriangleColor);
-        SetBuffer(GetParamStr(AppConstants::TopLeftUB), &initialTriangleColor, sizeof(Color3));
-        SetBuffer(GetParamStr(AppConstants::TopRightUB), &initialTriangleColor, sizeof(Color3));
-        SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &initialTriangleColor, sizeof(Color3));
-        SetBuffer(GetParamStr(AppConstants::BottomRightUB), &initialTriangleColor, sizeof(Color3));
-
-        CreateDefaultRenderPass();
-        CreateShaderModules(shaderModuleCreateInfo_);
-        CreateDescriptorPool();
-        CreateDescriptorSetLayout();
-        CreateDescriptorSet();
-        CreatePipeline();
-        CreateDefaultFramebuffers();
-        CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
-        CreateCommandBuffers();
-
-        const uint32_t vertexCount = vertices.size();
-        RecordCommandBuffers(vertexCount); // Recording in Init for this example
-    } catch (const std::exception &e) {
-        std::cerr << e.what() << '\n';
-        return false;
-    }
-
-    return true;
-}
-
-void VulkanApplication::DrawFrame()
-{
-    inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
-    inFlightFences_[currentIndex_]->ResetFence();
-
-    uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
-
-    if (swapImagesFences_[imageIndex] != nullptr) {
-        swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
-    }
-
-    swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
-
-    const auto currentTime = static_cast<float>(glfwGetTime());
-    const auto currentValue = 0.5f + 0.5f * std::sin(currentTime * 1.1f);
-    const Color3 topLeftColor{currentValue, 0.0f, 0.0f};
-    buffers_[GetParamStr(AppConstants::TopLeftUB)]->MapMemory();
-    buffers_[GetParamStr(AppConstants::TopLeftUB)]->FlushData(&topLeftColor, sizeof(Color3));
-    buffers_[GetParamStr(AppConstants::TopLeftUB)]->UnmapMemory();
-
-    const Color3 topRightColor{0.0f, currentValue, 0.0f};
-    buffers_[GetParamStr(AppConstants::TopRightUB)]->MapMemory();
-    buffers_[GetParamStr(AppConstants::TopRightUB)]->FlushData(&topRightColor, sizeof(Color3));
-    buffers_[GetParamStr(AppConstants::TopRightUB)]->UnmapMemory();
-
-    const Color3 bottomLeftColor{0.0f, 0.0f, currentValue};
-    buffers_[GetParamStr(AppConstants::BottomLeftUB)]->MapMemory();
-    buffers_[GetParamStr(AppConstants::BottomLeftUB)]->FlushData(&bottomLeftColor, sizeof(Color3));
-    buffers_[GetParamStr(AppConstants::BottomLeftUB)]->UnmapMemory();
-
-    const Color3 bottomRightColor{currentValue, 0.0f, currentValue};
-    buffers_[GetParamStr(AppConstants::BottomRightUB)]->MapMemory();
-    buffers_[GetParamStr(AppConstants::BottomRightUB)]->FlushData(&bottomRightColor, sizeof(Color3));
-    buffers_[GetParamStr(AppConstants::BottomRightUB)]->UnmapMemory();
-
-    queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
-                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-                   });
-
-    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
-
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
+    SetBuffer(GetParamStr(AppConstants::ScreenSizeUB), &screenSizes, sizeof(screenSizes));
+    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &initialTriangleColor, sizeof(Color3));
+    SetBuffer(GetParamStr(AppConstants::TopRightUB), &initialTriangleColor, sizeof(Color3));
+    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &initialTriangleColor, sizeof(Color3));
+    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &initialTriangleColor, sizeof(Color3));
 }
 
 void VulkanApplication::CreateDescriptorPool()
@@ -174,7 +175,6 @@ void VulkanApplication::CreateDescriptorPool()
         throw std::runtime_error("Failed to create descriptor pool!");
     }
 }
-
 
 void VulkanApplication::CreateDescriptorSetLayout()
 {
@@ -269,12 +269,14 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainVertexShaderKey))->
                     GetHandle();
         });
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainFragmentShaderKey))
                     ->GetHandle();
         });
         builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {

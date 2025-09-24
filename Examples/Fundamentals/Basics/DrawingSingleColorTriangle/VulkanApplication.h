@@ -34,6 +34,7 @@ protected:
 
     void DrawFrame() override;
 
+private:
     void CreateShaderModules();
 
     void CreatePipeline();

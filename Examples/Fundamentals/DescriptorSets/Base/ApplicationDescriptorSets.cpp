@@ -183,9 +183,12 @@ void ApplicationDescriptorSets::CreateDefaultSyncObjects(const std::uint32_t max
 {
     swapImagesFences_.resize(swapChainImageViews_.size(), nullptr);
 
-    for (size_t i = 0; i < maxFramesInFlight; i++) {
-        imageAvailableSemaphores_.emplace_back(device_->CreateSemaphore());
+    for (size_t i = 0; i < swapChainImageViews_.size(); ++i) {
         renderFinishedSemaphores_.emplace_back(device_->CreateSemaphore());
+    }
+
+    for (size_t i = 0; i < maxFramesInFlight; ++i) {
+        imageAvailableSemaphores_.emplace_back(device_->CreateSemaphore());
         inFlightFences_.emplace_back(device_->CreateFence(VK_FENCE_CREATE_SIGNALED_BIT));
     }
 
@@ -196,7 +199,7 @@ void ApplicationDescriptorSets::CreateDefaultSyncObjects(const std::uint32_t max
 
 void ApplicationDescriptorSets::CreateBuffers(const std::vector<BufferResourceCreateInfo> &bufferCreateInfos)
 {
-    for (const auto& createInfo: bufferCreateInfos) {
+    for (const auto &createInfo: bufferCreateInfos) {
         buffers_[createInfo.Name] = std::make_unique<BufferResource>(physicalDevice_, device_);
         buffers_[createInfo.Name]->CreateBuffer(createInfo);
     }

@@ -21,46 +21,40 @@ using namespace common::vulkan_framework;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationBasics(std::move(params))
 {
-    currentWindowWidth_ = GetParamU32(WindowParams::Width);
-    currentWindowHeight_ = GetParamU32(WindowParams::Height);
 }
 
 bool VulkanApplication::Init()
 {
     try {
+        currentWindowWidth_ = GetParamU32(WindowParams::Width);
+        currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
         CreateDefaultLogicalDevice();
         CreateDefaultQueue();
         CreateDefaultSwapChain();
-
-        const uint32_t vertexDataSize = vertices.size() * sizeof(vertices[0]);
-        CreateVertexBuffer(vertexDataSize);
-        FillVertexBuffer(vertices.data(), vertexDataSize);
+        CreateDefaultCommandPool();
+        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
 
         uint32_t indexCount;
         if (params_.Get<bool>(AppSettings::PrimitiveRestartEnabled)) {
             const uint32_t indexDataSize = indicesWithRestart.size() * sizeof(indicesWithRestart[0]);
-            CreateIndexBuffer(indexDataSize);
-            FillIndexBuffer(indicesWithRestart.data(), indexDataSize);
-
+            CreateResources(indexDataSize);
+            InitResources(indicesWithRestart.data(), indexDataSize);
             indexCount = indicesWithRestart.size();
         } else {
             const uint32_t indexDataSize = indicesWithoutRestart.size() * sizeof(indicesWithoutRestart[0]);
-            CreateIndexBuffer(indexDataSize);
-            FillIndexBuffer(indicesWithoutRestart.data(), indexDataSize);
-
+            CreateResources(indexDataSize);
+            InitResources(indicesWithoutRestart.data(), indexDataSize);
             indexCount = indicesWithoutRestart.size();
         }
 
         CreateDefaultRenderPass();
-        CreateShaderModules();
         CreatePipeline();
         CreateDefaultFramebuffers();
-        CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
-        CreateCommandBuffers();
 
+        CreateCommandBuffers();
         RecordCommandBuffers(indexCount); // Recording in Init for this example
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
@@ -84,13 +78,31 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[currentIndex_]}, inFlightFences_[currentIndex_], {
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
                    });
 
-    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[currentIndex_]});
+    queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+}
+
+void VulkanApplication::CreateResources(const std::uint64_t indexDataSize)
+{
+    const uint32_t vertexDataSize = vertices.size() * sizeof(vertices[0]);
+    CreateVertexBuffer(vertexDataSize);
+
+    CreateIndexBuffer(indexDataSize);
+
+    CreateShaderModules();
+}
+
+void VulkanApplication::InitResources(const void *indexData, const std::uint64_t indexDataSize) const
+{
+    const uint32_t vertexDataSize = vertices.size() * sizeof(vertices[0]);
+    FillVertexBuffer(vertices.data(), vertexDataSize);
+
+    FillIndexBuffer(indexData, indexDataSize);
 }
 
 void VulkanApplication::CreateVertexBuffer(std::uint64_t dataSize)

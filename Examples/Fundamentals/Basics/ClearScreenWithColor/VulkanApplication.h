@@ -28,6 +28,7 @@ protected:
 
     void DrawFrame() override;
 
+private:
     void CreateCommandBuffers();
 
     void RecordCommandBuffers();
