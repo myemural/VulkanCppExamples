@@ -39,11 +39,14 @@ protected:
 
     void Cleanup() noexcept override;
 
+private:
     void InitInputSystem();
 
-    void InitResources(const VkFormat &depthImageFormat);
+    void CreateResources();
 
-    void CreateRenderPass(const VkFormat &depthImageFormat);
+    void InitResources();
+
+    void CreateRenderPass();
 
     void CreatePipeline();
 
@@ -60,15 +63,8 @@ protected:
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
+    VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
     MvpData mvpData[NUM_CUBES] = {glm::mat4(1.0)};
-
-    // Create infos
-    std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
-    std::vector<common::vulkan_framework::ImageResourceCreateInfo> imageResourceCreateInfos_;
-    std::vector<common::vulkan_framework::SamplerResourceCreateInfo> samplerResourceCreateInfos_;
-    common::vulkan_framework::ShaderModulesCreateInfo shaderModuleCreateInfo_;
-    common::vulkan_framework::DescriptorResourceCreateInfo descriptorSetCreateInfo_;
-    common::vulkan_framework::DescriptorUpdateInfo descriptorSetUpdateInfo_;
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};
@@ -79,7 +75,6 @@ protected:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffersPresent_;
-    std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> cmdBufferTransfer_;
 
     // Camera values
     glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f); // Camera position

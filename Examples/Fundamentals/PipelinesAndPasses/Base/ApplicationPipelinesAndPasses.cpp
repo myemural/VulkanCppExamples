@@ -168,7 +168,7 @@ void ApplicationPipelinesAndPasses::CreateDefaultSyncObjects(const std::uint32_t
     }
 }
 
-void ApplicationPipelinesAndPasses::CreateResources(const ResourceDescriptor &resourceCreateInfo)
+void ApplicationPipelinesAndPasses::CreateVulkanResources(const ResourceDescriptor &resourceCreateInfo)
 {
     resources_ = std::make_unique<ResourceManager>(physicalDevice_, device_);
 

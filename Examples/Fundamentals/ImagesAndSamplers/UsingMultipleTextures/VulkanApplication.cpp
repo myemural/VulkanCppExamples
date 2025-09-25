@@ -24,127 +24,32 @@ using namespace common::vulkan_framework;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationImagesAndSamplers(std::move(params))
 {
-    currentWindowWidth_ = GetParamU32(WindowParams::Width);
-    currentWindowHeight_ = GetParamU32(WindowParams::Height);
-
-    // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    bricksTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::BricksTexturePath));
-    wallTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::WallTexturePath));
-
-    // Fill buffer create infos
-    const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2Uv2);
-    const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
-    bufferCreateInfos_ = {
-        {
-            GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
-            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        },
-        {
-            GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        },
-        {
-            GetParamStr(AppConstants::BricksStagingBuffer), bricksTextureHandler_.GetByteSize(),
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        },
-        {
-            GetParamStr(AppConstants::WallStagingBuffer), wallTextureHandler_.GetByteSize(),
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        }
-    };
-
-    // Fill shader module create infos
-    shaderModuleCreateInfo_ = {
-        .BasePath = SHADERS_DIR,
-        .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
-        .Modules = {
-            {
-                .Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)
-            },
-            {
-                .Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)
-            }
-        }
-    };
-
-    // Fill descriptor set create infos
-    descriptorSetCreateInfo_ = {
-        .MaxSets = 1,
-        .PoolSizes = {
-            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}
-        },
-        .Layouts = {
-            {
-                .Name = GetParamStr(AppConstants::MainDescSetLayout),
-                .Bindings = {
-                    {
-                        0,
-                        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                        2,
-                        VK_SHADER_STAGE_FRAGMENT_BIT,
-                        nullptr
-                    }
-                }
-            }
-        }
-    };
-
-    // Fill push constant data for every quad
-    pushConstantData_[TOP_LEFT_QUAD_INDEX] = {.Offset = {-0.5, -0.5}, .SamplerIndex = TOP_LEFT_QUAD_INDEX};
-    pushConstantData_[TOP_RIGHT_QUAD_INDEX] = {.Offset = {0.5, -0.5}, .SamplerIndex = TOP_RIGHT_QUAD_INDEX};
-    pushConstantData_[BOTTOM_CENTER_QUAD_INDEX] = {.Offset = {0.0, 0.5}, .SamplerIndex = BOTTOM_CENTER_QUAD_INDEX};
 }
 
 bool VulkanApplication::Init()
 {
     try {
+        currentWindowWidth_ = GetParamU32(WindowParams::Width);
+        currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
         CreateDefaultLogicalDevice();
         CreateDefaultQueue();
         CreateDefaultSwapChain();
-
-        CreateTextureImages();
-        CreateTextureImageViews();
-        CreateSampler();
-
-        CreateBuffers(bufferCreateInfos_);
-        SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(),
-                  vertices.size() * sizeof(VertexPos2Uv2));
-        SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(),
-                  indices.size() * sizeof(indices[0]));
-        SetBuffer(GetParamStr(AppConstants::BricksStagingBuffer), bricksTextureHandler_.Data,
-                  bricksTextureHandler_.GetByteSize());
-        SetBuffer(GetParamStr(AppConstants::WallStagingBuffer), wallTextureHandler_.Data,
-                  wallTextureHandler_.GetByteSize());
-
-        CreateDefaultRenderPass();
-        CreateShaderModules(shaderModuleCreateInfo_);
-        CreateDescriptorSets(descriptorSetCreateInfo_);
-        UpdateDescriptorSets();
-        CreatePipeline();
-        CreateDefaultFramebuffers();
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
-        CreateCommandBuffers();
+
+        CreateResources();
+        InitResources();
+
+        CreateDefaultRenderPass();
+        CreatePipeline();
+        CreateDefaultFramebuffers();
 
         const uint32_t indexCount = indices.size();
+        CreateCommandBuffers();
         RecordPresentCommandBuffers(indexCount);
-        ChangeImageLayout(bricksTexImage_, VK_IMAGE_LAYOUT_UNDEFINED,
-                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        ChangeImageLayout(wallTexImage_, VK_IMAGE_LAYOUT_UNDEFINED,
-                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        CopyStagingBuffers();
-        ChangeImageLayout(bricksTexImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        ChangeImageLayout(wallTexImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
         return false;
@@ -183,6 +88,111 @@ void VulkanApplication::Cleanup() noexcept
     wallTextureHandler_.Clear();
 }
 
+void VulkanApplication::CreateResources()
+{
+    // Pre-load textures
+    const TextureLoader textureLoader{ASSETS_DIR};
+    bricksTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::BricksTexturePath));
+    wallTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::WallTexturePath));
+
+    // Fill buffer create infos
+    const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2Uv2);
+    const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
+    const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
+        {
+            GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        },
+        {
+            GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        },
+        {
+            GetParamStr(AppConstants::BricksStagingBuffer), bricksTextureHandler_.GetByteSize(),
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        },
+        {
+            GetParamStr(AppConstants::WallStagingBuffer), wallTextureHandler_.GetByteSize(),
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        }
+    };
+    CreateBuffers(bufferCreateInfos);
+
+    // Fill shader module create infos
+    const ShaderModulesCreateInfo shaderModuleCreateInfo = {
+        .BasePath = SHADERS_DIR,
+        .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
+        .Modules = {
+            {
+                .Name = GetParamStr(AppConstants::MainVertexShaderKey),
+                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)
+            },
+            {
+                .Name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)
+            }
+        }
+    };
+    CreateShaderModules(shaderModuleCreateInfo);
+
+    // Fill descriptor set create infos
+    const DescriptorResourceCreateInfo descriptorSetCreateInfo = {
+        .MaxSets = 1,
+        .PoolSizes = {
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}
+        },
+        .Layouts = {
+            {
+                .Name = GetParamStr(AppConstants::MainDescSetLayout),
+                .Bindings = {
+                    {
+                        0,
+                        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                        2,
+                        VK_SHADER_STAGE_FRAGMENT_BIT,
+                        nullptr
+                    }
+                }
+            }
+        }
+    };
+    CreateDescriptorSets(descriptorSetCreateInfo);
+
+    CreateTextureImages();
+    CreateTextureImageViews();
+    CreateSampler();
+}
+
+void VulkanApplication::InitResources()
+{
+    // Fill push constant data for every quad
+    pushConstantData_[TOP_LEFT_QUAD_INDEX] = {.Offset = {-0.5, -0.5}, .SamplerIndex = TOP_LEFT_QUAD_INDEX};
+    pushConstantData_[TOP_RIGHT_QUAD_INDEX] = {.Offset = {0.5, -0.5}, .SamplerIndex = TOP_RIGHT_QUAD_INDEX};
+    pushConstantData_[BOTTOM_CENTER_QUAD_INDEX] = {.Offset = {0.0, 0.5}, .SamplerIndex = BOTTOM_CENTER_QUAD_INDEX};
+
+    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2Uv2));
+    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(indices[0]));
+    SetBuffer(GetParamStr(AppConstants::BricksStagingBuffer), bricksTextureHandler_.Data,
+              bricksTextureHandler_.GetByteSize());
+    SetBuffer(GetParamStr(AppConstants::WallStagingBuffer), wallTextureHandler_.Data,
+              wallTextureHandler_.GetByteSize());
+
+    UpdateDescriptorSets();
+
+    ChangeImageLayout(bricksTexImage_, VK_IMAGE_LAYOUT_UNDEFINED,
+                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    ChangeImageLayout(wallTexImage_, VK_IMAGE_LAYOUT_UNDEFINED,
+                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    CopyStagingBuffers();
+    ChangeImageLayout(bricksTexImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    ChangeImageLayout(wallTexImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+}
+
 void VulkanApplication::CreatePipeline()
 {
     VkPushConstantRange pushConstant;
@@ -199,7 +209,9 @@ void VulkanApplication::CreatePipeline()
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    VkViewport viewport{0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f};
+    VkViewport viewport{
+        0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f
+    };
     VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
@@ -225,12 +237,14 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainVertexShaderKey))->
                     GetHandle();
         });
         builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(
+                        GetParamStr(AppConstants::MainFragmentShaderKey))
                     ->GetHandle();
         });
         builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {
@@ -256,7 +270,7 @@ void VulkanApplication::CreatePipeline()
     }
 }
 
-void VulkanApplication::UpdateDescriptorSets()
+void VulkanApplication::UpdateDescriptorSets() const
 {
     std::vector<VkDescriptorImageInfo> imageSamplerInfos;
     imageSamplerInfos.emplace_back(sampler_->GetHandle(), bricksTexImageView_->GetHandle(),
@@ -270,11 +284,11 @@ void VulkanApplication::UpdateDescriptorSets()
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    descriptorSetUpdateInfo_ = {
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
         .ImageWriteRequests = {samplerUpdateRequest}
     };
 
-    UpdateDescriptorSet(descriptorSetUpdateInfo_);
+    UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
 
 void VulkanApplication::CreateTextureImages()
@@ -361,12 +375,6 @@ void VulkanApplication::CreateCommandBuffers()
     if (cmdBuffersPresent_.empty()) {
         throw std::runtime_error("Failed to create command buffers!");
     }
-
-    cmdBufferTransfer_ = cmdPool_->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
-
-    if (!cmdBufferTransfer_) {
-        throw std::runtime_error("Failed to create command buffer for transfer!");
-    }
 }
 
 void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t indexCount)
@@ -411,13 +419,15 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t indexCou
 
 void VulkanApplication::CopyStagingBuffers()
 {
-    if (!cmdBufferTransfer_->BeginCommandBuffer([](auto &beginInfo) {
+    const auto cmdBufferTransfer = cmdPool_->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
+
+    if (!cmdBufferTransfer->BeginCommandBuffer([](auto &beginInfo) {
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     })) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
-    VkBufferImageCopy copyRegion = {
+    VkBufferImageCopy copyRegionBricks = {
         .bufferOffset = 0,
         .bufferRowLength = 0,
         .bufferImageHeight = 0,
@@ -430,21 +440,25 @@ void VulkanApplication::CopyStagingBuffers()
         .imageOffset = {0, 0, 0},
         .imageExtent = {bricksTextureHandler_.Width, bricksTextureHandler_.Height, 1},
     };
-    cmdBufferTransfer_->CopyBufferToImage(
+
+    VkBufferImageCopy copyRegionWall = copyRegionBricks;
+    copyRegionWall.imageExtent = {wallTextureHandler_.Width, wallTextureHandler_.Height, 1};
+
+    cmdBufferTransfer->CopyBufferToImage(
         buffers_[GetParamStr(AppConstants::BricksStagingBuffer)]->GetBuffer(),
         bricksTexImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        {copyRegion});
-    cmdBufferTransfer_->CopyBufferToImage(
+        {copyRegionBricks});
+    cmdBufferTransfer->CopyBufferToImage(
         buffers_[GetParamStr(AppConstants::WallStagingBuffer)]->GetBuffer(),
         wallTexImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        {copyRegion});
+        {copyRegionWall});
 
-    if (!cmdBufferTransfer_->EndCommandBuffer()) {
+    if (!cmdBufferTransfer->EndCommandBuffer()) {
         throw std::runtime_error("Failed to end recording command buffer!");
     }
 
     // Directly submit this command buffer to queue
-    queue_->Submit({cmdBufferTransfer_});
+    queue_->Submit({cmdBufferTransfer});
     queue_->WaitIdle();
 }
 } // namespace examples::fundamentals::images_and_samplers::using_multiple_textures

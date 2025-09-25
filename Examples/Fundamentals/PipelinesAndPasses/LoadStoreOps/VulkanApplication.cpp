@@ -29,13 +29,14 @@ using namespace common::window_wrapper;
 VulkanApplication::VulkanApplication(ParameterServer &&params)
     : ApplicationPipelinesAndPasses(std::move(params))
 {
-    currentWindowWidth_ = GetParamU32(WindowParams::Width);
-    currentWindowHeight_ = GetParamU32(WindowParams::Height);
 }
 
 bool VulkanApplication::Init()
 {
     try {
+        currentWindowWidth_ = GetParamU32(WindowParams::Width);
+        currentWindowHeight_ = GetParamU32(WindowParams::Height);
+
         InitInputSystem();
 
         CreateDefaultSurface();
@@ -44,33 +45,15 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateDefaultSwapChain();
         CreateDefaultCommandPool();
+        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
 
-        const auto depthFormat = physicalDevice_->FindSupportedFormat({
-                                                                          VK_FORMAT_D32_SFLOAT,
-                                                                          VK_FORMAT_D32_SFLOAT_S8_UINT,
-                                                                          VK_FORMAT_D24_UNORM_S8_UINT
-                                                                      },
-                                                                      VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+        CreateResources();
+        InitResources();
 
-
-        InitResources(depthFormat);
-
-        resources_->SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(),
-                              vertices.size() * sizeof(VertexPos3Uv2));
-        resources_->SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(),
-                              indices.size() * sizeof(indices[0]));
-        resources_->SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data,
-                              crateTextureHandler_.GetByteSize());
-        resources_->SetImageFromBuffer(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage),
-                                       resources_->GetBuffer(GetParamStr(AppConstants::ImageStagingBuffer)), {
-                                           crateTextureHandler_.Width, crateTextureHandler_.Height, 1
-                                       });
-
-        CreateRenderPass(depthFormat);
+        CreateRenderPass();
         CreatePipeline();
         CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
                                                            GetParamStr(AppConstants::DepthImageView)));
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
         CreateCommandBuffers();
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
@@ -170,16 +153,26 @@ void VulkanApplication::InitInputSystem()
     });
 }
 
-void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
+void VulkanApplication::CreateResources()
 {
+    depthImageFormat_ = physicalDevice_->FindSupportedFormat({
+                                                                 VK_FORMAT_D32_SFLOAT,
+                                                                 VK_FORMAT_D32_SFLOAT_S8_UINT,
+                                                                 VK_FORMAT_D24_UNORM_S8_UINT
+                                                             },
+                                                             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
     crateTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::CrateTexturePath));
 
+    ResourceDescriptor resourceCreateInfo;
+
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
-    resourceCreateInfo_.Buffers = {
+
+    resourceCreateInfo.Buffers = {
         {
             GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -197,7 +190,7 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
     };
 
     // Fill shader module create infos
-    resourceCreateInfo_.Shaders = {
+    resourceCreateInfo.Shaders = {
         .BasePath = SHADERS_DIR,
         .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
         .Modules = {
@@ -213,7 +206,7 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
     };
 
     // Fill descriptor set create infos
-    resourceCreateInfo_.Descriptors = {
+    resourceCreateInfo.Descriptors = {
         .MaxSets = 1,
         .PoolSizes = {
             {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}
@@ -234,8 +227,8 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
         }
     };
 
-    resourceCreateInfo_.Images = {
-        ImageResourceCreateInfo{
+    resourceCreateInfo.Images = {
+        ImageResourceCreateInfo {
             .Name = GetParamStr(AppConstants::CrateImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .Format = VK_FORMAT_R8G8B8A8_SRGB,
@@ -247,16 +240,16 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
                 }
             }
         },
-        ImageResourceCreateInfo{
+        ImageResourceCreateInfo {
             .Name = GetParamStr(AppConstants::DepthImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat,
+            .Format = depthImageFormat_,
             .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
             .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
             .Views = {
                 ImageViewCreateInfo{
                     .ViewName = GetParamStr(AppConstants::DepthImageView),
-                    .Format = depthImageFormat,
+                    .Format = depthImageFormat_,
                     .SubresourceRange = {
                         .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                         .baseMipLevel = 0,
@@ -269,7 +262,7 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
         }
     };
 
-    resourceCreateInfo_.Samplers = {
+    resourceCreateInfo.Samplers = {
         {
             .Name = GetParamStr(AppConstants::MainSampler),
             .FilteringBehavior = {
@@ -279,11 +272,27 @@ void VulkanApplication::InitResources(const VkFormat &depthImageFormat)
         }
     };
 
-    CreateResources(resourceCreateInfo_);
+    CreateVulkanResources(resourceCreateInfo);
+}
+
+void VulkanApplication::InitResources() const
+{
+    resources_->SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(),
+                          vertices.size() * sizeof(VertexPos3Uv2));
+    resources_->SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(),
+                          indices.size() * sizeof(indices[0]));
+    resources_->SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data,
+                          crateTextureHandler_.GetByteSize());
+
+    resources_->SetImageFromBuffer(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage),
+                                   resources_->GetBuffer(GetParamStr(AppConstants::ImageStagingBuffer)), {
+                                       crateTextureHandler_.Width, crateTextureHandler_.Height, 1
+                                   });
+
     UpdateDescriptorSets();
 }
 
-void VulkanApplication::CreateRenderPass(const VkFormat &depthImageFormat)
+void VulkanApplication::CreateRenderPass()
 {
     VkAttachmentReference colorAttachmentRef{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
@@ -300,8 +309,8 @@ void VulkanApplication::CreateRenderPass(const VkFormat &depthImageFormat)
                     attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
                     attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
                 })
-                .AddAttachment([&depthImageFormat](auto &attachmentCreateInfo) {
-                    attachmentCreateInfo.format = depthImageFormat;
+                .AddAttachment([&](auto &attachmentCreateInfo) {
+                    attachmentCreateInfo.format = depthImageFormat_;
                     attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
                     attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
                     attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -406,7 +415,7 @@ void VulkanApplication::CreatePipeline()
     }
 }
 
-void VulkanApplication::UpdateDescriptorSets()
+void VulkanApplication::UpdateDescriptorSets() const
 {
     std::vector<VkDescriptorImageInfo> imageSamplerInfos;
     imageSamplerInfos.emplace_back(
@@ -421,11 +430,11 @@ void VulkanApplication::UpdateDescriptorSets()
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    descriptorSetUpdateInfo_ = {
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
         .ImageWriteRequests = {samplerUpdateRequest}
     };
 
-    resources_->UpdateDescriptorSet(descriptorSetUpdateInfo_);
+    resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
 
 void VulkanApplication::CreateCommandBuffers()
@@ -434,12 +443,6 @@ void VulkanApplication::CreateCommandBuffers()
 
     if (cmdBuffersPresent_.empty()) {
         throw std::runtime_error("Failed to create command buffers!");
-    }
-
-    cmdBufferTransfer_ = cmdPool_->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
-
-    if (!cmdBufferTransfer_) {
-        throw std::runtime_error("Failed to create command buffer for transfer!");
     }
 }
 

@@ -60,3 +60,14 @@ VkVertexInputAttributeDescription GenerateAttributeDescriptionInternal(const uin
 
 #define GenerateAttributeDescription(VertexStruct, Attribute, BindingIndex) \
     GenerateAttributeDescriptionInternal<decltype(VertexStruct::Attribute)>(BindingIndex, offsetof(VertexStruct, Attribute))
+
+constexpr common::utility::Vec4 CalculateUVRect(const VkRect2D &r, const uint32_t atlasWidth,
+                                                const uint32_t atlasHeight)
+{
+    const float u0 = static_cast<float>(r.offset.x) / static_cast<float>(atlasWidth);
+    const float v0 = static_cast<float>(r.offset.y) / static_cast<float>(atlasHeight);
+    const float u1 = static_cast<float>(r.offset.x + r.extent.width) / static_cast<float>(atlasWidth);
+    const float v1 = static_cast<float>(r.offset.y + r.extent.height) / static_cast<float>(atlasHeight);
+
+    return {u0, v0, (u1 - u0), (v1 - v0)};
+}

@@ -67,7 +67,7 @@ protected:
 
     void CreateDefaultSyncObjects(std::uint32_t maxFramesInFlight);
 
-    void CreateResources(const common::vulkan_framework::ResourceDescriptor& resourceCreateInfo);
+    void CreateVulkanResources(const common::vulkan_framework::ResourceDescriptor& resourceCreateInfo);
 
     std::shared_ptr<common::window_wrapper::Window> window_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSurface> surface_;

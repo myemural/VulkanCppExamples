@@ -8,7 +8,6 @@
 
 #include <thread>
 
-#include "ShaderLoader.h"
 #include "VulkanInstance.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanImage.h"

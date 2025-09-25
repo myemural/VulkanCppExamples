@@ -36,9 +36,14 @@ protected:
 
     void Cleanup() noexcept override;
 
+private:
+    void CreateResources();
+
+    void InitResources();
+
     void CreatePipeline();
 
-    void UpdateDescriptorSets();
+    void UpdateDescriptorSets() const;
 
     void CreateQuadTextureImage();
 
@@ -57,9 +62,7 @@ protected:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
     // Create infos
-    std::vector<common::vulkan_framework::BufferResourceCreateInfo> bufferCreateInfos_;
-    common::vulkan_framework::ShaderModulesCreateInfo shaderModuleCreateInfo_;
-    common::vulkan_framework::DescriptorResourceCreateInfo descriptorSetCreateInfo_;
+
     common::vulkan_framework::DescriptorUpdateInfo descriptorSetUpdateInfo_;
 
     // Texture resource
@@ -75,6 +78,5 @@ protected:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffersPresent_;
-    std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> cmdBufferTransfer_;
 };
 } // namespace examples::fundamentals::images_and_samplers::textured_quad
