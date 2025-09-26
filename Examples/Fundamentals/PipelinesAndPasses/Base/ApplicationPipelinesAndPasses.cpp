@@ -71,6 +71,10 @@ void ApplicationPipelinesAndPasses::CreateDefaultLogicalDevice()
 {
     std::vector queuePriorities = {1.0f};
 
+    VkPhysicalDeviceFeatures deviceFeatures{};
+    deviceFeatures.fillModeNonSolid = VK_TRUE;
+    deviceFeatures.wideLines = VK_TRUE;
+
     device_ = physicalDevice_->CreateDevice([&](auto &builder) {
         builder.AddLayer("VK_LAYER_KHRONOS_validation")
                 .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
@@ -78,7 +82,8 @@ void ApplicationPipelinesAndPasses::CreateDefaultLogicalDevice()
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
                     queueInfo.queueCount = 1;
                     queueInfo.pQueuePriorities = queuePriorities.data();
-                });
+                })
+                .SetDeviceFeatures(deviceFeatures);
     });
 
     if (!device_) {

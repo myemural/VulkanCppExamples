@@ -33,7 +33,7 @@ inline VkGraphicsPipelineCreateInfo GetDefaultGraphicsPipelineCreateInfo()
     createInfo.renderPass = VK_NULL_HANDLE;
     createInfo.subpass = 0;
     createInfo.basePipelineHandle = VK_NULL_HANDLE;
-    createInfo.basePipelineIndex = 0;
+    createInfo.basePipelineIndex = -1;
     return createInfo;
 }
 
@@ -204,6 +204,12 @@ VulkanGraphicsPipelineBuilder::VulkanGraphicsPipelineBuilder()
       colorBlendState_{GetDefaultColorBlendStateCreateInfo()},
       dynamicState_{GetDefaultDynamicStateCreateInfo()}
 {
+}
+
+VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetCreateFlags(const VkPipelineCreateFlags &flags)
+{
+    createInfo_.flags = flags;
+    return *this;
 }
 
 VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::AddShaderStage(

@@ -174,4 +174,15 @@ void VulkanCommandBuffer::PushConstants(const std::shared_ptr<VulkanPipelineLayo
 {
     vkCmdPushConstants(handle_, pipelineLayout->GetHandle(), stageFlags, offset, size, values);
 }
+
+void VulkanCommandBuffer::SetBlendConstants(const float r, const float g, const float b, const float a) const
+{
+    const float blendConstants[4] = {r, g, b, a};
+    vkCmdSetBlendConstants(handle_, blendConstants);
+}
+
+void VulkanCommandBuffer::SetLineWidth(const float lineWidth) const
+{
+    vkCmdSetLineWidth(handle_, lineWidth);
+}
 } // common::vulkan_wrapper

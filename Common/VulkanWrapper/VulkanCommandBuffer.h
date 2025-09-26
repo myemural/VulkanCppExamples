@@ -79,5 +79,9 @@ public:
     void PushConstants(const std::shared_ptr<VulkanPipelineLayout> &pipelineLayout,
                        const VkShaderStageFlags &stageFlags, std::uint32_t offset, std::uint32_t size,
                        const void *values) const;
+
+    void SetBlendConstants(float r, float g, float b, float a) const;
+
+    void SetLineWidth(float lineWidth) const;
 };
 } // common::vulkan_wrapper

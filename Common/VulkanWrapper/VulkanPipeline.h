@@ -37,6 +37,8 @@ class VulkanGraphicsPipelineBuilder
 public:
     VulkanGraphicsPipelineBuilder();
 
+    VulkanGraphicsPipelineBuilder &SetCreateFlags(const VkPipelineCreateFlags& flags);
+
     VulkanGraphicsPipelineBuilder &AddShaderStage(
         const std::function<void(VkPipelineShaderStageCreateInfo &)> &builderFunc);
 
