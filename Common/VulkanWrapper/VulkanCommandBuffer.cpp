@@ -84,6 +84,11 @@ void VulkanCommandBuffer::EndRenderPass() const
     vkCmdEndRenderPass(handle_);
 }
 
+void VulkanCommandBuffer::NextSubpass(const VkSubpassContents &subpassContents) const
+{
+    vkCmdNextSubpass(handle_, subpassContents);
+}
+
 void VulkanCommandBuffer::BindDescriptorSets(const VkPipelineBindPoint &pipelineBindPoint,
                                              const std::shared_ptr<VulkanPipelineLayout> &pipelineLayout,
                                              const std::uint32_t firstSet,

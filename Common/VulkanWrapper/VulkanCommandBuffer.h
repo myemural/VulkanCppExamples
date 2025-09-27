@@ -44,6 +44,8 @@ public:
 
     void EndRenderPass() const;
 
+    void NextSubpass(const VkSubpassContents &subpassContents) const;
+
     void BindDescriptorSets(const VkPipelineBindPoint &pipelineBindPoint,
                             const std::shared_ptr<VulkanPipelineLayout> &pipelineLayout,
                             std::uint32_t firstSet,

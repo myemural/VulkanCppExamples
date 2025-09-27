@@ -1,0 +1,46 @@
+/**
+ * @file    AppConfig.h
+ * @brief   This header file keeps key names for user-provided config key names.
+ * @author  Mustafa Yemural (myemural)
+ * @date    27.09.2025
+ *
+ * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
+ * Released under the MIT License
+ * https://opensource.org/licenses/MIT
+ */
+#pragma once
+
+#include "AppCommonConfig.h"
+
+namespace examples::fundamentals::pipelines_and_passes::multiple_subpasses
+{
+namespace AppConstants
+{
+    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
+    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
+    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
+    constexpr auto ObjectFragmentShaderFile = "AppConstants.ObjectFragmentShaderFile";
+    constexpr auto DepthObjectFragmentShaderFile = "AppConstants.DepthObjectFragmentShaderFile";
+    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
+    constexpr auto ObjectFragmentShaderKey = "AppConstants.ObjectFragmentShaderKey";
+    constexpr auto DepthObjectFragmentShaderKey = "AppConstants.DepthObjectFragmentShaderKey";
+
+    // Resources
+    constexpr auto MainVertexBuffer = "AppConstants.MainVertexBuffer";
+    constexpr auto MainIndexBuffer = "AppConstants.MainIndexBuffer";
+    constexpr auto ImageStagingBuffer = "AppConstants.ImageStagingBuffer";
+    constexpr auto CrateImage = "AppConstants.CrateImage";
+    constexpr auto CrateImageView = "AppConstants.CrateImageView";
+    constexpr auto DepthImage = "AppConstants.DepthImage";
+    constexpr auto DepthImageView = "AppConstants.DepthImageView";
+    constexpr auto MainSampler = "AppConstants.MainSampler";
+    constexpr auto ObjectDescSetLayout = "AppConstants.ObjectDescSetLayout";
+    constexpr auto DepthObjectDescSetLayout = "AppConstants.DepthObjectDescSetLayout";
+    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
+} // namespace AppConstants
+
+namespace AppSettings
+{
+    constexpr auto ClearColor = "AppSettings.ClearColor";
+} // namespace AppSettings
+} // namespace examples::fundamentals::pipelines_and_passes::multiple_subpasses
