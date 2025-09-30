@@ -21,12 +21,11 @@
 
 namespace common::vulkan_framework
 {
-
 struct ResourceDescriptor
 {
-    std::optional<std::vector<BufferResourceCreateInfo>> Buffers;
-    std::optional<std::vector<ImageResourceCreateInfo>> Images;
-    std::optional<std::vector<SamplerResourceCreateInfo>> Samplers;
+    std::optional<std::vector<BufferResourceCreateInfo> > Buffers;
+    std::optional<std::vector<ImageResourceCreateInfo> > Images;
+    std::optional<std::vector<SamplerResourceCreateInfo> > Samplers;
     std::optional<ShaderModulesCreateInfo> Shaders;
     std::optional<DescriptorResourceCreateInfo> Descriptors;
 };
