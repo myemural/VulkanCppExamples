@@ -37,3 +37,15 @@ The topics covered by this subsection:
 - Setting face culling
 - Drawing with instanced rendering
 - Managing other depth testing operations
+
+## [Pipelines And Passes](/Examples/Fundamentals/PipelinesAndPasses)
+
+The topics covered by this subsection:
+
+- Render pass load/store operations
+- Using dynamic states in a pipeline
+- Using multiple pipelines
+- Creating a derived pipeline
+- Basic stencil testing
+- Using multiple subpasses and input attachment
+- Rendering scene to a texture (offscreen rendering)

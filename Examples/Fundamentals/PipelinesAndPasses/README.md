@@ -18,6 +18,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `MultipleSubpasses`
 6. [Using Multiple Render Passes](/Examples/Fundamentals/PipelinesAndPasses/MultipleRenderPasses)
    - `MultipleRenderPasses`
+7. [Rendering Scene to a Texture](/Examples/Fundamentals/PipelinesAndPasses/OffscreenRendering)
+   - `OffscreenRendering`
 
 ## Architecture of the Subsection
 
