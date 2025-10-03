@@ -6,8 +6,8 @@
 
 #include "ShaderLoader.h"
 
-#include <fstream>
 #include <filesystem>
+#include <fstream>
 
 namespace common::utility
 {
@@ -15,15 +15,15 @@ namespace
 {
     constexpr auto kGlslSpirvOutPath = "glsl/spirv/";
     constexpr auto kHlslSpirvOutPath = "hlsl/spirv/";
-}
+} // namespace
 
-ShaderLoader::ShaderLoader(const std::string &rootPath, const ShaderBaseType &shaderBaseType)
+ShaderLoader::ShaderLoader(const std::string& rootPath, const ShaderBaseType& shaderBaseType)
     : shaderType_{shaderBaseType}
 {
     basePath_ = GenerateBasePath(rootPath);
 }
 
-std::vector<std::uint32_t> ShaderLoader::LoadSpirV(const std::string &fileName) const
+std::vector<std::uint32_t> ShaderLoader::LoadSpirV(const std::string& fileName) const
 {
     const std::filesystem::path fullPath{basePath_ + fileName};
 
@@ -48,7 +48,7 @@ std::vector<std::uint32_t> ShaderLoader::LoadSpirV(const std::string &fileName) 
         throw std::runtime_error("SPIRV file couldn't be opened: " + fullPath.string());
     }
 
-    file.read(reinterpret_cast<char *>(output.data()), static_cast<std::streamsize>(fileSizeInBytes));
+    file.read(reinterpret_cast<char*>(output.data()), static_cast<std::streamsize>(fileSizeInBytes));
 
     if (!file || file.gcount() != static_cast<std::streamsize>(fileSizeInBytes)) {
         throw std::runtime_error("SPIRV file couldn't be read fully: " + fullPath.string());
@@ -57,7 +57,7 @@ std::vector<std::uint32_t> ShaderLoader::LoadSpirV(const std::string &fileName) 
     return output;
 }
 
-std::string ShaderLoader::GenerateBasePath(const std::string &rootPath) const
+std::string ShaderLoader::GenerateBasePath(const std::string& rootPath) const
 {
     std::string intermediatePath;
 

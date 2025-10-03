@@ -25,4 +25,4 @@ VulkanDescriptorSetLayout::~VulkanDescriptorSetLayout()
         }
     }
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

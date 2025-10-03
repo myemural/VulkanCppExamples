@@ -14,11 +14,11 @@
 #include <memory>
 
 #include "ApplicationDescriptorSets.h"
-#include "VulkanDevice.h"
 #include "VulkanCommandBuffer.h"
+#include "VulkanDescriptorSet.h"
+#include "VulkanDevice.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
-#include "VulkanDescriptorSet.h"
 #include "Window.h"
 
 namespace examples::fundamentals::descriptor_sets::basic_push_constants
@@ -26,7 +26,7 @@ namespace examples::fundamentals::descriptor_sets::basic_push_constants
 class VulkanApplication final : public base::ApplicationDescriptorSets
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer &&params);
+    explicit VulkanApplication(common::utility::ParameterServer&& params);
 
 protected:
     bool Init() override;
@@ -55,6 +55,6 @@ private:
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorSet> descriptorSet_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
 };
 } // namespace examples::fundamentals::descriptor_sets::basic_push_constants

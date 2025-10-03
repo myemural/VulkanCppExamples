@@ -38,10 +38,7 @@ inline VkApplicationInfo GetDefaultApplicationInfo()
     return appInfo;
 }
 
-VulkanInstance::VulkanInstance(VkInstance const instance)
-    : VulkanObject(nullptr, instance)
-{
-}
+VulkanInstance::VulkanInstance(VkInstance const instance) : VulkanObject(nullptr, instance) {}
 
 VulkanInstance::~VulkanInstance()
 {
@@ -50,7 +47,7 @@ VulkanInstance::~VulkanInstance()
     }
 }
 
-PFN_vkVoidFunction VulkanInstance::GetInstanceProcAddr(const std::string &name) const
+PFN_vkVoidFunction VulkanInstance::GetInstanceProcAddr(const std::string& name) const
 {
     return vkGetInstanceProcAddr(handle_, name.c_str());
 }
@@ -60,33 +57,33 @@ VulkanInstanceBuilder::VulkanInstanceBuilder()
 {
 }
 
-VulkanInstanceBuilder &VulkanInstanceBuilder::SetApplicationInfo(
-    const std::function<void(VkApplicationInfo &)> &appInfoCallback)
+VulkanInstanceBuilder&
+VulkanInstanceBuilder::SetApplicationInfo(const std::function<void(VkApplicationInfo&)>& appInfoCallback)
 {
     appInfoCallback(appInfo_);
     createInfo_.pApplicationInfo = &appInfo_;
     return *this;
 }
 
-VulkanInstanceBuilder &VulkanInstanceBuilder::AddLayer(const std::string &layerName)
+VulkanInstanceBuilder& VulkanInstanceBuilder::AddLayer(const std::string& layerName)
 {
     layers_.emplace_back(layerName);
     return *this;
 }
 
-VulkanInstanceBuilder &VulkanInstanceBuilder::AddLayers(const std::vector<std::string> &layerNames)
+VulkanInstanceBuilder& VulkanInstanceBuilder::AddLayers(const std::vector<std::string>& layerNames)
 {
     layers_.insert(layers_.end(), layerNames.begin(), layerNames.end());
     return *this;
 }
 
-VulkanInstanceBuilder &VulkanInstanceBuilder::AddExtension(const std::string &extensionName)
+VulkanInstanceBuilder& VulkanInstanceBuilder::AddExtension(const std::string& extensionName)
 {
     extensions_.emplace_back(extensionName);
     return *this;
 }
 
-VulkanInstanceBuilder &VulkanInstanceBuilder::AddExtensions(const std::vector<std::string> &extensionNames)
+VulkanInstanceBuilder& VulkanInstanceBuilder::AddExtensions(const std::vector<std::string>& extensionNames)
 {
     extensions_.insert(extensions_.end(), extensionNames.begin(), extensionNames.end());
     return *this;
@@ -95,15 +92,14 @@ VulkanInstanceBuilder &VulkanInstanceBuilder::AddExtensions(const std::vector<st
 std::shared_ptr<VulkanInstance> VulkanInstanceBuilder::Build()
 {
     if (!layers_.empty()) {
-        std::ranges::transform(layers_, std::back_inserter(layersStr_),
-                               [](const std::string &s) { return s.c_str(); });
+        std::ranges::transform(layers_, std::back_inserter(layersStr_), [](const std::string& s) { return s.c_str(); });
         createInfo_.enabledLayerCount = static_cast<uint32_t>(layersStr_.size());
         createInfo_.ppEnabledLayerNames = layersStr_.data();
     }
 
     if (!extensions_.empty()) {
         std::ranges::transform(extensions_, std::back_inserter(extensionsStr_),
-                               [](const std::string &s) { return s.c_str(); });
+                               [](const std::string& s) { return s.c_str(); });
         createInfo_.enabledExtensionCount = static_cast<uint32_t>(extensionsStr_.size());
         createInfo_.ppEnabledExtensionNames = extensionsStr_.data();
     }
@@ -116,4 +112,4 @@ std::shared_ptr<VulkanInstance> VulkanInstanceBuilder::Build()
 
     return std::make_shared<VulkanInstance>(instance);
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

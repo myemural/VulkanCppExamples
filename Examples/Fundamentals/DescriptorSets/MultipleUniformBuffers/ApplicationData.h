@@ -23,25 +23,15 @@ struct VertexPos2
 };
 
 // Vertex Data
-const std::vector vertices{
-    // Top-left triangle (Clockwise)
-    VertexPos2{{-0.8, -0.8}},
-    VertexPos2{{-0.2, -0.8}},
-    VertexPos2{{-0.5, -0.2}},
+const std::vector vertices{// Top-left triangle (Clockwise)
+                           VertexPos2{{-0.8, -0.8}}, VertexPos2{{-0.2, -0.8}}, VertexPos2{{-0.5, -0.2}},
 
-    // Top-right triangle (Clockwise)
-    VertexPos2{{0.2, -0.8}},
-    VertexPos2{{0.8, -0.8}},
-    VertexPos2{{0.5, -0.2}},
+                           // Top-right triangle (Clockwise)
+                           VertexPos2{{0.2, -0.8}}, VertexPos2{{0.8, -0.8}}, VertexPos2{{0.5, -0.2}},
 
-    // Bottom-left triangle (Clockwise)
-    VertexPos2{{-0.5, 0.2}},
-    VertexPos2{{-0.2, 0.8}},
-    VertexPos2{{-0.8, 0.8}},
+                           // Bottom-left triangle (Clockwise)
+                           VertexPos2{{-0.5, 0.2}}, VertexPos2{{-0.2, 0.8}}, VertexPos2{{-0.8, 0.8}},
 
-    // Bottom-right triangle (Clockwise)
-    VertexPos2{{0.5, 0.2}},
-    VertexPos2{{0.8, 0.8}},
-    VertexPos2{{0.2, 0.8}}
-};
+                           // Bottom-right triangle (Clockwise)
+                           VertexPos2{{0.5, 0.2}}, VertexPos2{{0.8, 0.8}}, VertexPos2{{0.2, 0.8}}};
 } // namespace examples::fundamentals::descriptor_sets::multiple_uniform_buffers

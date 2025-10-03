@@ -37,13 +37,13 @@ class VulkanRenderPassBuilder
 public:
     VulkanRenderPassBuilder();
 
-    VulkanRenderPassBuilder &SetCreateFlags(const VkRenderPassCreateFlags &flags);
+    VulkanRenderPassBuilder& SetCreateFlags(const VkRenderPassCreateFlags& flags);
 
-    VulkanRenderPassBuilder &AddAttachment(const std::function<void(VkAttachmentDescription &)> &setterFunc);
+    VulkanRenderPassBuilder& AddAttachment(const std::function<void(VkAttachmentDescription&)>& setterFunc);
 
-    VulkanRenderPassBuilder &AddSubpass(const std::function<void(VkSubpassDescription &)> &setterFunc);
+    VulkanRenderPassBuilder& AddSubpass(const std::function<void(VkSubpassDescription&)>& setterFunc);
 
-    VulkanRenderPassBuilder &AddDependency(const std::function<void(VkSubpassDependency &)> &setterFunc);
+    VulkanRenderPassBuilder& AddDependency(const std::function<void(VkSubpassDependency&)>& setterFunc);
 
     std::shared_ptr<VulkanRenderPass> Build(std::shared_ptr<VulkanDevice> device);
 
@@ -53,4 +53,4 @@ private:
     std::vector<VkSubpassDescription> subpasses_;
     std::vector<VkSubpassDependency> dependencies_;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

@@ -9,10 +9,10 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include "VulkanApplication.h"
-#include "Window.h"
 #include "AppConfig.h"
 #include "ShaderLoader.h"
+#include "VulkanApplication.h"
+#include "Window.h"
 
 using namespace common::utility;
 using namespace common::window_wrapper;
@@ -54,7 +54,7 @@ inline ParameterSchema CreateParameterSchema()
     return schema;
 }
 
-bool SetParams(ParameterServer &params)
+bool SetParams(ParameterServer& params)
 {
     try {
         // Initial window settings
@@ -64,13 +64,13 @@ bool SetParams(ParameterServer &params)
 
         // Vulkan settings
         params.Set<std::string>(VulkanParams::ApplicationName, params.Get<std::string>(WindowParams::Title));
-        params.Set<std::vector<std::string> >(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
+        params.Set<std::vector<std::string>>(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
 
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.3f, 0.3f, 1.0f});
         params.Set(AppSettings::MouseSensitivity, 3.0f);
         params.Set(AppSettings::CameraSpeed, 3.0f);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
     }
@@ -88,14 +88,12 @@ int main()
 
     // Create a window
     const auto window = std::make_shared<Window>(params.Get<std::string>(WindowParams::Title));
-    if (!window->Init(params.Get<std::uint32_t>(WindowParams::Width),
-                      params.Get<std::uint32_t>(WindowParams::Height),
-                      params.Get<bool>(WindowParams::Resizable),
-                      params.Get<unsigned int>(WindowParams::SampleCount))) {
+    if (!window->Init(params.Get<std::uint32_t>(WindowParams::Width), params.Get<std::uint32_t>(WindowParams::Height),
+                      params.Get<bool>(WindowParams::Resizable), params.Get<unsigned int>(WindowParams::SampleCount))) {
         std::cerr << "Failed to initialize window." << std::endl;
         return -1;
     }
-    params.Set<std::vector<std::string> >(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
+    params.Set<std::vector<std::string>>(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
 
     // Init Vulkan application
     VulkanApplication app{std::move(params)};

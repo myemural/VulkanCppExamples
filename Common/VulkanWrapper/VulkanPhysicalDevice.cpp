@@ -15,13 +15,10 @@
 
 namespace common::vulkan_wrapper
 {
-VulkanPhysicalDevice::VulkanPhysicalDevice(VkPhysicalDevice physicalDevice)
-    : VulkanObject(nullptr, physicalDevice)
-{
-}
+VulkanPhysicalDevice::VulkanPhysicalDevice(VkPhysicalDevice physicalDevice) : VulkanObject(nullptr, physicalDevice) {}
 
 std::uint32_t VulkanPhysicalDevice::FindMemoryType(std::uint32_t typeFilter,
-                                                   const VkMemoryPropertyFlags &properties) const
+                                                   const VkMemoryPropertyFlags& properties) const
 {
     VkPhysicalDeviceMemoryProperties memoryProperties{};
     vkGetPhysicalDeviceMemoryProperties(handle_, &memoryProperties);
@@ -53,19 +50,19 @@ std::vector<VkQueueFamilyProperties> VulkanPhysicalDevice::GetQueueFamilyPropert
     return queueFamilyProperties;
 }
 
-std::uint32_t VulkanPhysicalDevice::GetSurfaceSupportedQueueFamilyIndex(const VkSurfaceKHR &surface) const
+std::uint32_t VulkanPhysicalDevice::GetSurfaceSupportedQueueFamilyIndex(const VkSurfaceKHR& surface) const
 {
     const auto queueFamilyProperties = GetQueueFamilyProperties();
 
     std::vector<std::uint32_t> queueFamilyIndices;
-    for (uint32_t queueFamilyIndex = 0; const auto &familyProperty: queueFamilyProperties) {
+    for (uint32_t queueFamilyIndex = 0; const auto& familyProperty: queueFamilyProperties) {
         if (familyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             queueFamilyIndices.emplace_back(queueFamilyIndex);
         }
         ++queueFamilyIndex;
     }
 
-    for (const auto &familyIndex: queueFamilyIndices) {
+    for (const auto& familyIndex: queueFamilyIndices) {
         VkBool32 presentSupport;
         vkGetPhysicalDeviceSurfaceSupportKHR(handle_, familyIndex, surface, &presentSupport);
         if (presentSupport) {
@@ -87,10 +84,8 @@ std::optional<VkSurfaceCapabilitiesKHR> VulkanPhysicalDevice::GetSurfaceCapabili
     return surfaceCapabilities;
 }
 
-std::optional<VkSurfaceFormatKHR> VulkanPhysicalDevice::GetSurfaceFormat(const VkSurfaceKHR &surface,
-                                                                         const VkFormat &selectedFormat,
-                                                                         const VkColorSpaceKHR &selectedColorSpace)
-const
+std::optional<VkSurfaceFormatKHR> VulkanPhysicalDevice::GetSurfaceFormat(
+        const VkSurfaceKHR& surface, const VkFormat& selectedFormat, const VkColorSpaceKHR& selectedColorSpace) const
 {
     uint32_t formatCount;
     if (vkGetPhysicalDeviceSurfaceFormatsKHR(handle_, surface, &formatCount, nullptr) != VK_SUCCESS) {
@@ -105,7 +100,7 @@ const
         return std::nullopt;
     }
 
-    for (VkSurfaceFormatKHR &entry: surfaceFormats) {
+    for (VkSurfaceFormatKHR& entry: surfaceFormats) {
         if (entry.format == selectedFormat && entry.colorSpace == selectedColorSpace) {
             return entry;
         }
@@ -121,9 +116,9 @@ VkPhysicalDeviceFeatures VulkanPhysicalDevice::GetSupportedFeatures() const
     return supportedFeatures;
 }
 
-VkFormat VulkanPhysicalDevice::FindSupportedFormat(const std::vector<VkFormat> &candidateFormats,
-                                                   const VkFormatFeatureFlags &features,
-                                                   const VkImageTiling &tiling) const
+VkFormat VulkanPhysicalDevice::FindSupportedFormat(const std::vector<VkFormat>& candidateFormats,
+                                                   const VkFormatFeatureFlags& features,
+                                                   const VkImageTiling& tiling) const
 {
     for (const auto format: candidateFormats) {
         VkFormatProperties props;
@@ -140,8 +135,8 @@ VkFormat VulkanPhysicalDevice::FindSupportedFormat(const std::vector<VkFormat> &
     throw std::runtime_error("Appropriate target format couldn't be detected!");
 }
 
-std::shared_ptr<VulkanDevice> VulkanPhysicalDevice::CreateDevice(
-    const std::function<void(VulkanDeviceBuilder &)> &builderFunc)
+std::shared_ptr<VulkanDevice>
+VulkanPhysicalDevice::CreateDevice(const std::function<void(VulkanDeviceBuilder&)>& builderFunc)
 {
     VulkanDeviceBuilder builder;
     builderFunc(builder);
@@ -150,28 +145,27 @@ std::shared_ptr<VulkanDevice> VulkanPhysicalDevice::CreateDevice(
     return device;
 }
 
-VulkanPhysicalDeviceSelector &VulkanPhysicalDeviceSelector::FilterByDeviceType(
-    const VkPhysicalDeviceType &deviceType)
+VulkanPhysicalDeviceSelector& VulkanPhysicalDeviceSelector::FilterByDeviceType(const VkPhysicalDeviceType& deviceType)
 {
     deviceType_ = deviceType;
     return *this;
 }
 
-VulkanPhysicalDeviceSelector &VulkanPhysicalDeviceSelector::FilterByQueueTypes(const VkQueueFlags &queueTypeFlags)
+VulkanPhysicalDeviceSelector& VulkanPhysicalDeviceSelector::FilterByQueueTypes(const VkQueueFlags& queueTypeFlags)
 {
     queueTypeFlags_ = queueTypeFlags;
     return *this;
 }
 
-VulkanPhysicalDeviceSelector &VulkanPhysicalDeviceSelector::FilterBySurfaceSupport(
-    std::shared_ptr<VulkanSurface> surface)
+VulkanPhysicalDeviceSelector&
+VulkanPhysicalDeviceSelector::FilterBySurfaceSupport(std::shared_ptr<VulkanSurface> surface)
 {
     surface_ = std::move(surface);
     return *this;
 }
 
-std::vector<std::shared_ptr<VulkanPhysicalDevice> > VulkanPhysicalDeviceSelector::Select(
-    const std::shared_ptr<VulkanInstance> &instance) const
+std::vector<std::shared_ptr<VulkanPhysicalDevice>>
+VulkanPhysicalDeviceSelector::Select(const std::shared_ptr<VulkanInstance>& instance) const
 {
     // Query physical devices
     uint32_t deviceCount = 0;
@@ -191,7 +185,7 @@ std::vector<std::shared_ptr<VulkanPhysicalDevice> > VulkanPhysicalDeviceSelector
 
     // Filter by Device Type
     if (deviceType_ != VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM) {
-        std::erase_if(devices, [=](auto &device) {
+        std::erase_if(devices, [=](auto& device) {
             VkPhysicalDeviceProperties properties;
             vkGetPhysicalDeviceProperties(device, &properties);
             return properties.deviceType != deviceType_;
@@ -200,14 +194,14 @@ std::vector<std::shared_ptr<VulkanPhysicalDevice> > VulkanPhysicalDeviceSelector
 
     // Filter by Queue Types
     if (queueTypeFlags_ != VK_QUEUE_FLAG_BITS_MAX_ENUM) {
-        std::erase_if(devices, [=](auto &device) {
+        std::erase_if(devices, [=](auto& device) {
             uint32_t queueFamilyCount = 0;
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 
             std::vector<VkQueueFamilyProperties> queueFamilyProperties{queueFamilyCount};
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilyProperties.data());
 
-            for (const auto &familyProperty: queueFamilyProperties) {
+            for (const auto& familyProperty: queueFamilyProperties) {
                 if (familyProperty.queueFlags & queueTypeFlags_) {
                     return false;
                 }
@@ -218,14 +212,14 @@ std::vector<std::shared_ptr<VulkanPhysicalDevice> > VulkanPhysicalDeviceSelector
 
     // Filter by Surface
     if (surface_) {
-        std::erase_if(devices, [=](auto &device) {
+        std::erase_if(devices, [=](auto& device) {
             uint32_t queueFamilyCount = 0;
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 
             std::vector<VkQueueFamilyProperties> queueFamilyProperties{queueFamilyCount};
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilyProperties.data());
 
-            for (uint32_t queueFamilyIndex = 0; const auto &familyProperty: queueFamilyProperties) {
+            for (uint32_t queueFamilyIndex = 0; const auto& familyProperty: queueFamilyProperties) {
                 if (familyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                     VkBool32 presentSupport;
                     vkGetPhysicalDeviceSurfaceSupportKHR(device, queueFamilyIndex, surface_->GetHandle(),
@@ -245,11 +239,11 @@ std::vector<std::shared_ptr<VulkanPhysicalDevice> > VulkanPhysicalDeviceSelector
         return {};
     }
 
-    std::vector<std::shared_ptr<VulkanPhysicalDevice> > physicalDevices(devices.size());
+    std::vector<std::shared_ptr<VulkanPhysicalDevice>> physicalDevices(devices.size());
     for (size_t i = 0; i < devices.size(); ++i) {
         physicalDevices[i] = std::make_shared<VulkanPhysicalDevice>(devices[i]);
     }
 
     return physicalDevices;
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

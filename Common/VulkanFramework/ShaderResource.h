@@ -33,11 +33,11 @@ struct ShaderModulesCreateInfo
 class ShaderResource
 {
 public:
-    explicit ShaderResource(const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device);
+    explicit ShaderResource(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device);
 
-    void CreateShaders(const ShaderModulesCreateInfo &createInfo);
+    void CreateShaders(const ShaderModulesCreateInfo& createInfo);
 
-    [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanShaderModule> GetShaderModule(const std::string &name)
+    [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanShaderModule> GetShaderModule(const std::string& name)
     {
         return shaderModules_[name];
     }
@@ -45,6 +45,6 @@ public:
 private:
     std::weak_ptr<vulkan_wrapper::VulkanDevice> device_;
 
-    std::map<std::string, std::shared_ptr<vulkan_wrapper::VulkanShaderModule> > shaderModules_;
+    std::map<std::string, std::shared_ptr<vulkan_wrapper::VulkanShaderModule>> shaderModules_;
 };
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

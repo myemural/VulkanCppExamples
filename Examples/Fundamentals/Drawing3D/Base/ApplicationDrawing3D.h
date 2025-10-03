@@ -14,21 +14,21 @@
 #include <memory>
 #include <vector>
 
-#include "VulkanApplicationBase.h"
 #include "BufferResource.h"
-#include "ImageResource.h"
 #include "DescriptorRegistry.h"
 #include "DescriptorUpdater.h"
+#include "ImageResource.h"
 #include "SamplerResource.h"
 #include "ShaderResource.h"
+#include "VulkanApplicationBase.h"
 #include "VulkanCommandPool.h"
-#include "VulkanSurface.h"
-#include "VulkanPhysicalDevice.h"
 #include "VulkanDevice.h"
 #include "VulkanFence.h"
 #include "VulkanFramebuffer.h"
+#include "VulkanPhysicalDevice.h"
 #include "VulkanQueue.h"
 #include "VulkanRenderPass.h"
+#include "VulkanSurface.h"
 #include "VulkanSwapChain.h"
 #include "Window.h"
 
@@ -42,16 +42,14 @@ public:
 
     ~ApplicationDrawing3D() override = default;
 
-    void SetWindow(const std::shared_ptr<common::window_wrapper::Window> &window);
+    void SetWindow(const std::shared_ptr<common::window_wrapper::Window>& window);
 
 protected:
     void PreUpdate() override;
 
     void PostUpdate() override;
 
-    void Cleanup() noexcept override
-    {
-    }
+    void Cleanup() noexcept override {}
 
     bool ShouldClose() override;
 
@@ -65,29 +63,29 @@ protected:
 
     void CreateDefaultSwapChain();
 
-    void CreateDefaultFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView> &depthImageView);
+    void CreateDefaultFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView>& depthImageView);
 
     void CreateDefaultCommandPool();
 
     void CreateDefaultSyncObjects(std::uint32_t maxFramesInFlight);
 
-    void CreateBuffers(const std::vector<common::vulkan_framework::BufferResourceCreateInfo> &bufferCreateInfos);
+    void CreateBuffers(const std::vector<common::vulkan_framework::BufferResourceCreateInfo>& bufferCreateInfos);
 
-    void SetBuffer(const std::string &name, const void *data, std::uint64_t dataSize);
+    void SetBuffer(const std::string& name, const void* data, std::uint64_t dataSize);
 
-    void CreateImages(const std::vector<common::vulkan_framework::ImageResourceCreateInfo> &imageCreateInfos);
+    void CreateImages(const std::vector<common::vulkan_framework::ImageResourceCreateInfo>& imageCreateInfos);
 
-    void CreateSamplers(const std::vector<common::vulkan_framework::SamplerResourceCreateInfo> &samplerCreateInfos);
+    void CreateSamplers(const std::vector<common::vulkan_framework::SamplerResourceCreateInfo>& samplerCreateInfos);
 
-    void SetImageFromBuffer(const std::string &name,
-                            const std::shared_ptr<common::vulkan_wrapper::VulkanBuffer> &stagingBuffer,
-                            const VkExtent3D &dimensions);
+    void SetImageFromBuffer(const std::string& name,
+                            const std::shared_ptr<common::vulkan_wrapper::VulkanBuffer>& stagingBuffer,
+                            const VkExtent3D& dimensions);
 
-    void CreateShaderModules(const common::vulkan_framework::ShaderModulesCreateInfo &modulesInfo);
+    void CreateShaderModules(const common::vulkan_framework::ShaderModulesCreateInfo& modulesInfo);
 
-    void CreateDescriptorSets(const common::vulkan_framework::DescriptorResourceCreateInfo &descriptorSetInfo);
+    void CreateDescriptorSets(const common::vulkan_framework::DescriptorResourceCreateInfo& descriptorSetInfo);
 
-    void UpdateDescriptorSet(const common::vulkan_framework::DescriptorUpdateInfo &descriptorSetUpdateInfo) const;
+    void UpdateDescriptorSet(const common::vulkan_framework::DescriptorUpdateInfo& descriptorSetUpdateInfo) const;
 
     std::shared_ptr<common::window_wrapper::Window> window_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSurface> surface_;
@@ -96,19 +94,19 @@ protected:
     std::shared_ptr<common::vulkan_wrapper::VulkanDevice> device_;
     std::shared_ptr<common::vulkan_wrapper::VulkanQueue> queue_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSwapChain> swapChain_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanImageView> > swapChainImageViews_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanImageView>> swapChainImageViews_;
     std::shared_ptr<common::vulkan_wrapper::VulkanRenderPass> renderPass_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer> > framebuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> framebuffers_;
     std::shared_ptr<common::vulkan_wrapper::VulkanCommandPool> cmdPool_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore> > imageAvailableSemaphores_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore> > renderFinishedSemaphores_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence> > inFlightFences_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence> > swapImagesFences_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> imageAvailableSemaphores_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> renderFinishedSemaphores_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence>> inFlightFences_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence>> swapImagesFences_;
 
     // All resources
-    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::BufferResource> > buffers_;
-    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::ImageResource> > images_;
-    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::SamplerResource> > samplers_;
+    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::BufferResource>> buffers_;
+    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::ImageResource>> images_;
+    std::unordered_map<std::string, std::unique_ptr<common::vulkan_framework::SamplerResource>> samplers_;
     std::unique_ptr<common::vulkan_framework::ShaderResource> shaderResources_;
     std::unique_ptr<common::vulkan_framework::DescriptorRegistry> descriptorRegistry_;
     std::unique_ptr<common::vulkan_framework::DescriptorUpdater> descriptorUpdater_;

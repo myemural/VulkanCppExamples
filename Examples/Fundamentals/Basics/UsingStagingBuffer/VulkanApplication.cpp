@@ -10,9 +10,9 @@
 #include <queue>
 
 #include "AppConfig.h"
+#include "ApplicationData.h"
 #include "ShaderLoader.h"
 #include "VulkanHelpers.h"
-#include "ApplicationData.h"
 
 namespace examples::fundamentals::basics::using_staging_buffer
 {
@@ -20,10 +20,7 @@ using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 
-VulkanApplication::VulkanApplication(ParameterServer &&params)
-    : ApplicationBasics(std::move(params))
-{
-}
+VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationBasics(std::move(params)) {}
 
 bool VulkanApplication::Init()
 {
@@ -51,7 +48,7 @@ bool VulkanApplication::Init()
         RecordCommandBuffers(vertexCount); // Recording in Init for this example
         const uint32_t vertexDataSize = vertices.size() * sizeof(VertexPos2);
         CopyStagingBuffer(vertexDataSize); // Record transfer related command buffer and submit it directly
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
     }
@@ -73,9 +70,8 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffersPresent_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
-                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-                   });
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_],
+                   {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
@@ -100,7 +96,7 @@ void VulkanApplication::InitResources() const
 
 void VulkanApplication::CreateVertexBuffer(std::uint64_t dataSize)
 {
-    vertexBuffer_ = device_->CreateBuffer([&](auto &builder) {
+    vertexBuffer_ = device_->CreateBuffer([&](auto& builder) {
         builder.SetSize(dataSize);
         // Need transfer dst bit
         builder.SetUsage(VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
@@ -113,8 +109,8 @@ void VulkanApplication::CreateVertexBuffer(std::uint64_t dataSize)
     const auto memoryReq = vertexBuffer_->GetBufferMemoryRequirements();
 
     // Get memory type index for device-only (GPU) storage
-    const uint32_t memoryTypeIndex = physicalDevice_->FindMemoryType(memoryReq.memoryTypeBits,
-                                                                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    const uint32_t memoryTypeIndex =
+            physicalDevice_->FindMemoryType(memoryReq.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
     vertexBufferMemory_ = device_->AllocateMemory(memoryReq.size, memoryTypeIndex);
 
@@ -127,7 +123,7 @@ void VulkanApplication::CreateVertexBuffer(std::uint64_t dataSize)
 
 void VulkanApplication::CreateStagingBuffer(std::uint64_t dataSize)
 {
-    stagingBuffer_ = device_->CreateBuffer([&](auto &builder) {
+    stagingBuffer_ = device_->CreateBuffer([&](auto& builder) {
         builder.SetSize(dataSize);
         // Need transfer src bit
         builder.SetUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -140,9 +136,8 @@ void VulkanApplication::CreateStagingBuffer(std::uint64_t dataSize)
     const auto memoryReq = stagingBuffer_->GetBufferMemoryRequirements();
 
     // Get memory type index for storage that accessible by CPU
-    const uint32_t memoryTypeIndex = physicalDevice_->FindMemoryType(memoryReq.memoryTypeBits,
-                                                                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                                                     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    const uint32_t memoryTypeIndex = physicalDevice_->FindMemoryType(
+            memoryReq.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     stagingBufferMemory_ = device_->AllocateMemory(memoryReq.size, memoryTypeIndex);
 
@@ -153,9 +148,9 @@ void VulkanApplication::CreateStagingBuffer(std::uint64_t dataSize)
     stagingBuffer_->BindBufferMemory(stagingBufferMemory_, 0);
 }
 
-void VulkanApplication::FillStagingBuffer(const void *data, const std::uint64_t dataSize) const
+void VulkanApplication::FillStagingBuffer(const void* data, const std::uint64_t dataSize) const
 {
-    void *stagingData = stagingBufferMemory_->MapMemory(VK_WHOLE_SIZE, 0);
+    void* stagingData = stagingBufferMemory_->MapMemory(VK_WHOLE_SIZE, 0);
 
     if (!stagingData) {
         throw std::runtime_error("Failed to map staging buffer data!");
@@ -180,8 +175,7 @@ void VulkanApplication::CreateShaderModules()
     shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)] = vertexShaderModule;
 
     // Fragment Shader
-    const auto fragmentShaderCode = shaderLoader.LoadSpirV(
-        GetParamStr(AppConstants::MainFragmentShaderFile));
+    const auto fragmentShaderCode = shaderLoader.LoadSpirV(GetParamStr(AppConstants::MainFragmentShaderFile));
     const auto fragmentShaderModule = device_->CreateShaderModule(fragmentShaderCode);
     if (!fragmentShaderModule) {
         throw std::runtime_error("Failed to create fragment shader module!");
@@ -197,9 +191,8 @@ void VulkanApplication::CreatePipeline()
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    VkViewport viewport{
-        0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f
-    };
+    VkViewport viewport{0,    0,   static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_),
+                        0.0f, 1.0f};
     VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
@@ -210,43 +203,40 @@ void VulkanApplication::CreatePipeline()
     colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT
-                                          | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.colorWriteMask =
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
     constexpr uint32_t bindingIndex = 0;
     auto bindingDescription = GenerateBindingDescription<VertexPos2>(bindingIndex);
     const auto posAttribDescription = GenerateAttributeDescription(VertexPos2, Position, bindingIndex);
-    const std::array attributeDescriptions{
-        posAttribDescription
-    };
+    const std::array attributeDescriptions{posAttribDescription};
 
-    pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+    pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)]
-                    ->GetHandle();
+            shaderStageCreateInfo.module = shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)]->GetHandle();
         });
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderModules_[params_.Get<
-                std::string>(AppConstants::MainFragmentShaderKey)]->GetHandle();
+            shaderStageCreateInfo.module =
+                    shaderModules_[params_.Get<std::string>(AppConstants::MainFragmentShaderKey)]->GetHandle();
         });
-        builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {
+        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
             vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
             vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
             vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         });
-        builder.SetInputAssemblyState([&](auto &inputAssemblyStateCreateInfo) {
+        builder.SetInputAssemblyState([&](auto& inputAssemblyStateCreateInfo) {
             inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
         });
-        builder.SetViewportState([&](auto &viewportStateCreateInfo) {
+        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
             viewportStateCreateInfo.pViewports = &viewport;
             viewportStateCreateInfo.scissorCount = 1;
             viewportStateCreateInfo.pScissors = &scissor;
         });
-        builder.SetColorBlendState([&](auto &blendStateCreateInfo) {
+        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
             blendStateCreateInfo.attachmentCount = 1;
             blendStateCreateInfo.pAttachments = &colorBlendAttachment;
         });
@@ -282,14 +272,16 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t vertexCount)
         if (!cmdBuffersPresent_[i]->BeginCommandBuffer(nullptr)) {
             throw std::runtime_error("Failed to begin recording command buffer!");
         }
-        cmdBuffersPresent_[i]->BeginRenderPass([&](auto &beginInfo) {
-            beginInfo.renderPass = renderPass_->GetHandle();
-            beginInfo.framebuffer = framebuffers_[i]->GetHandle();
-            beginInfo.renderArea.offset = {0, 0};
-            beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
-            beginInfo.clearValueCount = 1;
-            beginInfo.pClearValues = &clearColor;
-        }, VK_SUBPASS_CONTENTS_INLINE);
+        cmdBuffersPresent_[i]->BeginRenderPass(
+                [&](auto& beginInfo) {
+                    beginInfo.renderPass = renderPass_->GetHandle();
+                    beginInfo.framebuffer = framebuffers_[i]->GetHandle();
+                    beginInfo.renderArea.offset = {0, 0};
+                    beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
+                    beginInfo.clearValueCount = 1;
+                    beginInfo.pClearValues = &clearColor;
+                },
+                VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffersPresent_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         cmdBuffersPresent_[i]->BindVertexBuffers({vertexBuffer_}, 0, 1, {0});
         cmdBuffersPresent_[i]->Draw(vertexCount, 1, 0, 0);
@@ -302,9 +294,8 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t vertexCount)
 
 void VulkanApplication::CopyStagingBuffer(const std::uint64_t dataSize)
 {
-    if (!cmdBufferTransfer_->BeginCommandBuffer([](auto &beginInfo) {
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-    })) {
+    if (!cmdBufferTransfer_->BeginCommandBuffer(
+                [](auto& beginInfo) { beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT; })) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 

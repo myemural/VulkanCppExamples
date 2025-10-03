@@ -63,31 +63,31 @@ struct DescriptorUpdateInfo
 class DescriptorUpdater
 {
 public:
-    DescriptorUpdater(const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device, DescriptorRegistry &registry);
+    DescriptorUpdater(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device, DescriptorRegistry& registry);
 
     /**
      * @brief Add a buffer write request to the update query.
      * @param request Buffer write request.
      */
-    void AddBufferUpdate(const BufferWriteRequest &request) { bufferRequests_.push_back(request); }
+    void AddBufferUpdate(const BufferWriteRequest& request) { bufferRequests_.push_back(request); }
 
     /**
      * @brief Add a image write request to the update query.
      * @param request Image write request.
      */
-    void AddImageUpdate(const ImageWriteRequest &request) { imageRequests_.push_back(request); }
+    void AddImageUpdate(const ImageWriteRequest& request) { imageRequests_.push_back(request); }
 
     /**
      * @brief Add a texel buffer write request to the update query.
      * @param request Texel buffer write request.
      */
-    void AddTexelBufferUpdate(const TexelBufferWriteRequest &request) { texelRequests_.push_back(request); }
+    void AddTexelBufferUpdate(const TexelBufferWriteRequest& request) { texelRequests_.push_back(request); }
 
     /**
      * @brief Add a copy request to the update query.
      * @param request Copy request.
      */
-    void AddCopyRequest(const CopySetRequest &request) { copyRequests_.push_back(request); }
+    void AddCopyRequest(const CopySetRequest& request) { copyRequests_.push_back(request); }
 
     /**
      * @brief Applies all requests at once.
@@ -96,10 +96,10 @@ public:
 
 private:
     std::shared_ptr<vulkan_wrapper::VulkanDevice> device_;
-    DescriptorRegistry &registry_;
+    DescriptorRegistry& registry_;
     std::vector<BufferWriteRequest> bufferRequests_;
     std::vector<ImageWriteRequest> imageRequests_;
     std::vector<TexelBufferWriteRequest> texelRequests_;
     std::vector<CopySetRequest> copyRequests_;
 };
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

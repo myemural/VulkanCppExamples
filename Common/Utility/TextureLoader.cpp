@@ -32,19 +32,16 @@ void TextureHandler::Clear() noexcept
     Channels = UINT32_MAX;
 }
 
-TextureLoader::TextureLoader(const std::string &basePath)
-    : basePath_{basePath}
-{
-}
+TextureLoader::TextureLoader(const std::string& basePath) : basePath_{basePath} {}
 
-TextureHandler TextureLoader::Load(const std::string &path, const TextureChannelFormat &channelFormat) const
+TextureHandler TextureLoader::Load(const std::string& path, const TextureChannelFormat& channelFormat) const
 {
     int width, height, channels;
 
     const std::string fileFullPath = basePath_ + path;
 
     int desiredChannels;
-    switch(channelFormat) {
+    switch (channelFormat) {
         case TextureChannelFormat::RGB:
             desiredChannels = STBI_rgb;
             break;
@@ -58,13 +55,8 @@ TextureHandler TextureLoader::Load(const std::string &path, const TextureChannel
         throw std::runtime_error("Failed to load texture: " + fileFullPath);
     }
 
-    return {
-        data,
-        static_cast<std::uint32_t>(width),
-        static_cast<std::uint32_t>(height),
-        static_cast<std::uint32_t>(channels),
-        channelFormat
-    };
+    return {data, static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height),
+            static_cast<std::uint32_t>(channels), channelFormat};
 }
 
 } // namespace common::utility

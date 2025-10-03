@@ -21,7 +21,7 @@ namespace examples::fundamentals::basics::clear_screen_with_color
 class VulkanApplication final : public base::ApplicationBasics
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer &&params);
+    explicit VulkanApplication(common::utility::ParameterServer&& params);
 
 protected:
     bool Init() override;
@@ -37,6 +37,6 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
 };
 } // namespace examples::fundamentals::basics::clear_screen_with_color

@@ -15,18 +15,18 @@
 
 #include "ApplicationData.h"
 #include "ApplicationDrawing3D.h"
+#include "TextureLoader.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
-#include "TextureLoader.h"
 
 namespace examples::fundamentals::drawing_3d::drawing_cube
 {
 class VulkanApplication final : public base::ApplicationDrawing3D
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer &&params);
+    explicit VulkanApplication(common::utility::ParameterServer&& params);
 
     ~VulkanApplication() override = default;
 
@@ -68,6 +68,6 @@ private:
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
 
     // Command buffers
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffersPresent_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
 };
 } // namespace examples::fundamentals::drawing_3d::drawing_cube

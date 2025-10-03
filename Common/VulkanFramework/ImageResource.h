@@ -11,11 +11,11 @@
  */
 #pragma once
 
+#include "VulkanDevice.h"
+#include "VulkanDeviceMemory.h"
 #include "VulkanImage.h"
 #include "VulkanImageView.h"
-#include "VulkanDevice.h"
 #include "VulkanPhysicalDevice.h"
-#include "VulkanDeviceMemory.h"
 
 namespace common::vulkan_framework
 {
@@ -25,10 +25,8 @@ struct ImageViewCreateInfo
     VkImageViewCreateFlags CreateFlags = 0;
     VkImageViewType ViewType = VK_IMAGE_VIEW_TYPE_2D;
     VkFormat Format = VK_FORMAT_UNDEFINED;
-    VkComponentMapping Components = {
-        VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
-        VK_COMPONENT_SWIZZLE_IDENTITY
-    };
+    VkComponentMapping Components = {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
+                                     VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY};
     VkImageSubresourceRange SubresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 };
 
@@ -53,25 +51,26 @@ struct ImageResourceCreateInfo
 class ImageResource
 {
 public:
-    ImageResource(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice> &physicalDevice,
-                  const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device);
+    ImageResource(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice>& physicalDevice,
+                  const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device);
 
-    void CreateImage(const ImageResourceCreateInfo &createInfo);
+    void CreateImage(const ImageResourceCreateInfo& createInfo);
 
-    void ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool> &cmdPool,
-                           const std::shared_ptr<vulkan_wrapper::VulkanQueue> &queue,
-                           const VkImageLayout &oldLayout, const VkImageLayout &newLayout) const;
+    void ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
+                           const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                           const VkImageLayout& oldLayout,
+                           const VkImageLayout& newLayout) const;
 
-    void CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool> &cmdPool,
-                            const std::shared_ptr<vulkan_wrapper::VulkanQueue> &queue,
-                            const std::shared_ptr<vulkan_wrapper::VulkanBuffer> &stagingBuffer,
-                            const VkBufferImageCopy &copyRegion) const;
+    void CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
+                            const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                            const std::shared_ptr<vulkan_wrapper::VulkanBuffer>& stagingBuffer,
+                            const VkBufferImageCopy& copyRegion) const;
 
     [[nodiscard]] std::string GetName() const { return name_; }
 
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanImage> GetImage() const { return image_; }
 
-    [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanImageView> GetImageView(const std::string &viewName) const;
+    [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanImageView> GetImageView(const std::string& viewName) const;
 
 private:
     void AllocateImageMemory();
@@ -81,8 +80,8 @@ private:
 
     std::string name_;
     std::shared_ptr<vulkan_wrapper::VulkanImage> image_ = nullptr;
-    std::unordered_map<std::string, std::shared_ptr<vulkan_wrapper::VulkanImageView> > imageViews_;
+    std::unordered_map<std::string, std::shared_ptr<vulkan_wrapper::VulkanImageView>> imageViews_;
     VkMemoryPropertyFlags memProps_ = 0;
     std::shared_ptr<vulkan_wrapper::VulkanDeviceMemory> deviceMemory_ = nullptr;
 };
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

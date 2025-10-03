@@ -16,10 +16,7 @@ using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 
-VulkanApplication::VulkanApplication(ParameterServer &&params)
-    : ApplicationBasics(std::move(params))
-{
-}
+VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationBasics(std::move(params)) {}
 
 bool VulkanApplication::Init()
 {
@@ -40,7 +37,7 @@ bool VulkanApplication::Init()
 
         CreateCommandBuffers();
         RecordCommandBuffers(); // Recording in Init for this example
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
     }
@@ -62,9 +59,8 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
-                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-                   });
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_],
+                   {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
@@ -88,14 +84,16 @@ void VulkanApplication::RecordCommandBuffers()
         if (!cmdBuffers_[i]->BeginCommandBuffer(nullptr)) {
             throw std::runtime_error("Failed to begin recording command buffer!");
         }
-        cmdBuffers_[i]->BeginRenderPass([&](auto &beginInfo) {
-            beginInfo.renderPass = renderPass_->GetHandle();
-            beginInfo.framebuffer = framebuffers_[i]->GetHandle();
-            beginInfo.renderArea.offset = {0, 0};
-            beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
-            beginInfo.clearValueCount = 1;
-            beginInfo.pClearValues = &clearColor;
-        }, VK_SUBPASS_CONTENTS_INLINE);
+        cmdBuffers_[i]->BeginRenderPass(
+                [&](auto& beginInfo) {
+                    beginInfo.renderPass = renderPass_->GetHandle();
+                    beginInfo.framebuffer = framebuffers_[i]->GetHandle();
+                    beginInfo.renderArea.offset = {0, 0};
+                    beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
+                    beginInfo.clearValueCount = 1;
+                    beginInfo.pClearValues = &clearColor;
+                },
+                VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffers_[i]->EndRenderPass();
         if (!cmdBuffers_[i]->EndCommandBuffer()) {
             throw std::runtime_error("Failed to end recording command buffer!");

@@ -15,10 +15,7 @@ using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 
-VulkanApplication::VulkanApplication(ParameterServer &&params)
-    : ApplicationBasics(std::move(params))
-{
-}
+VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationBasics(std::move(params)) {}
 
 bool VulkanApplication::Init()
 {
@@ -42,7 +39,7 @@ bool VulkanApplication::Init()
 
         CreateCommandBuffers();
         RecordCommandBuffers(); // Recording in Init for this example
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
     }
@@ -64,9 +61,8 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
-                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-                   });
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_],
+                   {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
@@ -85,8 +81,7 @@ void VulkanApplication::CreateShaderModules()
     shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)] = vertexShaderModule;
 
     // Fragment Shader
-    const auto fragmentShaderCode = shaderLoader.LoadSpirV(
-        GetParamStr(AppConstants::MainFragmentShaderFile));
+    const auto fragmentShaderCode = shaderLoader.LoadSpirV(GetParamStr(AppConstants::MainFragmentShaderFile));
     const auto fragmentShaderModule = device_->CreateShaderModule(fragmentShaderCode);
     if (!fragmentShaderModule) {
         throw std::runtime_error("Failed to create fragment shader module!");
@@ -102,11 +97,8 @@ void VulkanApplication::CreatePipeline()
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    VkViewport viewport{
-        0, 0,
-        static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_),
-        0.0f, 1.0f
-    };
+    VkViewport viewport{0,    0,   static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_),
+                        0.0f, 1.0f};
     VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
@@ -117,27 +109,27 @@ void VulkanApplication::CreatePipeline()
     colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT
-                                          | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.colorWriteMask =
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-    pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+    pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderModules_[params_.Get<
-                std::string>(AppConstants::MainVertexShaderKey)]->GetHandle();
+            shaderStageCreateInfo.module =
+                    shaderModules_[params_.Get<std::string>(AppConstants::MainVertexShaderKey)]->GetHandle();
         });
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderModules_[params_.Get<
-                std::string>(AppConstants::MainFragmentShaderKey)]->GetHandle();
+            shaderStageCreateInfo.module =
+                    shaderModules_[params_.Get<std::string>(AppConstants::MainFragmentShaderKey)]->GetHandle();
         });
-        builder.SetViewportState([&](auto &viewportStateCreateInfo) {
+        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
             viewportStateCreateInfo.pViewports = &viewport;
             viewportStateCreateInfo.scissorCount = 1;
             viewportStateCreateInfo.pScissors = &scissor;
         });
-        builder.SetColorBlendState([&](auto &blendStateCreateInfo) {
+        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
             blendStateCreateInfo.attachmentCount = 1;
             blendStateCreateInfo.pAttachments = &colorBlendAttachment;
         });
@@ -165,14 +157,16 @@ void VulkanApplication::RecordCommandBuffers()
         if (!cmdBuffers_[i]->BeginCommandBuffer(nullptr)) {
             throw std::runtime_error("Failed to begin recording command buffer!");
         }
-        cmdBuffers_[i]->BeginRenderPass([&](auto &beginInfo) {
-            beginInfo.renderPass = renderPass_->GetHandle();
-            beginInfo.framebuffer = framebuffers_[i]->GetHandle();
-            beginInfo.renderArea.offset = {0, 0};
-            beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
-            beginInfo.clearValueCount = 1;
-            beginInfo.pClearValues = &clearColor;
-        }, VK_SUBPASS_CONTENTS_INLINE);
+        cmdBuffers_[i]->BeginRenderPass(
+                [&](auto& beginInfo) {
+                    beginInfo.renderPass = renderPass_->GetHandle();
+                    beginInfo.framebuffer = framebuffers_[i]->GetHandle();
+                    beginInfo.renderArea.offset = {0, 0};
+                    beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
+                    beginInfo.clearValueCount = 1;
+                    beginInfo.pClearValues = &clearColor;
+                },
+                VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffers_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         cmdBuffers_[i]->Draw(GetParamU32(AppConstants::VertexCount), 1, 0, 0);
         cmdBuffers_[i]->EndRenderPass();

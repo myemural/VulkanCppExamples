@@ -31,10 +31,10 @@ public:
 
     ~VulkanCommandPool() override;
 
-    std::vector<std::shared_ptr<VulkanCommandBuffer> > CreateCommandBuffers(std::uint32_t count,
-                                                                            const VkCommandBufferLevel &level);
+    std::vector<std::shared_ptr<VulkanCommandBuffer>> CreateCommandBuffers(std::uint32_t count,
+                                                                           const VkCommandBufferLevel& level);
 
-    bool ResetCommandPool(const VkCommandPoolResetFlags &resetFlags = 0) const;
+    bool ResetCommandPool(const VkCommandPoolResetFlags& resetFlags = 0) const;
 };
 
 class VulkanCommandPoolBuilder
@@ -51,4 +51,4 @@ public:
 private:
     VkCommandPoolCreateInfo createInfo_;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

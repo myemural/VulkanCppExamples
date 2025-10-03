@@ -15,11 +15,11 @@
 
 #include "ApplicationBasics.h"
 
-#include "VulkanShaderModule.h"
+#include "ParameterServer.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
-#include "ParameterServer.h"
+#include "VulkanShaderModule.h"
 #include "Window.h"
 
 namespace examples::fundamentals::basics::drawing_single_color_triangle
@@ -27,7 +27,7 @@ namespace examples::fundamentals::basics::drawing_single_color_triangle
 class VulkanApplication final : public base::ApplicationBasics
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer &&params);
+    explicit VulkanApplication(common::utility::ParameterServer&& params);
 
 protected:
     bool Init() override;
@@ -47,9 +47,9 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
-    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule> > shaderModules_;
+    std::unordered_map<std::string, std::shared_ptr<common::vulkan_wrapper::VulkanShaderModule>> shaderModules_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
 };
 } // namespace examples::fundamentals::basics::drawing_single_color_triangle

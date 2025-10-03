@@ -10,14 +10,14 @@
  */
 #pragma once
 
-#include <unordered_map>
-#include <string>
 #include <any>
 #include <iostream>
 #include <ostream>
-#include <typeindex>
-#include <utility>
 #include <stdexcept>
+#include <string>
+#include <typeindex>
+#include <unordered_map>
+#include <utility>
 
 namespace common::utility
 {
@@ -39,7 +39,7 @@ public:
      * @param defaultValue Default value of the parameter.
      */
     template<typename ParamType>
-    void RegisterParam(const std::string &name, ParamType defaultValue)
+    void RegisterParam(const std::string& name, ParamType defaultValue)
     {
         if (params_.contains(name)) {
             std::cerr << "Parameter has already registered: " << name << std::endl;
@@ -55,7 +55,7 @@ public:
      * @param name Name of the parameter.
      */
     template<typename ParamType>
-    void RegisterParam(const std::string &name)
+    void RegisterParam(const std::string& name)
     {
         if (params_.contains(name)) {
             std::cerr << "Parameter has already registered: " << name << std::endl;
@@ -72,7 +72,7 @@ public:
      * @param defaultValue Default value of the parameter.
      */
     template<typename ParamType>
-    void RegisterImmutableParam(const std::string &name, ParamType defaultValue)
+    void RegisterImmutableParam(const std::string& name, ParamType defaultValue)
     {
         if (params_.contains(name)) {
             std::cerr << "Parameter has already registered: " << name << std::endl;
@@ -87,7 +87,7 @@ public:
      * @param name Name of the parameter.
      * @return Returns the parameter information (name, type, default value etc.)
      */
-    [[nodiscard]] const ParameterInfo &GetInfo(const std::string &name) const
+    [[nodiscard]] const ParameterInfo& GetInfo(const std::string& name) const
     {
         const auto it = params_.find(name);
         if (it == params_.end()) {
@@ -102,10 +102,7 @@ public:
      * @param name Name of the parameter.
      * @return If the parameter is in the schema, it returns true, otherwise it returns false.
      */
-    [[nodiscard]] bool HasParam(const std::string &name) const
-    {
-        return params_.contains(name);
-    }
+    [[nodiscard]] bool HasParam(const std::string& name) const { return params_.contains(name); }
 
 private:
     std::unordered_map<std::string, ParameterInfo> params_;
@@ -114,10 +111,7 @@ private:
 class ParameterServer
 {
 public:
-    explicit ParameterServer(ParameterSchema schema)
-        : schema_{std::move(schema)}
-    {
-    }
+    explicit ParameterServer(ParameterSchema schema) : schema_{std::move(schema)} {}
 
     /**
      * @brief Sets a parameter with a value of a specified type.
@@ -126,13 +120,13 @@ public:
      * @param value Value of the parameter.
      */
     template<typename ParamType>
-    void Set(const std::string &key, const ParamType &value)
+    void Set(const std::string& key, const ParamType& value)
     {
         if (!schema_.HasParam(key)) {
             throw std::runtime_error("Parameter not registered: " + key);
         }
 
-        const auto &info = schema_.GetInfo(key);
+        const auto& info = schema_.GetInfo(key);
 
         if (info.Type != std::type_index(typeid(ParamType))) {
             throw std::runtime_error("Type mismatch for parameter: " + key);
@@ -152,13 +146,13 @@ public:
      * @return Value of the parameter in specified type.
      */
     template<typename ParamType>
-    ParamType Get(const std::string &key) const
+    ParamType Get(const std::string& key) const
     {
         if (!schema_.HasParam(key)) {
             throw std::runtime_error("Parameter not registered: " + key);
         }
 
-        const auto &info = schema_.GetInfo(key);
+        const auto& info = schema_.GetInfo(key);
 
         if (info.Type != std::type_index(typeid(ParamType))) {
             throw std::runtime_error("Type mismatch for parameter: " + key);
@@ -179,4 +173,4 @@ private:
     ParameterSchema schema_;
     std::unordered_map<std::string, std::any> params_;
 };
-} // common::utility
+} // namespace common::utility

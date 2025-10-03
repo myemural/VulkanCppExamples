@@ -14,10 +14,10 @@
 namespace common::utility
 {
 /**
-  * @brief Data holder template class for vertex attributes.
-  * @tparam T Type of the attribute.
-  * @tparam Loc Location of the attribute in the shader code.
-  */
+ * @brief Data holder template class for vertex attributes.
+ * @tparam T Type of the attribute.
+ * @tparam Loc Location of the attribute in the shader code.
+ */
 template<typename T, int Loc>
 struct Attribute
 {
@@ -54,4 +54,4 @@ struct Color4
 {
     float R, G, B, A;
 };
-} // common::utility
+} // namespace common::utility

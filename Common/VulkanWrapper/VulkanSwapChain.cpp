@@ -7,10 +7,10 @@
 #include "VulkanSwapChain.h"
 
 #include "VulkanDevice.h"
-#include "VulkanImageView.h"
-#include "VulkanSurface.h"
-#include "VulkanSemaphore.h"
 #include "VulkanFence.h"
+#include "VulkanImageView.h"
+#include "VulkanSemaphore.h"
+#include "VulkanSurface.h"
 
 namespace common::vulkan_wrapper
 {
@@ -53,7 +53,7 @@ VulkanSwapChain::~VulkanSwapChain()
     }
 }
 
-void VulkanSwapChain::SetSwapChainImageViews(const std::shared_ptr<VulkanDevice> &device, const VkFormat &imageFormat)
+void VulkanSwapChain::SetSwapChainImageViews(const std::shared_ptr<VulkanDevice>& device, const VkFormat& imageFormat)
 {
     std::vector<VkImage> swapImages;
     uint32_t swapChainImageCount;
@@ -67,20 +67,19 @@ void VulkanSwapChain::SetSwapChainImageViews(const std::shared_ptr<VulkanDevice>
     }
 
     for (const auto swapImage: swapImages) {
-        std::shared_ptr<VulkanImageView> imageView = VulkanImageViewBuilder()
-                .SetFormat(imageFormat)
-                .Build(device, swapImage);
+        std::shared_ptr<VulkanImageView> imageView =
+                VulkanImageViewBuilder().SetFormat(imageFormat).Build(device, swapImage);
         swapChainImageViews_.emplace_back(imageView);
     }
 }
 
-std::vector<std::shared_ptr<VulkanImageView> > VulkanSwapChain::GetSwapChainImageViews() const
+std::vector<std::shared_ptr<VulkanImageView>> VulkanSwapChain::GetSwapChainImageViews() const
 {
     return swapChainImageViews_;
 }
 
-std::uint32_t VulkanSwapChain::AcquireNextImage(const std::shared_ptr<VulkanSemaphore> &semaphore,
-                                                const std::shared_ptr<VulkanFence> &fence,
+std::uint32_t VulkanSwapChain::AcquireNextImage(const std::shared_ptr<VulkanSemaphore>& semaphore,
+                                                const std::shared_ptr<VulkanFence>& fence,
                                                 const std::uint64_t timeout) const
 {
     const auto device = GetParent();
@@ -94,99 +93,96 @@ std::uint32_t VulkanSwapChain::AcquireNextImage(const std::shared_ptr<VulkanSema
     return imageIndex;
 }
 
-VulkanSwapChainBuilder::VulkanSwapChainBuilder()
-    : createInfo_(GetDefaultSwapChainCreateInfo())
-{
-}
+VulkanSwapChainBuilder::VulkanSwapChainBuilder() : createInfo_(GetDefaultSwapChainCreateInfo()) {}
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetCreateFlags(const VkSwapchainCreateFlagsKHR &flags)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetCreateFlags(const VkSwapchainCreateFlagsKHR& flags)
 {
     createInfo_.flags = flags;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetMinImageCount(const std::uint32_t minImageCount)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetMinImageCount(const std::uint32_t minImageCount)
 {
     createInfo_.minImageCount = minImageCount;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetImageFormat(const VkFormat &format)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetImageFormat(const VkFormat& format)
 {
     createInfo_.imageFormat = format;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetImageColorSpace(const VkColorSpaceKHR &colorSpace)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetImageColorSpace(const VkColorSpaceKHR& colorSpace)
 {
     createInfo_.imageColorSpace = colorSpace;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetImageExtent(const std::uint32_t width, const std::uint32_t height)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetImageExtent(const std::uint32_t width, const std::uint32_t height)
 {
     createInfo_.imageExtent = VkExtent2D(width, height);
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetImageArrayLayers(const std::uint32_t imageArrayLayers)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetImageArrayLayers(const std::uint32_t imageArrayLayers)
 {
     createInfo_.imageArrayLayers = imageArrayLayers;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetImageUsageFlags(const VkImageUsageFlags &imageUsage)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetImageUsageFlags(const VkImageUsageFlags& imageUsage)
 {
     createInfo_.imageUsage = imageUsage;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetImageSharingMode(const VkSharingMode &sharingMode)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetImageSharingMode(const VkSharingMode& sharingMode)
 {
     createInfo_.imageSharingMode = sharingMode;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetQueueFamilyIndices(const std::vector<std::uint32_t> &familyIndices)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetQueueFamilyIndices(const std::vector<std::uint32_t>& familyIndices)
 {
     createInfo_.queueFamilyIndexCount = familyIndices.size();
     createInfo_.pQueueFamilyIndices = familyIndices.data();
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetPreTransformFlagBits(const VkSurfaceTransformFlagBitsKHR &flagBits)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetPreTransformFlagBits(const VkSurfaceTransformFlagBitsKHR& flagBits)
 {
     createInfo_.preTransform = flagBits;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetCompositeAlphaFlagBits(
-    const VkCompositeAlphaFlagBitsKHR &compositeAlpha)
+VulkanSwapChainBuilder&
+VulkanSwapChainBuilder::SetCompositeAlphaFlagBits(const VkCompositeAlphaFlagBitsKHR& compositeAlpha)
 {
     createInfo_.compositeAlpha = compositeAlpha;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetPresentMode(const VkPresentModeKHR &presentMode)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetPresentMode(const VkPresentModeKHR& presentMode)
 {
     createInfo_.presentMode = presentMode;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetClipped(bool isClipped)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetClipped(bool isClipped)
 {
     createInfo_.clipped = isClipped;
     return *this;
 }
 
-VulkanSwapChainBuilder &VulkanSwapChainBuilder::SetOldSwapChain(const std::shared_ptr<VulkanSwapChain> &oldSwapChain)
+VulkanSwapChainBuilder& VulkanSwapChainBuilder::SetOldSwapChain(const std::shared_ptr<VulkanSwapChain>& oldSwapChain)
 {
     createInfo_.oldSwapchain = oldSwapChain->GetHandle();
     return *this;
 }
 
-std::shared_ptr<VulkanSwapChain> VulkanSwapChainBuilder::Build(const std::shared_ptr<VulkanDevice> &device,
-                                                               const std::shared_ptr<VulkanSurface> &surface)
+std::shared_ptr<VulkanSwapChain> VulkanSwapChainBuilder::Build(const std::shared_ptr<VulkanDevice>& device,
+                                                               const std::shared_ptr<VulkanSurface>& surface)
 {
     createInfo_.surface = surface->GetHandle();
 
@@ -200,4 +196,4 @@ std::shared_ptr<VulkanSwapChain> VulkanSwapChainBuilder::Build(const std::shared
     vulkanSwapChain->SetSwapChainImageViews(device, createInfo_.imageFormat);
     return vulkanSwapChain;
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

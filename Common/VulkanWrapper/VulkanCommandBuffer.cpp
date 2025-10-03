@@ -10,8 +10,8 @@
 
 #include "VulkanBuffer.h"
 #include "VulkanCommandPool.h"
-#include "VulkanDevice.h"
 #include "VulkanDescriptorSet.h"
+#include "VulkanDevice.h"
 #include "VulkanImage.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -36,8 +36,8 @@ VulkanCommandBuffer::~VulkanCommandBuffer()
     }
 }
 
-bool VulkanCommandBuffer::BeginCommandBuffer(
-    const std::function<void(VkCommandBufferBeginInfo &)> &beginInfoCallback) const
+bool
+VulkanCommandBuffer::BeginCommandBuffer(const std::function<void(VkCommandBufferBeginInfo&)>& beginInfoCallback) const
 {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -61,7 +61,7 @@ bool VulkanCommandBuffer::EndCommandBuffer() const
     return true;
 }
 
-bool VulkanCommandBuffer::ResetCommandBuffer(const VkCommandBufferResetFlags &resetFlags) const
+bool VulkanCommandBuffer::ResetCommandBuffer(const VkCommandBufferResetFlags& resetFlags) const
 {
     if (vkResetCommandBuffer(handle_, resetFlags)) {
         std::cerr << "Failed to reset command buffer!" << std::endl;
@@ -70,8 +70,8 @@ bool VulkanCommandBuffer::ResetCommandBuffer(const VkCommandBufferResetFlags &re
     return true;
 }
 
-void VulkanCommandBuffer::BeginRenderPass(const std::function<void(VkRenderPassBeginInfo &)> &beginInfoCallback,
-                                          const VkSubpassContents &subpassContents) const
+void VulkanCommandBuffer::BeginRenderPass(const std::function<void(VkRenderPassBeginInfo&)>& beginInfoCallback,
+                                          const VkSubpassContents& subpassContents) const
 {
     VkRenderPassBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -79,103 +79,106 @@ void VulkanCommandBuffer::BeginRenderPass(const std::function<void(VkRenderPassB
     vkCmdBeginRenderPass(handle_, &beginInfo, subpassContents);
 }
 
-void VulkanCommandBuffer::EndRenderPass() const
-{
-    vkCmdEndRenderPass(handle_);
-}
+void VulkanCommandBuffer::EndRenderPass() const { vkCmdEndRenderPass(handle_); }
 
-void VulkanCommandBuffer::NextSubpass(const VkSubpassContents &subpassContents) const
+void VulkanCommandBuffer::NextSubpass(const VkSubpassContents& subpassContents) const
 {
     vkCmdNextSubpass(handle_, subpassContents);
 }
 
-void VulkanCommandBuffer::BindDescriptorSets(const VkPipelineBindPoint &pipelineBindPoint,
-                                             const std::shared_ptr<VulkanPipelineLayout> &pipelineLayout,
+void VulkanCommandBuffer::BindDescriptorSets(const VkPipelineBindPoint& pipelineBindPoint,
+                                             const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
                                              const std::uint32_t firstSet,
-                                             const std::vector<std::shared_ptr<VulkanDescriptorSet> > &descriptorSets,
-                                             const std::vector<std::uint32_t> &dynamicOffsets) const
+                                             const std::vector<std::shared_ptr<VulkanDescriptorSet>>& descriptorSets,
+                                             const std::vector<std::uint32_t>& dynamicOffsets) const
 {
     std::vector<VkDescriptorSet> vkDescriptorSets(descriptorSets.size());
     for (std::size_t i = 0; i < descriptorSets.size(); ++i) {
         vkDescriptorSets[i] = descriptorSets[i]->GetHandle();
     }
 
-    vkCmdBindDescriptorSets(handle_, pipelineBindPoint, pipelineLayout->GetHandle(), firstSet,
-                            descriptorSets.size(), vkDescriptorSets.empty() ? nullptr : vkDescriptorSets.data(),
-                            dynamicOffsets.size(), dynamicOffsets.empty() ? nullptr : dynamicOffsets.data());
+    vkCmdBindDescriptorSets(handle_, pipelineBindPoint, pipelineLayout->GetHandle(), firstSet, descriptorSets.size(),
+                            vkDescriptorSets.empty() ? nullptr : vkDescriptorSets.data(), dynamicOffsets.size(),
+                            dynamicOffsets.empty() ? nullptr : dynamicOffsets.data());
 }
 
-void VulkanCommandBuffer::BindIndexBuffer(const std::shared_ptr<VulkanBuffer> &indexBuffer, const VkDeviceSize &offset,
-                                          const VkIndexType &indexType) const
+void VulkanCommandBuffer::BindIndexBuffer(const std::shared_ptr<VulkanBuffer>& indexBuffer,
+                                          const VkDeviceSize& offset,
+                                          const VkIndexType& indexType) const
 {
     vkCmdBindIndexBuffer(handle_, indexBuffer->GetHandle(), offset, indexType);
 }
 
-void VulkanCommandBuffer::BindPipeline(const std::shared_ptr<VulkanPipeline> &pipeline,
-                                       const VkPipelineBindPoint &bindPoint) const
+void VulkanCommandBuffer::BindPipeline(const std::shared_ptr<VulkanPipeline>& pipeline,
+                                       const VkPipelineBindPoint& bindPoint) const
 {
     vkCmdBindPipeline(handle_, bindPoint, pipeline->GetHandle());
 }
 
-void VulkanCommandBuffer::BindVertexBuffers(const std::vector<std::shared_ptr<VulkanBuffer> > &vertexBuffers,
-                                            const std::uint32_t firstBinding, const std::uint32_t bindingCount,
-                                            const std::vector<VkDeviceSize> &offsets) const
+void VulkanCommandBuffer::BindVertexBuffers(const std::vector<std::shared_ptr<VulkanBuffer>>& vertexBuffers,
+                                            const std::uint32_t firstBinding,
+                                            const std::uint32_t bindingCount,
+                                            const std::vector<VkDeviceSize>& offsets) const
 {
     std::vector<VkBuffer> vkVertexBuffers(vertexBuffers.size());
     std::ranges::transform(vertexBuffers, vkVertexBuffers.begin(),
-                           [](const auto &buffer) { return buffer->GetHandle(); });
+                           [](const auto& buffer) { return buffer->GetHandle(); });
 
     vkCmdBindVertexBuffers(handle_, firstBinding, bindingCount, vkVertexBuffers.data(), offsets.data());
 }
 
-void VulkanCommandBuffer::CopyBuffer(const std::shared_ptr<VulkanBuffer> &srcBuffer,
-                                     const std::shared_ptr<VulkanBuffer> &dstBuffer,
-                                     const std::vector<VkBufferCopy> &regions) const
+void VulkanCommandBuffer::CopyBuffer(const std::shared_ptr<VulkanBuffer>& srcBuffer,
+                                     const std::shared_ptr<VulkanBuffer>& dstBuffer,
+                                     const std::vector<VkBufferCopy>& regions) const
 {
     vkCmdCopyBuffer(handle_, srcBuffer->GetHandle(), dstBuffer->GetHandle(), regions.size(),
                     regions.empty() ? nullptr : regions.data());
 }
 
-void VulkanCommandBuffer::CopyBufferToImage(const std::shared_ptr<VulkanBuffer> &srcBuffer,
-                                            const std::shared_ptr<VulkanImage> &dstImage,
-                                            const VkImageLayout &imageLayout,
-                                            const std::vector<VkBufferImageCopy> &regions) const
+void VulkanCommandBuffer::CopyBufferToImage(const std::shared_ptr<VulkanBuffer>& srcBuffer,
+                                            const std::shared_ptr<VulkanImage>& dstImage,
+                                            const VkImageLayout& imageLayout,
+                                            const std::vector<VkBufferImageCopy>& regions) const
 {
     vkCmdCopyBufferToImage(handle_, srcBuffer->GetHandle(), dstImage->GetHandle(), imageLayout, regions.size(),
                            regions.empty() ? nullptr : regions.data());
 }
 
-void VulkanCommandBuffer::Draw(const std::uint32_t vertexCount, const std::uint32_t instanceCount,
-                               const std::uint32_t firstVertex, const std::uint32_t firstInstance) const
+void VulkanCommandBuffer::Draw(const std::uint32_t vertexCount,
+                               const std::uint32_t instanceCount,
+                               const std::uint32_t firstVertex,
+                               const std::uint32_t firstInstance) const
 {
     vkCmdDraw(handle_, vertexCount, instanceCount, firstVertex, firstInstance);
 }
 
-void VulkanCommandBuffer::DrawIndexed(const std::uint32_t indexCount, const std::uint32_t instanceCount,
-                                      const std::uint32_t firstIndex, const std::int32_t vertexOffset,
+void VulkanCommandBuffer::DrawIndexed(const std::uint32_t indexCount,
+                                      const std::uint32_t instanceCount,
+                                      const std::uint32_t firstIndex,
+                                      const std::int32_t vertexOffset,
                                       const std::uint32_t firstInstance) const
 {
     vkCmdDrawIndexed(handle_, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }
 
-void VulkanCommandBuffer::PipelineBarrier(const VkPipelineStageFlags &srcStage, const VkPipelineStageFlags &dstStage,
-                                          const std::vector<VkImageMemoryBarrier> &imageMemoryBarrier,
-                                          const std::vector<VkBufferMemoryBarrier> &bufferMemoryBarriers,
-                                          const std::vector<VkMemoryBarrier> &memoryBarriers,
-                                          const VkDependencyFlags &dependencyFlags) const
+void VulkanCommandBuffer::PipelineBarrier(const VkPipelineStageFlags& srcStage,
+                                          const VkPipelineStageFlags& dstStage,
+                                          const std::vector<VkImageMemoryBarrier>& imageMemoryBarrier,
+                                          const std::vector<VkBufferMemoryBarrier>& bufferMemoryBarriers,
+                                          const std::vector<VkMemoryBarrier>& memoryBarriers,
+                                          const VkDependencyFlags& dependencyFlags) const
 {
-    vkCmdPipelineBarrier(handle_, srcStage, dstStage, dependencyFlags,
-                         memoryBarriers.size(),
-                         memoryBarriers.empty() ? nullptr : memoryBarriers.data(),
-                         bufferMemoryBarriers.size(),
+    vkCmdPipelineBarrier(handle_, srcStage, dstStage, dependencyFlags, memoryBarriers.size(),
+                         memoryBarriers.empty() ? nullptr : memoryBarriers.data(), bufferMemoryBarriers.size(),
                          bufferMemoryBarriers.empty() ? nullptr : bufferMemoryBarriers.data(),
-                         imageMemoryBarrier.size(),
-                         imageMemoryBarrier.empty() ? nullptr : imageMemoryBarrier.data());
+                         imageMemoryBarrier.size(), imageMemoryBarrier.empty() ? nullptr : imageMemoryBarrier.data());
 }
 
-void VulkanCommandBuffer::PushConstants(const std::shared_ptr<VulkanPipelineLayout> &pipelineLayout,
-                                        const VkShaderStageFlags &stageFlags, const std::uint32_t offset,
-                                        const std::uint32_t size, const void *values) const
+void VulkanCommandBuffer::PushConstants(const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
+                                        const VkShaderStageFlags& stageFlags,
+                                        const std::uint32_t offset,
+                                        const std::uint32_t size,
+                                        const void* values) const
 {
     vkCmdPushConstants(handle_, pipelineLayout->GetHandle(), stageFlags, offset, size, values);
 }
@@ -186,8 +189,5 @@ void VulkanCommandBuffer::SetBlendConstants(const float r, const float g, const 
     vkCmdSetBlendConstants(handle_, blendConstants);
 }
 
-void VulkanCommandBuffer::SetLineWidth(const float lineWidth) const
-{
-    vkCmdSetLineWidth(handle_, lineWidth);
-}
-} // common::vulkan_wrapper
+void VulkanCommandBuffer::SetLineWidth(const float lineWidth) const { vkCmdSetLineWidth(handle_, lineWidth); }
+} // namespace common::vulkan_wrapper

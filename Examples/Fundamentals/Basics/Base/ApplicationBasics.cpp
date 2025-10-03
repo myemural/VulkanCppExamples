@@ -8,8 +8,8 @@
 
 #include <thread>
 
-#include "VulkanInstance.h"
 #include "AppCommonConfig.h"
+#include "VulkanInstance.h"
 
 namespace examples::fundamentals::basics::base
 {
@@ -17,25 +17,13 @@ using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
-void ApplicationBasics::SetWindow(const std::shared_ptr<Window> &window)
-{
-    window_ = window;
-}
+void ApplicationBasics::SetWindow(const std::shared_ptr<Window>& window) { window_ = window; }
 
-void ApplicationBasics::PreUpdate()
-{
-    window_->PollEvents();
-}
+void ApplicationBasics::PreUpdate() { window_->PollEvents(); }
 
-void ApplicationBasics::PostUpdate()
-{
-    window_->SwapBuffers();
-}
+void ApplicationBasics::PostUpdate() { window_->SwapBuffers(); }
 
-bool ApplicationBasics::ShouldClose()
-{
-    return window_->CheckWindowCloseFlag();
-}
+bool ApplicationBasics::ShouldClose() { return window_->CheckWindowCloseFlag(); }
 
 void ApplicationBasics::CreateDefaultSurface()
 {
@@ -51,9 +39,9 @@ void ApplicationBasics::CreateDefaultSurface()
 void ApplicationBasics::SelectDefaultPhysicalDevice()
 {
     const auto physicalDevices = VulkanPhysicalDeviceSelector()
-            .FilterByQueueTypes(VK_QUEUE_GRAPHICS_BIT)
-            .FilterBySurfaceSupport(surface_)
-            .Select(instance_);
+                                         .FilterByQueueTypes(VK_QUEUE_GRAPHICS_BIT)
+                                         .FilterBySurfaceSupport(surface_)
+                                         .Select(instance_);
 
     if (physicalDevices.empty()) {
         throw std::runtime_error("No physical devices found!");
@@ -76,10 +64,10 @@ void ApplicationBasics::CreateDefaultLogicalDevice()
     deviceFeatures.fillModeNonSolid = VK_TRUE;
     deviceFeatures.wideLines = VK_TRUE;
 
-    device_ = physicalDevice_->CreateDevice([&](auto &builder) {
+    device_ = physicalDevice_->CreateDevice([&](auto& builder) {
         builder.AddLayer("VK_LAYER_KHRONOS_validation")
                 .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
-                .AddQueueInfo([&](auto &queueInfo) {
+                .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
                     queueInfo.queueCount = 1;
                     queueInfo.pQueuePriorities = queuePriorities.data();
@@ -92,10 +80,7 @@ void ApplicationBasics::CreateDefaultLogicalDevice()
     }
 }
 
-void ApplicationBasics::CreateDefaultQueue()
-{
-    queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0);
-}
+void ApplicationBasics::CreateDefaultQueue() { queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0); }
 
 void ApplicationBasics::CreateDefaultSwapChain()
 {
@@ -110,7 +95,7 @@ void ApplicationBasics::CreateDefaultSwapChain()
         throw std::runtime_error("Failed to get surface format or capabilities!");
     }
 
-    swapChain_ = device_->CreateSwapChain(surface_, [&](auto &builder) {
+    swapChain_ = device_->CreateSwapChain(surface_, [&](auto& builder) {
         builder.SetMinImageCount(surfaceCapabilities.value().minImageCount + 1)
                 .SetImageFormat(surfaceFormat->format)
                 .SetImageColorSpace(surfaceFormat->colorSpace)
@@ -133,18 +118,18 @@ void ApplicationBasics::CreateDefaultRenderPass()
 {
     VkAttachmentReference colorAttachmentRef{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
-    renderPass_ = device_->CreateRenderPass([&](auto &builder) {
-        builder.AddAttachment([](auto &attachmentCreateInfo) {
-                    attachmentCreateInfo.format = VK_FORMAT_B8G8R8A8_SRGB;
-                    attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-                    attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-                    attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-                    attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-                    attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-                })
-                .AddSubpass([&colorAttachmentRef](auto &subpassCreateInfo) {
+    renderPass_ = device_->CreateRenderPass([&](auto& builder) {
+        builder.AddAttachment([](auto& attachmentCreateInfo) {
+                   attachmentCreateInfo.format = VK_FORMAT_B8G8R8A8_SRGB;
+                   attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+                   attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+                   attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+                   attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+                   attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+                   attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+                   attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+               })
+                .AddSubpass([&colorAttachmentRef](auto& subpassCreateInfo) {
                     subpassCreateInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
                     subpassCreateInfo.colorAttachmentCount = 1;
                     subpassCreateInfo.pColorAttachments = &colorAttachmentRef;
@@ -161,10 +146,9 @@ void ApplicationBasics::CreateDefaultFramebuffers()
     const auto windowWidth = window_->GetWindowWidth();
     const auto windowHeight = window_->GetWindowHeight();
 
-    for (const auto &swapImage: swapChainImageViews_) {
-        auto framebuffer = device_->CreateFramebuffer(renderPass_, {swapImage}, [&](auto &builder) {
-            builder.SetDimensions(windowWidth, windowHeight);
-        });
+    for (const auto& swapImage: swapChainImageViews_) {
+        auto framebuffer = device_->CreateFramebuffer(
+                renderPass_, {swapImage}, [&](auto& builder) { builder.SetDimensions(windowWidth, windowHeight); });
 
         if (!framebuffer) {
             throw std::runtime_error("Failed to create framebuffer!");

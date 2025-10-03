@@ -6,23 +6,22 @@
 
 #include "VulkanQueue.h"
 
+#include "VulkanCommandBuffer.h"
 #include "VulkanFence.h"
 #include "VulkanSemaphore.h"
-#include "VulkanCommandBuffer.h"
 #include "VulkanSwapChain.h"
 
 namespace common::vulkan_wrapper
 {
-VulkanQueue::VulkanQueue(std::shared_ptr<VulkanDevice> device, VkQueue queue)
-    : VulkanObject{std::move(device), queue}
+VulkanQueue::VulkanQueue(std::shared_ptr<VulkanDevice> device, VkQueue queue) : VulkanObject{std::move(device), queue}
 {
 }
 
-void VulkanQueue::Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer> > &cmdBuffers,
-                         const std::vector<std::shared_ptr<VulkanSemaphore> > &waitSemaphores,
-                         const std::vector<std::shared_ptr<VulkanSemaphore> > &signalSemaphores,
-                         const std::shared_ptr<VulkanFence> &fence,
-                         const std::vector<VkPipelineStageFlags> &waitStages) const
+void VulkanQueue::Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer>>& cmdBuffers,
+                         const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores,
+                         const std::vector<std::shared_ptr<VulkanSemaphore>>& signalSemaphores,
+                         const std::shared_ptr<VulkanFence>& fence,
+                         const std::vector<VkPipelineStageFlags>& waitStages) const
 {
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -56,9 +55,9 @@ void VulkanQueue::Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer> 
     }
 }
 
-void VulkanQueue::Present(const std::vector<std::shared_ptr<VulkanSwapChain> > &swapChains,
-                          const std::vector<std::uint32_t> &swapChainImageIndices,
-                          const std::vector<std::shared_ptr<VulkanSemaphore> > &waitSemaphores) const
+void VulkanQueue::Present(const std::vector<std::shared_ptr<VulkanSwapChain>>& swapChains,
+                          const std::vector<std::uint32_t>& swapChainImageIndices,
+                          const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores) const
 {
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -92,4 +91,4 @@ void VulkanQueue::WaitIdle() const
         throw std::runtime_error("Failed to wait queue!");
     }
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

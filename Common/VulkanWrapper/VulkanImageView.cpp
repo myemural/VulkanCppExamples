@@ -6,8 +6,8 @@
 
 #include "VulkanImageView.h"
 
-#include "VulkanImage.h"
 #include "VulkanDevice.h"
+#include "VulkanImage.h"
 
 namespace common::vulkan_wrapper
 {
@@ -47,49 +47,46 @@ VulkanImageView::~VulkanImageView()
     }
 }
 
-VulkanImageViewBuilder::VulkanImageViewBuilder()
-    : createInfo_(GetDefaultImageViewCreateInfo())
-{
-}
+VulkanImageViewBuilder::VulkanImageViewBuilder() : createInfo_(GetDefaultImageViewCreateInfo()) {}
 
-VulkanImageViewBuilder &VulkanImageViewBuilder::SetCreateFlags(const VkImageViewCreateFlags &flags)
+VulkanImageViewBuilder& VulkanImageViewBuilder::SetCreateFlags(const VkImageViewCreateFlags& flags)
 {
     createInfo_.flags = flags;
     return *this;
 }
 
-VulkanImageViewBuilder &VulkanImageViewBuilder::SetImageViewType(const VkImageViewType &viewType)
+VulkanImageViewBuilder& VulkanImageViewBuilder::SetImageViewType(const VkImageViewType& viewType)
 {
     createInfo_.viewType = viewType;
     return *this;
 }
 
-VulkanImageViewBuilder &VulkanImageViewBuilder::SetFormat(const VkFormat &format)
+VulkanImageViewBuilder& VulkanImageViewBuilder::SetFormat(const VkFormat& format)
 {
     createInfo_.format = format;
     return *this;
 }
 
-VulkanImageViewBuilder &VulkanImageViewBuilder::SetComponents(const VkComponentMapping &components)
+VulkanImageViewBuilder& VulkanImageViewBuilder::SetComponents(const VkComponentMapping& components)
 {
     createInfo_.components = components;
     return *this;
 }
 
-VulkanImageViewBuilder &VulkanImageViewBuilder::SetSubresourceRange(const VkImageSubresourceRange &subresourceRange)
+VulkanImageViewBuilder& VulkanImageViewBuilder::SetSubresourceRange(const VkImageSubresourceRange& subresourceRange)
 {
     createInfo_.subresourceRange = subresourceRange;
     return *this;
 }
 
-VulkanImageViewBuilder &VulkanImageViewBuilder::SetImage(const std::shared_ptr<VulkanImage> &image)
+VulkanImageViewBuilder& VulkanImageViewBuilder::SetImage(const std::shared_ptr<VulkanImage>& image)
 {
     createInfo_.image = image->GetHandle();
     return *this;
 }
 
 std::shared_ptr<VulkanImageView> VulkanImageViewBuilder::Build(std::shared_ptr<VulkanDevice> device,
-                                                               const std::shared_ptr<VulkanImage> &image)
+                                                               const std::shared_ptr<VulkanImage>& image)
 {
     createInfo_.image = image->GetHandle();
 
@@ -114,4 +111,4 @@ std::shared_ptr<VulkanImageView> VulkanImageViewBuilder::Build(std::shared_ptr<V
 
     return std::make_shared<VulkanImageView>(std::move(device), imageView);
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

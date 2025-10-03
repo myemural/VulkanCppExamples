@@ -14,21 +14,24 @@
 namespace common::window_wrapper
 {
 
-enum class EventType {
+enum class EventType
+{
     Key,
     MouseButton,
     MouseMove,
     MouseScroll
 };
 
-class InputEvent {
+class InputEvent
+{
 public:
     virtual ~InputEvent() = default;
     [[nodiscard]] virtual EventType GetType() const = 0;
 };
 
 // Key Event
-class KeyEvent final : public InputEvent {
+class KeyEvent final : public InputEvent
+{
 public:
     KeyEvent(const int key, const int action) : Key(key), Action(action) {}
     [[nodiscard]] EventType GetType() const override { return EventType::Key; }
@@ -38,7 +41,8 @@ public:
 };
 
 // Mouse Button Event
-class MouseButtonEvent final : public InputEvent {
+class MouseButtonEvent final : public InputEvent
+{
 public:
     MouseButtonEvent(const int button, const int action) : Button(button), Action(action) {}
     [[nodiscard]] EventType GetType() const override { return EventType::MouseButton; }
@@ -48,7 +52,8 @@ public:
 };
 
 // Mouse Move Event
-class MouseMoveEvent final : public InputEvent {
+class MouseMoveEvent final : public InputEvent
+{
 public:
     MouseMoveEvent(const double x, const double y) : X(x), Y(y) {}
     [[nodiscard]] EventType GetType() const override { return EventType::MouseMove; }
@@ -58,7 +63,8 @@ public:
 };
 
 // Mouse Scroll Event
-class MouseScrollEvent : public InputEvent {
+class MouseScrollEvent : public InputEvent
+{
 public:
     MouseScrollEvent(const double deltaX, const double deltaY) : DeltaX(deltaX), DeltaY(deltaY) {}
     [[nodiscard]] EventType GetType() const override { return EventType::MouseScroll; }

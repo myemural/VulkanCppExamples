@@ -206,14 +206,14 @@ VulkanGraphicsPipelineBuilder::VulkanGraphicsPipelineBuilder()
 {
 }
 
-VulkanGraphicsPipelineBuilder & VulkanGraphicsPipelineBuilder::SetCreateFlags(const VkPipelineCreateFlags &flags)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetCreateFlags(const VkPipelineCreateFlags& flags)
 {
     createInfo_.flags = flags;
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::AddShaderStage(
-    const std::function<void(VkPipelineShaderStageCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder&
+VulkanGraphicsPipelineBuilder::AddShaderStage(const std::function<void(VkPipelineShaderStageCreateInfo&)>& builderFunc)
 {
     VkPipelineShaderStageCreateInfo shaderStageCreateInfo = GetDefaultShaderStageCreateInfo();
     builderFunc(shaderStageCreateInfo);
@@ -221,88 +221,88 @@ VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::AddShaderStage(
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetVertexInputState(
-    const std::function<void(VkPipelineVertexInputStateCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetVertexInputState(
+        const std::function<void(VkPipelineVertexInputStateCreateInfo&)>& builderFunc)
 {
     builderFunc(vertexInputState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetInputAssemblyState(
-    const std::function<void(VkPipelineInputAssemblyStateCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetInputAssemblyState(
+        const std::function<void(VkPipelineInputAssemblyStateCreateInfo&)>& builderFunc)
 {
     builderFunc(inputAssemblyState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetTessellationState(
-    const std::function<void(VkPipelineTessellationStateCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetTessellationState(
+        const std::function<void(VkPipelineTessellationStateCreateInfo&)>& builderFunc)
 {
     builderFunc(tessellationState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetViewportState(
-    const std::function<void(VkPipelineViewportStateCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetViewportState(
+        const std::function<void(VkPipelineViewportStateCreateInfo&)>& builderFunc)
 {
     builderFunc(viewportState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetRasterizationState(
-    const std::function<void(VkPipelineRasterizationStateCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetRasterizationState(
+        const std::function<void(VkPipelineRasterizationStateCreateInfo&)>& builderFunc)
 {
     builderFunc(rasterizationState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetMultisampleState(
-    const std::function<void(VkPipelineMultisampleStateCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetMultisampleState(
+        const std::function<void(VkPipelineMultisampleStateCreateInfo&)>& builderFunc)
 {
     builderFunc(multisampleState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetDepthStencilState(
-    const std::function<void(VkPipelineDepthStencilStateCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetDepthStencilState(
+        const std::function<void(VkPipelineDepthStencilStateCreateInfo&)>& builderFunc)
 {
     builderFunc(depthStencilState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetColorBlendState(
-    const std::function<void(VkPipelineColorBlendStateCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetColorBlendState(
+        const std::function<void(VkPipelineColorBlendStateCreateInfo&)>& builderFunc)
 {
     builderFunc(colorBlendState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetDynamicState(
-    const std::function<void(VkPipelineDynamicStateCreateInfo &)> &builderFunc)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetDynamicState(
+        const std::function<void(VkPipelineDynamicStateCreateInfo&)>& builderFunc)
 {
     builderFunc(dynamicState_);
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetSubpassIndex(const std::uint32_t subpassIndex)
+VulkanGraphicsPipelineBuilder& VulkanGraphicsPipelineBuilder::SetSubpassIndex(const std::uint32_t subpassIndex)
 {
     createInfo_.subpass = subpassIndex;
     return *this;
 }
 
-VulkanGraphicsPipelineBuilder &VulkanGraphicsPipelineBuilder::SetBasePipeline(
-    const std::shared_ptr<VulkanPipeline> &basePipeline, const std::int32_t basePipelineIndex)
+VulkanGraphicsPipelineBuilder&
+VulkanGraphicsPipelineBuilder::SetBasePipeline(const std::shared_ptr<VulkanPipeline>& basePipeline,
+                                               const std::int32_t basePipelineIndex)
 {
     createInfo_.basePipelineHandle = basePipeline->GetHandle();
     createInfo_.basePipelineIndex = basePipelineIndex;
     return *this;
 }
 
-std::shared_ptr<VulkanPipeline> VulkanGraphicsPipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
-                                                                     const std::shared_ptr<VulkanPipelineLayout> &
-                                                                     pipelineLayout,
-                                                                     const std::shared_ptr<VulkanRenderPass> &
-                                                                     renderPass)
+std::shared_ptr<VulkanPipeline>
+VulkanGraphicsPipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
+                                     const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
+                                     const std::shared_ptr<VulkanRenderPass>& renderPass)
 {
     if (shaderStages_.empty()) {
         std::cerr << "Please set at least 1 shader stage for pipeline!" << std::endl;
@@ -332,4 +332,4 @@ std::shared_ptr<VulkanPipeline> VulkanGraphicsPipelineBuilder::Build(std::shared
 
     return std::make_shared<VulkanPipeline>(std::move(device), graphicsPipeline);
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

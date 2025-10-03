@@ -12,12 +12,12 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
-#include "VulkanHelpers.h"
+#include "AppConfig.h"
 #include "ApplicationData.h"
+#include "TimeUtils.h"
+#include "VulkanHelpers.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
-#include "AppConfig.h"
-#include "TimeUtils.h"
 
 namespace examples::fundamentals::pipelines_and_passes::basic_stencil_testing
 {
@@ -26,10 +26,7 @@ using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
-VulkanApplication::VulkanApplication(ParameterServer &&params)
-    : ApplicationPipelinesAndPasses(std::move(params))
-{
-}
+VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationPipelinesAndPasses(std::move(params)) {}
 
 bool VulkanApplication::Init()
 {
@@ -55,7 +52,7 @@ bool VulkanApplication::Init()
         CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
                                                            GetParamStr(AppConstants::DepthImageView)));
         CreateCommandBuffers();
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
     }
@@ -81,9 +78,8 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffersPresent_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
-                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-                   });
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_],
+                   {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
@@ -117,7 +113,7 @@ void VulkanApplication::InitInputSystem()
 
     window_->DisableCursor();
 
-    window_->OnMouseMove([&](const MouseMoveEvent &event) {
+    window_->OnMouseMove([&](const MouseMoveEvent& event) {
         const auto xPos = static_cast<float>(event.X);
         const auto yPos = static_cast<float>(event.Y);
 
@@ -144,23 +140,17 @@ void VulkanApplication::InitInputSystem()
         const float yawRad = glm::radians(yawAngle_);
         const float pitchRad = glm::radians(pitchAngle_);
 
-        const glm::vec3 front{
-            std::cos(yawRad) * std::cos(pitchRad),
-            std::sin(pitchRad),
-            std::sin(yawRad) * std::cos(pitchRad)
-        };
+        const glm::vec3 front{std::cos(yawRad) * std::cos(pitchRad), std::sin(pitchRad),
+                              std::sin(yawRad) * std::cos(pitchRad)};
         cameraFront_ = glm::normalize(front);
     });
 }
 
 void VulkanApplication::CreateResources()
 {
-    depthImageFormat_ = physicalDevice_->FindSupportedFormat({
-                                                                 VK_FORMAT_D32_SFLOAT_S8_UINT,
-                                                                 VK_FORMAT_D32_SFLOAT,
-                                                                 VK_FORMAT_D24_UNORM_S8_UINT
-                                                             },
-                                                             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+    depthImageFormat_ = physicalDevice_->FindSupportedFormat(
+            {VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D24_UNORM_S8_UINT},
+            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
@@ -173,108 +163,54 @@ void VulkanApplication::CreateResources()
     const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
 
     resourceCreateInfo.Buffers = {
-        {
-            GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize,
-            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        },
-        {
-            GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        },
-        {
-            GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.GetByteSize(),
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        }
-    };
+        {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+        {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+        {GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.GetByteSize(),
+         VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.Shaders = {
-        .BasePath = SHADERS_DIR,
-        .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
-        .Modules = {
-            {
-                .Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)
-            },
-            {
-                .Name = GetParamStr(AppConstants::ObjectFragmentShaderKey),
-                .FileName = GetParamStr(AppConstants::ObjectFragmentShaderFile)
-            },
-            {
-                .Name = GetParamStr(AppConstants::OutlineFragmentShaderKey),
-                .FileName = GetParamStr(AppConstants::OutlineFragmentShaderFile)
-            }
-        }
-    };
+    resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
+                                  .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
+                                  .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
+                                               .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                                              {.Name = GetParamStr(AppConstants::ObjectFragmentShaderKey),
+                                               .FileName = GetParamStr(AppConstants::ObjectFragmentShaderFile)},
+                                              {.Name = GetParamStr(AppConstants::OutlineFragmentShaderKey),
+                                               .FileName = GetParamStr(AppConstants::OutlineFragmentShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {
-        .MaxSets = 1,
-        .PoolSizes = {
-            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}
-        },
-        .Layouts = {
-            {
-                .Name = GetParamStr(AppConstants::MainDescSetLayout),
-                .Bindings = {
-                    {
-                        0,
-                        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                        1,
-                        VK_SHADER_STAGE_FRAGMENT_BIT,
-                        nullptr
-                    }
-                }
-            }
-        }
-    };
+    resourceCreateInfo.Descriptors = {.MaxSets = 1,
+                                      .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
+                                      .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+                                                                 VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}}};
 
     resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::CrateImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_SRGB,
-            .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
-            .Views = {
-                ImageViewCreateInfo{
-                    .ViewName = GetParamStr(AppConstants::CrateImageView),
-                    .Format = VK_FORMAT_R8G8B8A8_SRGB
-                }
-            }
-        },
+        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CrateImage),
+                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
+                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CrateImageView),
+                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
             .Name = GetParamStr(AppConstants::DepthImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .Format = depthImageFormat_,
             .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
             .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {
-                ImageViewCreateInfo{
-                    .ViewName = GetParamStr(AppConstants::DepthImageView),
-                    .Format = depthImageFormat_,
-                    .SubresourceRange = {
-                        .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                        .baseMipLevel = 0,
-                        .levelCount = 1,
-                        .baseArrayLayer = 0,
-                        .layerCount = 1
-                    }
-                }
-            }
-        }
-    };
+            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
+                                          .Format = depthImageFormat_,
+                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                               .baseMipLevel = 0,
+                                                               .levelCount = 1,
+                                                               .baseArrayLayer = 0,
+                                                               .layerCount = 1}}}}};
 
     resourceCreateInfo.Samplers = {
-        {
-            .Name = GetParamStr(AppConstants::MainSampler),
-            .FilteringBehavior = {
-                .MagFilter = VK_FILTER_LINEAR,
-                .MinFilter = VK_FILTER_LINEAR
-            }
-        }
-    };
+        {.Name = GetParamStr(AppConstants::MainSampler),
+         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
@@ -289,9 +225,8 @@ void VulkanApplication::InitResources() const
                           crateTextureHandler_.GetByteSize());
 
     resources_->SetImageFromBuffer(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage),
-                                   resources_->GetBuffer(GetParamStr(AppConstants::ImageStagingBuffer)), {
-                                       crateTextureHandler_.Width, crateTextureHandler_.Height, 1
-                                   });
+                                   resources_->GetBuffer(GetParamStr(AppConstants::ImageStagingBuffer)),
+                                   {crateTextureHandler_.Width, crateTextureHandler_.Height, 1});
 
     UpdateDescriptorSets();
 }
@@ -302,18 +237,18 @@ void VulkanApplication::CreateRenderPass()
 
     VkAttachmentReference depthAttachmentRef{1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
 
-    renderPass_ = device_->CreateRenderPass([&](auto &builder) {
-        builder.AddAttachment([](auto &attachmentCreateInfo) {
-                    attachmentCreateInfo.format = VK_FORMAT_B8G8R8A8_SRGB;
-                    attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-                    attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-                    attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-                    attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-                    attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-                })
-                .AddAttachment([&](auto &attachmentCreateInfo) {
+    renderPass_ = device_->CreateRenderPass([&](auto& builder) {
+        builder.AddAttachment([](auto& attachmentCreateInfo) {
+                   attachmentCreateInfo.format = VK_FORMAT_B8G8R8A8_SRGB;
+                   attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+                   attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+                   attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+                   attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+                   attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+                   attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+                   attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+               })
+                .AddAttachment([&](auto& attachmentCreateInfo) {
                     attachmentCreateInfo.format = depthImageFormat_;
                     attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
                     attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -323,7 +258,7 @@ void VulkanApplication::CreateRenderPass()
                     attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
                     attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
                 })
-                .AddSubpass([&](auto &subpassCreateInfo) {
+                .AddSubpass([&](auto& subpassCreateInfo) {
                     subpassCreateInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
                     subpassCreateInfo.colorAttachmentCount = 1;
                     subpassCreateInfo.pColorAttachments = &colorAttachmentRef;
@@ -343,19 +278,15 @@ void VulkanApplication::CreatePipeline()
     mvpPushConstant.size = sizeof(MvpData);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    pipelineLayout_ = device_->CreatePipelineLayout({
-                                                        resources_->GetDescriptorLayout(
-                                                            GetParamStr(AppConstants::MainDescSetLayout))
-                                                    },
-                                                    {mvpPushConstant});
+    pipelineLayout_ = device_->CreatePipelineLayout(
+            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))}, {mvpPushConstant});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    VkViewport viewport{
-        0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f
-    };
+    VkViewport viewport{0,    0,   static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_),
+                        0.0f, 1.0f};
     VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
@@ -366,68 +297,59 @@ void VulkanApplication::CreatePipeline()
     colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT
-                                          | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.colorWriteMask =
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
     constexpr uint32_t bindingIndex = 0;
     auto bindingDescription = GenerateBindingDescription<VertexPos3Uv2>(bindingIndex);
     const auto posAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Position, bindingIndex);
     const auto uvAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Uv, bindingIndex);
-    const std::array attributeDescriptions{
-        posAttribDescription,
-        uvAttribDescription
-    };
+    const std::array attributeDescriptions{posAttribDescription, uvAttribDescription};
 
-    VkStencilOpState stencilOpNormal = {
-        .failOp = VK_STENCIL_OP_KEEP,
-        .passOp = VK_STENCIL_OP_REPLACE,
-        .depthFailOp = VK_STENCIL_OP_KEEP,
-        .compareOp = VK_COMPARE_OP_ALWAYS,
-        .compareMask = 0xFF,
-        .writeMask = 0xFF,
-        .reference = 1
-    };
+    VkStencilOpState stencilOpNormal = {.failOp = VK_STENCIL_OP_KEEP,
+                                        .passOp = VK_STENCIL_OP_REPLACE,
+                                        .depthFailOp = VK_STENCIL_OP_KEEP,
+                                        .compareOp = VK_COMPARE_OP_ALWAYS,
+                                        .compareMask = 0xFF,
+                                        .writeMask = 0xFF,
+                                        .reference = 1};
 
-    VkStencilOpState stencilOpOutline = {
-        .failOp = VK_STENCIL_OP_KEEP,
-        .passOp = VK_STENCIL_OP_KEEP,
-        .depthFailOp = VK_STENCIL_OP_KEEP,
-        .compareOp = VK_COMPARE_OP_NOT_EQUAL,
-        .compareMask = 0xFF,
-        .writeMask = 0x00,
-        .reference = 1
-    };
+    VkStencilOpState stencilOpOutline = {.failOp = VK_STENCIL_OP_KEEP,
+                                         .passOp = VK_STENCIL_OP_KEEP,
+                                         .depthFailOp = VK_STENCIL_OP_KEEP,
+                                         .compareOp = VK_COMPARE_OP_NOT_EQUAL,
+                                         .compareMask = 0xFF,
+                                         .writeMask = 0x00,
+                                         .reference = 1};
 
-    pipelineObject_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+    pipelineObject_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = resources_->GetShaderModule(
-                        GetParamStr(AppConstants::MainVertexShaderKey))->
-                    GetHandle();
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
         });
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = resources_->GetShaderModule(
-                        GetParamStr(AppConstants::ObjectFragmentShaderKey))
-                    ->GetHandle();
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::ObjectFragmentShaderKey))->GetHandle();
         });
-        builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {
+        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
             vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
             vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
             vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         });
-        builder.SetViewportState([&](auto &viewportStateCreateInfo) {
+        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
             viewportStateCreateInfo.pViewports = &viewport;
             viewportStateCreateInfo.scissorCount = 1;
             viewportStateCreateInfo.pScissors = &scissor;
         });
-        builder.SetColorBlendState([&](auto &blendStateCreateInfo) {
+        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
             blendStateCreateInfo.attachmentCount = 1;
             blendStateCreateInfo.pAttachments = &colorBlendAttachment;
         });
-        builder.SetDepthStencilState([&](auto &depthStencilStateCreateInfo) {
+        builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
             depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
             depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
             depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
@@ -441,36 +363,34 @@ void VulkanApplication::CreatePipeline()
         throw std::runtime_error("Failed to create graphics pipeline(object)!");
     }
 
-    pipelineOutline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+    pipelineOutline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = resources_->GetShaderModule(
-                        GetParamStr(AppConstants::MainVertexShaderKey))->
-                    GetHandle();
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
         });
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = resources_->GetShaderModule(
-                        GetParamStr(AppConstants::OutlineFragmentShaderKey))
-                    ->GetHandle();
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::OutlineFragmentShaderKey))->GetHandle();
         });
-        builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {
+        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
             vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
             vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
             vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         });
-        builder.SetViewportState([&](auto &viewportStateCreateInfo) {
+        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
             viewportStateCreateInfo.pViewports = &viewport;
             viewportStateCreateInfo.scissorCount = 1;
             viewportStateCreateInfo.pScissors = &scissor;
         });
-        builder.SetColorBlendState([&](auto &blendStateCreateInfo) {
+        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
             blendStateCreateInfo.attachmentCount = 1;
             blendStateCreateInfo.pAttachments = &colorBlendAttachment;
         });
-        builder.SetDepthStencilState([&](auto &depthStencilStateCreateInfo) {
+        builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
             depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
             depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
             depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
@@ -489,10 +409,10 @@ void VulkanApplication::UpdateDescriptorSets() const
 {
     std::vector<VkDescriptorImageInfo> imageSamplerInfos;
     imageSamplerInfos.emplace_back(
-        resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-        resources_->GetImageView(GetParamStr(AppConstants::CrateImage),
-                                 GetParamStr(AppConstants::CrateImageView))->GetHandle(),
-        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
+            resources_->GetImageView(GetParamStr(AppConstants::CrateImage), GetParamStr(AppConstants::CrateImageView))
+                    ->GetHandle(),
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
     samplerUpdateRequest.LayoutName = GetParamStr(AppConstants::MainDescSetLayout);
@@ -500,9 +420,7 @@ void VulkanApplication::UpdateDescriptorSets() const
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .ImageWriteRequests = {samplerUpdateRequest}
-    };
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -525,35 +443,32 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     if (!cmdBuffersPresent_[currentImageIndex]->BeginCommandBuffer(nullptr)) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
-    cmdBuffersPresent_[currentImageIndex]->BeginRenderPass([&](auto &beginInfo) {
-        beginInfo.renderPass = renderPass_->GetHandle();
-        beginInfo.framebuffer = framebuffers_[currentImageIndex]->GetHandle();
-        beginInfo.renderArea.offset = {0, 0};
-        beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
-        beginInfo.clearValueCount = clearValues.size();
-        beginInfo.pClearValues = clearValues.data();
-    }, VK_SUBPASS_CONTENTS_INLINE);
-    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
-                                                              {
-                                                                  resources_->GetDescriptorSet(
-                                                                      GetParamStr(
-                                                                          AppConstants::MainDescSetLayout))
-                                                              });
-    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers({
-                                                                 resources_->GetBuffer(GetParamStr(
-                                                                     AppConstants::MainVertexBuffer))
-                                                             }, 0, 1, {0});
+    cmdBuffersPresent_[currentImageIndex]->BeginRenderPass(
+            [&](auto& beginInfo) {
+                beginInfo.renderPass = renderPass_->GetHandle();
+                beginInfo.framebuffer = framebuffers_[currentImageIndex]->GetHandle();
+                beginInfo.renderArea.offset = {0, 0};
+                beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
+                beginInfo.clearValueCount = clearValues.size();
+                beginInfo.pClearValues = clearValues.data();
+            },
+            VK_SUBPASS_CONTENTS_INLINE);
+    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(
+            VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
+            {resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))});
+    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers(
+            {resources_->GetBuffer(GetParamStr(AppConstants::MainVertexBuffer))}, 0, 1, {0});
     cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(
-        resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)), 0, VK_INDEX_TYPE_UINT16);
+            resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)), 0, VK_INDEX_TYPE_UINT16);
 
-    for (auto &mvpObject: mvpData) {
+    for (auto& mvpObject: mvpData) {
         cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipelineObject_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
                                                              sizeof(MvpData), &mvpObject);
         cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
     }
 
-    for (auto &mvpOutline: mvpOutlineData) {
+    for (auto& mvpOutline: mvpOutlineData) {
         cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipelineOutline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
                                                              sizeof(MvpData), &mvpOutline);
@@ -576,20 +491,15 @@ void VulkanApplication::CalculateAndSetMvp()
         modelOutline = glm::translate(modelOutline, modelPositions[i]);
         modelOutline = glm::scale(modelOutline, glm::vec3(1.0f) * (1.0f + GetParamFloat(AppSettings::OutlineWidth)));
 
-        const glm::mat4 view = glm::lookAt(
-            cameraPos_,
-            cameraPos_ + cameraFront_,
-            cameraUp_
-        );
+        const glm::mat4 view = glm::lookAt(cameraPos_, cameraPos_ + cameraFront_, cameraUp_);
 
         const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        glm::mat4 proj = glm::perspective(
-            glm::radians(45.0f), // FOV
-            aspectRatio, // Aspect ratio
-            0.1f, // Near clipping-plane
-            20.0f // Far clipping plane
+        glm::mat4 proj = glm::perspective(glm::radians(45.0f), // FOV
+                                          aspectRatio,         // Aspect ratio
+                                          0.1f,                // Near clipping-plane
+                                          20.0f                // Far clipping plane
         );
-        proj[1][1] *= -1; // Vulkan trick for projection
+        proj[1][1] *= -1;                                      // Vulkan trick for projection
 
 
         // Calculate MVP matrix

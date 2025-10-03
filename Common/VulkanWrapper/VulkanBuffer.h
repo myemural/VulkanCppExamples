@@ -31,7 +31,7 @@ public:
 
     [[nodiscard]] VkMemoryRequirements GetBufferMemoryRequirements() const;
 
-    void BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory> &deviceMemory, VkDeviceSize memoryOffset) const;
+    void BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory, VkDeviceSize memoryOffset) const;
 };
 
 class VulkanBufferBuilder
@@ -39,19 +39,19 @@ class VulkanBufferBuilder
 public:
     VulkanBufferBuilder();
 
-    VulkanBufferBuilder &SetCreateFlags(const VkBufferCreateFlags &createFlags);
+    VulkanBufferBuilder& SetCreateFlags(const VkBufferCreateFlags& createFlags);
 
-    VulkanBufferBuilder &SetSize(const VkDeviceSize &size);
+    VulkanBufferBuilder& SetSize(const VkDeviceSize& size);
 
-    VulkanBufferBuilder &SetUsage(const VkBufferUsageFlags &usageFlags);
+    VulkanBufferBuilder& SetUsage(const VkBufferUsageFlags& usageFlags);
 
-    VulkanBufferBuilder &SetSharingMode(const VkSharingMode &sharingMode);
+    VulkanBufferBuilder& SetSharingMode(const VkSharingMode& sharingMode);
 
-    VulkanBufferBuilder &SetQueueFamilyIndices(const std::vector<std::uint32_t> &queueFamilyIndices);
+    VulkanBufferBuilder& SetQueueFamilyIndices(const std::vector<std::uint32_t>& queueFamilyIndices);
 
     [[nodiscard]] std::shared_ptr<VulkanBuffer> Build(std::shared_ptr<VulkanDevice> device) const;
 
 private:
     VkBufferCreateInfo createInfo_;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

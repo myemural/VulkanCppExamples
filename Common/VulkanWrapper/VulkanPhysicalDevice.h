@@ -34,26 +34,27 @@ public:
 
     ~VulkanPhysicalDevice() override = default;
 
-    std::uint32_t FindMemoryType(std::uint32_t typeFilter, const VkMemoryPropertyFlags &properties) const;
+    std::uint32_t FindMemoryType(std::uint32_t typeFilter, const VkMemoryPropertyFlags& properties) const;
 
     VkPhysicalDeviceProperties GetProperties() const;
 
     std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const;
 
-    std::uint32_t GetSurfaceSupportedQueueFamilyIndex(const VkSurfaceKHR &surface) const;
+    std::uint32_t GetSurfaceSupportedQueueFamilyIndex(const VkSurfaceKHR& surface) const;
 
     std::optional<VkSurfaceCapabilitiesKHR> GetSurfaceCapabilities(VkSurfaceKHR surface) const;
 
-    std::optional<VkSurfaceFormatKHR> GetSurfaceFormat(const VkSurfaceKHR &surface, const VkFormat &selectedFormat,
-                                                       const VkColorSpaceKHR &selectedColorSpace) const;
+    std::optional<VkSurfaceFormatKHR> GetSurfaceFormat(const VkSurfaceKHR& surface,
+                                                       const VkFormat& selectedFormat,
+                                                       const VkColorSpaceKHR& selectedColorSpace) const;
 
     VkPhysicalDeviceFeatures GetSupportedFeatures() const;
 
-    VkFormat FindSupportedFormat(const std::vector<VkFormat> &candidateFormats,
-                                 const VkFormatFeatureFlags &features,
-                                 const VkImageTiling &tiling = VK_IMAGE_TILING_OPTIMAL) const;
+    VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidateFormats,
+                                 const VkFormatFeatureFlags& features,
+                                 const VkImageTiling& tiling = VK_IMAGE_TILING_OPTIMAL) const;
 
-    std::shared_ptr<VulkanDevice> CreateDevice(const std::function<void(VulkanDeviceBuilder &)> &builderFunc);
+    std::shared_ptr<VulkanDevice> CreateDevice(const std::function<void(VulkanDeviceBuilder&)>& builderFunc);
 };
 
 class VulkanPhysicalDeviceSelector
@@ -61,18 +62,18 @@ class VulkanPhysicalDeviceSelector
 public:
     VulkanPhysicalDeviceSelector() = default;
 
-    VulkanPhysicalDeviceSelector &FilterByDeviceType(const VkPhysicalDeviceType &deviceType);
+    VulkanPhysicalDeviceSelector& FilterByDeviceType(const VkPhysicalDeviceType& deviceType);
 
-    VulkanPhysicalDeviceSelector &FilterByQueueTypes(const VkQueueFlags &queueTypeFlags);
+    VulkanPhysicalDeviceSelector& FilterByQueueTypes(const VkQueueFlags& queueTypeFlags);
 
-    VulkanPhysicalDeviceSelector &FilterBySurfaceSupport(std::shared_ptr<VulkanSurface> surface);
+    VulkanPhysicalDeviceSelector& FilterBySurfaceSupport(std::shared_ptr<VulkanSurface> surface);
 
-    [[nodiscard]] std::vector<std::shared_ptr<VulkanPhysicalDevice> > Select(
-        const std::shared_ptr<VulkanInstance> &instance) const;
+    [[nodiscard]] std::vector<std::shared_ptr<VulkanPhysicalDevice>>
+    Select(const std::shared_ptr<VulkanInstance>& instance) const;
 
 private:
     VkPhysicalDeviceType deviceType_ = VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM;
     VkQueueFlags queueTypeFlags_ = VK_QUEUE_FLAG_BITS_MAX_ENUM;
     std::shared_ptr<VulkanSurface> surface_ = nullptr;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

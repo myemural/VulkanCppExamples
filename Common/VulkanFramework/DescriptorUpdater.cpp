@@ -8,8 +8,8 @@
 
 namespace common::vulkan_framework
 {
-DescriptorUpdater::DescriptorUpdater(const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device,
-                                     DescriptorRegistry &registry)
+DescriptorUpdater::DescriptorUpdater(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device,
+                                     DescriptorRegistry& registry)
     : device_{device}, registry_(registry)
 {
 }
@@ -21,7 +21,7 @@ void DescriptorUpdater::ApplyUpdates()
     std::vector<VkCopyDescriptorSet> copies;
 
     // Buffer write requests
-    for (auto &req: bufferRequests_) {
+    for (auto& req: bufferRequests_) {
         const auto set = registry_.GetDescriptorSet(req.LayoutName);
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -35,7 +35,7 @@ void DescriptorUpdater::ApplyUpdates()
     }
 
     // Image write requests
-    for (auto &req: imageRequests_) {
+    for (auto& req: imageRequests_) {
         const auto set = registry_.GetDescriptorSet(req.LayoutName);
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -49,7 +49,7 @@ void DescriptorUpdater::ApplyUpdates()
     }
 
     // Texel buffer write requests
-    for (auto &req: texelRequests_) {
+    for (auto& req: texelRequests_) {
         const auto set = registry_.GetDescriptorSet(req.LayoutName);
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -63,7 +63,7 @@ void DescriptorUpdater::ApplyUpdates()
     }
 
     // Copy requests
-    for (auto &req: copyRequests_) {
+    for (auto& req: copyRequests_) {
         VkCopyDescriptorSet copy{};
         copy.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
         copy.srcSet = req.SourceSet->GetHandle();
@@ -84,4 +84,4 @@ void DescriptorUpdater::ApplyUpdates()
     texelRequests_.clear();
     copyRequests_.clear();
 }
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

@@ -33,24 +33,24 @@ class VulkanImageViewBuilder
 public:
     VulkanImageViewBuilder();
 
-    VulkanImageViewBuilder &SetCreateFlags(const VkImageViewCreateFlags &flags);
+    VulkanImageViewBuilder& SetCreateFlags(const VkImageViewCreateFlags& flags);
 
-    VulkanImageViewBuilder &SetImageViewType(const VkImageViewType &viewType);
+    VulkanImageViewBuilder& SetImageViewType(const VkImageViewType& viewType);
 
-    VulkanImageViewBuilder &SetFormat(const VkFormat &format);
+    VulkanImageViewBuilder& SetFormat(const VkFormat& format);
 
-    VulkanImageViewBuilder &SetComponents(const VkComponentMapping &components);
+    VulkanImageViewBuilder& SetComponents(const VkComponentMapping& components);
 
-    VulkanImageViewBuilder &SetSubresourceRange(const VkImageSubresourceRange &subresourceRange);
+    VulkanImageViewBuilder& SetSubresourceRange(const VkImageSubresourceRange& subresourceRange);
 
-    VulkanImageViewBuilder &SetImage(const std::shared_ptr<VulkanImage> &image);
+    VulkanImageViewBuilder& SetImage(const std::shared_ptr<VulkanImage>& image);
 
     std::shared_ptr<VulkanImageView> Build(std::shared_ptr<VulkanDevice> device,
-                                           const std::shared_ptr<VulkanImage> &image);
+                                           const std::shared_ptr<VulkanImage>& image);
 
     std::shared_ptr<VulkanImageView> Build(std::shared_ptr<VulkanDevice> device, VkImage image);
 
 private:
     VkImageViewCreateInfo createInfo_;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

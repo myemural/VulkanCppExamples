@@ -15,29 +15,51 @@
 #include "Vertex.h"
 
 template<typename T>
-constexpr VkFormat GetVkFormat() { return VK_FORMAT_R32G32B32_SFLOAT; }
+constexpr VkFormat GetVkFormat()
+{
+    return VK_FORMAT_R32G32B32_SFLOAT;
+}
 
 template<>
-constexpr VkFormat GetVkFormat<float>() { return VK_FORMAT_R32_SFLOAT; }
+constexpr VkFormat GetVkFormat<float>()
+{
+    return VK_FORMAT_R32_SFLOAT;
+}
 
 template<>
-constexpr VkFormat GetVkFormat<common::utility::Vec2>() { return VK_FORMAT_R32G32_SFLOAT; }
+constexpr VkFormat GetVkFormat<common::utility::Vec2>()
+{
+    return VK_FORMAT_R32G32_SFLOAT;
+}
 
 template<>
-constexpr VkFormat GetVkFormat<common::utility::Vec3>() { return VK_FORMAT_R32G32B32_SFLOAT; }
+constexpr VkFormat GetVkFormat<common::utility::Vec3>()
+{
+    return VK_FORMAT_R32G32B32_SFLOAT;
+}
 
 template<>
-constexpr VkFormat GetVkFormat<common::utility::Color3>() { return VK_FORMAT_R32G32B32_SFLOAT; }
+constexpr VkFormat GetVkFormat<common::utility::Color3>()
+{
+    return VK_FORMAT_R32G32B32_SFLOAT;
+}
 
 template<>
-constexpr VkFormat GetVkFormat<common::utility::Color4>() { return VK_FORMAT_R32G32B32A32_SFLOAT; }
+constexpr VkFormat GetVkFormat<common::utility::Color4>()
+{
+    return VK_FORMAT_R32G32B32A32_SFLOAT;
+}
 
 template<>
-constexpr VkFormat GetVkFormat<float[4]>() { return VK_FORMAT_R32G32B32A32_SFLOAT; }
+constexpr VkFormat GetVkFormat<float[4]>()
+{
+    return VK_FORMAT_R32G32B32A32_SFLOAT;
+}
 
 template<typename Vertex>
-static constexpr VkVertexInputBindingDescription GenerateBindingDescription(
-    const std::uint32_t bindingIndex, const VkVertexInputRate &inputRate = VK_VERTEX_INPUT_RATE_VERTEX)
+static constexpr VkVertexInputBindingDescription
+GenerateBindingDescription(const std::uint32_t bindingIndex,
+                           const VkVertexInputRate& inputRate = VK_VERTEX_INPUT_RATE_VERTEX)
 {
     VkVertexInputBindingDescription desc{};
     desc.binding = bindingIndex;
@@ -58,11 +80,12 @@ VkVertexInputAttributeDescription GenerateAttributeDescriptionInternal(const uin
     return description;
 }
 
-#define GenerateAttributeDescription(VertexStruct, Attribute, BindingIndex) \
-    GenerateAttributeDescriptionInternal<decltype(VertexStruct::Attribute)>(BindingIndex, offsetof(VertexStruct, Attribute))
+#define GenerateAttributeDescription(VertexStruct, Attribute, BindingIndex)                                            \
+    GenerateAttributeDescriptionInternal<decltype(VertexStruct::Attribute)>(BindingIndex,                              \
+                                                                            offsetof(VertexStruct, Attribute))
 
-constexpr common::utility::Vec4 CalculateUVRect(const VkRect2D &r, const uint32_t atlasWidth,
-                                                const uint32_t atlasHeight)
+constexpr common::utility::Vec4
+CalculateUVRect(const VkRect2D& r, const uint32_t atlasWidth, const uint32_t atlasHeight)
 {
     const float u0 = static_cast<float>(r.offset.x) / static_cast<float>(atlasWidth);
     const float v0 = static_cast<float>(r.offset.y) / static_cast<float>(atlasHeight);

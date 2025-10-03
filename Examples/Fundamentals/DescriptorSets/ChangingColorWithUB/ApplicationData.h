@@ -23,10 +23,6 @@ struct VertexPos2
 };
 
 // Vertex Data
-const std::vector vertices{
-    // Top-left triangle (Clockwise)
-    VertexPos2{{0.0, -0.5}},
-    VertexPos2{{0.5, 0.5}},
-    VertexPos2{{-0.5, 0.5}}
-};
+const std::vector vertices{// Top-left triangle (Clockwise)
+                           VertexPos2{{0.0, -0.5}}, VertexPos2{{0.5, 0.5}}, VertexPos2{{-0.5, 0.5}}};
 } // namespace examples::fundamentals::descriptor_sets::changing_color_with_ub

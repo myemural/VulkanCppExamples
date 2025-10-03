@@ -20,7 +20,7 @@ namespace examples::fundamentals::descriptor_sets::changing_color_with_ub
 class VulkanApplication final : public base::ApplicationDescriptorSets
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer &&params);
+    explicit VulkanApplication(common::utility::ParameterServer&& params);
 
 protected:
     bool Init() override;
@@ -53,6 +53,6 @@ private:
     std::shared_ptr<common::vulkan_wrapper::VulkanDescriptorSet> descriptorSet_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
 };
 } // namespace examples::fundamentals::descriptor_sets::changing_color_with_ub

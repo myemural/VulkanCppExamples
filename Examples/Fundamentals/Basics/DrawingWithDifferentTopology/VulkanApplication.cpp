@@ -9,8 +9,8 @@
 #include <array>
 
 #include "AppConfig.h"
-#include "VulkanHelpers.h"
 #include "ApplicationData.h"
+#include "VulkanHelpers.h"
 
 namespace examples::fundamentals::basics::drawing_with_different_topology
 {
@@ -18,10 +18,7 @@ using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 
-VulkanApplication::VulkanApplication(ParameterServer &&params)
-    : ApplicationBasics(std::move(params))
-{
-}
+VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationBasics(std::move(params)) {}
 
 bool VulkanApplication::Init()
 {
@@ -56,7 +53,7 @@ bool VulkanApplication::Init()
 
         CreateCommandBuffers();
         RecordCommandBuffers(indexCount); // Recording in Init for this example
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
     }
@@ -78,9 +75,8 @@ void VulkanApplication::DrawFrame()
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
-                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_], {
-                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-                   });
+                   {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_],
+                   {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT});
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
@@ -97,7 +93,7 @@ void VulkanApplication::CreateResources(const std::uint64_t indexDataSize)
     CreateShaderModules();
 }
 
-void VulkanApplication::InitResources(const void *indexData, const std::uint64_t indexDataSize) const
+void VulkanApplication::InitResources(const void* indexData, const std::uint64_t indexDataSize) const
 {
     const uint32_t vertexDataSize = vertices.size() * sizeof(vertices[0]);
     FillVertexBuffer(vertices.data(), vertexDataSize);
@@ -107,7 +103,7 @@ void VulkanApplication::InitResources(const void *indexData, const std::uint64_t
 
 void VulkanApplication::CreateVertexBuffer(std::uint64_t dataSize)
 {
-    vertexBuffer_ = device_->CreateBuffer([&](auto &builder) {
+    vertexBuffer_ = device_->CreateBuffer([&](auto& builder) {
         builder.SetSize(dataSize);
         builder.SetUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
     });
@@ -118,9 +114,8 @@ void VulkanApplication::CreateVertexBuffer(std::uint64_t dataSize)
 
     const auto memoryReq = vertexBuffer_->GetBufferMemoryRequirements();
 
-    const uint32_t memoryTypeIndex = physicalDevice_->FindMemoryType(memoryReq.memoryTypeBits,
-                                                                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                                                     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    const uint32_t memoryTypeIndex = physicalDevice_->FindMemoryType(
+            memoryReq.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     vertexBufferMemory_ = device_->AllocateMemory(memoryReq.size, memoryTypeIndex);
 
@@ -131,9 +126,9 @@ void VulkanApplication::CreateVertexBuffer(std::uint64_t dataSize)
     vertexBuffer_->BindBufferMemory(vertexBufferMemory_, 0);
 }
 
-void VulkanApplication::FillVertexBuffer(const void *data, const std::uint64_t dataSize) const
+void VulkanApplication::FillVertexBuffer(const void* data, const std::uint64_t dataSize) const
 {
-    void *vertexData = vertexBufferMemory_->MapMemory(VK_WHOLE_SIZE, 0);
+    void* vertexData = vertexBufferMemory_->MapMemory(VK_WHOLE_SIZE, 0);
 
     if (!vertexData) {
         throw std::runtime_error("Failed to map vertex buffer data!");
@@ -148,7 +143,7 @@ void VulkanApplication::FillVertexBuffer(const void *data, const std::uint64_t d
 
 void VulkanApplication::CreateIndexBuffer(std::uint64_t dataSize)
 {
-    indexBuffer_ = device_->CreateBuffer([&](auto &builder) {
+    indexBuffer_ = device_->CreateBuffer([&](auto& builder) {
         builder.SetSize(dataSize);
         builder.SetUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
     });
@@ -159,9 +154,8 @@ void VulkanApplication::CreateIndexBuffer(std::uint64_t dataSize)
 
     const auto memoryReq = indexBuffer_->GetBufferMemoryRequirements();
 
-    const uint32_t memoryTypeIndex = physicalDevice_->FindMemoryType(memoryReq.memoryTypeBits,
-                                                                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                                                     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    const uint32_t memoryTypeIndex = physicalDevice_->FindMemoryType(
+            memoryReq.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     indexBufferMemory_ = device_->AllocateMemory(memoryReq.size, memoryTypeIndex);
 
@@ -172,9 +166,9 @@ void VulkanApplication::CreateIndexBuffer(std::uint64_t dataSize)
     indexBuffer_->BindBufferMemory(indexBufferMemory_, 0);
 }
 
-void VulkanApplication::FillIndexBuffer(const void *data, const std::uint64_t dataSize) const
+void VulkanApplication::FillIndexBuffer(const void* data, const std::uint64_t dataSize) const
 {
-    void *indexData = indexBufferMemory_->MapMemory(VK_WHOLE_SIZE, 0);
+    void* indexData = indexBufferMemory_->MapMemory(VK_WHOLE_SIZE, 0);
 
     if (!indexData) {
         throw std::runtime_error("Failed to map index buffer data!");
@@ -199,8 +193,7 @@ void VulkanApplication::CreateShaderModules()
     shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)] = vertexShaderModule;
 
     // Fragment Shader
-    const auto fragmentShaderCode = shaderLoader.LoadSpirV(
-        GetParamStr(AppConstants::MainFragmentShaderFile));
+    const auto fragmentShaderCode = shaderLoader.LoadSpirV(GetParamStr(AppConstants::MainFragmentShaderFile));
     const auto fragmentShaderModule = device_->CreateShaderModule(fragmentShaderCode);
     if (!fragmentShaderModule) {
         throw std::runtime_error("Failed to create fragment shader module!");
@@ -216,9 +209,8 @@ void VulkanApplication::CreatePipeline()
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    VkViewport viewport{
-        0, 0, static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_), 0.0f, 1.0f
-    };
+    VkViewport viewport{0,    0,   static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_),
+                        0.0f, 1.0f};
     VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
@@ -229,51 +221,47 @@ void VulkanApplication::CreatePipeline()
     colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT
-                                          | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.colorWriteMask =
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
     constexpr uint32_t bindingIndex = 0;
     auto bindingDescription = GenerateBindingDescription<VertexPos2Color3>(bindingIndex);
     const auto posAttribDescription = GenerateAttributeDescription(VertexPos2Color3, Position, bindingIndex);
     const auto colorAttribDescription = GenerateAttributeDescription(VertexPos2Color3, Color, bindingIndex);
-    const std::array attributeDescriptions{
-        posAttribDescription,
-        colorAttribDescription
-    };
+    const std::array attributeDescriptions{posAttribDescription, colorAttribDescription};
 
-    pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto &builder) {
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+    pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)]
-                    ->GetHandle();
+            shaderStageCreateInfo.module = shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)]->GetHandle();
         });
-        builder.AddShaderStage([&](auto &shaderStageCreateInfo) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = shaderModules_[params_.Get<
-                std::string>(AppConstants::MainFragmentShaderKey)]->GetHandle();
+            shaderStageCreateInfo.module =
+                    shaderModules_[params_.Get<std::string>(AppConstants::MainFragmentShaderKey)]->GetHandle();
         });
-        builder.SetVertexInputState([&](auto &vertexInputStateCreateInfo) {
+        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
             vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
             vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
             vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         });
-        builder.SetInputAssemblyState([&](auto &inputAssemblyStateCreateInfo) {
+        builder.SetInputAssemblyState([&](auto& inputAssemblyStateCreateInfo) {
             inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-            inputAssemblyStateCreateInfo.primitiveRestartEnable = params_.Get<bool>(
-                AppSettings::PrimitiveRestartEnabled);
+            inputAssemblyStateCreateInfo.primitiveRestartEnable =
+                    params_.Get<bool>(AppSettings::PrimitiveRestartEnabled);
         });
-        builder.SetViewportState([&](auto &viewportStateCreateInfo) {
+        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
             viewportStateCreateInfo.pViewports = &viewport;
             viewportStateCreateInfo.scissorCount = 1;
             viewportStateCreateInfo.pScissors = &scissor;
         });
-        builder.SetRasterizationState([&](auto &rasterizationStateCreateInfo) {
+        builder.SetRasterizationState([&](auto& rasterizationStateCreateInfo) {
             rasterizationStateCreateInfo.polygonMode = params_.Get<VkPolygonMode>(AppSettings::PolygonMode);
             rasterizationStateCreateInfo.lineWidth = GetParamFloat(AppSettings::LineWidth);
         });
-        builder.SetColorBlendState([&](auto &blendStateCreateInfo) {
+        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
             blendStateCreateInfo.attachmentCount = 1;
             blendStateCreateInfo.pAttachments = &colorBlendAttachment;
         });
@@ -301,14 +289,16 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t indexCount)
         if (!cmdBuffers_[i]->BeginCommandBuffer(nullptr)) {
             throw std::runtime_error("Failed to begin recording command buffer!");
         }
-        cmdBuffers_[i]->BeginRenderPass([&](auto &beginInfo) {
-            beginInfo.renderPass = renderPass_->GetHandle();
-            beginInfo.framebuffer = framebuffers_[i]->GetHandle();
-            beginInfo.renderArea.offset = {0, 0};
-            beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
-            beginInfo.clearValueCount = 1;
-            beginInfo.pClearValues = &clearColor;
-        }, VK_SUBPASS_CONTENTS_INLINE);
+        cmdBuffers_[i]->BeginRenderPass(
+                [&](auto& beginInfo) {
+                    beginInfo.renderPass = renderPass_->GetHandle();
+                    beginInfo.framebuffer = framebuffers_[i]->GetHandle();
+                    beginInfo.renderArea.offset = {0, 0};
+                    beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
+                    beginInfo.clearValueCount = 1;
+                    beginInfo.pClearValues = &clearColor;
+                },
+                VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffers_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         cmdBuffers_[i]->BindVertexBuffers({vertexBuffer_}, 0, 1, {0});
         cmdBuffers_[i]->BindIndexBuffer(indexBuffer_, 0, VK_INDEX_TYPE_UINT16);

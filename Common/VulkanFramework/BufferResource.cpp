@@ -11,13 +11,13 @@ namespace common::vulkan_framework
 
 using namespace common::vulkan_wrapper;
 
-BufferResource::BufferResource(const std::shared_ptr<VulkanPhysicalDevice> &physicalDevice,
-                               const std::shared_ptr<VulkanDevice> &device)
+BufferResource::BufferResource(const std::shared_ptr<VulkanPhysicalDevice>& physicalDevice,
+                               const std::shared_ptr<VulkanDevice>& device)
     : physicalDevice_{physicalDevice}, device_{device}, createInfo_{}
 {
 }
 
-void BufferResource::CreateBuffer(const BufferResourceCreateInfo &createInfo)
+void BufferResource::CreateBuffer(const BufferResourceCreateInfo& createInfo)
 {
     createInfo_ = createInfo;
 
@@ -26,7 +26,7 @@ void BufferResource::CreateBuffer(const BufferResourceCreateInfo &createInfo)
         throw std::runtime_error("Device object not found!");
     }
 
-    buffer_ = devicePtr->CreateBuffer([&](auto &builder) {
+    buffer_ = devicePtr->CreateBuffer([&](auto& builder) {
         builder.SetSize(createInfo_.BufferSizeInBytes);
         builder.SetUsage(createInfo_.UsageFlags);
     });
@@ -52,7 +52,8 @@ void BufferResource::AllocateBufferMemory()
 
     const auto memoryReq = buffer_->GetBufferMemoryRequirements();
 
-    const uint32_t memoryTypeIndex = physicalDevicePtr->FindMemoryType(memoryReq.memoryTypeBits, createInfo_.MemoryProperties);
+    const uint32_t memoryTypeIndex =
+            physicalDevicePtr->FindMemoryType(memoryReq.memoryTypeBits, createInfo_.MemoryProperties);
 
     deviceMemory_ = devicePtr->AllocateMemory(memoryReq.size, memoryTypeIndex);
 
@@ -68,16 +69,14 @@ void BufferResource::MapMemory(const VkDeviceSize mapSize, const VkDeviceSize ma
     mappedData_ = deviceMemory_->MapMemory(mapSize, mapOffset);
 }
 
-void BufferResource::FlushData(const void *data, const std::uint64_t dataSize,
-                               const std::vector<std::pair<VkDeviceSize, VkDeviceSize> > &mappedMemoryRanges) const
+void BufferResource::FlushData(const void* data,
+                               const std::uint64_t dataSize,
+                               const std::vector<std::pair<VkDeviceSize, VkDeviceSize>>& mappedMemoryRanges) const
 {
     std::memcpy(mappedData_, data, dataSize);
 
     deviceMemory_->FlushMappedMemoryRanges(mappedMemoryRanges);
 }
 
-void BufferResource::UnmapMemory() const
-{
-    deviceMemory_->UnmapMemory();
-}
-} // common::vulkan_framework
+void BufferResource::UnmapMemory() const { deviceMemory_->UnmapMemory(); }
+} // namespace common::vulkan_framework

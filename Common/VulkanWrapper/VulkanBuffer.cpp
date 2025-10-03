@@ -50,7 +50,8 @@ VkMemoryRequirements VulkanBuffer::GetBufferMemoryRequirements() const
     return memoryReq;
 }
 
-void VulkanBuffer::BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory, const VkDeviceSize memoryOffset) const
+void VulkanBuffer::BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory,
+                                    const VkDeviceSize memoryOffset) const
 {
     const auto device = GetParent();
     if (!device) {
@@ -62,36 +63,33 @@ void VulkanBuffer::BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& d
     }
 }
 
-VulkanBufferBuilder::VulkanBufferBuilder()
-    : createInfo_{GetDefaultBufferCreateInfo()}
-{
-}
+VulkanBufferBuilder::VulkanBufferBuilder() : createInfo_{GetDefaultBufferCreateInfo()} {}
 
-VulkanBufferBuilder & VulkanBufferBuilder::SetCreateFlags(const VkBufferCreateFlags &createFlags)
+VulkanBufferBuilder& VulkanBufferBuilder::SetCreateFlags(const VkBufferCreateFlags& createFlags)
 {
     createInfo_.flags = createFlags;
     return *this;
 }
 
-VulkanBufferBuilder & VulkanBufferBuilder::SetSize(const VkDeviceSize &size)
+VulkanBufferBuilder& VulkanBufferBuilder::SetSize(const VkDeviceSize& size)
 {
     createInfo_.size = size;
     return *this;
 }
 
-VulkanBufferBuilder & VulkanBufferBuilder::SetUsage(const VkBufferUsageFlags &usageFlags)
+VulkanBufferBuilder& VulkanBufferBuilder::SetUsage(const VkBufferUsageFlags& usageFlags)
 {
     createInfo_.usage = usageFlags;
     return *this;
 }
 
-VulkanBufferBuilder & VulkanBufferBuilder::SetSharingMode(const VkSharingMode &sharingMode)
+VulkanBufferBuilder& VulkanBufferBuilder::SetSharingMode(const VkSharingMode& sharingMode)
 {
     createInfo_.sharingMode = sharingMode;
     return *this;
 }
 
-VulkanBufferBuilder & VulkanBufferBuilder::SetQueueFamilyIndices(const std::vector<std::uint32_t> &queueFamilyIndices)
+VulkanBufferBuilder& VulkanBufferBuilder::SetQueueFamilyIndices(const std::vector<std::uint32_t>& queueFamilyIndices)
 {
     createInfo_.queueFamilyIndexCount = queueFamilyIndices.size();
     createInfo_.pQueueFamilyIndices = queueFamilyIndices.data();
@@ -108,4 +106,4 @@ std::shared_ptr<VulkanBuffer> VulkanBufferBuilder::Build(std::shared_ptr<VulkanD
 
     return std::make_shared<VulkanBuffer>(std::move(device), buffer);
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

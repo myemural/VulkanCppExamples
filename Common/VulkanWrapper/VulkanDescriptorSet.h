@@ -31,10 +31,10 @@ public:
     VkWriteDescriptorSet CreateWriteDescriptorSet(std::uint32_t dstBinding,
                                                   std::uint32_t dstArrayElement,
                                                   std::uint32_t descCount,
-                                                  const VkDescriptorType &descType,
-                                                  const std::vector<VkDescriptorBufferInfo> &descBufferInfos = {},
-                                                  const std::vector<VkDescriptorImageInfo> &descImageInfos = {}) const;
+                                                  const VkDescriptorType& descType,
+                                                  const std::vector<VkDescriptorBufferInfo>& descBufferInfos = {},
+                                                  const std::vector<VkDescriptorImageInfo>& descImageInfos = {}) const;
 
     ~VulkanDescriptorSet() override;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

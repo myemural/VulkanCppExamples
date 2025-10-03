@@ -9,8 +9,8 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
 #include "VulkanInstance.h"
 #include "VulkanPhysicalDevice.h"
@@ -23,34 +23,31 @@ int main()
 
     // Create a Vulkan instance
     const auto instance = VulkanInstanceBuilder()
-            .SetApplicationInfo([=](auto &info) {
-                info.pApplicationName = applicationName;
-                info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-                info.pEngineName = "DefaultEngine";
-                info.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-                info.apiVersion = VK_API_VERSION_1_0;
-            })
-            .AddLayer("VK_LAYER_KHRONOS_validation")
-            .Build();
+                                  .SetApplicationInfo([=](auto& info) {
+                                      info.pApplicationName = applicationName;
+                                      info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+                                      info.pEngineName = "DefaultEngine";
+                                      info.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+                                      info.apiVersion = VK_API_VERSION_1_0;
+                                  })
+                                  .AddLayer("VK_LAYER_KHRONOS_validation")
+                                  .Build();
 
     // Get physical devices on your system by filtering them with graphics queue support
-    const auto physicalDevices = VulkanPhysicalDeviceSelector()
-            .FilterByQueueTypes(VK_QUEUE_GRAPHICS_BIT)
-            .Select(instance);
+    const auto physicalDevices =
+            VulkanPhysicalDeviceSelector().FilterByQueueTypes(VK_QUEUE_GRAPHICS_BIT).Select(instance);
 
     // Print all device info
-    for (const auto &device: physicalDevices) {
+    for (const auto& device: physicalDevices) {
         VkPhysicalDeviceProperties props = device->GetProperties();
 
         // Print device general info
         std::cout << "*********************************************************" << "\n";
-        std::cout << "*Device Name: " << std::setw(42) << std::setfill(' ') << std::left
-                << props.deviceName << "*" << "\n";
+        std::cout << "*Device Name: " << std::setw(42) << std::setfill(' ') << std::left << props.deviceName << "*"
+                  << "\n";
         std::cout << "*********************************************************" << "\n";
-        std::cout << "Vulkan API Version: "
-                << VK_VERSION_MAJOR(props.apiVersion) << "."
-                << VK_VERSION_MINOR(props.apiVersion) << "."
-                << VK_VERSION_PATCH(props.apiVersion) << "\n";
+        std::cout << "Vulkan API Version: " << VK_VERSION_MAJOR(props.apiVersion) << "."
+                  << VK_VERSION_MINOR(props.apiVersion) << "." << VK_VERSION_PATCH(props.apiVersion) << "\n";
 
         std::cout << "Driver Version: " << props.driverVersion << "\n";
         std::cout << "Vendor ID: " << props.vendorID << "\n";
@@ -78,7 +75,7 @@ int main()
         std::cout << "*********************************************************" << '\n';
 
         // Print some device limits
-        const auto &limits = props.limits;
+        const auto& limits = props.limits;
         std::cout << "************ Device Limits ************" << '\n';
         std::cout << "Max Image Dimension 2D: " << limits.maxImageDimension2D << "\n";
         std::cout << "Max Uniform Buffer Range: " << limits.maxUniformBufferRange << "\n";
@@ -91,7 +88,7 @@ int main()
 
         std::cout << "************ Queue Families ************" << '\n';
         for (uint32_t i = 0; i < queueFamilies.size(); ++i) {
-            const auto &q = queueFamilies[i];
+            const auto& q = queueFamilies[i];
             std::cout << "Queue Family " << i << ":\n";
             std::cout << "->Queue Count: " << q.queueCount << "\n";
             std::cout << "->Flags: ";

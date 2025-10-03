@@ -37,4 +37,4 @@ namespace AppSettings
     constexpr auto ClearColor = "AppSettings.ClearColor";
     constexpr auto InitialTriangleColor = "AppSettings.InitialTriangleColor";
 } // namespace AppSettings
-} // namespace examples::fundamentals::descriptor_sets::array_of_ub
+} // namespace examples::fundamentals::descriptor_sets::multiple_uniform_buffers

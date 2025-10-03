@@ -36,15 +36,15 @@ class VulkanInstanceBuilder
 public:
     VulkanInstanceBuilder();
 
-    VulkanInstanceBuilder &SetApplicationInfo(const std::function<void(VkApplicationInfo &)> &appInfoCallback);
+    VulkanInstanceBuilder& SetApplicationInfo(const std::function<void(VkApplicationInfo&)>& appInfoCallback);
 
-    VulkanInstanceBuilder &AddLayer(const std::string &layerName);
+    VulkanInstanceBuilder& AddLayer(const std::string& layerName);
 
-    VulkanInstanceBuilder &AddLayers(const std::vector<std::string> &layerNames);
+    VulkanInstanceBuilder& AddLayers(const std::vector<std::string>& layerNames);
 
-    VulkanInstanceBuilder &AddExtension(const std::string &extensionName);
+    VulkanInstanceBuilder& AddExtension(const std::string& extensionName);
 
-    VulkanInstanceBuilder &AddExtensions(const std::vector<std::string> &extensionNames);
+    VulkanInstanceBuilder& AddExtensions(const std::vector<std::string>& extensionNames);
 
     std::shared_ptr<VulkanInstance> Build();
 
@@ -52,8 +52,8 @@ private:
     VkInstanceCreateInfo createInfo_;
     VkApplicationInfo appInfo_;
     std::vector<std::string> layers_;
-    std::vector<const char *> layersStr_;
+    std::vector<const char*> layersStr_;
     std::vector<std::string> extensions_;
-    std::vector<const char *> extensionsStr_;
+    std::vector<const char*> extensionsStr_;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

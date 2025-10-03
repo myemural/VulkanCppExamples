@@ -12,10 +12,7 @@
 
 namespace common::vulkan_framework
 {
-VulkanApplicationBase::VulkanApplicationBase(utility::ParameterServer params)
-    : params_{std::move(params)}
-{
-}
+VulkanApplicationBase::VulkanApplicationBase(utility::ParameterServer params) : params_{std::move(params)} {}
 
 bool VulkanApplicationBase::Run()
 {
@@ -35,7 +32,7 @@ bool VulkanApplicationBase::Run()
             DrawFrame();
             PostUpdate();
         }
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         Cleanup();
         return false;
@@ -46,33 +43,27 @@ bool VulkanApplicationBase::Run()
     return true;
 }
 
-std::string VulkanApplicationBase::GetParamStr(const std::string &key) const
-{
-    return params_.Get<std::string>(key);
-}
+std::string VulkanApplicationBase::GetParamStr(const std::string& key) const { return params_.Get<std::string>(key); }
 
-std::uint32_t VulkanApplicationBase::GetParamU32(const std::string &key) const
+std::uint32_t VulkanApplicationBase::GetParamU32(const std::string& key) const
 {
     return params_.Get<std::uint32_t>(key);
 }
 
-float VulkanApplicationBase::GetParamFloat(const std::string &key) const
-{
-    return params_.Get<float>(key);
-}
+float VulkanApplicationBase::GetParamFloat(const std::string& key) const { return params_.Get<float>(key); }
 
 bool VulkanApplicationBase::CreateInstance()
 {
     instance_ = vulkan_wrapper::VulkanInstanceBuilder()
-            .SetApplicationInfo([=](auto &info) {
-                info.pApplicationName = GetParamStr(VulkanParams::ApplicationName).c_str();
-                info.pEngineName = GetParamStr(VulkanParams::EngineName).c_str();
-                info.engineVersion = GetParamU32(VulkanParams::EngineVersion);
-                info.apiVersion = GetParamU32(VulkanParams::VulkanApiVersion);
-            })
-            .AddLayers(params_.Get<std::vector<std::string> >(VulkanParams::InstanceLayers))
-            .AddExtensions(params_.Get<std::vector<std::string> >(VulkanParams::InstanceExtensions))
-            .Build();
+                        .SetApplicationInfo([=](auto& info) {
+                            info.pApplicationName = GetParamStr(VulkanParams::ApplicationName).c_str();
+                            info.pEngineName = GetParamStr(VulkanParams::EngineName).c_str();
+                            info.engineVersion = GetParamU32(VulkanParams::EngineVersion);
+                            info.apiVersion = GetParamU32(VulkanParams::VulkanApiVersion);
+                        })
+                        .AddLayers(params_.Get<std::vector<std::string>>(VulkanParams::InstanceLayers))
+                        .AddExtensions(params_.Get<std::vector<std::string>>(VulkanParams::InstanceExtensions))
+                        .Build();
 
     if (!instance_) {
         std::cerr << "Failed to create Vulkan instance!" << std::endl;
@@ -81,4 +72,4 @@ bool VulkanApplicationBase::CreateInstance()
 
     return true;
 }
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

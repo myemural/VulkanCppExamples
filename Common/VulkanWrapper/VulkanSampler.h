@@ -34,35 +34,35 @@ class VulkanSamplerBuilder
 public:
     VulkanSamplerBuilder();
 
-    VulkanSamplerBuilder &SetCreateFlags(const VkSamplerCreateFlags &flags);
+    VulkanSamplerBuilder& SetCreateFlags(const VkSamplerCreateFlags& flags);
 
-    VulkanSamplerBuilder &SetFilters(const VkFilter &magFilter, const VkFilter &minFilter);
+    VulkanSamplerBuilder& SetFilters(const VkFilter& magFilter, const VkFilter& minFilter);
 
-    VulkanSamplerBuilder &SetMipmapMode(const VkSamplerMipmapMode &mipmapMode);
+    VulkanSamplerBuilder& SetMipmapMode(const VkSamplerMipmapMode& mipmapMode);
 
-    VulkanSamplerBuilder &SetAddressModes(const VkSamplerAddressMode &addressModeU,
-                                          const VkSamplerAddressMode &addressModeV,
-                                          const VkSamplerAddressMode &addressModeW);
+    VulkanSamplerBuilder& SetAddressModes(const VkSamplerAddressMode& addressModeU,
+                                          const VkSamplerAddressMode& addressModeV,
+                                          const VkSamplerAddressMode& addressModeW);
 
-    VulkanSamplerBuilder &SetMipmapLodBias(float mipLodBias);
+    VulkanSamplerBuilder& SetMipmapLodBias(float mipLodBias);
 
-    VulkanSamplerBuilder &EnableAnisotropy(bool isEnabled);
+    VulkanSamplerBuilder& EnableAnisotropy(bool isEnabled);
 
-    VulkanSamplerBuilder &SetMaxAnisotropy(float maxAnisotropy);
+    VulkanSamplerBuilder& SetMaxAnisotropy(float maxAnisotropy);
 
-    VulkanSamplerBuilder &EnableComparing(bool isEnabled);
+    VulkanSamplerBuilder& EnableComparing(bool isEnabled);
 
-    VulkanSamplerBuilder &SetCompareOp(const VkCompareOp &compareOp);
+    VulkanSamplerBuilder& SetCompareOp(const VkCompareOp& compareOp);
 
-    VulkanSamplerBuilder &SetMipmapLodRange(float minLod, float maxLod);
+    VulkanSamplerBuilder& SetMipmapLodRange(float minLod, float maxLod);
 
-    VulkanSamplerBuilder &SetBorderColor(const VkBorderColor &borderColor);
+    VulkanSamplerBuilder& SetBorderColor(const VkBorderColor& borderColor);
 
-    VulkanSamplerBuilder &EnableUnnormalizedCoordinates(bool isEnabled);
+    VulkanSamplerBuilder& EnableUnnormalizedCoordinates(bool isEnabled);
 
     [[nodiscard]] std::shared_ptr<VulkanSampler> Build(std::shared_ptr<VulkanDevice> device) const;
 
 private:
     VkSamplerCreateInfo createInfo_;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

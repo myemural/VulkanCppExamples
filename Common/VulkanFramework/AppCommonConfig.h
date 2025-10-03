@@ -10,8 +10,9 @@
  */
 #pragma once
 
-#include "ParameterServer.h"
 #include <vulkan/vulkan_core.h>
+
+#include "ParameterServer.h"
 
 namespace common::vulkan_framework
 {
@@ -24,7 +25,7 @@ namespace WindowParams
     constexpr auto Title = "Window.Title";
     constexpr auto Resizable = "Window.Resizable";
     constexpr auto SampleCount = "Window.SampleCount";
-}
+} // namespace WindowParams
 
 namespace VulkanParams
 {
@@ -35,7 +36,7 @@ namespace VulkanParams
     constexpr auto EngineVersion = "Vulkan.EngineVersion";
     constexpr auto InstanceLayers = "Vulkan.InstanceLayers";
     constexpr auto InstanceExtensions = "Vulkan.InstanceExtensions";
-}
+} // namespace VulkanParams
 
 inline void SetCommonParamSchema(common::utility::ParameterSchema& schema)
 {

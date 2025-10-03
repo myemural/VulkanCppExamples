@@ -29,7 +29,7 @@ public:
      * @param rootPath Root path.
      * @param shaderBaseType Specifies which shading language (GLSL, HLSL etc.) the .spv file was converted from.
      */
-    ShaderLoader(const std::string &rootPath, const ShaderBaseType &shaderBaseType);
+    ShaderLoader(const std::string& rootPath, const ShaderBaseType& shaderBaseType);
 
     ~ShaderLoader() = default;
 
@@ -38,10 +38,10 @@ public:
      * @param fileName Only contains file name of the .spv file ("example.spv" etc.)
      * @return Returns .spv file as vector of bytes.
      */
-    [[nodiscard]] std::vector<std::uint32_t> LoadSpirV(const std::string &fileName) const;
+    [[nodiscard]] std::vector<std::uint32_t> LoadSpirV(const std::string& fileName) const;
 
 private:
-    [[nodiscard]] std::string GenerateBasePath(const std::string &rootPath) const;
+    [[nodiscard]] std::string GenerateBasePath(const std::string& rootPath) const;
 
     std::string basePath_;
     ShaderBaseType shaderType_;

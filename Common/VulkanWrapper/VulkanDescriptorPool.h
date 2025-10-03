@@ -29,11 +29,11 @@ class VulkanDescriptorPool final : public VulkanObject<VulkanDevice, VkDescripto
 public:
     explicit VulkanDescriptorPool(std::shared_ptr<VulkanDevice> device, VkDescriptorPool descriptorPool);
 
-    std::vector<std::shared_ptr<VulkanDescriptorSet> > CreateDescriptorSets(
-        const std::vector<std::shared_ptr<VulkanDescriptorSetLayout> > &descriptorSetLayouts);
+    std::vector<std::shared_ptr<VulkanDescriptorSet>>
+    CreateDescriptorSets(const std::vector<std::shared_ptr<VulkanDescriptorSetLayout>>& descriptorSetLayouts);
 
-    void ResetDescriptorPool(const VkDescriptorPoolResetFlags &resetFlags = 0) const;
+    void ResetDescriptorPool(const VkDescriptorPoolResetFlags& resetFlags = 0) const;
 
     ~VulkanDescriptorPool() override;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

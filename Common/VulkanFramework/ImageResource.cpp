@@ -6,19 +6,19 @@
 
 #include "ImageResource.h"
 
-#include "VulkanCommandPool.h"
 #include "VulkanCommandBuffer.h"
+#include "VulkanCommandPool.h"
 #include "VulkanQueue.h"
 
 namespace common::vulkan_framework
 {
-ImageResource::ImageResource(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice> &physicalDevice,
-                             const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device)
+ImageResource::ImageResource(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice>& physicalDevice,
+                             const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device)
     : physicalDevice_{physicalDevice}, device_{device}
 {
 }
 
-void ImageResource::CreateImage(const ImageResourceCreateInfo &createInfo)
+void ImageResource::CreateImage(const ImageResourceCreateInfo& createInfo)
 {
     const auto devicePtr = device_.lock();
     if (!devicePtr) {
@@ -27,7 +27,7 @@ void ImageResource::CreateImage(const ImageResourceCreateInfo &createInfo)
 
     name_ = createInfo.Name;
 
-    image_ = devicePtr->CreateImage([&](auto &builder) {
+    image_ = devicePtr->CreateImage([&](auto& builder) {
         builder.SetCreateFlags(createInfo.CreateFlags);
         builder.SetImageType(createInfo.ImageType);
         builder.SetFormat(createInfo.Format);
@@ -46,8 +46,8 @@ void ImageResource::CreateImage(const ImageResourceCreateInfo &createInfo)
 
     AllocateImageMemory();
 
-    for (const auto& imageViewInfos : createInfo.Views) {
-        const auto imageView = devicePtr->CreateImageView(image_, [&](auto &builder) {
+    for (const auto& imageViewInfos: createInfo.Views) {
+        const auto imageView = devicePtr->CreateImageView(image_, [&](auto& builder) {
             builder.SetCreateFlags(imageViewInfos.CreateFlags);
             builder.SetImageViewType(imageViewInfos.ViewType);
             builder.SetFormat(imageViewInfos.Format);
@@ -60,7 +60,7 @@ void ImageResource::CreateImage(const ImageResourceCreateInfo &createInfo)
     memProps_ = createInfo.MemProperties;
 }
 
-std::shared_ptr<vulkan_wrapper::VulkanImageView> ImageResource::GetImageView(const std::string &viewName) const
+std::shared_ptr<vulkan_wrapper::VulkanImageView> ImageResource::GetImageView(const std::string& viewName) const
 {
     if (!imageViews_.contains(viewName)) {
         throw std::runtime_error("Image " + viewName + " does not exist");
@@ -94,9 +94,10 @@ void ImageResource::AllocateImageMemory()
     image_->BindImageMemory(deviceMemory_, 0);
 }
 
-void ImageResource::ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool> &cmdPool,
-                                      const std::shared_ptr<vulkan_wrapper::VulkanQueue> &queue,
-                                      const VkImageLayout &oldLayout, const VkImageLayout &newLayout) const
+void ImageResource::ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
+                                      const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                                      const VkImageLayout& oldLayout,
+                                      const VkImageLayout& newLayout) const
 {
     const auto cmdBufferChangeLayout = cmdPool->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
 
@@ -104,9 +105,8 @@ void ImageResource::ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::Vulk
         throw std::runtime_error("Failed to create command buffer for transition image layout!");
     }
 
-    if (!cmdBufferChangeLayout->BeginCommandBuffer([](auto &beginInfo) {
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-    })) {
+    if (!cmdBufferChangeLayout->BeginCommandBuffer(
+                [](auto& beginInfo) { beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT; })) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
@@ -121,8 +121,8 @@ void ImageResource::ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::Vulk
 
         srcStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout ==
-               VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+               newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
         srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
@@ -130,8 +130,8 @@ void ImageResource::ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::Vulk
         dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     }
 
-    const auto imageMemoryBarrier = image_->
-            CreateImageMemoryBarrier(srcAccessMask, dstAccessMask, oldLayout, newLayout);
+    const auto imageMemoryBarrier =
+            image_->CreateImageMemoryBarrier(srcAccessMask, dstAccessMask, oldLayout, newLayout);
 
     cmdBufferChangeLayout->PipelineBarrier(srcStage, dstStage, {imageMemoryBarrier});
 
@@ -144,16 +144,15 @@ void ImageResource::ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::Vulk
     queue->WaitIdle();
 }
 
-void ImageResource::CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool> &cmdPool,
-                                       const std::shared_ptr<vulkan_wrapper::VulkanQueue> &queue,
-                                       const std::shared_ptr<vulkan_wrapper::VulkanBuffer> &stagingBuffer,
-                                       const VkBufferImageCopy &copyRegion) const
+void ImageResource::CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
+                                       const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                                       const std::shared_ptr<vulkan_wrapper::VulkanBuffer>& stagingBuffer,
+                                       const VkBufferImageCopy& copyRegion) const
 {
     const auto cmdBufferTransfer = cmdPool->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
 
-    if (!cmdBufferTransfer->BeginCommandBuffer([](auto& beginInfo) {
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-    })) {
+    if (!cmdBufferTransfer->BeginCommandBuffer(
+                [](auto& beginInfo) { beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT; })) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
@@ -167,4 +166,4 @@ void ImageResource::CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::Vul
     queue->Submit({cmdBufferTransfer});
     queue->WaitIdle();
 }
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

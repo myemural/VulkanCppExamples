@@ -14,17 +14,17 @@
 #include <memory>
 #include <vector>
 
-#include "VulkanApplicationBase.h"
 #include "ImageResource.h"
 #include "ResourceManager.h"
+#include "VulkanApplicationBase.h"
 #include "VulkanCommandPool.h"
-#include "VulkanSurface.h"
-#include "VulkanPhysicalDevice.h"
 #include "VulkanDevice.h"
 #include "VulkanFence.h"
 #include "VulkanFramebuffer.h"
+#include "VulkanPhysicalDevice.h"
 #include "VulkanQueue.h"
 #include "VulkanRenderPass.h"
+#include "VulkanSurface.h"
 #include "VulkanSwapChain.h"
 #include "Window.h"
 
@@ -38,16 +38,14 @@ public:
 
     ~ApplicationPipelinesAndPasses() override = default;
 
-    void SetWindow(const std::shared_ptr<common::window_wrapper::Window> &window);
+    void SetWindow(const std::shared_ptr<common::window_wrapper::Window>& window);
 
 protected:
     void PreUpdate() override;
 
     void PostUpdate() override;
 
-    void Cleanup() noexcept override
-    {
-    }
+    void Cleanup() noexcept override {}
 
     bool ShouldClose() override;
 
@@ -61,7 +59,7 @@ protected:
 
     void CreateDefaultSwapChain();
 
-    void CreateDefaultFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView> &depthImageView);
+    void CreateDefaultFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView>& depthImageView);
 
     void CreateDefaultCommandPool();
 
@@ -76,14 +74,14 @@ protected:
     std::shared_ptr<common::vulkan_wrapper::VulkanDevice> device_;
     std::shared_ptr<common::vulkan_wrapper::VulkanQueue> queue_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSwapChain> swapChain_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanImageView> > swapChainImageViews_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanImageView>> swapChainImageViews_;
     std::shared_ptr<common::vulkan_wrapper::VulkanRenderPass> renderPass_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer> > framebuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> framebuffers_;
     std::shared_ptr<common::vulkan_wrapper::VulkanCommandPool> cmdPool_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore> > imageAvailableSemaphores_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore> > renderFinishedSemaphores_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence> > inFlightFences_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence> > swapImagesFences_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> imageAvailableSemaphores_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> renderFinishedSemaphores_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence>> inFlightFences_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFence>> swapImagesFences_;
 
     std::unique_ptr<common::vulkan_framework::ResourceManager> resources_;
 };

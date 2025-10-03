@@ -10,8 +10,7 @@
 
 namespace common::vulkan_wrapper
 {
-VulkanFence::VulkanFence(std::shared_ptr<VulkanDevice> device, VkFence fence)
-    : VulkanObject(std::move(device), fence)
+VulkanFence::VulkanFence(std::shared_ptr<VulkanDevice> device, VkFence fence) : VulkanObject(std::move(device), fence)
 {
 }
 
@@ -43,4 +42,4 @@ void VulkanFence::ResetFence() const
         throw std::runtime_error("Failed to reset fences!");
     }
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

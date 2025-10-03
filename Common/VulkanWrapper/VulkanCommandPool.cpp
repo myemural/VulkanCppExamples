@@ -6,8 +6,8 @@
 
 #include "VulkanCommandPool.h"
 
-#include "VulkanDevice.h"
 #include "VulkanCommandBuffer.h"
+#include "VulkanDevice.h"
 
 namespace common::vulkan_wrapper
 {
@@ -23,8 +23,9 @@ inline VkCommandPoolCreateInfo GetDefaultCommandPoolCreateInfo()
 }
 
 VulkanCommandPool::VulkanCommandPool(std::shared_ptr<VulkanDevice> device, VkCommandPool cmdPool)
-        : VulkanObject(std::move(device), cmdPool)
-{}
+    : VulkanObject(std::move(device), cmdPool)
+{
+}
 
 VulkanCommandPool::~VulkanCommandPool()
 {
@@ -36,8 +37,8 @@ VulkanCommandPool::~VulkanCommandPool()
     }
 }
 
-std::vector<std::shared_ptr<VulkanCommandBuffer> > VulkanCommandPool::CreateCommandBuffers(const std::uint32_t count,
-    const VkCommandBufferLevel &level)
+std::vector<std::shared_ptr<VulkanCommandBuffer>>
+VulkanCommandPool::CreateCommandBuffers(const std::uint32_t count, const VkCommandBufferLevel& level)
 {
     VkCommandBufferAllocateInfo allocateInfo{};
     allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -53,8 +54,8 @@ std::vector<std::shared_ptr<VulkanCommandBuffer> > VulkanCommandPool::CreateComm
         return {};
     }
 
-    std::vector<std::shared_ptr<VulkanCommandBuffer> > commandBuffers;
-    for (auto &cmdBuffer: cmdBuffers) {
+    std::vector<std::shared_ptr<VulkanCommandBuffer>> commandBuffers;
+    for (auto& cmdBuffer: cmdBuffers) {
         auto vulkanCmdBuffer = std::make_shared<VulkanCommandBuffer>(shared_from_this(), cmdBuffer);
         commandBuffers.push_back(vulkanCmdBuffer);
     }
@@ -62,7 +63,7 @@ std::vector<std::shared_ptr<VulkanCommandBuffer> > VulkanCommandPool::CreateComm
     return commandBuffers;
 }
 
-bool VulkanCommandPool::ResetCommandPool(const VkCommandPoolResetFlags &resetFlags) const
+bool VulkanCommandPool::ResetCommandPool(const VkCommandPoolResetFlags& resetFlags) const
 {
     const auto device = GetParent();
     if (!device || vkResetCommandPool(device->GetHandle(), handle_, resetFlags) != VK_SUCCESS) {
@@ -73,18 +74,15 @@ bool VulkanCommandPool::ResetCommandPool(const VkCommandPoolResetFlags &resetFla
     return true;
 }
 
-VulkanCommandPoolBuilder::VulkanCommandPoolBuilder()
-    : createInfo_(GetDefaultCommandPoolCreateInfo())
-{
-}
+VulkanCommandPoolBuilder::VulkanCommandPoolBuilder() : createInfo_(GetDefaultCommandPoolCreateInfo()) {}
 
-VulkanCommandPoolBuilder &VulkanCommandPoolBuilder::SetCreateFlags(const VkCommandPoolCreateFlags &flags)
+VulkanCommandPoolBuilder& VulkanCommandPoolBuilder::SetCreateFlags(const VkCommandPoolCreateFlags& flags)
 {
     createInfo_.flags = flags;
     return *this;
 }
 
-VulkanCommandPoolBuilder &VulkanCommandPoolBuilder::SetQueueFamilyIndex(const std::uint32_t familyIndex)
+VulkanCommandPoolBuilder& VulkanCommandPoolBuilder::SetQueueFamilyIndex(const std::uint32_t familyIndex)
 {
     createInfo_.queueFamilyIndex = familyIndex;
     return *this;
@@ -100,4 +98,4 @@ std::shared_ptr<VulkanCommandPool> VulkanCommandPoolBuilder::Build(std::shared_p
 
     return std::make_shared<VulkanCommandPool>(std::move(device), cmdPool);
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

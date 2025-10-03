@@ -25,4 +25,4 @@ VulkanSemaphore::~VulkanSemaphore()
         }
     }
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

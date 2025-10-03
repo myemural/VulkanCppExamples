@@ -94,19 +94,16 @@ VkExtent2D VulkanRenderPass::GetRenderAreaGranularity() const
     return granularity;
 }
 
-VulkanRenderPassBuilder::VulkanRenderPassBuilder()
-    : createInfo_(GetDefaultRenderPassCreateInfo())
-{
-}
+VulkanRenderPassBuilder::VulkanRenderPassBuilder() : createInfo_(GetDefaultRenderPassCreateInfo()) {}
 
-VulkanRenderPassBuilder &VulkanRenderPassBuilder::SetCreateFlags(const VkRenderPassCreateFlags &flags)
+VulkanRenderPassBuilder& VulkanRenderPassBuilder::SetCreateFlags(const VkRenderPassCreateFlags& flags)
 {
     createInfo_.flags = flags;
     return *this;
 }
 
-VulkanRenderPassBuilder &VulkanRenderPassBuilder::AddAttachment(
-    const std::function<void(VkAttachmentDescription &)> &setterFunc)
+VulkanRenderPassBuilder&
+VulkanRenderPassBuilder::AddAttachment(const std::function<void(VkAttachmentDescription&)>& setterFunc)
 {
     VkAttachmentDescription description = GetDefaultAttachmentDescription();
     setterFunc(description);
@@ -114,8 +111,8 @@ VulkanRenderPassBuilder &VulkanRenderPassBuilder::AddAttachment(
     return *this;
 }
 
-VulkanRenderPassBuilder &VulkanRenderPassBuilder::AddSubpass(
-    const std::function<void(VkSubpassDescription &)> &setterFunc)
+VulkanRenderPassBuilder&
+VulkanRenderPassBuilder::AddSubpass(const std::function<void(VkSubpassDescription&)>& setterFunc)
 {
     VkSubpassDescription description = GetDefaultSubpassDescription();
     setterFunc(description);
@@ -123,8 +120,8 @@ VulkanRenderPassBuilder &VulkanRenderPassBuilder::AddSubpass(
     return *this;
 }
 
-VulkanRenderPassBuilder &VulkanRenderPassBuilder::AddDependency(
-    const std::function<void(VkSubpassDependency &)> &setterFunc)
+VulkanRenderPassBuilder&
+VulkanRenderPassBuilder::AddDependency(const std::function<void(VkSubpassDependency&)>& setterFunc)
 {
     VkSubpassDependency dependency = GetDefaultSubpassDependency();
     setterFunc(dependency);
@@ -157,4 +154,4 @@ std::shared_ptr<VulkanRenderPass> VulkanRenderPassBuilder::Build(std::shared_ptr
 
     return std::make_shared<VulkanRenderPass>(std::move(device), renderPass);
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

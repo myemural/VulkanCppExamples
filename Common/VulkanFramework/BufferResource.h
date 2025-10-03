@@ -15,8 +15,8 @@
 
 #include "VulkanBuffer.h"
 #include "VulkanDevice.h"
-#include "VulkanPhysicalDevice.h"
 #include "VulkanDeviceMemory.h"
+#include "VulkanPhysicalDevice.h"
 
 namespace common::vulkan_framework
 {
@@ -36,14 +36,14 @@ public:
      * @param physicalDevice Refers VulkanPhysicalDevice object.
      * @param device Refers VulkanDevice object.
      */
-    BufferResource(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice> &physicalDevice,
-                   const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device);
+    BufferResource(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice>& physicalDevice,
+                   const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device);
 
     /**
      * @brief Creates a Vulkan buffer with specified type and usage.
      * @param createInfo Buffer create information.
      */
-    void CreateBuffer(const BufferResourceCreateInfo &createInfo);
+    void CreateBuffer(const BufferResourceCreateInfo& createInfo);
 
     /// TODO: Creating buffer with concurrency support will be added later.
 
@@ -60,9 +60,10 @@ public:
      * @param dataSize Flushing data size.
      * @param mappedMemoryRanges (size, offset) pair of the mapped memory ranges.
      */
-    void FlushData(const void *data, std::uint64_t dataSize,
-                   const std::vector<std::pair<VkDeviceSize, VkDeviceSize> > &mappedMemoryRanges = {{VK_WHOLE_SIZE, 0}})
-    const;
+    void FlushData(const void* data,
+                   std::uint64_t dataSize,
+                   const std::vector<std::pair<VkDeviceSize, VkDeviceSize>>& mappedMemoryRanges = {
+                       {VK_WHOLE_SIZE, 0}}) const;
 
     /**
      * @brief Unmaps memory region.
@@ -86,6 +87,6 @@ private:
     BufferResourceCreateInfo createInfo_;
     std::shared_ptr<vulkan_wrapper::VulkanBuffer> buffer_ = nullptr;
     std::shared_ptr<vulkan_wrapper::VulkanDeviceMemory> deviceMemory_ = nullptr;
-    void *mappedData_ = nullptr;
+    void* mappedData_ = nullptr;
 };
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

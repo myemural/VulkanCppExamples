@@ -56,8 +56,8 @@ public:
      * @param channelFormat Specifies channel format (RGB, RGBA etc.) of the texture file.
      * @return Returns texture handler object that holds real texture data and its info.
      */
-    [[nodiscard]] TextureHandler Load(const std::string &path,
-                                      const TextureChannelFormat &channelFormat = TextureChannelFormat::RGBA) const;
+    [[nodiscard]] TextureHandler Load(const std::string& path,
+                                      const TextureChannelFormat& channelFormat = TextureChannelFormat::RGBA) const;
 
 private:
     std::string basePath_;

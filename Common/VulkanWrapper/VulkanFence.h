@@ -32,4 +32,4 @@ public:
 
     void ResetFence() const;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

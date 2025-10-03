@@ -6,26 +6,24 @@
 
 #include "VulkanDescriptorSet.h"
 
-#include "VulkanDevice.h"
 #include "VulkanDescriptorPool.h"
+#include "VulkanDevice.h"
 
 namespace common::vulkan_wrapper
 {
-VulkanDescriptorSet::VulkanDescriptorSet(std::shared_ptr<VulkanDescriptorPool> descPool,
-                                         VkDescriptorSet descriptorSet)
+VulkanDescriptorSet::VulkanDescriptorSet(std::shared_ptr<VulkanDescriptorPool> descPool, VkDescriptorSet descriptorSet)
     : VulkanObject(std::move(descPool), descriptorSet)
 {
 }
 
 /// TODO: Add BufferView after implemented it
-VkWriteDescriptorSet VulkanDescriptorSet::CreateWriteDescriptorSet(const std::uint32_t dstBinding,
-                                                                   const std::uint32_t dstArrayElement,
-                                                                   const std::uint32_t descCount,
-                                                                   const VkDescriptorType &descType,
-                                                                   const std::vector<VkDescriptorBufferInfo> &
-                                                                   descBufferInfos,
-                                                                   const std::vector<VkDescriptorImageInfo> &
-                                                                   descImageInfos) const
+VkWriteDescriptorSet
+VulkanDescriptorSet::CreateWriteDescriptorSet(const std::uint32_t dstBinding,
+                                              const std::uint32_t dstArrayElement,
+                                              const std::uint32_t descCount,
+                                              const VkDescriptorType& descType,
+                                              const std::vector<VkDescriptorBufferInfo>& descBufferInfos,
+                                              const std::vector<VkDescriptorImageInfo>& descImageInfos) const
 {
     VkWriteDescriptorSet descriptorWrite;
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -54,4 +52,4 @@ VulkanDescriptorSet::~VulkanDescriptorSet()
         }
     }
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

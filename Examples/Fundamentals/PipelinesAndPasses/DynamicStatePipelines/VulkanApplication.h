@@ -15,18 +15,18 @@
 
 #include "ApplicationData.h"
 #include "ApplicationPipelinesAndPasses.h"
+#include "TextureLoader.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
-#include "TextureLoader.h"
 
 namespace examples::fundamentals::pipelines_and_passes::dynamic_state_pipelines
 {
 class VulkanApplication final : public base::ApplicationPipelinesAndPasses
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer &&params);
+    explicit VulkanApplication(common::utility::ParameterServer&& params);
 
     ~VulkanApplication() override = default;
 
@@ -67,7 +67,7 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
     MvpData mvpData[NUM_CUBES] = {glm::mat4(1.0)};
-    common::utility::Color4 currentBlendConstants {1.0f, 1.0f, 1.0f, 1.0f};
+    common::utility::Color4 currentBlendConstants{1.0f, 1.0f, 1.0f, 1.0f};
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};
@@ -77,12 +77,12 @@ private:
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
 
     // Command buffers
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffersPresent_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
 
     // Camera values
-    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f); // Camera position
+    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f);    // Camera position
     glm::vec3 cameraFront_ = glm::vec3(0.0f, 0.0f, -1.0f); // Front position
-    glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f); // Up vector
+    glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f);     // Up vector
 
     // Delta time related values
     double deltaTime_ = 0.0f;

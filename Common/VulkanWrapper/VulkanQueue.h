@@ -32,16 +32,16 @@ public:
 
     ~VulkanQueue() override = default;
 
-    void Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer> > &cmdBuffers,
-                const std::vector<std::shared_ptr<VulkanSemaphore> > &waitSemaphores = {},
-                const std::vector<std::shared_ptr<VulkanSemaphore> > &signalSemaphores = {},
-                const std::shared_ptr<VulkanFence> &fence = VK_NULL_HANDLE,
-                const std::vector<VkPipelineStageFlags> &waitStages = {}) const;
+    void Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer>>& cmdBuffers,
+                const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores = {},
+                const std::vector<std::shared_ptr<VulkanSemaphore>>& signalSemaphores = {},
+                const std::shared_ptr<VulkanFence>& fence = VK_NULL_HANDLE,
+                const std::vector<VkPipelineStageFlags>& waitStages = {}) const;
 
-    void Present(const std::vector<std::shared_ptr<VulkanSwapChain> > &swapChains,
-                 const std::vector<std::uint32_t> &swapChainImageIndices,
-                 const std::vector<std::shared_ptr<VulkanSemaphore> > &waitSemaphores) const;
+    void Present(const std::vector<std::shared_ptr<VulkanSwapChain>>& swapChains,
+                 const std::vector<std::uint32_t>& swapChainImageIndices,
+                 const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores) const;
 
     void WaitIdle() const;
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

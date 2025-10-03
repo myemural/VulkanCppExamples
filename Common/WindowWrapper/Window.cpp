@@ -11,11 +11,7 @@
 
 namespace common::window_wrapper
 {
-Window::Window(std::string windowName)
-    : windowName_{std::move(windowName)}, window_{nullptr}
-{
-    glfwInit();
-}
+Window::Window(std::string windowName) : windowName_{std::move(windowName)}, window_{nullptr} { glfwInit(); }
 
 Window::~Window()
 {
@@ -23,7 +19,9 @@ Window::~Window()
     glfwTerminate();
 }
 
-bool Window::Init(const uint32_t windowWidth, const uint32_t windowHeight, const bool isResizable,
+bool Window::Init(const uint32_t windowWidth,
+                  const uint32_t windowHeight,
+                  const bool isResizable,
                   const uint32_t sampleCount)
 {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -46,8 +44,8 @@ bool Window::Init(const uint32_t windowWidth, const uint32_t windowHeight, const
 
     glfwSetWindowUserPointer(window_, this);
 
-    glfwSetKeyCallback(window_, [](GLFWwindow *window, int key, int scancode, int action, int mods) {
-        if (const auto self = static_cast<Window *>(glfwGetWindowUserPointer(window))) {
+    glfwSetKeyCallback(window_, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        if (const auto self = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
             self->inputDispatcher_.OnKeyEvent(key, action);
         }
 
@@ -56,20 +54,20 @@ bool Window::Init(const uint32_t windowWidth, const uint32_t windowHeight, const
         }
     });
 
-    glfwSetMouseButtonCallback(window_, [](GLFWwindow *window, int button, int action, int mods) {
-        if (const auto self = static_cast<Window *>(glfwGetWindowUserPointer(window))) {
+    glfwSetMouseButtonCallback(window_, [](GLFWwindow* window, int button, int action, int mods) {
+        if (const auto self = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
             self->inputDispatcher_.OnMouseButtonEvent(button, action);
         }
     });
 
-    glfwSetCursorPosCallback(window_, [](GLFWwindow *window, double x, double y) {
-        if (const auto self = static_cast<Window *>(glfwGetWindowUserPointer(window))) {
+    glfwSetCursorPosCallback(window_, [](GLFWwindow* window, double x, double y) {
+        if (const auto self = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
             self->inputDispatcher_.OnMouseMoveEvent(x, y);
         }
     });
 
-    glfwSetScrollCallback(window_, [](GLFWwindow *window, double xOffset, double yOffset) {
-        if (const auto self = static_cast<Window *>(glfwGetWindowUserPointer(window))) {
+    glfwSetScrollCallback(window_, [](GLFWwindow* window, double xOffset, double yOffset) {
+        if (const auto self = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
             self->inputDispatcher_.OnMouseScrollEvent(xOffset, yOffset);
         }
     });
@@ -81,7 +79,7 @@ std::vector<std::string> Window::GetVulkanInstanceExtensions()
 {
     std::vector<std::string> extensions;
     uint32_t count;
-    const char **surfaceExtensions = glfwGetRequiredInstanceExtensions(&count);
+    const char** surfaceExtensions = glfwGetRequiredInstanceExtensions(&count);
     for (uint32_t idx = 0; idx < count; idx++) {
         extensions.emplace_back(surfaceExtensions[idx]);
     }
@@ -99,52 +97,34 @@ VkSurfaceKHR Window::CreateVulkanSurface(VkInstance instance) const
     return surface;
 }
 
-void Window::DisableCursor() const
-{
-    glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-}
+void Window::DisableCursor() const { glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
 
-bool Window::CheckWindowCloseFlag() const
-{
-    return static_cast<bool>(glfwWindowShouldClose(window_));
-}
+bool Window::CheckWindowCloseFlag() const { return static_cast<bool>(glfwWindowShouldClose(window_)); }
 
-void Window::PollEvents() const
-{
-    glfwPollEvents();
-}
+void Window::PollEvents() const { glfwPollEvents(); }
 
-void Window::SwapBuffers() const
-{
-    glfwSwapBuffers(window_);
-}
+void Window::SwapBuffers() const { glfwSwapBuffers(window_); }
 
-bool Window::IsKeyPressed(const int key) const
-{
-    return inputDispatcher_.IsKeyPressed(key);
-}
+bool Window::IsKeyPressed(const int key) const { return inputDispatcher_.IsKeyPressed(key); }
 
-bool Window::IsMouseButtonPressed(const int button) const
-{
-    return inputDispatcher_.IsMouseButtonPressed(button);
-}
+bool Window::IsMouseButtonPressed(const int button) const { return inputDispatcher_.IsMouseButtonPressed(button); }
 
-void Window::OnKey(std::function<void(const KeyEvent &)> callback)
+void Window::OnKey(std::function<void(const KeyEvent&)> callback)
 {
     inputDispatcher_.AddKeyListener(std::move(callback));
 }
 
-void Window::OnMouseButton(std::function<void(const MouseButtonEvent &)> callback)
+void Window::OnMouseButton(std::function<void(const MouseButtonEvent&)> callback)
 {
     inputDispatcher_.AddMouseButtonListener(std::move(callback));
 }
 
-void Window::OnMouseMove(std::function<void(const MouseMoveEvent &)> callback)
+void Window::OnMouseMove(std::function<void(const MouseMoveEvent&)> callback)
 {
     inputDispatcher_.AddMouseMoveListener(std::move(callback));
 }
 
-void Window::OnMouseScroll(std::function<void(const MouseScrollEvent &)> callback)
+void Window::OnMouseScroll(std::function<void(const MouseScrollEvent&)> callback)
 {
     inputDispatcher_.AddMouseScrollListener(std::move(callback));
 }

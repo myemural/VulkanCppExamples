@@ -25,15 +25,15 @@ VulkanDeviceMemory::~VulkanDeviceMemory()
     }
 }
 
-void *VulkanDeviceMemory::MapMemory(const VkDeviceSize size, const VkDeviceSize offset,
-                                    const VkMemoryMapFlags &flags) const
+void*
+VulkanDeviceMemory::MapMemory(const VkDeviceSize size, const VkDeviceSize offset, const VkMemoryMapFlags& flags) const
 {
     const auto device = GetParent();
     if (!device) {
         throw std::runtime_error("Device not found!");
     }
 
-    void *data;
+    void* data;
     if (vkMapMemory(device->GetHandle(), handle_, offset, size, flags, &data) != VK_SUCCESS) {
         throw std::runtime_error("Failed to map device memory!");
     }
@@ -42,10 +42,10 @@ void *VulkanDeviceMemory::MapMemory(const VkDeviceSize size, const VkDeviceSize 
 }
 
 void VulkanDeviceMemory::FlushMappedMemoryRanges(
-    const std::vector<std::pair<VkDeviceSize, VkDeviceSize> > &mappedMemoryRanges) const
+        const std::vector<std::pair<VkDeviceSize, VkDeviceSize>>& mappedMemoryRanges) const
 {
     std::vector<VkMappedMemoryRange> memoryRanges;
-    for (const auto &[size, offset]: mappedMemoryRanges) {
+    for (const auto& [size, offset]: mappedMemoryRanges) {
         VkMappedMemoryRange memoryRange;
         memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
         memoryRange.pNext = nullptr;
@@ -56,8 +56,8 @@ void VulkanDeviceMemory::FlushMappedMemoryRanges(
     }
 
     const auto device = GetParent();
-    if (!device || vkFlushMappedMemoryRanges(device->GetHandle(), memoryRanges.size(), memoryRanges.data()) !=
-        VK_SUCCESS) {
+    if (!device ||
+        vkFlushMappedMemoryRanges(device->GetHandle(), memoryRanges.size(), memoryRanges.data()) != VK_SUCCESS) {
         throw std::runtime_error("Failed to flush mapped memory ranges!");
     }
 }
@@ -71,4 +71,4 @@ void VulkanDeviceMemory::UnmapMemory() const
 
     vkUnmapMemory(device->GetHandle(), handle_);
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

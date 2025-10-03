@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include <memory>
 #include <iostream>
+#include <memory>
 
 namespace common::vulkan_wrapper
 {
@@ -29,17 +29,16 @@ public:
 
     virtual ~VulkanObject() = default;
 
-    VulkanObject(const VulkanObject &) = delete;
+    VulkanObject(const VulkanObject&) = delete;
 
-    VulkanObject &operator=(const VulkanObject &) = delete;
+    VulkanObject& operator=(const VulkanObject&) = delete;
 
-    VulkanObject(VulkanObject &&o) noexcept
-        : parentObject_(o.parentObject_), handle_(o.handle_)
+    VulkanObject(VulkanObject&& o) noexcept : parentObject_(o.parentObject_), handle_(o.handle_)
     {
         o.handle_ = nullptr;
     }
 
-    VulkanObject &operator=(VulkanObject &&o) noexcept
+    VulkanObject& operator=(VulkanObject&& o) noexcept
     {
         if (this != &o) {
             parentObject_ = o.parentObject_;
@@ -68,4 +67,4 @@ protected:
     std::weak_ptr<ParentType> parentObject_{nullptr};
     HandleType handle_{nullptr};
 };
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

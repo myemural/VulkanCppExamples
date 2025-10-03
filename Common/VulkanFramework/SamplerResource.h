@@ -11,8 +11,8 @@
  */
 #pragma once
 
-#include "VulkanSampler.h"
 #include "VulkanDevice.h"
+#include "VulkanSampler.h"
 
 namespace common::vulkan_framework
 {
@@ -61,9 +61,9 @@ struct SamplerResourceCreateInfo
 class SamplerResource
 {
 public:
-    explicit SamplerResource(const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device);
+    explicit SamplerResource(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device);
 
-    void CreateSampler(const SamplerResourceCreateInfo &createInfo);
+    void CreateSampler(const SamplerResourceCreateInfo& createInfo);
 
     [[nodiscard]] std::string GetName() const { return name_; }
 
@@ -75,4 +75,4 @@ private:
     std::string name_;
     std::shared_ptr<vulkan_wrapper::VulkanSampler> sampler_ = nullptr;
 };
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

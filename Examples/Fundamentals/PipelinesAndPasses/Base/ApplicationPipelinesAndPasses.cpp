@@ -6,9 +6,9 @@
 
 #include "ApplicationPipelinesAndPasses.h"
 
-#include "VulkanInstance.h"
-#include "VulkanCommandBuffer.h"
 #include "AppCommonConfig.h"
+#include "VulkanCommandBuffer.h"
+#include "VulkanInstance.h"
 
 namespace examples::fundamentals::pipelines_and_passes::base
 {
@@ -16,25 +16,13 @@ using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
-void ApplicationPipelinesAndPasses::SetWindow(const std::shared_ptr<Window> &window)
-{
-    window_ = window;
-}
+void ApplicationPipelinesAndPasses::SetWindow(const std::shared_ptr<Window>& window) { window_ = window; }
 
-void ApplicationPipelinesAndPasses::PreUpdate()
-{
-    window_->PollEvents();
-}
+void ApplicationPipelinesAndPasses::PreUpdate() { window_->PollEvents(); }
 
-void ApplicationPipelinesAndPasses::PostUpdate()
-{
-    window_->SwapBuffers();
-}
+void ApplicationPipelinesAndPasses::PostUpdate() { window_->SwapBuffers(); }
 
-bool ApplicationPipelinesAndPasses::ShouldClose()
-{
-    return window_->CheckWindowCloseFlag();
-}
+bool ApplicationPipelinesAndPasses::ShouldClose() { return window_->CheckWindowCloseFlag(); }
 
 void ApplicationPipelinesAndPasses::CreateDefaultSurface()
 {
@@ -50,9 +38,9 @@ void ApplicationPipelinesAndPasses::CreateDefaultSurface()
 void ApplicationPipelinesAndPasses::SelectDefaultPhysicalDevice()
 {
     const auto physicalDevices = VulkanPhysicalDeviceSelector()
-            .FilterByQueueTypes(VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_TRANSFER_BIT)
-            .FilterBySurfaceSupport(surface_)
-            .Select(instance_);
+                                         .FilterByQueueTypes(VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_TRANSFER_BIT)
+                                         .FilterBySurfaceSupport(surface_)
+                                         .Select(instance_);
 
     if (physicalDevices.empty()) {
         throw std::runtime_error("No physical devices found!");
@@ -75,10 +63,10 @@ void ApplicationPipelinesAndPasses::CreateDefaultLogicalDevice()
     deviceFeatures.fillModeNonSolid = VK_TRUE;
     deviceFeatures.wideLines = VK_TRUE;
 
-    device_ = physicalDevice_->CreateDevice([&](auto &builder) {
+    device_ = physicalDevice_->CreateDevice([&](auto& builder) {
         builder.AddLayer("VK_LAYER_KHRONOS_validation")
                 .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
-                .AddQueueInfo([&](auto &queueInfo) {
+                .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
                     queueInfo.queueCount = 1;
                     queueInfo.pQueuePriorities = queuePriorities.data();
@@ -91,10 +79,7 @@ void ApplicationPipelinesAndPasses::CreateDefaultLogicalDevice()
     }
 }
 
-void ApplicationPipelinesAndPasses::CreateDefaultQueue()
-{
-    queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0);
-}
+void ApplicationPipelinesAndPasses::CreateDefaultQueue() { queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0); }
 
 void ApplicationPipelinesAndPasses::CreateDefaultSwapChain()
 {
@@ -109,7 +94,7 @@ void ApplicationPipelinesAndPasses::CreateDefaultSwapChain()
         throw std::runtime_error("Failed to get surface format or capabilities!");
     }
 
-    swapChain_ = device_->CreateSwapChain(surface_, [&](auto &builder) {
+    swapChain_ = device_->CreateSwapChain(surface_, [&](auto& builder) {
         builder.SetMinImageCount(surfaceCapabilities.value().minImageCount + 1)
                 .SetImageFormat(surfaceFormat->format)
                 .SetImageColorSpace(surfaceFormat->colorSpace)
@@ -128,13 +113,13 @@ void ApplicationPipelinesAndPasses::CreateDefaultSwapChain()
     }
 }
 
-void ApplicationPipelinesAndPasses::CreateDefaultFramebuffers(const std::shared_ptr<VulkanImageView> &depthImageView)
+void ApplicationPipelinesAndPasses::CreateDefaultFramebuffers(const std::shared_ptr<VulkanImageView>& depthImageView)
 {
     const auto windowWidth = window_->GetWindowWidth();
     const auto windowHeight = window_->GetWindowHeight();
 
-    for (const auto &swapImage: swapChainImageViews_) {
-        auto framebuffer = device_->CreateFramebuffer(renderPass_, {swapImage, depthImageView}, [&](auto &builder) {
+    for (const auto& swapImage: swapChainImageViews_) {
+        auto framebuffer = device_->CreateFramebuffer(renderPass_, {swapImage, depthImageView}, [&](auto& builder) {
             builder.SetDimensions(windowWidth, windowHeight);
         });
 
@@ -173,7 +158,7 @@ void ApplicationPipelinesAndPasses::CreateDefaultSyncObjects(const std::uint32_t
     }
 }
 
-void ApplicationPipelinesAndPasses::CreateVulkanResources(const ResourceDescriptor &resourceCreateInfo)
+void ApplicationPipelinesAndPasses::CreateVulkanResources(const ResourceDescriptor& resourceCreateInfo)
 {
     resources_ = std::make_unique<ResourceManager>(physicalDevice_, device_);
 

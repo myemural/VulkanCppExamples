@@ -15,18 +15,18 @@
 
 #include "ApplicationData.h"
 #include "ApplicationPipelinesAndPasses.h"
+#include "TextureLoader.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
-#include "TextureLoader.h"
 
 namespace examples::fundamentals::pipelines_and_passes::multiple_render_passes
 {
 class VulkanApplication final : public base::ApplicationPipelinesAndPasses
 {
 public:
-    explicit VulkanApplication(common::utility::ParameterServer &&params);
+    explicit VulkanApplication(common::utility::ParameterServer&& params);
 
     ~VulkanApplication() override = default;
 
@@ -50,7 +50,7 @@ private:
 
     void CreatePipelines();
 
-    void CreateFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView> &depthImageView);
+    void CreateFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView>& depthImageView);
 
     void UpdateDescriptorSets() const;
 
@@ -84,16 +84,16 @@ private:
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> cubePipeline_;
 
     // Framebuffers
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer> > backgroundFramebuffers_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer> > foregroundFramebuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> backgroundFramebuffers_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> foregroundFramebuffers_;
 
     // Command buffers
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer> > cmdBuffersPresent_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
 
     // Camera values
-    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f); // Camera position
+    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f);    // Camera position
     glm::vec3 cameraFront_ = glm::vec3(0.0f, 0.0f, -1.0f); // Front position
-    glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f); // Up vector
+    glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f);     // Up vector
 
     // Delta time related values
     double deltaTime_ = 0.0f;

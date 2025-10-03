@@ -6,17 +6,14 @@
 
 #include "SamplerResource.h"
 
-#include "VulkanCommandPool.h"
 #include "VulkanCommandBuffer.h"
+#include "VulkanCommandPool.h"
 
 namespace common::vulkan_framework
 {
-SamplerResource::SamplerResource(const std::shared_ptr<vulkan_wrapper::VulkanDevice> &device)
-    : device_{device}
-{
-}
+SamplerResource::SamplerResource(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device) : device_{device} {}
 
-void SamplerResource::CreateSampler(const SamplerResourceCreateInfo &createInfo)
+void SamplerResource::CreateSampler(const SamplerResourceCreateInfo& createInfo)
 {
     const auto devicePtr = device_.lock();
     if (!devicePtr) {
@@ -25,7 +22,7 @@ void SamplerResource::CreateSampler(const SamplerResourceCreateInfo &createInfo)
 
     name_ = createInfo.Name;
 
-    sampler_ = devicePtr->CreateSampler([&](auto &builder) {
+    sampler_ = devicePtr->CreateSampler([&](auto& builder) {
         builder.SetCreateFlags(createInfo.CreateFlags);
 
         builder.SetFilters(createInfo.FilteringBehavior.MagFilter, createInfo.FilteringBehavior.MinFilter);
@@ -49,4 +46,4 @@ void SamplerResource::CreateSampler(const SamplerResourceCreateInfo &createInfo)
         throw std::runtime_error("Failed to create sampler!");
     }
 }
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

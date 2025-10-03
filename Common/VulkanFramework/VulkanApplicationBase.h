@@ -87,4 +87,4 @@ protected:
 private:
     bool CreateInstance();
 };
-} // common::vulkan_framework
+} // namespace common::vulkan_framework

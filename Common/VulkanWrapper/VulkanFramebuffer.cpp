@@ -42,18 +42,16 @@ VulkanFramebuffer::~VulkanFramebuffer()
     }
 }
 
-VulkanFramebufferBuilder::VulkanFramebufferBuilder()
-    : createInfo_(GetDefaultFramebufferCreateInfo())
-{
-}
+VulkanFramebufferBuilder::VulkanFramebufferBuilder() : createInfo_(GetDefaultFramebufferCreateInfo()) {}
 
-VulkanFramebufferBuilder &VulkanFramebufferBuilder::SetCreateFlags(const VkFramebufferCreateFlags &flags)
+VulkanFramebufferBuilder& VulkanFramebufferBuilder::SetCreateFlags(const VkFramebufferCreateFlags& flags)
 {
     createInfo_.flags = flags;
     return *this;
 }
 
-VulkanFramebufferBuilder &VulkanFramebufferBuilder::SetDimensions(const std::uint32_t width, const std::uint32_t height,
+VulkanFramebufferBuilder& VulkanFramebufferBuilder::SetDimensions(const std::uint32_t width,
+                                                                  const std::uint32_t height,
                                                                   const std::uint32_t layers)
 {
     createInfo_.width = width;
@@ -62,10 +60,10 @@ VulkanFramebufferBuilder &VulkanFramebufferBuilder::SetDimensions(const std::uin
     return *this;
 }
 
-std::shared_ptr<VulkanFramebuffer> VulkanFramebufferBuilder::Build(std::shared_ptr<VulkanDevice> device,
-                                                                   const std::shared_ptr<VulkanRenderPass> &renderPass,
-                                                                   const std::vector<std::shared_ptr<VulkanImageView> >
-                                                                   &attachments)
+std::shared_ptr<VulkanFramebuffer>
+VulkanFramebufferBuilder::Build(std::shared_ptr<VulkanDevice> device,
+                                const std::shared_ptr<VulkanRenderPass>& renderPass,
+                                const std::vector<std::shared_ptr<VulkanImageView>>& attachments)
 {
     createInfo_.renderPass = renderPass->GetHandle();
     createInfo_.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -83,4 +81,4 @@ std::shared_ptr<VulkanFramebuffer> VulkanFramebufferBuilder::Build(std::shared_p
 
     return std::make_shared<VulkanFramebuffer>(std::move(device), framebuffer);
 }
-} // common::vulkan_wrapper
+} // namespace common::vulkan_wrapper

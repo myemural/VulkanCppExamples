@@ -22,12 +22,13 @@
 namespace common::window_wrapper
 {
 
-class Window {
+class Window
+{
 public:
     /**
      * @param windowName Title of the window.
      */
-    explicit Window(std::string  windowName);
+    explicit Window(std::string windowName);
 
     ~Window();
 
@@ -82,7 +83,7 @@ public:
      * @brief Checks window close event has occurred or not.
      * @return Returns true if close event has occurred, otherwise false.
      */
-    [[nodiscard]] bool CheckWindowCloseFlag() const ;
+    [[nodiscard]] bool CheckWindowCloseFlag() const;
 
     /**
      * @brief Used to polling call of the input events.
@@ -136,7 +137,7 @@ private:
     std::string windowName_;
     std::uint32_t windowWidth_ = 0;
     std::uint32_t windowHeight_ = 0;
-    GLFWwindow *window_;
+    GLFWwindow* window_;
     InputDispatcher inputDispatcher_;
 };
 
