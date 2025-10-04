@@ -34,6 +34,9 @@ bool VulkanApplication::Init()
         currentWindowWidth_ = GetParamU32(WindowParams::Width);
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
 
+        float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
+        camera = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
+
         InitInputSystem();
 
         CreateDefaultSurface();
@@ -133,17 +136,7 @@ void VulkanApplication::InitInputSystem()
         xOffset *= sensitivity;
         yOffset *= sensitivity;
 
-        yawAngle_ += xOffset;
-        pitchAngle_ += yOffset;
-
-        pitchAngle_ = std::clamp(pitchAngle_, -89.0f, 89.0f);
-
-        const float yawRad = glm::radians(yawAngle_);
-        const float pitchRad = glm::radians(pitchAngle_);
-
-        const glm::vec3 front{std::cos(yawRad) * std::cos(pitchRad), std::sin(pitchRad),
-                              std::sin(yawRad) * std::cos(pitchRad)};
-        cameraFront_ = glm::normalize(front);
+        camera->Rotate(xOffset, yOffset);
     });
 }
 
@@ -431,16 +424,9 @@ void VulkanApplication::CalculateAndSetMvp()
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, modelPositions[i]);
 
-        const glm::mat4 view = glm::lookAt(cameraPos_, cameraPos_ + cameraFront_, cameraUp_);
-
-        const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        glm::mat4 proj = glm::perspective(glm::radians(45.0f), // FOV
-                                          aspectRatio,         // Aspect ratio
-                                          0.1f,                // Near clipping-plane
-                                          20.0f                // Far clipping plane
-        );
-        proj[1][1] *= -1;                                      // Vulkan trick for projection
-
+        const glm::mat4 view = camera->GetViewMatrix();
+        glm::mat4 proj = camera->GetProjectionMatrix();
+        proj[1][1] *= -1; // Vulkan trick for projection
 
         // Calculate MVP matrix
         mvpData[i].mvpMatrix = proj * view * model;
@@ -449,25 +435,25 @@ void VulkanApplication::CalculateAndSetMvp()
 
 void VulkanApplication::CalculateAndSetBlendConstants()
 {
-    const float time = static_cast<float>(glfwGetTime());
+    const auto time = static_cast<float>(glfwGetTime());
     const float value = 0.5f + 0.5f * sin(time);
     currentBlendConstants = Color4(value, value, value, 1.0f);
 }
 
-void VulkanApplication::ProcessInput()
+void VulkanApplication::ProcessInput() const
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {
-        cameraPos_ += cameraSpeed * cameraFront_;
+        camera->Move(camera->GetFrontVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_S)) {
-        cameraPos_ -= cameraSpeed * cameraFront_;
+        camera->Move(-camera->GetFrontVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_A)) {
-        cameraPos_ -= glm::normalize(glm::cross(cameraFront_, cameraUp_)) * cameraSpeed;
+        camera->Move(-camera->GetRightVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_D)) {
-        cameraPos_ += glm::normalize(glm::cross(cameraFront_, cameraUp_)) * cameraSpeed;
+        camera->Move(camera->GetRightVector() * cameraSpeed);
     }
 }
 } // namespace examples::fundamentals::pipelines_and_passes::dynamic_state_pipelines

@@ -15,6 +15,7 @@
 
 #include "ApplicationData.h"
 #include "ApplicationPipelinesAndPasses.h"
+#include "PerspectiveCamera.h"
 #include "TextureLoader.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -58,7 +59,7 @@ private:
 
     void CalculateAndSetMvp();
 
-    void ProcessInput();
+    void ProcessInput() const;
 
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
@@ -78,20 +79,16 @@ private:
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
 
-    // Camera values
-    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f);    // Camera position
-    glm::vec3 cameraFront_ = glm::vec3(0.0f, 0.0f, -1.0f); // Front position
-    glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f);     // Up vector
-
     // Delta time related values
     double deltaTime_ = 0.0f;
     double lastFrame_ = 0.0f;
 
     // Mouse related values
     bool firstMouseTriggered_ = true;
-    float yawAngle_ = -90.0f;
-    float pitchAngle_ = 0.0f;
     float lastX_ = 0.0f;
     float lastY_ = 0.0f;
+
+    // Camera
+    std::unique_ptr<common::utility::PerspectiveCamera> camera;
 };
 } // namespace examples::fundamentals::pipelines_and_passes::basic_stencil_testing

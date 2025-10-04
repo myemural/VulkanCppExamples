@@ -34,6 +34,9 @@ bool VulkanApplication::Init()
         currentWindowWidth_ = GetParamU32(WindowParams::Width);
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
 
+        float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
+        camera = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio, 45.0f, 0.1f, 20.0f);
+
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
         CreateDefaultLogicalDevice();
@@ -482,16 +485,9 @@ void VulkanApplication::CalculateAndSetMvp()
             model = glm::translate(model, position);
         }
 
-        const glm::mat4 view = glm::lookAt(cameraPos_, cameraPos_ + cameraFront_, cameraUp_);
-
-        const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        glm::mat4 proj = glm::perspective(glm::radians(45.0f), // FOV
-                                          aspectRatio,         // Aspect ratio
-                                          0.1f,                // Near clipping-plane
-                                          20.0f                // Far clipping plane
-        );
-        proj[1][1] *= -1;                                      // Vulkan trick for projection
-
+        const glm::mat4 view = camera->GetViewMatrix();
+        glm::mat4 proj = camera->GetProjectionMatrix();
+        proj[1][1] *= -1; // Vulkan trick for projection
 
         // Calculate MVP matrix
         mvpData[i].mvpMatrix = proj * view * model;
