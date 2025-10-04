@@ -72,6 +72,19 @@ bool Window::Init(const uint32_t windowWidth,
         }
     });
 
+    glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* window, int width, int height) {
+        if (const auto self = static_cast<Window*>(glfwGetWindowUserPointer(window))) {
+            self->windowWidth_ = width;
+            self->windowHeight_ = height;
+
+            // Protection against minimizing the window
+            while (width == 0 || height == 0) {
+                glfwGetFramebufferSize(window, &width, &height);
+                glfwWaitEvents();
+            }
+        }
+    });
+
     return true;
 }
 

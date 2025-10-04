@@ -351,6 +351,12 @@ VulkanDevice::CreateSampler(const std::function<void(VulkanSamplerBuilder&)>& bu
 
     return builder.Build(device);
 }
+void VulkanDevice::WaitIdle() const
+{
+    if (vkDeviceWaitIdle(handle_) != VK_SUCCESS) {
+        throw std::runtime_error("Failed to wait on device!");
+    }
+}
 
 VulkanDeviceBuilder::VulkanDeviceBuilder() : createInfo(GetDefaultDeviceCreateInfo()) {}
 

@@ -4,23 +4,23 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include "ApplicationPipelinesAndPasses.h"
+#include "ApplicationSwapChainsAndViewports.h"
 
 #include "AppCommonConfig.h"
 #include "TimeUtils.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanInstance.h"
 
-namespace examples::fundamentals::pipelines_and_passes::base
+namespace examples::fundamentals::swap_chains_and_viewports::base
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
-void ApplicationPipelinesAndPasses::SetWindow(const std::shared_ptr<Window>& window) { window_ = window; }
+void ApplicationSwapChainsAndViewports::SetWindow(const std::shared_ptr<Window>& window) { window_ = window; }
 
-void ApplicationPipelinesAndPasses::PreUpdate()
+void ApplicationSwapChainsAndViewports::PreUpdate()
 {
     // Calculate delta time
     const double currentFrame = GetCurrentTime();
@@ -30,11 +30,11 @@ void ApplicationPipelinesAndPasses::PreUpdate()
     window_->PollEvents();
 }
 
-void ApplicationPipelinesAndPasses::PostUpdate() { window_->SwapBuffers(); }
+void ApplicationSwapChainsAndViewports::PostUpdate() { window_->SwapBuffers(); }
 
-bool ApplicationPipelinesAndPasses::ShouldClose() { return window_->CheckWindowCloseFlag(); }
+bool ApplicationSwapChainsAndViewports::ShouldClose() { return window_->CheckWindowCloseFlag(); }
 
-void ApplicationPipelinesAndPasses::CreateDefaultSurface()
+void ApplicationSwapChainsAndViewports::CreateDefaultSurface()
 {
     const auto vulkanSurface = window_->CreateVulkanSurface(instance_->GetHandle());
 
@@ -45,7 +45,7 @@ void ApplicationPipelinesAndPasses::CreateDefaultSurface()
     surface_ = std::make_shared<VulkanSurface>(instance_, vulkanSurface);
 }
 
-void ApplicationPipelinesAndPasses::SelectDefaultPhysicalDevice()
+void ApplicationSwapChainsAndViewports::SelectDefaultPhysicalDevice()
 {
     const auto physicalDevices = VulkanPhysicalDeviceSelector()
                                          .FilterByQueueTypes(VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_TRANSFER_BIT)
@@ -65,7 +65,7 @@ void ApplicationPipelinesAndPasses::SelectDefaultPhysicalDevice()
     }
 }
 
-void ApplicationPipelinesAndPasses::CreateDefaultLogicalDevice()
+void ApplicationSwapChainsAndViewports::CreateDefaultLogicalDevice()
 {
     std::vector queuePriorities = {1.0f};
 
@@ -89,59 +89,9 @@ void ApplicationPipelinesAndPasses::CreateDefaultLogicalDevice()
     }
 }
 
-void ApplicationPipelinesAndPasses::CreateDefaultQueue() { queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0); }
+void ApplicationSwapChainsAndViewports::CreateDefaultQueue() { queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0); }
 
-void ApplicationPipelinesAndPasses::CreateDefaultSwapChain()
-{
-    const auto windowWidth = window_->GetWindowWidth();
-    const auto windowHeight = window_->GetWindowHeight();
-
-    auto surfaceFormat = physicalDevice_->GetSurfaceFormat(surface_->GetHandle(), VK_FORMAT_B8G8R8A8_SRGB,
-                                                           VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
-    auto surfaceCapabilities = physicalDevice_->GetSurfaceCapabilities(surface_->GetHandle());
-
-    if (!surfaceFormat.has_value() || !surfaceCapabilities.has_value()) {
-        throw std::runtime_error("Failed to get surface format or capabilities!");
-    }
-
-    swapChain_ = device_->CreateSwapChain(surface_, [&](auto& builder) {
-        builder.SetMinImageCount(surfaceCapabilities.value().minImageCount + 1)
-                .SetImageFormat(surfaceFormat->format)
-                .SetImageColorSpace(surfaceFormat->colorSpace)
-                .SetImageExtent(windowWidth, windowHeight)
-                .SetPreTransformFlagBits(surfaceCapabilities.value().currentTransform);
-    });
-
-    if (!swapChain_) {
-        throw std::runtime_error("Failed to create swap chain!");
-    }
-
-    swapChainImageViews_ = swapChain_->GetSwapChainImageViews();
-
-    if (swapChainImageViews_.empty()) {
-        throw std::runtime_error("Failed to get swap chain image views!");
-    }
-}
-
-void ApplicationPipelinesAndPasses::CreateDefaultFramebuffers(const std::shared_ptr<VulkanImageView>& depthImageView)
-{
-    const auto windowWidth = window_->GetWindowWidth();
-    const auto windowHeight = window_->GetWindowHeight();
-
-    for (const auto& swapImage: swapChainImageViews_) {
-        auto framebuffer = device_->CreateFramebuffer(renderPass_, {swapImage, depthImageView}, [&](auto& builder) {
-            builder.SetDimensions(windowWidth, windowHeight);
-        });
-
-        if (!framebuffer) {
-            throw std::runtime_error("Failed to create framebuffer!");
-        }
-
-        framebuffers_.push_back(framebuffer);
-    }
-}
-
-void ApplicationPipelinesAndPasses::CreateDefaultCommandPool()
+void ApplicationSwapChainsAndViewports::CreateDefaultCommandPool()
 {
     cmdPool_ = device_->CreateCommandPool(currentQueueFamilyIndex_, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -150,11 +100,11 @@ void ApplicationPipelinesAndPasses::CreateDefaultCommandPool()
     }
 }
 
-void ApplicationPipelinesAndPasses::CreateDefaultSyncObjects(const std::uint32_t maxFramesInFlight)
+void ApplicationSwapChainsAndViewports::CreateDefaultSyncObjects(const std::uint32_t swapImageCount, const std::uint32_t maxFramesInFlight)
 {
-    swapImagesFences_.resize(swapChainImageViews_.size(), nullptr);
+    swapImagesFences_.resize(swapImageCount, nullptr);
 
-    for (size_t i = 0; i < swapChainImageViews_.size(); ++i) {
+    for (size_t i = 0; i < swapImageCount; ++i) {
         renderFinishedSemaphores_.emplace_back(device_->CreateSemaphore());
     }
 
@@ -168,7 +118,7 @@ void ApplicationPipelinesAndPasses::CreateDefaultSyncObjects(const std::uint32_t
     }
 }
 
-void ApplicationPipelinesAndPasses::CreateVulkanResources(const ResourceDescriptor& resourceCreateInfo)
+void ApplicationSwapChainsAndViewports::CreateVulkanResources(const ResourceDescriptor& resourceCreateInfo)
 {
     resources_ = std::make_unique<ResourceManager>(physicalDevice_, device_);
 
@@ -192,4 +142,4 @@ void ApplicationPipelinesAndPasses::CreateVulkanResources(const ResourceDescript
         resources_->CreateDescriptorSets(resourceCreateInfo.Descriptors.value());
     }
 }
-} // namespace examples::fundamentals::pipelines_and_passes::base
+} // namespace examples::fundamentals::swap_chains_and_viewports::base

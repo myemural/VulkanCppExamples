@@ -38,10 +38,13 @@ public:
 
     [[nodiscard]] std::uint32_t AcquireNextImage(const std::shared_ptr<VulkanSemaphore>& semaphore,
                                                  const std::shared_ptr<VulkanFence>& fence,
-                                                 std::uint64_t timeout = UINT64_MAX) const;
+                                                 std::uint64_t timeout = UINT64_MAX);
+
+    [[nodiscard]] VkResult GetAcquireResult() const;
 
 private:
     std::vector<std::shared_ptr<VulkanImageView>> swapChainImageViews_;
+    VkResult acquireResult_;
 };
 
 class VulkanSwapChainBuilder

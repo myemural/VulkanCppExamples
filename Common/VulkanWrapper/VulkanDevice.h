@@ -108,6 +108,8 @@ public:
                               const std::vector<VkCopyDescriptorSet>& copyDescriptorSets = {}) const;
 
     std::shared_ptr<VulkanSampler> CreateSampler(const std::function<void(VulkanSamplerBuilder&)>& builderFunc);
+
+    void WaitIdle() const;
 };
 
 class VulkanDeviceBuilder

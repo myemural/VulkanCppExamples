@@ -144,4 +144,8 @@ void ResourceManager::SetImageFromBuffer(const std::shared_ptr<vulkan_wrapper::V
     images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
+void ResourceManager::DeleteImage(const std::string& name)
+{
+    images_.erase(name);
+}
 } // namespace common::vulkan_framework

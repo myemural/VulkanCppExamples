@@ -1,0 +1,6 @@
+set(SUBCATEGORY_NAME SwapChainsAndViewports)
+
+add_subdirectory(Base)
+include_directories(Base)
+
+add_subdirectory(SwapChainRecreation)

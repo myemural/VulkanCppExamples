@@ -74,6 +74,8 @@ public:
                             const std::shared_ptr<vulkan_wrapper::VulkanBuffer>& stagingBuffer,
                             const VkExtent3D& dimensions);
 
+    void DeleteImage(const std::string& name);
+
 private:
     std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice> physicalDevice_;
     std::shared_ptr<vulkan_wrapper::VulkanDevice> device_;

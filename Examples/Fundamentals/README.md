@@ -49,3 +49,12 @@ The topics covered by this subsection:
 - Basic stencil testing
 - Using multiple subpasses and input attachment
 - Rendering scene to a texture (offscreen rendering)
+
+## [Handling Window Resizing](/Examples/Fundamentals/SwapChainsAndViewports)
+
+The topics covered by this subsection:
+- Handling window resizing
+- Creating swap chains and related resources again
+- Using multiple viewports and scissors
+- Using dynamic pipeline states related to viewports and scissors
+- Creating animations with respect to changing viewport sizes

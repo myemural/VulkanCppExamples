@@ -80,18 +80,22 @@ std::vector<std::shared_ptr<VulkanImageView>> VulkanSwapChain::GetSwapChainImage
 
 std::uint32_t VulkanSwapChain::AcquireNextImage(const std::shared_ptr<VulkanSemaphore>& semaphore,
                                                 const std::shared_ptr<VulkanFence>& fence,
-                                                const std::uint64_t timeout) const
+                                                const std::uint64_t timeout)
 {
     const auto device = GetParent();
 
     std::uint32_t imageIndex = 0;
-    if (vkAcquireNextImageKHR(device->GetHandle(), handle_, timeout,
-                              semaphore ? semaphore->GetHandle() : VK_NULL_HANDLE,
-                              fence ? fence->GetHandle() : VK_NULL_HANDLE, &imageIndex) != VK_SUCCESS) {
+    acquireResult_ = vkAcquireNextImageKHR(device->GetHandle(), handle_, timeout,
+                                           semaphore ? semaphore->GetHandle() : VK_NULL_HANDLE,
+                                           fence ? fence->GetHandle() : VK_NULL_HANDLE, &imageIndex);
+    if (acquireResult_ != VK_SUCCESS && acquireResult_ != VK_SUBOPTIMAL_KHR &&
+        acquireResult_ != VK_ERROR_OUT_OF_DATE_KHR) {
         throw std::runtime_error("Failed to acquire next swap chain image!");
     }
     return imageIndex;
 }
+
+VkResult VulkanSwapChain::GetAcquireResult() const { return acquireResult_; }
 
 VulkanSwapChainBuilder::VulkanSwapChainBuilder() : createInfo_(GetDefaultSwapChainCreateInfo()) {}
 

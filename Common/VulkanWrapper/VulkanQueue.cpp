@@ -57,7 +57,7 @@ void VulkanQueue::Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer>>
 
 void VulkanQueue::Present(const std::vector<std::shared_ptr<VulkanSwapChain>>& swapChains,
                           const std::vector<std::uint32_t>& swapChainImageIndices,
-                          const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores) const
+                          const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores)
 {
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -80,7 +80,9 @@ void VulkanQueue::Present(const std::vector<std::shared_ptr<VulkanSwapChain>>& s
     presentInfo.pImageIndices = swapChainImageIndices.data();
     presentInfo.pResults = nullptr; /// TODO: Advanced queue handling will be added later
 
-    if (vkQueuePresentKHR(handle_, &presentInfo) != VK_SUCCESS) {
+    presentResult_ = vkQueuePresentKHR(handle_, &presentInfo);
+    if (presentResult_ != VK_SUCCESS && presentResult_ != VK_SUBOPTIMAL_KHR &&
+        presentResult_ != VK_ERROR_OUT_OF_DATE_KHR) {
         throw std::runtime_error("Failed to present queue!");
     }
 }
@@ -91,4 +93,6 @@ void VulkanQueue::WaitIdle() const
         throw std::runtime_error("Failed to wait queue!");
     }
 }
+
+VkResult VulkanQueue::GetPresentResult() const { return presentResult_; }
 } // namespace common::vulkan_wrapper

@@ -40,8 +40,13 @@ public:
 
     void Present(const std::vector<std::shared_ptr<VulkanSwapChain>>& swapChains,
                  const std::vector<std::uint32_t>& swapChainImageIndices,
-                 const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores) const;
+                 const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores);
 
     void WaitIdle() const;
+
+    VkResult GetPresentResult() const;
+
+private:
+    VkResult presentResult_;
 };
 } // namespace common::vulkan_wrapper

@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
-#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "AppConfig.h"
@@ -18,14 +17,14 @@
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::fundamentals::pipelines_and_passes::multiple_subpasses
+namespace examples::fundamentals::swap_chains_and_viewports::swap_chain_recreation
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
-VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationPipelinesAndPasses(std::move(params)) {}
+VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationSwapChainsAndViewports(std::move(params)) {}
 
 bool VulkanApplication::Init()
 {
@@ -34,23 +33,25 @@ bool VulkanApplication::Init()
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
 
         float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        camera = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio, 45.0f, 0.1f, 20.0f);
+        camera = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
+
+        InitInputSystem();
 
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
         CreateDefaultLogicalDevice();
         CreateDefaultQueue();
-        CreateDefaultSwapChain();
+        CreateSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects(swapChainImageViews_.size(), GetParamU32(AppConstants::MaxFramesInFlight));
 
         CreateResources();
         InitResources();
 
         CreateRenderPass();
         CreatePipeline();
-        CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                           GetParamStr(AppConstants::DepthImageView)));
+        CreateFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
+                                                    GetParamStr(AppConstants::DepthImageView)));
         CreateCommandBuffers();
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -66,6 +67,13 @@ void VulkanApplication::DrawFrame()
     inFlightFences_[currentIndex_]->ResetFence();
 
     uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
+
+    if (swapChain_->GetAcquireResult() == VK_ERROR_OUT_OF_DATE_KHR ||
+        swapChain_->GetAcquireResult() == VK_SUBOPTIMAL_KHR) {
+        RecreateSwapChain();
+        // Skip to next frame
+        return;
+    }
 
     const uint32_t indexCount = indices.size();
     CalculateAndSetMvp();
@@ -83,15 +91,58 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
+    // Not necessary, just in case
+    if (queue_->GetPresentResult() == VK_ERROR_OUT_OF_DATE_KHR || queue_->GetPresentResult() == VK_SUBOPTIMAL_KHR) {
+        RecreateSwapChain();
+        // Skip to next frame
+        return;
+    }
+
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+}
+
+void VulkanApplication::PreUpdate()
+{
+    // Poll events
+    ApplicationSwapChainsAndViewports::PreUpdate();
+
+    // Process continuous inputs
+    ProcessInput();
 }
 
 void VulkanApplication::Cleanup() noexcept
 {
-    ApplicationPipelinesAndPasses::Cleanup();
+    ApplicationSwapChainsAndViewports::Cleanup();
     crateTextureHandler_.Clear();
 }
 
+void VulkanApplication::InitInputSystem()
+{
+    lastX_ = static_cast<float>(currentWindowWidth_) / 2.0f;
+    lastY_ = static_cast<float>(currentWindowHeight_) / 2.0f;
+
+    window_->OnMouseMove([&](const MouseMoveEvent& event) {
+        const auto xPos = static_cast<float>(event.X);
+        const auto yPos = static_cast<float>(event.Y);
+
+        if (firstMouseTriggered_) {
+            lastX_ = xPos;
+            lastY_ = yPos;
+            firstMouseTriggered_ = false;
+        }
+
+        float xOffset = xPos - lastX_;
+        float yOffset = lastY_ - yPos;
+        lastX_ = xPos;
+        lastY_ = yPos;
+
+        const float sensitivity = GetParamFloat(AppSettings::MouseSensitivity) * static_cast<float>(deltaTime_);
+        xOffset *= sensitivity;
+        yOffset *= sensitivity;
+
+        camera->Rotate(xOffset, yOffset);
+    });
+}
 
 void VulkanApplication::CreateResources()
 {
@@ -122,20 +173,15 @@ void VulkanApplication::CreateResources()
                                   .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
                                   .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
                                                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::ObjectFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::ObjectFragmentShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::DepthObjectFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::DepthObjectFragmentShaderFile)}}};
+                                              {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                                               .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {
-        .MaxSets = 2,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1}},
-        .Layouts = {
-            {.Name = GetParamStr(AppConstants::ObjectDescSetLayout),
-             .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
-            {.Name = GetParamStr(AppConstants::DepthObjectDescSetLayout),
-             .Bindings = {{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}}};
+    resourceCreateInfo.Descriptors = {.MaxSets = 1,
+                                      .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
+                                      .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+                                                                 VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}}};
 
     resourceCreateInfo.Images = {
         ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CrateImage),
@@ -149,7 +195,7 @@ void VulkanApplication::CreateResources()
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .Format = depthImageFormat_,
             .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
+            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
             .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
                                           .Format = depthImageFormat_,
                                           .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
@@ -181,13 +227,40 @@ void VulkanApplication::InitResources() const
     UpdateDescriptorSets();
 }
 
+void VulkanApplication::CreateSwapChain()
+{
+    auto surfaceFormat = physicalDevice_->GetSurfaceFormat(surface_->GetHandle(), VK_FORMAT_B8G8R8A8_SRGB,
+                                                           VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+    auto surfaceCapabilities = physicalDevice_->GetSurfaceCapabilities(surface_->GetHandle());
+
+    if (!surfaceFormat.has_value() || !surfaceCapabilities.has_value()) {
+        throw std::runtime_error("Failed to get surface format or capabilities!");
+    }
+
+    swapChain_ = device_->CreateSwapChain(surface_, [&](auto& builder) {
+        builder.SetMinImageCount(surfaceCapabilities.value().minImageCount + 1)
+                .SetImageFormat(surfaceFormat->format)
+                .SetImageColorSpace(surfaceFormat->colorSpace)
+                .SetImageExtent(currentWindowWidth_, currentWindowHeight_)
+                .SetPreTransformFlagBits(surfaceCapabilities.value().currentTransform);
+    });
+
+    if (!swapChain_) {
+        throw std::runtime_error("Failed to create swap chain!");
+    }
+
+    swapChainImageViews_ = swapChain_->GetSwapChainImageViews();
+
+    if (swapChainImageViews_.empty()) {
+        throw std::runtime_error("Failed to get swap chain image views!");
+    }
+}
+
 void VulkanApplication::CreateRenderPass()
 {
     VkAttachmentReference colorAttachmentRef{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
     VkAttachmentReference depthAttachmentRef{1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
-
-    VkAttachmentReference inputAttachmentRef{1, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
 
     renderPass_ = device_->CreateRenderPass([&](auto& builder) {
         builder.AddAttachment([](auto& attachmentCreateInfo) {
@@ -215,21 +288,6 @@ void VulkanApplication::CreateRenderPass()
                     subpassCreateInfo.colorAttachmentCount = 1;
                     subpassCreateInfo.pColorAttachments = &colorAttachmentRef;
                     subpassCreateInfo.pDepthStencilAttachment = &depthAttachmentRef;
-                })
-                .AddSubpass([&](auto& subpassCreateInfo) {
-                    subpassCreateInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-                    subpassCreateInfo.inputAttachmentCount = 1;
-                    subpassCreateInfo.pInputAttachments = &inputAttachmentRef;
-                    subpassCreateInfo.colorAttachmentCount = 1;
-                    subpassCreateInfo.pColorAttachments = &colorAttachmentRef;
-                })
-                .AddDependency([&](auto& dependency) {
-                    dependency.srcSubpass = 0;
-                    dependency.dstSubpass = 1;
-                    dependency.srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-                    dependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-                    dependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                    dependency.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
                 });
     });
 
@@ -245,18 +303,11 @@ void VulkanApplication::CreatePipeline()
     mvpPushConstant.size = sizeof(MvpData);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    pipelineLayoutObject_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::ObjectDescSetLayout))}, {mvpPushConstant});
+    pipelineLayout_ = device_->CreatePipelineLayout(
+            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))}, {mvpPushConstant});
 
-    if (!pipelineLayoutObject_) {
-        throw std::runtime_error("Failed to create pipeline layout (object)!");
-    }
-
-    pipelineLayoutDepthObject_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::DepthObjectDescSetLayout))}, {mvpPushConstant});
-
-    if (!pipelineLayoutDepthObject_) {
-        throw std::runtime_error("Failed to create pipeline layout (depth object)!");
+    if (!pipelineLayout_) {
+        throw std::runtime_error("Failed to create pipeline layout!");
     }
 
     VkViewport viewport{0,    0,   static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_),
@@ -280,7 +331,7 @@ void VulkanApplication::CreatePipeline()
     const auto uvAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Uv, bindingIndex);
     const std::array attributeDescriptions{posAttribDescription, uvAttribDescription};
 
-    pipelineObject_ = device_->CreateGraphicsPipeline(pipelineLayoutObject_, renderPass_, [&](auto& builder) {
+    pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
             shaderStageCreateInfo.module =
@@ -289,7 +340,7 @@ void VulkanApplication::CreatePipeline()
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
             shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::ObjectFragmentShaderKey))->GetHandle();
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -312,45 +363,25 @@ void VulkanApplication::CreatePipeline()
             depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
             depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
         });
-        builder.SetSubpassIndex(0);
     });
 
-    if (!pipelineObject_) {
-        throw std::runtime_error("Failed to create graphics pipeline(object)!");
+    if (!pipeline_) {
+        throw std::runtime_error("Failed to create graphics pipeline!");
     }
+}
 
-    pipelineDepthObject_ = device_->CreateGraphicsPipeline(pipelineLayoutDepthObject_, renderPass_, [&](auto& builder) {
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
-            shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+void VulkanApplication::CreateFramebuffers(const std::shared_ptr<VulkanImageView>& depthImageView)
+{
+    for (const auto& swapImage: swapChainImageViews_) {
+        auto framebuffer = device_->CreateFramebuffer(renderPass_, {swapImage, depthImageView}, [&](auto& builder) {
+            builder.SetDimensions(currentWindowWidth_, currentWindowHeight_);
         });
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
-            shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::DepthObjectFragmentShaderKey))->GetHandle();
-        });
-        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
-            vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
-            vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
-            vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
-            vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-        });
-        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
-            viewportStateCreateInfo.viewportCount = 1;
-            viewportStateCreateInfo.pViewports = &viewport;
-            viewportStateCreateInfo.scissorCount = 1;
-            viewportStateCreateInfo.pScissors = &scissor;
-        });
-        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
-            blendStateCreateInfo.attachmentCount = 1;
-            blendStateCreateInfo.pAttachments = &colorBlendAttachment;
-        });
-        builder.SetSubpassIndex(1);
-    });
 
-    if (!pipelineDepthObject_) {
-        throw std::runtime_error("Failed to create graphics pipeline(depth object)!");
+        if (!framebuffer) {
+            throw std::runtime_error("Failed to create framebuffer!");
+        }
+
+        framebuffers_.push_back(framebuffer);
     }
 }
 
@@ -363,27 +394,13 @@ void VulkanApplication::UpdateDescriptorSets() const
                     ->GetHandle(),
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    std::vector<VkDescriptorImageInfo> depthImageInfos;
-    depthImageInfos.emplace_back(
-            VK_NULL_HANDLE,
-            resources_->GetImageView(GetParamStr(AppConstants::DepthImage), GetParamStr(AppConstants::DepthImageView))
-                    ->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.LayoutName = GetParamStr(AppConstants::ObjectDescSetLayout);
+    samplerUpdateRequest.LayoutName = GetParamStr(AppConstants::MainDescSetLayout);
     samplerUpdateRequest.BindingIndex = 0;
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    ImageWriteRequest inputDepthUpdateRequest;
-    inputDepthUpdateRequest.LayoutName = GetParamStr(AppConstants::DepthObjectDescSetLayout);
-    inputDepthUpdateRequest.BindingIndex = 0;
-    inputDepthUpdateRequest.Images = depthImageInfos;
-    inputDepthUpdateRequest.Type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .ImageWriteRequests = {samplerUpdateRequest, inputDepthUpdateRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -416,33 +433,20 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 beginInfo.pClearValues = clearValues.data();
             },
             VK_SUBPASS_CONTENTS_INLINE);
+    cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(
+            VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
+            {resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))});
     cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers(
             {resources_->GetBuffer(GetParamStr(AppConstants::MainVertexBuffer))}, 0, 1, {0});
     cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(
             resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)), 0, VK_INDEX_TYPE_UINT16);
 
-    // Moving Cubes
-    cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipelineObject_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(
-            VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutObject_, 0,
-            {resources_->GetDescriptorSet(GetParamStr(AppConstants::ObjectDescSetLayout))});
-    for (size_t i = 0; i < NUM_CUBES - 1; ++i) {
-        cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayoutObject_, VK_SHADER_STAGE_VERTEX_BIT, 0,
-                                                             sizeof(MvpData), &mvpData[i]);
+    for (auto& mvp: mvpData) {
+        cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
+                                                             sizeof(MvpData), &mvp);
         cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
     }
-
-    cmdBuffersPresent_[currentImageIndex]->NextSubpass(VK_SUBPASS_CONTENTS_INLINE);
-
-    // Depth Cube
-    cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipelineDepthObject_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(
-            VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutDepthObject_, 0,
-            {resources_->GetDescriptorSet(GetParamStr(AppConstants::DepthObjectDescSetLayout))});
-    cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayoutDepthObject_, VK_SHADER_STAGE_VERTEX_BIT, 0,
-                                                         sizeof(MvpData), &mvpData[3]);
-    cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
-
 
     cmdBuffersPresent_[currentImageIndex]->EndRenderPass();
     if (!cmdBuffersPresent_[currentImageIndex]->EndCommandBuffer()) {
@@ -452,26 +456,9 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::CalculateAndSetMvp()
 {
-    for (size_t i = 0; i < NUM_CUBES; ++i) {
+    for (size_t i = 0; i < NUM_CUBES; i++) {
         auto model = glm::mat4(1.0f);
-        if (i == 3) {
-            // Still Cube Transform
-            model = glm::translate(model, modelPositions[i]);
-            model = glm::scale(model, glm::vec3(3.5f, 3.5f, 0.1f));
-        } else {
-            // Moving Cubes Transforms
-            const float radius = 1.2f + static_cast<float>(i) * 1.0f;
-            const glm::vec3 center(modelPositions[i]);
-            const float speed = glm::radians(40.0f + static_cast<float>(i) * 20.0f);
-            const float angle = speed * static_cast<float>(glfwGetTime());
-
-            glm::vec3 position;
-            position.x = center.x + radius * cos(angle);
-            position.y = center.y + radius * sin(angle);
-            position.z = center.z;
-
-            model = glm::translate(model, position);
-        }
+        model = glm::translate(model, modelPositions[i]);
 
         const glm::mat4 view = camera->GetViewMatrix();
         glm::mat4 proj = camera->GetProjectionMatrix();
@@ -481,4 +468,68 @@ void VulkanApplication::CalculateAndSetMvp()
         mvpData[i].mvpMatrix = proj * view * model;
     }
 }
-} // namespace examples::fundamentals::pipelines_and_passes::multiple_subpasses
+
+void VulkanApplication::ProcessInput() const
+{
+    const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
+    if (window_->IsKeyPressed(GLFW_KEY_W)) {
+        camera->Move(camera->GetFrontVector() * cameraSpeed);
+    }
+    if (window_->IsKeyPressed(GLFW_KEY_S)) {
+        camera->Move(-camera->GetFrontVector() * cameraSpeed);
+    }
+    if (window_->IsKeyPressed(GLFW_KEY_A)) {
+        camera->Move(-camera->GetRightVector() * cameraSpeed);
+    }
+    if (window_->IsKeyPressed(GLFW_KEY_D)) {
+        camera->Move(camera->GetRightVector() * cameraSpeed);
+    }
+}
+
+void VulkanApplication::RecreateSwapChain()
+{
+    // Wait device until idle
+    device_->WaitIdle();
+
+    // Reset and clear old Vulkan objects
+    swapChain_.reset();
+    swapChainImageViews_.clear();
+    framebuffers_.clear();
+    cmdBuffersPresent_.clear();
+    pipeline_.reset();
+    pipelineLayout_.reset();
+    imageAvailableSemaphores_.clear();
+    renderFinishedSemaphores_.clear();
+    inFlightFences_.clear();
+    swapImagesFences_.clear();
+
+    // Get new width and height
+    currentWindowWidth_ = window_->GetWindowWidth();
+    currentWindowHeight_ = window_->GetWindowHeight();
+
+    // Recreate depth image
+    resources_->DeleteImage(GetParamStr(AppConstants::DepthImage));
+    ImageResourceCreateInfo depthImage{
+        .Name = GetParamStr(AppConstants::DepthImage),
+        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .Format = depthImageFormat_,
+        .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
+                                      .Format = depthImageFormat_,
+                                      .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                           .baseMipLevel = 0,
+                                                           .levelCount = 1,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 1}}}};
+    resources_->CreateImages({depthImage});
+
+    // Create required Vulkan objects again
+    CreateSwapChain();
+    CreatePipeline();
+    CreateFramebuffers(
+            resources_->GetImageView(GetParamStr(AppConstants::DepthImage), GetParamStr(AppConstants::DepthImageView)));
+    CreateCommandBuffers();
+    CreateDefaultSyncObjects(swapChainImageViews_.size(), GetParamU32(AppConstants::MaxFramesInFlight));
+}
+} // namespace examples::fundamentals::swap_chains_and_viewports::swap_chain_recreation

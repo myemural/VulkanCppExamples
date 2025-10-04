@@ -77,10 +77,6 @@ private:
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
 
-    // Delta time related values
-    double deltaTime_ = 0.0f;
-    double lastFrame_ = 0.0f;
-
     // Mouse related values
     bool firstMouseTriggered_ = true;
     float lastX_ = 0.0f;

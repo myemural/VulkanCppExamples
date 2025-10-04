@@ -1,9 +1,9 @@
 /**
- * @file    ApplicationPipelinesAndPasses.h
- * @brief   This file contains Vulkan application base class implementation for examples that in "PipelinesAndPasses"
- *          subcategory.
+ * @file    ApplicationSwapChainsAndViewports.h
+ * @brief   This file contains Vulkan application base class implementation for examples that in
+ *          "SwapChainsAndViewports" subcategory.
  * @author  Mustafa Yemural (myemural)
- * @date    23.09.2025
+ * @date    4.10.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -28,15 +28,15 @@
 #include "VulkanSwapChain.h"
 #include "Window.h"
 
-namespace examples::fundamentals::pipelines_and_passes::base
+namespace examples::fundamentals::swap_chains_and_viewports::base
 {
 
-class ApplicationPipelinesAndPasses : public common::vulkan_framework::VulkanApplicationBase
+class ApplicationSwapChainsAndViewports : public common::vulkan_framework::VulkanApplicationBase
 {
 public:
     using VulkanApplicationBase::VulkanApplicationBase;
 
-    ~ApplicationPipelinesAndPasses() override = default;
+    ~ApplicationSwapChainsAndViewports() override = default;
 
     void SetWindow(const std::shared_ptr<common::window_wrapper::Window>& window);
 
@@ -57,13 +57,9 @@ protected:
 
     void CreateDefaultQueue();
 
-    void CreateDefaultSwapChain();
-
-    void CreateDefaultFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView>& depthImageView);
-
     void CreateDefaultCommandPool();
 
-    void CreateDefaultSyncObjects(std::uint32_t maxFramesInFlight);
+    void CreateDefaultSyncObjects(std::uint32_t swapImageCount, std::uint32_t maxFramesInFlight);
 
     void CreateVulkanResources(const common::vulkan_framework::ResourceDescriptor& resourceCreateInfo);
 
@@ -73,10 +69,7 @@ protected:
     std::uint32_t currentQueueFamilyIndex_ = UINT32_MAX;
     std::shared_ptr<common::vulkan_wrapper::VulkanDevice> device_;
     std::shared_ptr<common::vulkan_wrapper::VulkanQueue> queue_;
-    std::shared_ptr<common::vulkan_wrapper::VulkanSwapChain> swapChain_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanImageView>> swapChainImageViews_;
     std::shared_ptr<common::vulkan_wrapper::VulkanRenderPass> renderPass_;
-    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> framebuffers_;
     std::shared_ptr<common::vulkan_wrapper::VulkanCommandPool> cmdPool_;
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> imageAvailableSemaphores_;
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanSemaphore>> renderFinishedSemaphores_;
@@ -89,4 +82,4 @@ protected:
     double deltaTime_ = 0.0f;
     double lastFrame_ = 0.0f;
 };
-} // namespace examples::fundamentals::pipelines_and_passes::base
+} // namespace examples::fundamentals::swap_chains_and_viewports::base

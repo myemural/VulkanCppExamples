@@ -14,7 +14,6 @@
 
 #include "AppConfig.h"
 #include "ApplicationData.h"
-#include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
@@ -94,11 +93,6 @@ void VulkanApplication::DrawFrame()
 
 void VulkanApplication::PreUpdate()
 {
-    // Calculate delta time
-    const double currentFrame = GetCurrentTime();
-    deltaTime_ = currentFrame - lastFrame_;
-    lastFrame_ = currentFrame;
-
     // Poll events
     ApplicationPipelinesAndPasses::PreUpdate();
 
