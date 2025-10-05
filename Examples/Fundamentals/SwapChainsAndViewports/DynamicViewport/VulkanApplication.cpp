@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
-#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "AppConfig.h"
@@ -18,14 +17,14 @@
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::fundamentals::pipelines_and_passes::load_store_ops
+namespace examples::fundamentals::swap_chains_and_viewports::dynamic_viewport
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
-VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationPipelinesAndPasses(std::move(params)) {}
+VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationSwapChainsAndViewports(std::move(params)) {}
 
 bool VulkanApplication::Init()
 {
@@ -33,8 +32,9 @@ bool VulkanApplication::Init()
         currentWindowWidth_ = GetParamU32(WindowParams::Width);
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
 
-        float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        camera = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
+        float aspectRatio = (static_cast<float>(currentWindowWidth_) / 2.0f) / static_cast<float>(currentWindowHeight_);
+        perspectiveCamera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
+        orthoCamera_ = std::make_unique<OrthographicCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
 
         InitInputSystem();
 
@@ -42,17 +42,17 @@ bool VulkanApplication::Init()
         SelectDefaultPhysicalDevice();
         CreateDefaultLogicalDevice();
         CreateDefaultQueue();
-        CreateDefaultSwapChain();
+        CreateSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects(swapChainImageViews_.size(), GetParamU32(AppConstants::MaxFramesInFlight));
 
         CreateResources();
         InitResources();
 
         CreateRenderPass();
         CreatePipeline();
-        CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                           GetParamStr(AppConstants::DepthImageView)));
+        CreateFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
+                                                    GetParamStr(AppConstants::DepthImageView)));
         CreateCommandBuffers();
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -91,7 +91,7 @@ void VulkanApplication::DrawFrame()
 void VulkanApplication::PreUpdate()
 {
     // Poll events
-    ApplicationPipelinesAndPasses::PreUpdate();
+    ApplicationSwapChainsAndViewports::PreUpdate();
 
     // Process continuous inputs
     ProcessInput();
@@ -99,7 +99,7 @@ void VulkanApplication::PreUpdate()
 
 void VulkanApplication::Cleanup() noexcept
 {
-    ApplicationPipelinesAndPasses::Cleanup();
+    ApplicationSwapChainsAndViewports::Cleanup();
     crateTextureHandler_.Clear();
 }
 
@@ -129,7 +129,8 @@ void VulkanApplication::InitInputSystem()
         xOffset *= sensitivity;
         yOffset *= sensitivity;
 
-        camera->Rotate(xOffset, yOffset);
+        perspectiveCamera_->Rotate(xOffset, yOffset);
+        orthoCamera_->Rotate(xOffset, yOffset);
     });
 }
 
@@ -216,6 +217,35 @@ void VulkanApplication::InitResources() const
     UpdateDescriptorSets();
 }
 
+void VulkanApplication::CreateSwapChain()
+{
+    auto surfaceFormat = physicalDevice_->GetSurfaceFormat(surface_->GetHandle(), VK_FORMAT_B8G8R8A8_SRGB,
+                                                           VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+    auto surfaceCapabilities = physicalDevice_->GetSurfaceCapabilities(surface_->GetHandle());
+
+    if (!surfaceFormat.has_value() || !surfaceCapabilities.has_value()) {
+        throw std::runtime_error("Failed to get surface format or capabilities!");
+    }
+
+    swapChain_ = device_->CreateSwapChain(surface_, [&](auto& builder) {
+        builder.SetMinImageCount(surfaceCapabilities.value().minImageCount + 1)
+                .SetImageFormat(surfaceFormat->format)
+                .SetImageColorSpace(surfaceFormat->colorSpace)
+                .SetImageExtent(currentWindowWidth_, currentWindowHeight_)
+                .SetPreTransformFlagBits(surfaceCapabilities.value().currentTransform);
+    });
+
+    if (!swapChain_) {
+        throw std::runtime_error("Failed to create swap chain!");
+    }
+
+    swapChainImageViews_ = swapChain_->GetSwapChainImageViews();
+
+    if (swapChainImageViews_.empty()) {
+        throw std::runtime_error("Failed to get swap chain image views!");
+    }
+}
+
 void VulkanApplication::CreateRenderPass()
 {
     VkAttachmentReference colorAttachmentRef{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
@@ -226,7 +256,7 @@ void VulkanApplication::CreateRenderPass()
         builder.AddAttachment([](auto& attachmentCreateInfo) {
                    attachmentCreateInfo.format = VK_FORMAT_B8G8R8A8_SRGB;
                    attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-                   attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+                   attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
                    attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
                    attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -270,10 +300,6 @@ void VulkanApplication::CreatePipeline()
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    VkViewport viewport{0,    0,   static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_),
-                        0.0f, 1.0f};
-    VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
-
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
     colorBlendAttachment.blendEnable = VK_FALSE;
     colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
@@ -290,6 +316,8 @@ void VulkanApplication::CreatePipeline()
     const auto posAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Position, bindingIndex);
     const auto uvAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Uv, bindingIndex);
     const std::array attributeDescriptions{posAttribDescription, uvAttribDescription};
+
+    std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -309,10 +337,10 @@ void VulkanApplication::CreatePipeline()
             vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         });
         builder.SetViewportState([&](auto& viewportStateCreateInfo) {
-            viewportStateCreateInfo.viewportCount = 1;
-            viewportStateCreateInfo.pViewports = &viewport;
-            viewportStateCreateInfo.scissorCount = 1;
-            viewportStateCreateInfo.pScissors = &scissor;
+            viewportStateCreateInfo.viewportCount = 2;
+            viewportStateCreateInfo.pViewports = nullptr;
+            viewportStateCreateInfo.scissorCount = 2;
+            viewportStateCreateInfo.pScissors = nullptr;
         });
         builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
             blendStateCreateInfo.attachmentCount = 1;
@@ -323,10 +351,29 @@ void VulkanApplication::CreatePipeline()
             depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
             depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
         });
+        builder.SetDynamicState([&](auto& dynamicStateCreateInfo) {
+            dynamicStateCreateInfo.dynamicStateCount = dynamicStates.size();
+            dynamicStateCreateInfo.pDynamicStates = dynamicStates.data();
+        });
     });
 
     if (!pipeline_) {
         throw std::runtime_error("Failed to create graphics pipeline!");
+    }
+}
+
+void VulkanApplication::CreateFramebuffers(const std::shared_ptr<VulkanImageView>& depthImageView)
+{
+    for (const auto& swapImage: swapChainImageViews_) {
+        auto framebuffer = device_->CreateFramebuffer(renderPass_, {swapImage, depthImageView}, [&](auto& builder) {
+            builder.SetDimensions(currentWindowWidth_, currentWindowHeight_);
+        });
+
+        if (!framebuffer) {
+            throw std::runtime_error("Failed to create framebuffer!");
+        }
+
+        framebuffers_.push_back(framebuffer);
     }
 }
 
@@ -387,7 +434,38 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(
             resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)), 0, VK_INDEX_TYPE_UINT16);
 
-    for (auto& mvp: mvpData) {
+    // Set dynamic viewports and scissors
+    const std::uint32_t halfWidth = currentWindowWidth_ / 2;
+    const float halfWidthFloat = static_cast<float>(currentWindowWidth_) / 2.0f;
+    const std::vector viewports = {
+        VkViewport{0, 0, halfWidthFloat, static_cast<float>(currentWindowHeight_), 0.0f, 1.0f},             // Left
+        VkViewport{halfWidthFloat, 0, halfWidthFloat, static_cast<float>(currentWindowHeight_), 0.0f, 1.0f} // Right
+    };
+    const std::vector scissors = {
+        VkRect2D{0, 0, halfWidth, currentWindowHeight_},                                                    // Left
+        VkRect2D{static_cast<int32_t>(halfWidth), 0, halfWidth, currentWindowHeight_}                       // Right
+    };
+    cmdBuffersPresent_[currentImageIndex]->SetViewports(0, viewports);
+    cmdBuffersPresent_[currentImageIndex]->SetScissors(0, scissors);
+
+    // Change background of the perspective side (left)
+    VkClearAttachment clearAttachment = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                                         .colorAttachment = 0,
+                                         .clearValue = {.color = VkClearColorValue{0.3f, 0.2f, 0.0f, 1.0f}}};
+    VkClearRect clearRect = {.rect = scissors[0], .baseArrayLayer = 0, .layerCount = 1};
+    cmdBuffersPresent_[currentImageIndex]->ClearAttachments({clearAttachment}, {clearRect});
+
+    // Draw perspective side (left)
+    for (auto& mvp: mvpDataPerspective_) {
+        mvp.viewportIndex = 0;
+        cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
+                                                             sizeof(MvpData), &mvp);
+        cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
+    }
+
+    // Draw orthographic side (right)
+    for (auto& mvp: mvpDataOrtho_) {
+        mvp.viewportIndex = 1;
         cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
                                                              sizeof(MvpData), &mvp);
         cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
@@ -405,11 +483,15 @@ void VulkanApplication::CalculateAndSetMvp()
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, modelPositions[i]);
 
-        const glm::mat4 view = camera->GetViewMatrix();
-        glm::mat4 proj = camera->GetProjectionMatrix();
+        const glm::mat4 viewPerspective = perspectiveCamera_->GetViewMatrix();
+        glm::mat4 projPerspective = perspectiveCamera_->GetProjectionMatrix();
 
-        // Calculate MVP matrix
-        mvpData[i].mvpMatrix = proj * view * model;
+        mvpDataPerspective_[i].mvpMatrix = projPerspective * viewPerspective * model;
+
+        const glm::mat4 viewOrtho = orthoCamera_->GetViewMatrix();
+        glm::mat4 projOrtho = orthoCamera_->GetProjectionMatrix();
+
+        mvpDataOrtho_[i].mvpMatrix = projOrtho * viewOrtho * model;
     }
 }
 
@@ -417,16 +499,21 @@ void VulkanApplication::ProcessInput() const
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {
-        camera->Move(camera->GetFrontVector() * cameraSpeed);
+        perspectiveCamera_->Move(perspectiveCamera_->GetFrontVector() * cameraSpeed);
+        orthoCamera_->Move(orthoCamera_->GetFrontVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_S)) {
-        camera->Move(-camera->GetFrontVector() * cameraSpeed);
+        perspectiveCamera_->Move(-perspectiveCamera_->GetFrontVector() * cameraSpeed);
+        orthoCamera_->Move(-orthoCamera_->GetFrontVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_A)) {
-        camera->Move(-camera->GetRightVector() * cameraSpeed);
+        perspectiveCamera_->Move(-perspectiveCamera_->GetRightVector() * cameraSpeed);
+        orthoCamera_->Move(-orthoCamera_->GetRightVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_D)) {
-        camera->Move(camera->GetRightVector() * cameraSpeed);
+        perspectiveCamera_->Move(perspectiveCamera_->GetRightVector() * cameraSpeed);
+        orthoCamera_->Move(orthoCamera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::fundamentals::pipelines_and_passes::load_store_ops
+
+} // namespace examples::fundamentals::swap_chains_and_viewports::dynamic_viewport

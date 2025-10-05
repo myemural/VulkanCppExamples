@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(SwapChainRecreation)
 add_subdirectory(MultiViewport)
+add_subdirectory(DynamicViewport)

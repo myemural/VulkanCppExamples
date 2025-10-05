@@ -17,7 +17,10 @@ PerspectiveCamera::PerspectiveCamera(glm::vec3 position, float aspect, float fov
 
 glm::mat4 PerspectiveCamera::GetProjectionMatrix() const
 {
-    return glm::perspective(glm::radians(fov_), aspect_, nearPlane_, farPlane_);
+    auto proj = glm::perspective(glm::radians(fov_), aspect_, nearPlane_, farPlane_);
+    proj[1][1] *= -1; // Vulkan trick for projection
+
+    return proj;
 }
 
 void PerspectiveCamera::SetFov(const float fov) { fov_ = fov; }

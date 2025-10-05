@@ -614,7 +614,6 @@ void VulkanApplication::CalculateAndSetMvp()
 
         const glm::mat4 view = camera->GetViewMatrix();
         glm::mat4 proj = camera->GetProjectionMatrix();
-        proj[1][1] *= -1; // Vulkan trick for projection
 
         // Calculate MVP matrix
         cubeMvpData[i].mvpMatrix = proj * view * model;

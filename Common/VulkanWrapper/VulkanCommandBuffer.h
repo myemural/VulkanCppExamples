@@ -102,5 +102,9 @@ public:
 
     void ClearAttachments(const std::vector<VkClearAttachment>& attachments,
                           const std::vector<VkClearRect>& rects) const;
+
+    void SetViewports(std::uint32_t firstViewport, const std::vector<VkViewport>& viewports) const;
+
+    void SetScissors(std::uint32_t firstScissor, const std::vector<VkRect2D>& scissors) const;
 };
 } // namespace common::vulkan_wrapper

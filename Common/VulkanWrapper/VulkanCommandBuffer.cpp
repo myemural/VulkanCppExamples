@@ -197,4 +197,14 @@ void VulkanCommandBuffer::ClearAttachments(const std::vector<VkClearAttachment>&
     vkCmdClearAttachments(handle_, attachments.size(), attachments.empty() ? nullptr : attachments.data(), rects.size(),
                           rects.empty() ? nullptr : rects.data());
 }
+void VulkanCommandBuffer::SetViewports(const std::uint32_t firstViewport,
+                                       const std::vector<VkViewport>& viewports) const
+{
+    vkCmdSetViewport(handle_, firstViewport, viewports.size(), viewports.empty() ? nullptr : viewports.data());
+}
+
+void VulkanCommandBuffer::SetScissors(std::uint32_t firstScissor, const std::vector<VkRect2D>& scissors) const
+{
+    vkCmdSetScissor(handle_, firstScissor, scissors.size(), scissors.empty() ? nullptr : scissors.data());
+}
 } // namespace common::vulkan_wrapper

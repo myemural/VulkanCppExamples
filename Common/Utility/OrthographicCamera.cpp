@@ -19,7 +19,10 @@ glm::mat4 OrthographicCamera::GetProjectionMatrix() const
 {
     const float halfW = size_ * aspect_ * 0.5f;
     const float halfH = size_ * 0.5f;
-    return glm::ortho(-halfW, halfW, -halfH, halfH, nearPlane_, farPlane_);
+    auto proj = glm::orthoZO(-halfW, halfW, -halfH, halfH, nearPlane_, farPlane_);
+    proj[1][1] *= -1; // Vulkan trick for projection
+
+    return proj;
 }
 
 void OrthographicCamera::SetSize(const float size) { size_ = size; }
