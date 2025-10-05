@@ -190,4 +190,11 @@ void VulkanCommandBuffer::SetBlendConstants(const float r, const float g, const 
 }
 
 void VulkanCommandBuffer::SetLineWidth(const float lineWidth) const { vkCmdSetLineWidth(handle_, lineWidth); }
+
+void VulkanCommandBuffer::ClearAttachments(const std::vector<VkClearAttachment>& attachments,
+                                           const std::vector<VkClearRect>& rects) const
+{
+    vkCmdClearAttachments(handle_, attachments.size(), attachments.empty() ? nullptr : attachments.data(), rects.size(),
+                          rects.empty() ? nullptr : rects.data());
+}
 } // namespace common::vulkan_wrapper

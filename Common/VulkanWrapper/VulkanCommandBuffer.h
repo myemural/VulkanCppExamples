@@ -99,5 +99,8 @@ public:
     void SetBlendConstants(float r, float g, float b, float a) const;
 
     void SetLineWidth(float lineWidth) const;
+
+    void ClearAttachments(const std::vector<VkClearAttachment>& attachments,
+                          const std::vector<VkClearRect>& rects) const;
 };
 } // namespace common::vulkan_wrapper

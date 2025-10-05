@@ -8,6 +8,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
 
 1. [Handling Window Resizing](/Examples/Fundamentals/SwapChainsAndViewports/SwapChainRecreation)
    - `SwapChainRecreation`
+2[Using Multi-Viewports for Different Colors](/Examples/Fundamentals/SwapChainsAndViewports/MultiViewport)
+   - `MultiViewport`
 
 ## Architecture of the Subsection
 

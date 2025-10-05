@@ -70,12 +70,12 @@ void ApplicationSwapChainsAndViewports::CreateDefaultLogicalDevice()
     std::vector queuePriorities = {1.0f};
 
     VkPhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.fillModeNonSolid = VK_TRUE;
-    deviceFeatures.wideLines = VK_TRUE;
+    deviceFeatures.multiViewport = VK_TRUE;
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
         builder.AddLayer("VK_LAYER_KHRONOS_validation")
                 .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
+                .AddExtension("VK_EXT_shader_viewport_index_layer")
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
                     queueInfo.queueCount = 1;
