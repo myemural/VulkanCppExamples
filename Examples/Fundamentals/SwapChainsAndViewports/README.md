@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `MultiViewport`
 3. [Split Screen with Dynamic Viewport](/Examples/Fundamentals/SwapChainsAndViewports/DynamicViewport)
    - `DynamicViewport`
+4. [Scissor Animation](/Examples/Fundamentals/SwapChainsAndViewports/ScissorAnimation)
+   - `ScissorAnimation`
 
 ## Architecture of the Subsection
 

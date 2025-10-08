@@ -55,6 +55,6 @@ The topics covered by this subsection:
 The topics covered by this subsection:
 - Handling window resizing
 - Creating swap chains and related resources again
-- Using multiple viewports and scissors
+- Using multiple viewports and scissors (via extension)
 - Using dynamic pipeline states related to viewports and scissors
-- Creating animations with respect to changing viewport sizes
+- Creating animations with respect to changing scissor position
