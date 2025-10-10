@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------
+// Author: Mustafa Yemural
+// Description:
+// ------------------------------------------------------------------------
+// Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
+// Licensed under the MIT License.
+// ------------------------------------------------------------------------
+
 struct ScreenUBO
 {
     float2 screenSize;

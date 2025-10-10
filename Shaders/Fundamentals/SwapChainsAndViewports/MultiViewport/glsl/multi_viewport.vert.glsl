@@ -1,6 +1,14 @@
 #version 450
 #extension GL_ARB_shader_viewport_layer_array : require
 
+// ------------------------------------------------------------------------
+// Author: Mustafa Yemural
+// Description:
+// ------------------------------------------------------------------------
+// Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
+// Licensed under the MIT License.
+// ------------------------------------------------------------------------
+
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec2 inUV;
 

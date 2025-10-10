@@ -18,17 +18,6 @@ This example draws 4 identical triangles to the screen to show how to draw somet
 
 ## Application Parameters
 
-### Constants
-
-| Parameter / Key                     | Type           | Usage in Code                        | Description                                                  | Default Value        |
-|-------------------------------------|----------------|--------------------------------------|--------------------------------------------------------------|----------------------|
-| AppConstants.MaxFramesInFlight      | std::uint32_t  | AppConstants::MaxFramesInFlight      | Maximum number of images to be processed in the render loop. | 2                    |
-| AppConstants.BaseShaderType         | ShaderBaseType | AppConstants::BaseShaderType         | Base shader type of the SPIR-V shader.                       | ShaderBaseType::GLSL |
-| AppConstants.MainVertexShaderFile   | std::string    | AppConstants::MainVertexShaderFile   | Main vertex shader file path.                                | "triangle.vert.spv"  |
-| AppConstants.MainFragmentShaderFile | std::string    | AppConstants::MainFragmentShaderFile | Main fragment shader file path.                              | "triangle.frag.spv"  |
-| AppConstants.MainVertexShaderKey    | std::string    | AppConstants::MainVertexShaderKey    | Main vertex shader key.                                      | "vertMain"           |
-| AppConstants.MainFragmentShaderKey  | std::string    | AppConstants::MainFragmentShaderKey  | Main fragment Shader key                                     | "fragMain"           |
-
 ### Settings
 
 | Parameter / Key        | Type              | Usage in Code           | Description                                            | Default Value |

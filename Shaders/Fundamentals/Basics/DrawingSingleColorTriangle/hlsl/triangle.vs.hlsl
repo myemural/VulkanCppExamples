@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------
+// Author: Mustafa Yemural
+// Description:
+// ------------------------------------------------------------------------
+// Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
+// Licensed under the MIT License.
+// ------------------------------------------------------------------------
+
 static const float2 positions[3] = {
     float2(0.0, -0.5), // Bottom
     float2(0.5, 0.5),  // Right-top

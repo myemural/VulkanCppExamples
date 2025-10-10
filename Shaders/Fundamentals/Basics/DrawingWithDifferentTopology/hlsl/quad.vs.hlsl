@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------
+// Author: Mustafa Yemural
+// Description:
+// ------------------------------------------------------------------------
+// Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
+// Licensed under the MIT License.
+// ------------------------------------------------------------------------
+
 struct VSInput
 {
     [[vk::location(0)]] float2 pos : POSITION;

@@ -20,31 +20,6 @@
 
 namespace examples::fundamentals::swap_chains_and_viewports::scissor_animation
 {
-
-namespace
-{
-    VkRect2D GetAnimatedScissorRect(const float timeSeconds, const float viewportWidth, const float viewportHeight)
-    {
-        constexpr float scissorWidth = 250.0f;
-        constexpr float scissorHeight = 200.0f;
-        constexpr float speed = 1.0f; // rad/sec
-        const float orbitRadiusX = (viewportWidth - scissorWidth) * 0.45f;
-        const float orbitRadiusY = (viewportHeight - scissorHeight) * 0.45f;
-        const float centerX = viewportWidth * 0.5f + orbitRadiusX * std::cos(timeSeconds * speed);
-        const float centerY = viewportHeight * 0.5f + orbitRadiusY * std::sin(timeSeconds * speed);
-
-        VkRect2D rect{};
-        rect.offset.x =
-                static_cast<int32_t>(std::clamp(centerX - scissorWidth * 0.5f, 0.0f, viewportWidth - scissorWidth));
-        rect.offset.y =
-                static_cast<int32_t>(std::clamp(centerY - scissorHeight * 0.5f, 0.0f, viewportHeight - scissorHeight));
-        rect.extent.width = static_cast<std::uint32_t>(scissorWidth);
-        rect.extent.height = static_cast<std::uint32_t>(scissorHeight);
-
-        return rect;
-    }
-} // namespace
-
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;

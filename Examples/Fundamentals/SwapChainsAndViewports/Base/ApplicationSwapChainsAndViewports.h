@@ -14,18 +14,15 @@
 #include <memory>
 #include <vector>
 
-#include "ImageResource.h"
 #include "ResourceManager.h"
 #include "VulkanApplicationBase.h"
 #include "VulkanCommandPool.h"
 #include "VulkanDevice.h"
 #include "VulkanFence.h"
-#include "VulkanFramebuffer.h"
 #include "VulkanPhysicalDevice.h"
 #include "VulkanQueue.h"
 #include "VulkanRenderPass.h"
 #include "VulkanSurface.h"
-#include "VulkanSwapChain.h"
 #include "Window.h"
 
 namespace examples::fundamentals::swap_chains_and_viewports::base

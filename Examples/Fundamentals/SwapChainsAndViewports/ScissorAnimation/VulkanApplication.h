@@ -18,8 +18,10 @@
 #include "PerspectiveCamera.h"
 #include "TextureLoader.h"
 #include "VulkanCommandBuffer.h"
+#include "VulkanFramebuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
+#include "VulkanSwapChain.h"
 #include "Window.h"
 
 namespace examples::fundamentals::swap_chains_and_viewports::scissor_animation
@@ -39,7 +41,6 @@ protected:
     void Cleanup() noexcept override;
 
 private:
-
     void CreateResources();
 
     void InitResources() const;
