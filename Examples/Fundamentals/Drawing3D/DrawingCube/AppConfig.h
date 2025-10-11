@@ -10,13 +10,13 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::drawing_3d::drawing_cube
 {
 namespace AppConstants
 {
     constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
+
+    // Shaders
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";

@@ -10,6 +10,7 @@
  * https://opensource.org/licenses/MIT
  */
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ShaderLoader.h"
 #include "VulkanApplication.h"
@@ -27,6 +28,7 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Constants
     schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
+
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
     schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundVertexShaderFile, "background.vert.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundFragmentShaderFile, "background.frag.spv");
@@ -55,7 +57,6 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeDescSetLayout, "cubeDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
     schema.RegisterImmutableParam<std::string>(AppConstants::CloudTexturePath, "Textures/cloud.png");
-
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);

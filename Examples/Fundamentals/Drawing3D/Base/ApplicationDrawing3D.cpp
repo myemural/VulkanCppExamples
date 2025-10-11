@@ -193,7 +193,6 @@ void ApplicationDrawing3D::SetImageFromBuffer(const std::string& name,
 {
     images_[name]->ChangeImageLayout(cmdPool_, queue_, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    /// TODO: It is constant for now
     const VkBufferImageCopy copyRegion = {.bufferOffset = 0,
                                           .bufferRowLength = 0,
                                           .bufferImageHeight = 0,

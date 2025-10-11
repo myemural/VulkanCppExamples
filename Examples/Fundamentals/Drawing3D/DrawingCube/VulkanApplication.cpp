@@ -10,6 +10,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "VulkanHelpers.h"
@@ -328,6 +329,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t indexCou
         std::array<VkClearValue, 2> clearValues{};
         clearValues[0].color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
         clearValues[1].depthStencil = {1.0f, 0};
+
         if (!cmdBuffersPresent_[i]->BeginCommandBuffer(nullptr)) {
             throw std::runtime_error("Failed to begin recording command buffer!");
         }
@@ -341,15 +343,15 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t indexCou
                     beginInfo.pClearValues = clearValues.data();
                 },
                 VK_SUBPASS_CONTENTS_INLINE);
+
         cmdBuffersPresent_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        cmdBuffersPresent_[i]->BindDescriptorSets(
-                VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
-                {descriptorRegistry_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))});
-        cmdBuffersPresent_[i]->BindVertexBuffers({buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()},
-                                                 0, 1, {0});
-        cmdBuffersPresent_[i]->BindIndexBuffer(buffers_[GetParamStr(AppConstants::MainIndexBuffer)]->GetBuffer(), 0,
-                                               VK_INDEX_TYPE_UINT16);
+        const std::vector descSets{descriptorRegistry_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))};
+        cmdBuffersPresent_[i]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
+        const std::vector vertexBuffers{buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()};
+        cmdBuffersPresent_[i]->BindVertexBuffers(vertexBuffers, 0, 1, {0});
+        cmdBuffersPresent_[i]->BindIndexBuffer(buffers_[GetParamStr(AppConstants::MainIndexBuffer)]->GetBuffer());
         cmdBuffersPresent_[i]->DrawIndexed(indexCount, 1, 0, 0, 0);
+
         cmdBuffersPresent_[i]->EndRenderPass();
         if (!cmdBuffersPresent_[i]->EndCommandBuffer()) {
             throw std::runtime_error("Failed to end recording command buffer!");

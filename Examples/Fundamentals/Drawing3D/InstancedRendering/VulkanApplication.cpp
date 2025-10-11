@@ -12,6 +12,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "TimeUtils.h"
@@ -68,9 +69,8 @@ void VulkanApplication::DrawFrame()
 
     uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
 
-    const uint32_t indexCount = indices.size();
     CalculateAndSetMvp();
-    RecordPresentCommandBuffers(imageIndex, indexCount);
+    RecordPresentCommandBuffers(imageIndex);
 
     if (swapImagesFences_[imageIndex] != nullptr) {
         swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
@@ -381,16 +381,18 @@ void VulkanApplication::CreateCommandBuffers()
     }
 }
 
-void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex,
-                                                    const std::uint32_t indexCount)
+void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex)
 {
     std::array<VkClearValue, 2> clearValues{};
     clearValues[0].color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
     clearValues[1].depthStencil = {1.0f, 0};
-    if (!cmdBuffersPresent_[currentImageIndex]->BeginCommandBuffer(nullptr)) {
+
+    const auto& currentCmdBuffer = cmdBuffersPresent_[currentImageIndex];
+
+    if (!currentCmdBuffer->BeginCommandBuffer(nullptr)) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
-    cmdBuffersPresent_[currentImageIndex]->BeginRenderPass(
+    currentCmdBuffer->BeginRenderPass(
             [&](auto& beginInfo) {
                 beginInfo.renderPass = renderPass_->GetHandle();
                 beginInfo.framebuffer = framebuffers_[currentImageIndex]->GetHandle();
@@ -400,20 +402,17 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 beginInfo.pClearValues = clearValues.data();
             },
             VK_SUBPASS_CONTENTS_INLINE);
-    cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers(
-            {buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()}, 0, 1, {0});
-    cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(
-            buffers_[GetParamStr(AppConstants::MainIndexBuffer)]->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
-    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(
-            VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
-            {descriptorRegistry_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))});
-    cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, NUM_CUBES, 0, 0,
-                                                       GetParamU32(AppSettings::FirstInstanceIndex));
+    currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    const std::vector descSets{descriptorRegistry_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))};
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
+    const std::vector vertexBuffers{buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()};
+    currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
+    currentCmdBuffer->BindIndexBuffer(buffers_[GetParamStr(AppConstants::MainIndexBuffer)]->GetBuffer());
+    currentCmdBuffer->DrawIndexed(indices.size(), NUM_CUBES, 0, 0, GetParamU32(AppSettings::FirstInstanceIndex));
 
-    cmdBuffersPresent_[currentImageIndex]->EndRenderPass();
-    if (!cmdBuffersPresent_[currentImageIndex]->EndCommandBuffer()) {
+    currentCmdBuffer->EndRenderPass();
+    if (!currentCmdBuffer->EndCommandBuffer()) {
         throw std::runtime_error("Failed to end recording command buffer!");
     }
 }
@@ -427,7 +426,7 @@ void VulkanApplication::CalculateAndSetMvp()
         model = glm::translate(model, modelPositions[i]);
 
         // Change rotation axis to the cube index
-        auto axis = glm::vec3((i % 2 == 0) ? 1.0f : 0.0f, (i % 5 == 0) ? 1.0f : 0.0f, (i % 2 == 0) ? 0.0f : 1.0f);
+        auto axis = glm::vec3(i % 2 == 0 ? 1.0f : 0.0f, i % 5 == 0 ? 1.0f : 0.0f, i % 2 == 0 ? 0.0f : 1.0f);
         model = glm::rotate(model, currentTime * glm::radians(45.0f), axis);
         model = glm::rotate(model, currentTime * glm::radians(45.0f), axis);
         model = glm::rotate(model, currentTime * glm::radians(30.0f), axis);

@@ -10,13 +10,13 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::pipelines_and_passes::basic_stencil_testing
 {
 namespace AppConstants
 {
     constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
+
+    // Shaders
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto ObjectFragmentShaderFile = "AppConstants.ObjectFragmentShaderFile";

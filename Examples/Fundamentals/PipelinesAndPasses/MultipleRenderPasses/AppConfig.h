@@ -10,13 +10,13 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::pipelines_and_passes::multiple_render_passes
 {
 namespace AppConstants
 {
     constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
+
+    // Shaders
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto BackgroundVertexShaderFile = "AppConstants.BackgroundVertexShaderFile";
     constexpr auto BackgroundFragmentShaderFile = "AppConstants.BackgroundFragmentShaderFile";

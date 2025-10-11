@@ -53,8 +53,8 @@ public:
                             const std::vector<std::uint32_t>& dynamicOffsets = {}) const;
 
     void BindIndexBuffer(const std::shared_ptr<VulkanBuffer>& indexBuffer,
-                         const VkDeviceSize& offset,
-                         const VkIndexType& indexType) const;
+                         const VkDeviceSize& offset = 0,
+                         const VkIndexType& indexType = VK_INDEX_TYPE_UINT16) const;
 
     void BindPipeline(const std::shared_ptr<VulkanPipeline>& pipeline, const VkPipelineBindPoint& bindPoint) const;
 

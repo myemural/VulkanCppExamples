@@ -12,6 +12,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "VulkanHelpers.h"
@@ -67,9 +68,8 @@ void VulkanApplication::DrawFrame()
 
     uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
 
-    const uint32_t indexCount = indices.size();
     CalculateAndSetMvp();
-    RecordPresentCommandBuffers(imageIndex, indexCount);
+    RecordPresentCommandBuffers(imageIndex);
 
     if (swapImagesFences_[imageIndex] != nullptr) {
         swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
@@ -397,16 +397,18 @@ void VulkanApplication::CreateCommandBuffers()
     }
 }
 
-void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex,
-                                                    const std::uint32_t indexCount)
+void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex)
 {
     std::array<VkClearValue, 2> clearValues{};
     clearValues[0].color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
     clearValues[1].depthStencil = {1.0f, 0};
-    if (!cmdBuffersPresent_[currentImageIndex]->BeginCommandBuffer(nullptr)) {
+
+    const auto& currentCmdBuffer = cmdBuffersPresent_[currentImageIndex];
+
+    if (!currentCmdBuffer->BeginCommandBuffer(nullptr)) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
-    cmdBuffersPresent_[currentImageIndex]->BeginRenderPass(
+    currentCmdBuffer->BeginRenderPass(
             [&](auto& beginInfo) {
                 beginInfo.renderPass = renderPass_->GetHandle();
                 beginInfo.framebuffer = framebuffers_[currentImageIndex]->GetHandle();
@@ -416,36 +418,34 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 beginInfo.pClearValues = clearValues.data();
             },
             VK_SUBPASS_CONTENTS_INLINE);
-    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers(
-            {resources_->GetBuffer(GetParamStr(AppConstants::MainVertexBuffer))}, 0, 1, {0});
-    cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(
-            resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)), 0, VK_INDEX_TYPE_UINT16);
+
+    const std::vector vertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::MainVertexBuffer))};
+    currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
+    currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)));
 
     // Moving Cubes
-    cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipelineObject_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(
-            VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutObject_, 0,
-            {resources_->GetDescriptorSet(GetParamStr(AppConstants::ObjectDescSetLayout))});
+    currentCmdBuffer->BindPipeline(pipelineObject_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    const std::vector objectDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::ObjectDescSetLayout))};
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutObject_, 0, objectDescSets);
     for (size_t i = 0; i < NUM_CUBES - 1; ++i) {
-        cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayoutObject_, VK_SHADER_STAGE_VERTEX_BIT, 0,
-                                                             sizeof(MvpData), &mvpData[i]);
-        cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
+        currentCmdBuffer->PushConstants(pipelineLayoutObject_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
+                                        &mvpData[i]);
+        currentCmdBuffer->DrawIndexed(indices.size(), 1, 0, 0, 0);
     }
 
-    cmdBuffersPresent_[currentImageIndex]->NextSubpass(VK_SUBPASS_CONTENTS_INLINE);
+    currentCmdBuffer->NextSubpass(VK_SUBPASS_CONTENTS_INLINE);
 
     // Depth Cube
-    cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipelineDepthObject_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(
-            VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutDepthObject_, 0,
-            {resources_->GetDescriptorSet(GetParamStr(AppConstants::DepthObjectDescSetLayout))});
-    cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayoutDepthObject_, VK_SHADER_STAGE_VERTEX_BIT, 0,
-                                                         sizeof(MvpData), &mvpData[3]);
-    cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
+    currentCmdBuffer->BindPipeline(pipelineDepthObject_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    const std::vector depthDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::DepthObjectDescSetLayout))};
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutDepthObject_, 0, depthDescSets);
+    currentCmdBuffer->PushConstants(pipelineLayoutDepthObject_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
+                                    &mvpData[3]);
+    currentCmdBuffer->DrawIndexed(indices.size(), 1, 0, 0, 0);
 
 
-    cmdBuffersPresent_[currentImageIndex]->EndRenderPass();
-    if (!cmdBuffersPresent_[currentImageIndex]->EndCommandBuffer()) {
+    currentCmdBuffer->EndRenderPass();
+    if (!currentCmdBuffer->EndCommandBuffer()) {
         throw std::runtime_error("Failed to end recording command buffer!");
     }
 }

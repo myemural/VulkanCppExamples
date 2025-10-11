@@ -57,13 +57,13 @@ private:
 
     void CreatePipeline();
 
-    void CreateFramebuffers(const std::shared_ptr<common::vulkan_wrapper::VulkanImageView>& depthImageView);
+    void CreateFramebuffers();
 
     void UpdateDescriptorSets() const;
 
     void CreateCommandBuffers();
 
-    void RecordPresentCommandBuffers(std::uint32_t currentImageIndex, std::uint32_t indexCount);
+    void RecordPresentCommandBuffers(std::uint32_t currentImageIndex);
 
     void CalculateAndSetMvp();
 

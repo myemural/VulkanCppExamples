@@ -11,6 +11,7 @@
 #include <chrono>
 #include <glm/ext/matrix_transform.hpp>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "VulkanHelpers.h"
@@ -50,8 +51,7 @@ bool VulkanApplication::Init()
 
         CreateRenderPass();
         CreatePipeline();
-        CreateFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                    GetParamStr(AppConstants::DepthImageView)));
+        CreateFramebuffers();
         CreateCommandBuffers();
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -75,9 +75,8 @@ void VulkanApplication::DrawFrame()
         return;
     }
 
-    const uint32_t indexCount = indices.size();
     CalculateAndSetMvp();
-    RecordPresentCommandBuffers(imageIndex, indexCount);
+    RecordPresentCommandBuffers(imageIndex);
 
     if (swapImagesFences_[imageIndex] != nullptr) {
         swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
@@ -370,8 +369,11 @@ void VulkanApplication::CreatePipeline()
     }
 }
 
-void VulkanApplication::CreateFramebuffers(const std::shared_ptr<VulkanImageView>& depthImageView)
+void VulkanApplication::CreateFramebuffers()
 {
+    const auto& depthImageView =
+            resources_->GetImageView(GetParamStr(AppConstants::DepthImage), GetParamStr(AppConstants::DepthImageView));
+
     for (const auto& swapImage: swapChainImageViews_) {
         auto framebuffer = device_->CreateFramebuffer(renderPass_, {swapImage, depthImageView}, [&](auto& builder) {
             builder.SetDimensions(currentWindowWidth_, currentWindowHeight_);
@@ -414,16 +416,18 @@ void VulkanApplication::CreateCommandBuffers()
     }
 }
 
-void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex,
-                                                    const std::uint32_t indexCount)
+void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex)
 {
     std::array<VkClearValue, 2> clearValues{};
     clearValues[0].color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
     clearValues[1].depthStencil = {1.0f, 0};
-    if (!cmdBuffersPresent_[currentImageIndex]->BeginCommandBuffer(nullptr)) {
+
+    const auto& currentCmdBuffer = cmdBuffersPresent_[currentImageIndex];
+
+    if (!currentCmdBuffer->BeginCommandBuffer(nullptr)) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
-    cmdBuffersPresent_[currentImageIndex]->BeginRenderPass(
+    currentCmdBuffer->BeginRenderPass(
             [&](auto& beginInfo) {
                 beginInfo.renderPass = renderPass_->GetHandle();
                 beginInfo.framebuffer = framebuffers_[currentImageIndex]->GetHandle();
@@ -433,23 +437,21 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 beginInfo.pClearValues = clearValues.data();
             },
             VK_SUBPASS_CONTENTS_INLINE);
-    cmdBuffersPresent_[currentImageIndex]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    cmdBuffersPresent_[currentImageIndex]->BindDescriptorSets(
-            VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
-            {resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))});
-    cmdBuffersPresent_[currentImageIndex]->BindVertexBuffers(
-            {resources_->GetBuffer(GetParamStr(AppConstants::MainVertexBuffer))}, 0, 1, {0});
-    cmdBuffersPresent_[currentImageIndex]->BindIndexBuffer(
-            resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)), 0, VK_INDEX_TYPE_UINT16);
+
+    currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))};
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
+    const std::vector vertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::MainVertexBuffer))};
+    currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
+    currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)));
 
     for (auto& mvp: mvpData) {
-        cmdBuffersPresent_[currentImageIndex]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
-                                                             sizeof(MvpData), &mvp);
-        cmdBuffersPresent_[currentImageIndex]->DrawIndexed(indexCount, 1, 0, 0, 0);
+        currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvp);
+        currentCmdBuffer->DrawIndexed(indices.size(), 1, 0, 0, 0);
     }
 
-    cmdBuffersPresent_[currentImageIndex]->EndRenderPass();
-    if (!cmdBuffersPresent_[currentImageIndex]->EndCommandBuffer()) {
+    currentCmdBuffer->EndRenderPass();
+    if (!currentCmdBuffer->EndCommandBuffer()) {
         throw std::runtime_error("Failed to end recording command buffer!");
     }
 }
@@ -526,8 +528,7 @@ void VulkanApplication::RecreateSwapChain()
     // Create required Vulkan objects again
     CreateSwapChain();
     CreatePipeline();
-    CreateFramebuffers(
-            resources_->GetImageView(GetParamStr(AppConstants::DepthImage), GetParamStr(AppConstants::DepthImageView)));
+    CreateFramebuffers();
     CreateCommandBuffers();
     CreateDefaultSyncObjects(swapChainImageViews_.size(), GetParamU32(AppConstants::MaxFramesInFlight));
 }

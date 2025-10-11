@@ -51,7 +51,7 @@ private:
 
     void CreateCommandBuffers();
 
-    void RecordPresentCommandBuffers(std::uint32_t currentImageIndex, std::uint32_t indexCount);
+    void RecordPresentCommandBuffers(std::uint32_t currentImageIndex);
 
     void CalculateAndSetMvp();
 

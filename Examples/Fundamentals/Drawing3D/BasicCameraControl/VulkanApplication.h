@@ -54,7 +54,7 @@ private:
 
     void CreateCommandBuffers();
 
-    void RecordPresentCommandBuffers(std::uint32_t currentImageIndex, std::uint32_t indexCount);
+    void RecordPresentCommandBuffers(std::uint32_t currentImageIndex);
 
     void CalculateAndSetMvp();
 
@@ -77,9 +77,9 @@ private:
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
 
     // Camera values
-    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f);    // Camera position
-    glm::vec3 cameraFront_ = glm::vec3(0.0f, 0.0f, -1.0f); // Front position
-    glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f);     // Up vector
+    glm::vec3 cameraPos_ = glm::vec3(0.0f, 0.0f, 4.0f);
+    glm::vec3 cameraFront_ = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 cameraUp_ = glm::vec3(0.0f, 1.0f, 0.0f);
 
     // Delta time related values
     double deltaTime_ = 0.0f;

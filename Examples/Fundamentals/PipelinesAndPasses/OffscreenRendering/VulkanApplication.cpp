@@ -13,6 +13,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "VulkanHelpers.h"
@@ -534,13 +535,15 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     clearValues[0].color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
     clearValues[1].depthStencil = {1.0f, 0};
 
-    if (!cmdBuffersPresent_[currentImageIndex]->BeginCommandBuffer(nullptr)) {
+    const auto& currentCmdBuffer = cmdBuffersPresent_[currentImageIndex];
+
+    if (!currentCmdBuffer->BeginCommandBuffer(nullptr)) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
     // Offscreen render pass
     {
-        cmdBuffersPresent_[currentImageIndex]->BeginRenderPass(
+        currentCmdBuffer->BeginRenderPass(
                 [&](auto& beginInfo) {
                     beginInfo.renderPass = offscreenRP_->GetHandle();
                     beginInfo.framebuffer = offscreenFramebuffer_->GetHandle();
@@ -551,15 +554,15 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 },
                 VK_SUBPASS_CONTENTS_INLINE);
 
-        cmdBuffersPresent_[currentImageIndex]->BindPipeline(offscreenPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        RenderScene(cmdBuffersPresent_[currentImageIndex]);
+        currentCmdBuffer->BindPipeline(offscreenPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        RenderScene(currentCmdBuffer);
 
-        cmdBuffersPresent_[currentImageIndex]->EndRenderPass();
+        currentCmdBuffer->EndRenderPass();
     }
 
     // Swapchain render pass
     {
-        cmdBuffersPresent_[currentImageIndex]->BeginRenderPass(
+        currentCmdBuffer->BeginRenderPass(
                 [&](auto& beginInfo) {
                     beginInfo.renderPass = renderPass_->GetHandle();
                     beginInfo.framebuffer = framebuffers_[currentImageIndex]->GetHandle();
@@ -570,16 +573,16 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 },
                 VK_SUBPASS_CONTENTS_INLINE);
 
-        cmdBuffersPresent_[currentImageIndex]->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        RenderScene(cmdBuffersPresent_[currentImageIndex]);
+        currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        RenderScene(currentCmdBuffer);
 
-        cmdBuffersPresent_[currentImageIndex]->BindPipeline(quadPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        RenderQuad(cmdBuffersPresent_[currentImageIndex]);
+        currentCmdBuffer->BindPipeline(quadPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        RenderQuad(currentCmdBuffer);
 
-        cmdBuffersPresent_[currentImageIndex]->EndRenderPass();
+        currentCmdBuffer->EndRenderPass();
     }
 
-    if (!cmdBuffersPresent_[currentImageIndex]->EndCommandBuffer()) {
+    if (!currentCmdBuffer->EndCommandBuffer()) {
         throw std::runtime_error("Failed to end recording command buffer!");
     }
 }
@@ -617,11 +620,10 @@ void VulkanApplication::ProcessInput() const
 
 void VulkanApplication::RenderScene(const std::shared_ptr<VulkanCommandBuffer>& cmdBuffer)
 {
-    cmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, scenePipelineLayout_, 0,
-                                  {resources_->GetDescriptorSet(GetParamStr(AppConstants::SceneDescSetLayout))});
+    const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::SceneDescSetLayout))};
+    cmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, scenePipelineLayout_, 0, descSets);
     cmdBuffer->BindVertexBuffers({resources_->GetBuffer(GetParamStr(AppConstants::CubeVertexBuffer))}, 0, 1, {0});
-    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::CubeIndexBuffer)), 0,
-                               VK_INDEX_TYPE_UINT16);
+    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::CubeIndexBuffer)));
 
     for (auto& mvp: mvpData) {
         cmdBuffer->PushConstants(scenePipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvp);
@@ -631,12 +633,10 @@ void VulkanApplication::RenderScene(const std::shared_ptr<VulkanCommandBuffer>& 
 
 void VulkanApplication::RenderQuad(const std::shared_ptr<VulkanCommandBuffer>& cmdBuffer) const
 {
-    cmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, quadPipelineLayout_, 0,
-                                  {resources_->GetDescriptorSet(GetParamStr(AppConstants::QuadDescSetLayout))});
+    const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::QuadDescSetLayout))};
+    cmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, quadPipelineLayout_, 0, descSets);
     cmdBuffer->BindVertexBuffers({resources_->GetBuffer(GetParamStr(AppConstants::PlaneVertexBuffer))}, 0, 1, {0});
-    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::PlaneIndexBuffer)), 0,
-                               VK_INDEX_TYPE_UINT16);
-
+    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::PlaneIndexBuffer)));
     cmdBuffer->DrawIndexed(planeIndices.size(), 1, 0, 0, 0);
 }
 } // namespace examples::fundamentals::pipelines_and_passes::offscreen_rendering
