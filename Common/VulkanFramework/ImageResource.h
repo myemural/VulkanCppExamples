@@ -51,25 +51,60 @@ struct ImageResourceCreateInfo
 class ImageResource
 {
 public:
+    /**
+     * @param physicalDevice Refers VulkanPhysicalDevice object.
+     * @param device Refers VulkanDevice object.
+     */
     ImageResource(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice>& physicalDevice,
                   const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device);
 
+    /**
+     * @brief Creates images from given information.
+     * @param createInfo Image create information.
+     */
     void CreateImage(const ImageResourceCreateInfo& createInfo);
 
+    /**
+     * @brief Changes image layout from old one to new one.
+     * @param cmdPool Command pool that the command buffer will be created.
+     * @param queue Queue that the command buffer will be sent.
+     * @param oldLayout Old image layout.
+     * @param newLayout New image layout.
+     */
     void ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                            const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                            const VkImageLayout& oldLayout,
                            const VkImageLayout& newLayout) const;
 
+    /**
+     * @brief Copies data from staging buffer to the image on device.
+     * @param cmdPool Command pool that the command buffer will be created.
+     * @param queue Queue that the command buffer will be sent.
+     * @param stagingBuffer Source buffer to be copied.
+     * @param copyRegion Copy region on the buffer.
+     */
     void CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                             const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                             const std::shared_ptr<vulkan_wrapper::VulkanBuffer>& stagingBuffer,
                             const VkBufferImageCopy& copyRegion) const;
 
+    /**
+     * @brief Returns name of the image resource.
+     * @return Returns name of the image resource.
+     */
     [[nodiscard]] std::string GetName() const { return name_; }
 
+    /**
+     * @brief Returns the image resource.
+     * @return Returns the image resource.
+     */
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanImage> GetImage() const { return image_; }
 
+    /**
+     * @brief Returns the image view of the image resource.
+     * @param viewName Name of the image view.
+     * @return Returns the image view of the image resource.
+     */
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanImageView> GetImageView(const std::string& viewName) const;
 
 private:

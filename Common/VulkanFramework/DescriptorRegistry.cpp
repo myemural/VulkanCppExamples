@@ -34,8 +34,8 @@ void DescriptorRegistry::CreatePool(const std::uint32_t maxSets,
 DescriptorRegistry& DescriptorRegistry::AddLayout(const std::string& layoutName,
                                                   const std::vector<VkDescriptorSetLayoutBinding>& bindings)
 {
-    descriptorSetsLayouts_[layoutName] = device_->CreateDescriptorSetLayout(bindings);
-    if (!descriptorSetsLayouts_[layoutName]) {
+    descriptorSetLayouts_[layoutName] = device_->CreateDescriptorSetLayout(bindings);
+    if (!descriptorSetLayouts_[layoutName]) {
         throw std::runtime_error("Failed to add new descriptor set layout!");
     }
 
@@ -44,7 +44,7 @@ DescriptorRegistry& DescriptorRegistry::AddLayout(const std::string& layoutName,
 
 void DescriptorRegistry::CreateDescriptorSet(const std::string& layoutName)
 {
-    const auto descSets = descPool_->CreateDescriptorSets({descriptorSetsLayouts_[layoutName]});
+    const auto descSets = descPool_->CreateDescriptorSets({descriptorSetLayouts_[layoutName]});
     if (descSets.empty()) {
         throw std::runtime_error("Failed to create descriptor sets!");
     }
@@ -54,7 +54,7 @@ void DescriptorRegistry::CreateDescriptorSet(const std::string& layoutName)
 std::shared_ptr<vulkan_wrapper::VulkanDescriptorSetLayout>
 DescriptorRegistry::GetDescriptorLayout(const std::string& layoutName)
 {
-    return descriptorSetsLayouts_.at(layoutName);
+    return descriptorSetLayouts_.at(layoutName);
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> DescriptorRegistry::GetDescriptorSet(const std::string& setName)

@@ -40,6 +40,10 @@ public:
      */
     explicit DescriptorRegistry(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device);
 
+    /**
+     * @brief Creates descriptor sets and descriptors from given information.
+     * @param createInfo Descriptor create information.
+     */
     void CreateDescriptors(const DescriptorResourceCreateInfo& createInfo);
 
     /**
@@ -84,7 +88,7 @@ public:
 private:
     std::shared_ptr<vulkan_wrapper::VulkanDevice> device_;
     std::shared_ptr<vulkan_wrapper::VulkanDescriptorPool> descPool_;
-    std::map<std::string, std::shared_ptr<vulkan_wrapper::VulkanDescriptorSetLayout>> descriptorSetsLayouts_;
+    std::map<std::string, std::shared_ptr<vulkan_wrapper::VulkanDescriptorSetLayout>> descriptorSetLayouts_;
     std::map<std::string, std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet>> descriptorSets_;
 };
 } // namespace common::vulkan_framework

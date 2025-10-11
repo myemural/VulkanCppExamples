@@ -38,7 +38,7 @@ namespace VulkanParams
     constexpr auto InstanceExtensions = "Vulkan.InstanceExtensions";
 } // namespace VulkanParams
 
-inline void SetCommonParamSchema(common::utility::ParameterSchema& schema)
+inline void SetCommonParamSchema(utility::ParameterSchema& schema)
 {
     schema.RegisterParam<std::uint32_t>(WindowParams::Width, 800);
     schema.RegisterParam<std::uint32_t>(WindowParams::Height, 600);

@@ -61,12 +61,27 @@ struct SamplerResourceCreateInfo
 class SamplerResource
 {
 public:
+    /**
+     * @param device Refers VulkanDevice object.
+     */
     explicit SamplerResource(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device);
 
+    /**
+     * @brief Creates a sampler resource from given information.
+     * @param createInfo Sampler create information.
+     */
     void CreateSampler(const SamplerResourceCreateInfo& createInfo);
 
+    /**
+     * @brief Returns name of the sampler resource.
+     * @return Returns name of the sampler resource.
+     */
     [[nodiscard]] std::string GetName() const { return name_; }
 
+    /**
+     * @brief Returns the sampler resource.
+     * @return Returns the sampler resource.
+     */
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanSampler> GetSampler() const { return sampler_; }
 
 private:

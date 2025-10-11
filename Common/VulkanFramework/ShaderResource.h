@@ -33,10 +33,22 @@ struct ShaderModulesCreateInfo
 class ShaderResource
 {
 public:
+    /**
+     * @param device Refers VulkanDevice object.
+     */
     explicit ShaderResource(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device);
 
+    /**
+     * @brief Creates a shader module resource from given information.
+     * @param createInfo Shader module create information.
+     */
     void CreateShaders(const ShaderModulesCreateInfo& createInfo);
 
+    /**
+     * @brief Returns the shader module resource.
+     * @param name Name of the shader module resource.
+     * @return Returns the shader module resource.
+     */
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanShaderModule> GetShaderModule(const std::string& name)
     {
         return shaderModules_[name];

@@ -38,7 +38,7 @@ The topics covered by this subsection:
 - Drawing with instanced rendering
 - Managing other depth testing operations
 
-## [Pipelines And Passes](/Examples/Fundamentals/PipelinesAndPasses)
+## [Pipelines and Passes](/Examples/Fundamentals/PipelinesAndPasses)
 
 The topics covered by this subsection:
 
@@ -50,7 +50,7 @@ The topics covered by this subsection:
 - Using multiple subpasses and input attachment
 - Rendering scene to a texture (offscreen rendering)
 
-## [Handling Window Resizing](/Examples/Fundamentals/SwapChainsAndViewports)
+## [Swap Chains and Viewports](/Examples/Fundamentals/SwapChainsAndViewports)
 
 The topics covered by this subsection:
 - Handling window resizing
