@@ -41,7 +41,6 @@ inline ParameterSchema CreateParameterSchema()
 
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexBuffer, "mainVertexBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainIndexBuffer, "mainIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ImageStagingBuffer, "imageStagingBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
     schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");

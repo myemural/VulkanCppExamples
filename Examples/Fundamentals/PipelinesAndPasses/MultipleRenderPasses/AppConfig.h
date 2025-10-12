@@ -33,8 +33,6 @@ namespace AppConstants
     constexpr auto PlaneVertexBuffer = "AppConstants.PlaneVertexBuffer";
     constexpr auto PlaneIndexBuffer = "AppConstants.PlaneIndexBuffer";
     constexpr auto TimeSpeedUniformBuffer = "AppConstants.TimeSpeedUniformBuffer";
-    constexpr auto CrateImageStagingBuffer = "AppConstants.CrateImageStagingBuffer";
-    constexpr auto CloudImageStagingBuffer = "AppConstants.CloudImageStagingBuffer";
     constexpr auto CrateImage = "AppConstants.CrateImage";
     constexpr auto CrateImageView = "AppConstants.CrateImageView";
     constexpr auto CloudImage = "AppConstants.CloudImage";

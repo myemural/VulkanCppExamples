@@ -97,12 +97,6 @@ void VulkanApplication::PreUpdate()
     ProcessInput();
 }
 
-void VulkanApplication::Cleanup() noexcept
-{
-    ApplicationPipelinesAndPasses::Cleanup();
-    crateTextureHandler_.Clear();
-}
-
 void VulkanApplication::InitInputSystem()
 {
     lastX_ = static_cast<float>(currentWindowWidth_) / 2.0f;
@@ -153,9 +147,7 @@ void VulkanApplication::CreateResources()
         {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.GetByteSize(),
-         VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
     resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
@@ -206,12 +198,8 @@ void VulkanApplication::InitResources() const
                           vertices.size() * sizeof(VertexPos3Uv2));
     resources_->SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(),
                           indices.size() * sizeof(indices[0]));
-    resources_->SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data,
-                          crateTextureHandler_.GetByteSize());
 
-    resources_->SetImageFromBuffer(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage),
-                                   resources_->GetBuffer(GetParamStr(AppConstants::ImageStagingBuffer)),
-                                   {crateTextureHandler_.Width, crateTextureHandler_.Height, 1});
+    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage), crateTextureHandler_);
 
     UpdateDescriptorSets();
 }

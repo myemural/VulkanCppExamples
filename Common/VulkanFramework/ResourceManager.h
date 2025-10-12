@@ -17,6 +17,7 @@
 #include "ImageResource.h"
 #include "SamplerResource.h"
 #include "ShaderResource.h"
+#include "TextureHandler.h"
 #include "VulkanDevice.h"
 #include "VulkanPhysicalDevice.h"
 
@@ -140,18 +141,16 @@ public:
     void SetBuffer(const std::string& name, const void* data, std::uint64_t dataSize);
 
     /**
-     * @brief Sets an image resource with staging buffer data.
+     * @brief Sets an image resource with texture data.
      * @param cmdPool Command pool that the command buffer will be created.
      * @param queue Queue that the command buffer will be sent.
      * @param imageName Name of the image resource to be updated.
-     * @param stagingBuffer Source buffer to be copied.
-     * @param dimensions Dimensions of the area to be copied.
+     * @param textureHandler Handler of the texture resource.
      */
-    void SetImageFromBuffer(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
-                            const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
-                            const std::string& imageName,
-                            const std::shared_ptr<vulkan_wrapper::VulkanBuffer>& stagingBuffer,
-                            const VkExtent3D& dimensions);
+    void SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
+                          const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                          const std::string& imageName,
+                          const utility::TextureHandler& textureHandler);
 
     /**
      * @brief Deletes image resource from resource manager.

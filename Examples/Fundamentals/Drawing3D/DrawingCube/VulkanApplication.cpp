@@ -82,12 +82,6 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }
 
-void VulkanApplication::Cleanup() noexcept
-{
-    ApplicationDrawing3D::Cleanup();
-    crateTextureHandler_.Clear();
-}
-
 void VulkanApplication::CreateResources()
 {
     depthImageFormat_ = physicalDevice_->FindSupportedFormat(
@@ -106,7 +100,7 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.GetByteSize(),
+        {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(crateTextureHandler_.Data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::MvpUniformBuffer), sizeof(MvpData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
@@ -163,8 +157,8 @@ void VulkanApplication::InitResources()
 {
     SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos3Uv2));
     SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(indices[0]));
-    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data,
-              crateTextureHandler_.GetByteSize());
+    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data.data(),
+              crateTextureHandler_.Data.size());
     SetBuffer(GetParamStr(AppConstants::MvpUniformBuffer), &mvpUbObject, sizeof(MvpData));
 
     SetImageFromBuffer(GetParamStr(AppConstants::CrateImage),

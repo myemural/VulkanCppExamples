@@ -36,8 +36,6 @@ protected:
 
     void DrawFrame() override;
 
-    void Cleanup() noexcept override;
-
 private:
     void CreateResources();
 

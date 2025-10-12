@@ -117,17 +117,23 @@ void ResourceManager::SetBuffer(const std::string& name, const void* data, const
     buffers_[name]->FlushData(data, dataSize);
     buffers_[name]->UnmapMemory();
 }
-
-void ResourceManager::SetImageFromBuffer(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
-                                         const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
-                                         const std::string& imageName,
-                                         const std::shared_ptr<vulkan_wrapper::VulkanBuffer>& stagingBuffer,
-                                         const VkExtent3D& dimensions)
+void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
+                                          const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                                          const std::string& imageName,
+                                          const utility::TextureHandler& textureHandler)
 {
     images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_UNDEFINED,
                                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-    /// TODO: It is constant for now
+    const BufferResourceCreateInfo stagingBufferCreateInfo{
+        imageName + "_tempStagingBuffer", static_cast<std::uint32_t>(textureHandler.Data.size()),
+        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
+
+    buffers_[stagingBufferCreateInfo.Name] = std::make_unique<BufferResource>(physicalDevice_, device_);
+    buffers_[stagingBufferCreateInfo.Name]->CreateBuffer(stagingBufferCreateInfo);
+
+    SetBuffer(stagingBufferCreateInfo.Name, textureHandler.Data.data(), textureHandler.Data.size());
+
     const VkBufferImageCopy copyRegion = {.bufferOffset = 0,
                                           .bufferRowLength = 0,
                                           .bufferImageHeight = 0,
@@ -139,13 +145,13 @@ void ResourceManager::SetImageFromBuffer(const std::shared_ptr<vulkan_wrapper::V
                                                       .layerCount = 1,
                                                   },
                                           .imageOffset = {0, 0, 0},
-                                          .imageExtent = dimensions};
-    images_[imageName]->CopyDataFromBuffer(cmdPool, queue, stagingBuffer, copyRegion);
+                                          .imageExtent = {textureHandler.Width, textureHandler.Height, 1}};
+    images_[imageName]->CopyDataFromBuffer(cmdPool, queue, buffers_[stagingBufferCreateInfo.Name]->GetBuffer(),
+                                           copyRegion);
     images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
-void ResourceManager::DeleteImage(const std::string& name)
-{
-    images_.erase(name);
-}
+
+void ResourceManager::DeleteImage(const std::string& name) { images_.erase(name); }
+
 } // namespace common::vulkan_framework

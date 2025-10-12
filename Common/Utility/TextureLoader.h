@@ -12,33 +12,10 @@
 
 #include <string>
 
+#include "TextureHandler.h"
+
 namespace common::utility
 {
-
-enum class TextureChannelFormat
-{
-    RGB,
-    RGBA
-};
-
-struct TextureHandler
-{
-    unsigned char* Data = nullptr;
-    std::uint32_t Width = UINT32_MAX;
-    std::uint32_t Height = UINT32_MAX;
-    std::uint32_t Channels = UINT32_MAX;
-    TextureChannelFormat Format = TextureChannelFormat::RGBA;
-
-    /**
-     * @return Gets loaded texture data size in terms of bytes.
-     */
-    [[nodiscard]] std::uint32_t GetByteSize() const;
-
-    /**
-     * @brief Clears the data that hold.
-     */
-    void Clear() noexcept;
-};
 
 class TextureLoader
 {

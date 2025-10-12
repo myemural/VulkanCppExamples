@@ -26,7 +26,6 @@ namespace AppConstants
     // Resources
     constexpr auto MainVertexBuffer = "AppConstants.MainVertexBuffer";
     constexpr auto MainIndexBuffer = "AppConstants.MainIndexBuffer";
-    constexpr auto ImageStagingBuffer = "AppConstants.ImageStagingBuffer";
     constexpr auto CrateImage = "AppConstants.CrateImage";
     constexpr auto CrateImageView = "AppConstants.CrateImageView";
     constexpr auto DepthImage = "AppConstants.DepthImage";

@@ -78,12 +78,6 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }
 
-void VulkanApplication::Cleanup() noexcept
-{
-    ApplicationImagesAndSamplers::Cleanup();
-    leafTextureHandler_.Clear();
-}
-
 void VulkanApplication::CreateResources()
 {
     // Pre-load textures
@@ -98,7 +92,7 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ImageStagingBuffer), leafTextureHandler_.GetByteSize(),
+        {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(leafTextureHandler_.Data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
@@ -130,8 +124,8 @@ void VulkanApplication::InitResources()
 {
     SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2Uv2));
     SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(indices[0]));
-    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), leafTextureHandler_.Data,
-              leafTextureHandler_.GetByteSize());
+    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), leafTextureHandler_.Data.data(),
+              leafTextureHandler_.Data.size());
 
     // Fill push constant data for every quad
     pushConstantData_[TOP_LEFT_QUAD_INDEX] = {.Offset = {-0.5, -0.5}};

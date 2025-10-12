@@ -25,7 +25,11 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw/include")
 set(GLM_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glm")
 include_directories("${GLM_DIR}/include")
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/stb")
+set(TINYGLTF_HEADER_ONLY OFF CACHE INTERNAL "" FORCE)
+set(TINYGLTF_INSTALL OFF CACHE INTERNAL "" FORCE)
+set(TINYGLTF_BUILD_LOADER_EXAMPLE OFF CACHE INTERNAL "" FORCE)
+add_subdirectory(ThirdParty/tinygltf)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tinygltf")
 
 include_directories("Common/Utility")
 include_directories("Common/VulkanFramework")

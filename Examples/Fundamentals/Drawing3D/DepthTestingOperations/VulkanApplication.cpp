@@ -101,12 +101,6 @@ void VulkanApplication::PreUpdate()
     ProcessInput();
 }
 
-void VulkanApplication::Cleanup() noexcept
-{
-    ApplicationDrawing3D::Cleanup();
-    crateTextureHandler_.Clear();
-}
-
 void VulkanApplication::InitInputSystem()
 {
     lastX_ = static_cast<float>(currentWindowWidth_) / 2.0f;
@@ -171,7 +165,7 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::PlaneIndexBuffer), planeIndexBufSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.GetByteSize(),
+        {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(crateTextureHandler_.Data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
@@ -231,8 +225,8 @@ void VulkanApplication::InitResources()
               planeVertices.size() * sizeof(VertexPos3Uv2));
     SetBuffer(GetParamStr(AppConstants::PlaneIndexBuffer), planeIndices.data(),
               planeIndices.size() * sizeof(planeIndices[0]));
-    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data,
-              crateTextureHandler_.GetByteSize());
+    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data.data(),
+              crateTextureHandler_.Data.size());
 
     SetImageFromBuffer(GetParamStr(AppConstants::CrateImage),
                        buffers_[GetParamStr(AppConstants::ImageStagingBuffer)]->GetBuffer(),

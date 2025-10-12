@@ -38,8 +38,6 @@ protected:
 
     void PreUpdate() override;
 
-    void Cleanup() noexcept override;
-
 private:
     void InitInputSystem();
 

@@ -44,8 +44,6 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::PlaneVertexBuffer, "planeVertexBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::PlaneIndexBuffer, "planeIndexBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::TimeSpeedUniformBuffer, "timeSpeedUniformBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageStagingBuffer, "crateImageStagingBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CloudImageStagingBuffer, "cloudImageStagingBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
     schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::CloudImage, "cloudImage");
