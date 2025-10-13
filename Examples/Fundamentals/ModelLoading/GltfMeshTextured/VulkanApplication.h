@@ -2,7 +2,7 @@
  * @file    VulkanApplication.h
  * @brief   This file contains VulkanApplication implementation.
  * @author  Mustafa Yemural (myemural)
- * @date    12.10.2025
+ * @date    13.10.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -22,7 +22,7 @@
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 
-namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
+namespace examples::fundamentals::model_loading::gltf_mesh_textured
 {
 class VulkanApplication final : public base::ApplicationModelLoading
 {
@@ -49,6 +49,8 @@ private:
 
     void CreatePipeline();
 
+    void UpdateDescriptorSets() const;
+
     void CreateCommandBuffers();
 
     void RecordPresentCommandBuffers(std::uint32_t currentImageIndex);
@@ -62,7 +64,12 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
     MvpData mvpData[NUM_OBJECTS] = {glm::mat4(1.0)};
+
+    // Models
     std::shared_ptr<common::utility::GltfModelHandler> avocadoModel_;
+
+    // Textures
+    common::utility::TextureHandler avocadoMeshTextureHandler_;
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
@@ -79,4 +86,4 @@ private:
     // Camera
     std::unique_ptr<common::utility::PerspectiveCamera> camera;
 };
-} // namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
+} // namespace examples::fundamentals::model_loading::gltf_mesh_textured

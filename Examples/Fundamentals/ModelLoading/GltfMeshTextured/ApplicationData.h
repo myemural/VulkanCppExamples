@@ -2,7 +2,7 @@
  * @file    ApplicationData.h
  * @brief   This header file keeps user-provided application data (vertices, indices etc.).
  * @author  Mustafa Yemural (myemural)
- * @date    12.10.2025
+ * @date    13.10.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -16,7 +16,7 @@
 #include "Vertex.h"
 #include "glm/glm.hpp"
 
-namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
+namespace examples::fundamentals::model_loading::gltf_mesh_textured
 {
 #define NUM_OBJECTS 10
 
@@ -39,16 +39,16 @@ inline constexpr glm::vec3 modelPositions[NUM_OBJECTS] = {
     glm::vec3(-0.95f, -1.25f, 0.55f), glm::vec3(1.25f, -0.2f, 0.8f),    glm::vec3(-0.4f, 0.65f, -1.35f),
     glm::vec3(0.95f, 0.15f, -0.9f),   glm::vec3(-1.35f, -0.75f, 1.1f),  glm::vec3(0.2f, 0.8f, -0.45f),
     glm::vec3(-0.7f, -0.35f, 1.3f)};
-} // namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
+} // namespace examples::fundamentals::model_loading::gltf_mesh_textured
 
 namespace common::utility
 {
 template<>
-inline std::vector<examples::fundamentals::model_loading::gltf_mesh_wireframe::VertexPos3Uv2> GltfMesh::GetVerticesAs()
+inline std::vector<examples::fundamentals::model_loading::gltf_mesh_textured::VertexPos3Uv2> GltfMesh::GetVerticesAs()
 {
-    std::vector<examples::fundamentals::model_loading::gltf_mesh_wireframe::VertexPos3Uv2> result;
+    std::vector<examples::fundamentals::model_loading::gltf_mesh_textured::VertexPos3Uv2> result;
     for (const auto& vertex: Vertices) {
-        examples::fundamentals::model_loading::gltf_mesh_wireframe::VertexPos3Uv2 current{};
+        examples::fundamentals::model_loading::gltf_mesh_textured::VertexPos3Uv2 current{};
         current.Position.data.X = vertex.Position.x;
         current.Position.data.Y = vertex.Position.y;
         current.Position.data.Z = vertex.Position.z;

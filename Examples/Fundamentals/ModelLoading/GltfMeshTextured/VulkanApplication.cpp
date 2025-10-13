@@ -17,7 +17,7 @@
 #include "VulkanHelpers.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
+namespace examples::fundamentals::model_loading::gltf_mesh_textured
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -135,6 +135,11 @@ void VulkanApplication::CreateResources()
     ModelLoader modelLoader;
     avocadoModel_ = modelLoader.LoadBinaryGltfFromFile(ASSETS_DIR + std::string("Models/Avocado.glb"));
 
+    // Load model textures
+    const auto meshMatIndex = avocadoModel_->Meshes[0].MaterialIndex;
+    const auto meshTexIndex = avocadoModel_->Materials[meshMatIndex].PbrMetallicRoughness.BaseColorTextureIndex;
+    avocadoMeshTextureHandler_ = avocadoModel_->Textures[meshTexIndex];
+
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
@@ -155,19 +160,37 @@ void VulkanApplication::CreateResources()
                                               {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
                                                .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
 
-    resourceCreateInfo.Images = {ImageResourceCreateInfo{
-        .Name = GetParamStr(AppConstants::DepthImage),
-        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        .Format = depthImageFormat_,
-        .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-        .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                      .Format = depthImageFormat_,
-                                      .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                           .baseMipLevel = 0,
-                                                           .levelCount = 1,
-                                                           .baseArrayLayer = 0,
-                                                           .layerCount = 1}}}}};
+    // Fill descriptor set create infos
+    resourceCreateInfo.Descriptors = {.MaxSets = 1,
+                                      .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
+                                      .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+                                                                 VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}}};
+
+    resourceCreateInfo.Images = {
+        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MeshImage),
+                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .Dimensions = {avocadoMeshTextureHandler_.Width, avocadoMeshTextureHandler_.Height, 1},
+                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MeshImageView),
+                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        ImageResourceCreateInfo{
+            .Name = GetParamStr(AppConstants::DepthImage),
+            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .Format = depthImageFormat_,
+            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
+                                          .Format = depthImageFormat_,
+                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                               .baseMipLevel = 0,
+                                                               .levelCount = 1,
+                                                               .baseArrayLayer = 0,
+                                                               .layerCount = 1}}}}};
+
+    resourceCreateInfo.Samplers = {
+        {.Name = GetParamStr(AppConstants::MainSampler),
+         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
@@ -181,6 +204,10 @@ void VulkanApplication::InitResources() const
 
     resources_->SetBuffer(avocadoModel_->Meshes[0].GetVertexBufferName(), vertexBufferData.data(), vertexBufferSize);
     resources_->SetBuffer(avocadoModel_->Meshes[0].GetIndexBufferName(), indexBufferData.data(), indexBufferSize);
+
+    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MeshImage), avocadoMeshTextureHandler_);
+
+    UpdateDescriptorSets();
 }
 
 void VulkanApplication::CreateRenderPass()
@@ -230,7 +257,8 @@ void VulkanApplication::CreatePipeline()
     mvpPushConstant.size = sizeof(MvpData);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    pipelineLayout_ = device_->CreatePipelineLayout({}, {mvpPushConstant});
+    pipelineLayout_ = device_->CreatePipelineLayout(
+            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))}, {mvpPushConstant});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -274,9 +302,6 @@ void VulkanApplication::CreatePipeline()
             vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
             vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         });
-        builder.SetRasterizationState([&](auto& rasterizationStateCreateInfo) {
-            rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_LINE;
-        });
         builder.SetViewportState([&](auto& viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
             viewportStateCreateInfo.pViewports = &viewport;
@@ -297,6 +322,26 @@ void VulkanApplication::CreatePipeline()
     if (!pipeline_) {
         throw std::runtime_error("Failed to create graphics pipeline!");
     }
+}
+
+void VulkanApplication::UpdateDescriptorSets() const
+{
+    std::vector<VkDescriptorImageInfo> imageSamplerInfos;
+    imageSamplerInfos.emplace_back(
+            resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
+            resources_->GetImageView(GetParamStr(AppConstants::MeshImage), GetParamStr(AppConstants::MeshImageView))
+                    ->GetHandle(),
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+    ImageWriteRequest samplerUpdateRequest;
+    samplerUpdateRequest.LayoutName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.BindingIndex = 0;
+    samplerUpdateRequest.Images = imageSamplerInfos;
+    samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequest}};
+
+    resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
 
 void VulkanApplication::CreateCommandBuffers()
@@ -330,6 +375,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             },
             VK_SUBPASS_CONTENTS_INLINE);
     currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))};
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
     const std::vector vertexBuffers{resources_->GetBuffer(avocadoModel_->Meshes[0].GetVertexBufferName())};
     currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
     currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(avocadoModel_->Meshes[0].GetIndexBufferName()));
@@ -378,4 +425,4 @@ void VulkanApplication::ProcessInput() const
         camera->Move(camera->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
+} // namespace examples::fundamentals::model_loading::gltf_mesh_textured

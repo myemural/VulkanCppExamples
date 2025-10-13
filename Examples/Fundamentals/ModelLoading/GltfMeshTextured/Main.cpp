@@ -1,8 +1,8 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, a glTF 3D mesh rendered on the screen as wireframe without any texture.
+ * @brief   In this example, a glTF 3D mesh rendered on the screen with texture.
  * @author  Mustafa Yemural (myemural)
- * @date    12.10.2025
+ * @date    13.10.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -17,7 +17,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::fundamentals::model_loading::gltf_mesh_wireframe;
+using namespace examples::fundamentals::model_loading::gltf_mesh_textured;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -27,13 +27,17 @@ inline ParameterSchema CreateParameterSchema()
     // Register Constants
     schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "drawing_model_wireframe.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "drawing_model_wireframe.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "drawing_model_textured.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "drawing_model_textured.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
 
+    schema.RegisterImmutableParam<std::string>(AppConstants::MeshImage, "meshImage");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MeshImageView, "meshImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
 
 
     // Register Customizable Settings
