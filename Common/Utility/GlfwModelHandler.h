@@ -71,9 +71,19 @@ struct GltfMesh
     }
 };
 
+struct GltfNode
+{
+    std::uint32_t ParentIndex = UINT32_MAX;
+    std::vector<std::uint32_t> ChildIndices;
+    std::uint32_t MeshIndex = UINT32_MAX;
+    glm::mat4 LocalTransform = glm::mat4(1.0f);
+    glm::mat4 WorldTransform = glm::mat4(1.0f);
+};
+
 struct GltfModelHandler
 {
     std::string Name;
+    std::vector<GltfNode> Nodes;
     std::vector<GltfMesh> Meshes;
     std::vector<GltfMaterial> Materials;
     std::vector<TextureHandler> Textures;

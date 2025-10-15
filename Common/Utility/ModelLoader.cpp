@@ -6,15 +6,59 @@
 
 #include "ModelLoader.h"
 
-#include <iostream>
 #include <filesystem>
+#include <iostream>
 
-#include <stb_image.h>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "TextureHandler.h"
 
 namespace common::utility
 {
+namespace
+{
+    glm::mat4 GetLocalTransform(const tinygltf::Node& node)
+    {
+        glm::mat4 mat(1.0f);
+
+        if (!node.matrix.empty()) {
+            for (int i = 0; i < 16; ++i) {
+                mat[i / 4][i % 4] = static_cast<float>(node.matrix[i]);
+            }
+        } else {
+            glm::vec3 translation(0.0f);
+            glm::vec3 scale(1.0f);
+            glm::quat rotation(1.0f, 0.0f, 0.0f, 0.0f);
+
+            if (node.translation.size() == 3) {
+                translation = glm::make_vec3(node.translation.data());
+            }
+            if (node.scale.size() == 3) {
+                scale = glm::make_vec3(node.scale.data());
+            }
+            if (node.rotation.size() == 4) {
+                rotation = glm::make_quat(node.rotation.data());
+            }
+
+            mat = glm::translate(glm::mat4(1.0f), translation) * glm::mat4_cast(rotation) *
+                  glm::scale(glm::mat4(1.0f), scale);
+        }
+
+        return mat;
+    }
+
+    void ComputeWorldTransform(std::vector<GltfNode>& nodes, std::uint32_t nodeIndex, const glm::mat4& parentWorld)
+    {
+        auto& node = nodes[nodeIndex];
+        node.WorldTransform = parentWorld * node.LocalTransform;
+
+        for (const auto childIndex: node.ChildIndices) {
+            ComputeWorldTransform(nodes, childIndex, node.WorldTransform);
+        }
+    }
+} // namespace
 
 std::shared_ptr<GltfModelHandler> ModelLoader::LoadBinaryGltfFromFile(const std::string& filePath)
 {
@@ -54,6 +98,11 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadBinaryGltfFromFile(const std:
         return nullptr;
     }
 
+    if (!ProcessNodes(gltfModelHandler, gltfModel)) {
+        std::cerr << "GLTF processing nodes error!" << std::endl;
+        return nullptr;
+    }
+
     return gltfModelHandler;
 }
 
@@ -87,6 +136,11 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadAsciiGltfFromFile(const std::
 
     if (!ProcessMeshes(gltfModelHandler, gltfModel)) {
         std::cerr << "GLTF processing meshes error!" << std::endl;
+        return nullptr;
+    }
+
+    if (!ProcessNodes(gltfModelHandler, gltfModel)) {
+        std::cerr << "GLTF processing nodes error!" << std::endl;
         return nullptr;
     }
 
@@ -231,6 +285,40 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
             handler->Meshes.push_back(gltfMesh);
         }
     }
+
+    return true;
+}
+
+bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel)
+{
+    std::vector<GltfNode> gltfNodes{gltfModel.nodes.size()};
+
+    // Set mesh index, child indices and local transform
+    for (size_t i = 0; i < gltfModel.nodes.size(); ++i) {
+        if (gltfModel.nodes[i].mesh != -1) {
+            gltfNodes[i].MeshIndex = gltfModel.nodes[i].mesh;
+        }
+        for (const auto child: gltfModel.nodes[i].children) {
+            gltfNodes[i].ChildIndices.emplace_back(static_cast<uint32_t>(child));
+        }
+        gltfNodes[i].LocalTransform = GetLocalTransform(gltfModel.nodes[i]);
+    }
+
+    // Set parents
+    for (size_t i = 0; i < gltfModel.nodes.size(); ++i) {
+        for (const auto childIndex: gltfModel.nodes[i].children) {
+            gltfNodes[childIndex].ParentIndex = static_cast<std::uint32_t>(i);
+        }
+    }
+
+    // Calculate world transforms
+    /// TODO: For now we are processing default scene like this
+    const tinygltf::Scene& scene = gltfModel.scenes[gltfModel.defaultScene > -1 ? gltfModel.defaultScene : 0];
+    for (const auto rootNode: scene.nodes) {
+        ComputeWorldTransform(gltfNodes, static_cast<std::uint32_t>(rootNode), glm::mat4(1.0f));
+    }
+
+    handler->Nodes = gltfNodes;
 
     return true;
 }

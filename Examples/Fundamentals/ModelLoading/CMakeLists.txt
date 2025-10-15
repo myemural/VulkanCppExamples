@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(GltfMeshWireframe)
 add_subdirectory(GltfMeshTextured)
+add_subdirectory(GltfMultipleMeshes)

@@ -35,6 +35,8 @@ private:
 
     bool ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
 
+    bool ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
+
     tinygltf::TinyGLTF gltfLoader_;
 };
 
