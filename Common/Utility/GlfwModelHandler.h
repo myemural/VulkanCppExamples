@@ -76,13 +76,44 @@ struct GltfNode
     std::uint32_t ParentIndex = UINT32_MAX;
     std::vector<std::uint32_t> ChildIndices;
     std::uint32_t MeshIndex = UINT32_MAX;
+    std::uint32_t CameraIndex = UINT32_MAX;
     glm::mat4 LocalTransform = glm::mat4(1.0f);
     glm::mat4 WorldTransform = glm::mat4(1.0f);
+};
+
+enum class GltfCameraType
+{
+    PERSPECTIVE,
+    ORTHOGRAPHIC
+};
+
+struct GltfCamera
+{
+    std::string Name;
+    GltfCameraType Type;
+
+    struct Perspective
+    {
+        float AspectRatio;
+        float Fov;
+        float Near;
+        float Far;
+    } PerspectiveFeatures;
+
+    struct Orthographic
+    {
+        float AspectRatio;
+        float Size;
+        float Near;
+        float Far;
+    } OrthographicFeatures;
 };
 
 struct GltfModelHandler
 {
     std::string Name;
+    std::uint32_t CurrentSceneIndex = UINT32_MAX;
+    std::vector<GltfCamera> Cameras;
     std::vector<GltfNode> Nodes;
     std::vector<GltfMesh> Meshes;
     std::vector<GltfMaterial> Materials;

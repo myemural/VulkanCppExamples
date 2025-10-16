@@ -14,6 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "TextureHandler.h"
+#include "TextureLoader.h"
 
 namespace common::utility
 {
@@ -103,6 +104,11 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadBinaryGltfFromFile(const std:
         return nullptr;
     }
 
+    if (!ProcessCameras(gltfModelHandler, gltfModel)) {
+        std::cerr << "GLTF processing cameras error!" << std::endl;
+        return nullptr;
+    }
+
     return gltfModelHandler;
 }
 
@@ -124,7 +130,8 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadAsciiGltfFromFile(const std::
     auto gltfModelHandler = std::make_shared<GltfModelHandler>();
     gltfModelHandler->Name = GenerateModelName(filePath);
 
-    if (!ProcessTextures(gltfModelHandler, gltfModel)) {
+    const std::string parentPath = (std::filesystem::path{filePath}.parent_path() / "").string();
+    if (!ProcessTextures(gltfModelHandler, gltfModel, parentPath)) {
         std::cerr << "GLTF processing textures error!" << std::endl;
         return nullptr;
     }
@@ -144,6 +151,11 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadAsciiGltfFromFile(const std::
         return nullptr;
     }
 
+    if (!ProcessCameras(gltfModelHandler, gltfModel)) {
+        std::cerr << "GLTF processing cameras error!" << std::endl;
+        return nullptr;
+    }
+
     return gltfModelHandler;
 }
 
@@ -154,7 +166,9 @@ std::string ModelLoader::GenerateModelName(const std::string& filePath)
     return fileName;
 }
 
-bool ModelLoader::ProcessTextures(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel)
+bool ModelLoader::ProcessTextures(const std::shared_ptr<GltfModelHandler>& handler,
+                                  const tinygltf::Model& gltfModel,
+                                  const std::string& parentPath)
 {
     for (const auto& tex: gltfModel.textures) {
         if (const int texIndex = tex.source; texIndex >= 0 && texIndex < gltfModel.images.size()) {
@@ -165,9 +179,8 @@ bool ModelLoader::ProcessTextures(const std::shared_ptr<GltfModelHandler>& handl
                 textureHandler.Channels = image.component;
                 textureHandler.Data = image.image;
             } else {
-                /// TODO: uri existance will be handled later
-                std::cerr << "GLTF image uri handling is not supported for now!" << std::endl;
-                return false;
+                TextureLoader textureLoader{""};
+                textureHandler = textureLoader.Load(parentPath + image.uri);
             }
 
             handler->Textures.push_back(textureHandler);
@@ -293,7 +306,7 @@ bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler,
 {
     std::vector<GltfNode> gltfNodes{gltfModel.nodes.size()};
 
-    // Set mesh index, child indices and local transform
+    // Set mesh index, child indices, camera index and local transform
     for (size_t i = 0; i < gltfModel.nodes.size(); ++i) {
         if (gltfModel.nodes[i].mesh != -1) {
             gltfNodes[i].MeshIndex = gltfModel.nodes[i].mesh;
@@ -301,6 +314,7 @@ bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler,
         for (const auto child: gltfModel.nodes[i].children) {
             gltfNodes[i].ChildIndices.emplace_back(static_cast<uint32_t>(child));
         }
+        gltfNodes[i].CameraIndex = gltfModel.nodes[i].camera != -1 ? gltfModel.nodes[i].camera : UINT32_MAX;
         gltfNodes[i].LocalTransform = GetLocalTransform(gltfModel.nodes[i]);
     }
 
@@ -312,13 +326,40 @@ bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler,
     }
 
     // Calculate world transforms
-    /// TODO: For now we are processing default scene like this
-    const tinygltf::Scene& scene = gltfModel.scenes[gltfModel.defaultScene > -1 ? gltfModel.defaultScene : 0];
+    handler->CurrentSceneIndex = gltfModel.defaultScene > -1 ? gltfModel.defaultScene : 0;
+    const tinygltf::Scene& scene = gltfModel.scenes[handler->CurrentSceneIndex];
     for (const auto rootNode: scene.nodes) {
         ComputeWorldTransform(gltfNodes, static_cast<std::uint32_t>(rootNode), glm::mat4(1.0f));
     }
 
     handler->Nodes = gltfNodes;
+
+    return true;
+}
+
+bool ModelLoader::ProcessCameras(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel)
+{
+    for (const auto& camera: gltfModel.cameras) {
+        GltfCamera gltfCamera;
+        gltfCamera.Name = camera.name;
+        gltfCamera.Type = camera.type == "perspective" ? GltfCameraType::PERSPECTIVE : GltfCameraType::ORTHOGRAPHIC;
+
+        if (gltfCamera.Type == GltfCameraType::PERSPECTIVE) {
+            gltfCamera.PerspectiveFeatures.AspectRatio = static_cast<float>(camera.perspective.aspectRatio);
+            gltfCamera.PerspectiveFeatures.Fov = static_cast<float>(glm::degrees(camera.perspective.yfov));
+            gltfCamera.PerspectiveFeatures.Near = static_cast<float>(camera.perspective.znear);
+            gltfCamera.PerspectiveFeatures.Far = static_cast<float>(camera.perspective.zfar);
+        } else {
+            gltfCamera.OrthographicFeatures.AspectRatio =
+                    static_cast<float>(camera.orthographic.xmag / camera.orthographic.ymag);
+            gltfCamera.OrthographicFeatures.Size =
+                    static_cast<float>(std::max(camera.orthographic.xmag, camera.orthographic.ymag));
+            gltfCamera.OrthographicFeatures.Near = static_cast<float>(camera.orthographic.znear);
+            gltfCamera.OrthographicFeatures.Far = static_cast<float>(camera.orthographic.zfar);
+        }
+
+        handler->Cameras.push_back(gltfCamera);
+    }
 
     return true;
 }

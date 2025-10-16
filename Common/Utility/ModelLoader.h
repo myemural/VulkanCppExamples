@@ -29,13 +29,17 @@ public:
 private:
     std::string GenerateModelName(const std::string& filePath);
 
-    bool ProcessTextures(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
+    bool ProcessTextures(const std::shared_ptr<GltfModelHandler>& handler,
+                         const tinygltf::Model& gltfModel,
+                         const std::string& parentPath = "");
 
     bool ProcessMaterials(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
 
     bool ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
 
     bool ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
+
+    bool ProcessCameras(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
 
     tinygltf::TinyGLTF gltfLoader_;
 };

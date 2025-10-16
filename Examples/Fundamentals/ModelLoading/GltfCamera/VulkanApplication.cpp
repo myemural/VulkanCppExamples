@@ -9,15 +9,15 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
-#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "OrthographicCamera.h"
 #include "VulkanHelpers.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::fundamentals::model_loading::gltf_multiple_meshes
+namespace examples::fundamentals::model_loading::gltf_camera
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -31,11 +31,6 @@ bool VulkanApplication::Init()
     try {
         currentWindowWidth_ = GetParamU32(WindowParams::Width);
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
-
-        float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
-
-        InitInputSystem();
 
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
@@ -85,45 +80,6 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
 }
 
-void VulkanApplication::PreUpdate()
-{
-    // Poll events
-    ApplicationModelLoading::PreUpdate();
-
-    // Process continuous inputs
-    ProcessInput();
-}
-
-void VulkanApplication::InitInputSystem()
-{
-    lastX_ = static_cast<float>(currentWindowWidth_) / 2.0f;
-    lastY_ = static_cast<float>(currentWindowHeight_) / 2.0f;
-
-    window_->DisableCursor();
-
-    window_->OnMouseMove([&](const MouseMoveEvent& event) {
-        const auto xPos = static_cast<float>(event.X);
-        const auto yPos = static_cast<float>(event.Y);
-
-        if (firstMouseTriggered_) {
-            lastX_ = xPos;
-            lastY_ = yPos;
-            firstMouseTriggered_ = false;
-        }
-
-        float xOffset = xPos - lastX_;
-        float yOffset = lastY_ - yPos;
-        lastX_ = xPos;
-        lastY_ = yPos;
-
-        const float sensitivity = GetParamFloat(AppSettings::MouseSensitivity) * static_cast<float>(deltaTime_);
-        xOffset *= sensitivity;
-        yOffset *= sensitivity;
-
-        camera_->Rotate(xOffset, yOffset);
-    });
-}
-
 void VulkanApplication::CreateResources()
 {
     depthImageFormat_ = physicalDevice_->FindSupportedFormat(
@@ -132,19 +88,27 @@ void VulkanApplication::CreateResources()
 
     // Load models
     ModelLoader modelLoader;
-    lanternModel_ = modelLoader.LoadBinaryGltfFromFile(ASSETS_DIR + std::string("Models/Lantern.glb"));
+    quadModel_ = modelLoader.LoadAsciiGltfFromFile(ASSETS_DIR + std::string("Models/Cameras.gltf"));
 
-    // Load model textures
-    const auto meshMatIndex = lanternModel_->Meshes[0].MaterialIndex;
-    const auto meshTexIndex = lanternModel_->Materials[meshMatIndex].PbrMetallicRoughness.BaseColorTextureIndex;
-    lanternMeshTextureHandler_ = lanternModel_->Textures[meshTexIndex];
+    if (params_.Get<bool>(AppSettings::IsPerspectiveCamera)) {
+        const auto& currentCameraFeatures = quadModel_->Cameras[0].PerspectiveFeatures;
+        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.5f, 0.5f, 5.0f), currentCameraFeatures.AspectRatio,
+                                                      currentCameraFeatures.Fov, currentCameraFeatures.Near,
+                                                      currentCameraFeatures.Far);
+    } else {
+        const auto& currentCameraFeatures = quadModel_->Cameras[1].OrthographicFeatures;
+        camera_ = std::make_unique<OrthographicCamera>(glm::vec3(0.5f, 0.5f, 5.0f), currentCameraFeatures.AspectRatio,
+                                                       currentCameraFeatures.Size, currentCameraFeatures.Near,
+                                                       currentCameraFeatures.Far);
+    }
+
 
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
     std::vector<BufferResourceCreateInfo> bufferCreateInfos;
-    for (const auto& mesh: lanternModel_->Meshes) {
-        const std::uint32_t vertexBufferSize = mesh.Vertices.size() * sizeof(VertexPos3Uv2);
+    for (const auto& mesh: quadModel_->Meshes) {
+        const std::uint32_t vertexBufferSize = mesh.Vertices.size() * sizeof(VertexPos3);
         const uint32_t indexBufferSize = mesh.Indices.size() * sizeof(std::uint16_t);
 
         bufferCreateInfos.emplace_back(mesh.GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -162,56 +126,34 @@ void VulkanApplication::CreateResources()
                                               {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
                                                .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
 
-    // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {.MaxSets = 1,
-                                      .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
-                                      .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
-                                                                 VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}}};
-
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MeshImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {lanternMeshTextureHandler_.Width, lanternMeshTextureHandler_.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MeshImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                          .Format = depthImageFormat_,
-                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}}};
-
-    resourceCreateInfo.Samplers = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.Images = {ImageResourceCreateInfo{
+        .Name = GetParamStr(AppConstants::DepthImage),
+        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .Format = depthImageFormat_,
+        .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
+                                      .Format = depthImageFormat_,
+                                      .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                           .baseMipLevel = 0,
+                                                           .levelCount = 1,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 1}}}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
 
 void VulkanApplication::InitResources() const
 {
-    for (auto& mesh: lanternModel_->Meshes) {
-        const auto& vertexBufferData = mesh.GetVerticesAs<VertexPos3Uv2>();
+    for (auto& mesh: quadModel_->Meshes) {
+        const auto& vertexBufferData = mesh.GetVerticesAs<VertexPos3>();
         const auto& indexBufferData = mesh.Indices;
-        const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3Uv2);
+        const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3);
         const uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
 
         resources_->SetBuffer(mesh.GetVertexBufferName(), vertexBufferData.data(), vertexBufferSize);
         resources_->SetBuffer(mesh.GetIndexBufferName(), indexBufferData.data(), indexBufferSize);
     }
-
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MeshImage), lanternMeshTextureHandler_);
-
-    UpdateDescriptorSets();
 }
 
 void VulkanApplication::CreateRenderPass()
@@ -261,8 +203,7 @@ void VulkanApplication::CreatePipeline()
     mvpPushConstant.size = sizeof(MvpData);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    pipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))}, {mvpPushConstant});
+    pipelineLayout_ = device_->CreatePipelineLayout({}, {mvpPushConstant});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -284,10 +225,9 @@ void VulkanApplication::CreatePipeline()
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
     constexpr uint32_t bindingIndex = 0;
-    auto bindingDescription = GenerateBindingDescription<VertexPos3Uv2>(bindingIndex);
-    const auto posAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Position, bindingIndex);
-    const auto uvAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Uv, bindingIndex);
-    const std::array attributeDescriptions{posAttribDescription, uvAttribDescription};
+    auto bindingDescription = GenerateBindingDescription<VertexPos3>(bindingIndex);
+    const auto posAttribDescription = GenerateAttributeDescription(VertexPos3, Position, bindingIndex);
+    const std::array attributeDescriptions{posAttribDescription};
 
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -328,26 +268,6 @@ void VulkanApplication::CreatePipeline()
     }
 }
 
-void VulkanApplication::UpdateDescriptorSets() const
-{
-    std::vector<VkDescriptorImageInfo> imageSamplerInfos;
-    imageSamplerInfos.emplace_back(
-            resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-            resources_->GetImageView(GetParamStr(AppConstants::MeshImage), GetParamStr(AppConstants::MeshImageView))
-                    ->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.LayoutName = GetParamStr(AppConstants::MainDescSetLayout);
-    samplerUpdateRequest.BindingIndex = 0;
-    samplerUpdateRequest.Images = imageSamplerInfos;
-    samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequest}};
-
-    resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
-}
-
 void VulkanApplication::CreateCommandBuffers()
 {
     cmdBuffersPresent_ = cmdPool_->CreateCommandBuffers(framebuffers_.size(), VK_COMMAND_BUFFER_LEVEL_PRIMARY);
@@ -379,20 +299,16 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             },
             VK_SUBPASS_CONTENTS_INLINE);
     currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))};
-    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
-
     // Draw meshes
-    for (const auto& node: lanternModel_->Nodes) {
+    for (const auto& node: quadModel_->Nodes) {
         if (node.MeshIndex == UINT32_MAX) {
             continue;
         }
 
-        const auto mesh = lanternModel_->Meshes[node.MeshIndex];
+        const auto mesh = quadModel_->Meshes[node.MeshIndex];
 
         MvpData mvpData{};
-        glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-        mvpData.mvpMatrix = camera_->GetProjectionMatrix() * camera_->GetViewMatrix() * scale * node.WorldTransform;
+        mvpData.mvpMatrix = camera_->GetProjectionMatrix() * camera_->GetViewMatrix() * node.WorldTransform;
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvpData);
 
         const std::vector vertexBuffers{resources_->GetBuffer(mesh.GetVertexBufferName())};
@@ -406,21 +322,4 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         throw std::runtime_error("Failed to end recording command buffer!");
     }
 }
-
-void VulkanApplication::ProcessInput() const
-{
-    const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
-    if (window_->IsKeyPressed(GLFW_KEY_W)) {
-        camera_->Move(camera_->GetFrontVector() * cameraSpeed);
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_S)) {
-        camera_->Move(-camera_->GetFrontVector() * cameraSpeed);
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_A)) {
-        camera_->Move(-camera_->GetRightVector() * cameraSpeed);
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_D)) {
-        camera_->Move(camera_->GetRightVector() * cameraSpeed);
-    }
-}
-} // namespace examples::fundamentals::model_loading::gltf_multiple_meshes
+} // namespace examples::fundamentals::model_loading::gltf_camera
