@@ -56,7 +56,7 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    MvpData mvpUbObject{glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0)};
+    MvpData mvpUbObject_{glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0)};
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};

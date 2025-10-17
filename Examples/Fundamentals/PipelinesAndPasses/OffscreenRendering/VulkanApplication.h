@@ -69,7 +69,7 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    MvpData mvpData[NUM_CUBES] = {glm::mat4(1.0)};
+    MvpData mvpData_[NUM_CUBES] = {glm::mat4(1.0)};
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};
@@ -96,6 +96,6 @@ private:
     float lastY_ = 0.0f;
 
     // Camera
-    std::unique_ptr<common::utility::PerspectiveCamera> camera;
+    std::unique_ptr<common::utility::PerspectiveCamera> camera_;
 };
 } // namespace examples::fundamentals::pipelines_and_passes::offscreen_rendering

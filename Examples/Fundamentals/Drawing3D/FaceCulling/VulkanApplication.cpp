@@ -400,7 +400,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindIndexBuffer(buffers_[GetParamStr(AppConstants::MainIndexBuffer)]->GetBuffer());
 
     // Draw cubes
-    for (auto& mvp: mvpData) {
+    for (auto& mvp: mvpData_) {
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvp);
         currentCmdBuffer->DrawIndexed(indices.size(), 1, 0, 0, 0);
     }
@@ -429,7 +429,7 @@ void VulkanApplication::CalculateAndSetMvp()
 
 
         // Calculate MVP matrix
-        mvpData[i].mvpMatrix = proj * view * model;
+        mvpData_[i].mvpMatrix = proj * view * model;
     }
 }
 

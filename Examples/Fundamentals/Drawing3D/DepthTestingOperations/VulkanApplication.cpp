@@ -411,7 +411,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     const auto& cubeIndexBuffer = buffers_[GetParamStr(AppConstants::CubeIndexBuffer)]->GetBuffer();
 
     // Drawing planes
-    for (auto& mvp: planeMvpData) {
+    for (auto& mvp: planeMvpData_) {
 
         currentCmdBuffer->BindVertexBuffers(planeVertexBuffers, 0, 1, {0});
         currentCmdBuffer->BindIndexBuffer(planeIndexBuffer);
@@ -421,7 +421,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     }
 
     // Drawing cubes
-    for (auto& mvp: cubeMvpData) {
+    for (auto& mvp: cubeMvpData_) {
         currentCmdBuffer->BindVertexBuffers(cubeVertexBuffers, 0, 1, {0});
         currentCmdBuffer->BindIndexBuffer(cubeIndexBuffer);
 
@@ -453,7 +453,7 @@ void VulkanApplication::CalculateAndSetMvp()
         cubeModel = glm::translate(cubeModel, cubePositions[i]);
 
         // Calculate MVP matrix
-        cubeMvpData[i].mvpMatrix = proj * view * cubeModel;
+        cubeMvpData_[i].mvpMatrix = proj * view * cubeModel;
     }
 
     // Update MVP matrix for planes
@@ -467,7 +467,7 @@ void VulkanApplication::CalculateAndSetMvp()
             planeModel = glm::rotate(planeModel, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         }
 
-        planeMvpData[i].mvpMatrix = proj * view * planeModel;
+        planeMvpData_[i].mvpMatrix = proj * view * planeModel;
     }
 }
 

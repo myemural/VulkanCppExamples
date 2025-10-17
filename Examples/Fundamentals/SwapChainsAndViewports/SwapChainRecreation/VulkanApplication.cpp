@@ -34,7 +34,7 @@ bool VulkanApplication::Init()
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
 
         float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        camera = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
+        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
 
         InitInputSystem();
 
@@ -133,7 +133,7 @@ void VulkanApplication::InitInputSystem()
         xOffset *= sensitivity;
         yOffset *= sensitivity;
 
-        camera->Rotate(xOffset, yOffset);
+        camera_->Rotate(xOffset, yOffset);
     });
 }
 
@@ -433,7 +433,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
     currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)));
 
-    for (auto& mvp: mvpData) {
+    for (auto& mvp: mvpData_) {
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvp);
         currentCmdBuffer->DrawIndexed(indices.size(), 1, 0, 0, 0);
     }
@@ -450,11 +450,11 @@ void VulkanApplication::CalculateAndSetMvp()
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, modelPositions[i]);
 
-        const glm::mat4 view = camera->GetViewMatrix();
-        glm::mat4 proj = camera->GetProjectionMatrix();
+        const glm::mat4 view = camera_->GetViewMatrix();
+        glm::mat4 proj = camera_->GetProjectionMatrix();
 
         // Calculate MVP matrix
-        mvpData[i].mvpMatrix = proj * view * model;
+        mvpData_[i].mvpMatrix = proj * view * model;
     }
 }
 
@@ -462,16 +462,16 @@ void VulkanApplication::ProcessInput() const
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {
-        camera->Move(camera->GetFrontVector() * cameraSpeed);
+        camera_->Move(camera_->GetFrontVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_S)) {
-        camera->Move(-camera->GetFrontVector() * cameraSpeed);
+        camera_->Move(-camera_->GetFrontVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_A)) {
-        camera->Move(-camera->GetRightVector() * cameraSpeed);
+        camera_->Move(-camera_->GetRightVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_D)) {
-        camera->Move(camera->GetRightVector() * cameraSpeed);
+        camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
 

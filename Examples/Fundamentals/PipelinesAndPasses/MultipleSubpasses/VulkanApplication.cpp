@@ -35,7 +35,7 @@ bool VulkanApplication::Init()
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
 
         float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        camera = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio, 45.0f, 0.1f, 20.0f);
+        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio, 45.0f, 0.1f, 20.0f);
 
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
@@ -416,7 +416,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutObject_, 0, objectDescSets);
     for (size_t i = 0; i < NUM_CUBES - 1; ++i) {
         currentCmdBuffer->PushConstants(pipelineLayoutObject_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
-                                        &mvpData[i]);
+                                        &mvpData_[i]);
         currentCmdBuffer->DrawIndexed(indices.size(), 1, 0, 0, 0);
     }
 
@@ -427,7 +427,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     const std::vector depthDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::DepthObjectDescSetLayout))};
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutDepthObject_, 0, depthDescSets);
     currentCmdBuffer->PushConstants(pipelineLayoutDepthObject_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
-                                    &mvpData[3]);
+                                    &mvpData_[3]);
     currentCmdBuffer->DrawIndexed(indices.size(), 1, 0, 0, 0);
 
 
@@ -460,11 +460,11 @@ void VulkanApplication::CalculateAndSetMvp()
             model = glm::translate(model, position);
         }
 
-        const glm::mat4 view = camera->GetViewMatrix();
-        glm::mat4 proj = camera->GetProjectionMatrix();
+        const glm::mat4 view = camera_->GetViewMatrix();
+        glm::mat4 proj = camera_->GetProjectionMatrix();
 
         // Calculate MVP matrix
-        mvpData[i].mvpMatrix = proj * view * model;
+        mvpData_[i].mvpMatrix = proj * view * model;
     }
 }
 } // namespace examples::fundamentals::pipelines_and_passes::multiple_subpasses

@@ -63,7 +63,7 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    MvpData mvpData[NUM_OBJECTS] = {glm::mat4(1.0)};
+    MvpData mvpData_[NUM_OBJECTS] = {glm::mat4(1.0)};
 
     // Models
     std::shared_ptr<common::utility::GltfModelHandler> avocadoModel_;
@@ -84,6 +84,6 @@ private:
     float lastY_ = 0.0f;
 
     // Camera
-    std::unique_ptr<common::utility::PerspectiveCamera> camera;
+    std::unique_ptr<common::utility::PerspectiveCamera> camera_;
 };
 } // namespace examples::fundamentals::model_loading::gltf_mesh_textured

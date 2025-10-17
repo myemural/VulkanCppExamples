@@ -159,7 +159,7 @@ void VulkanApplication::InitResources()
     SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(indices[0]));
     SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data.data(),
               crateTextureHandler_.Data.size());
-    SetBuffer(GetParamStr(AppConstants::MvpUniformBuffer), &mvpUbObject, sizeof(MvpData));
+    SetBuffer(GetParamStr(AppConstants::MvpUniformBuffer), &mvpUbObject_, sizeof(MvpData));
 
     SetImageFromBuffer(GetParamStr(AppConstants::CrateImage),
                        buffers_[GetParamStr(AppConstants::ImageStagingBuffer)]->GetBuffer(),
@@ -359,13 +359,13 @@ void VulkanApplication::CalculateAndSetMvp()
     auto model = glm::mat4(1.0f);
     model = glm::rotate(model, currentTime * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::rotate(model, currentTime * glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    mvpUbObject.model = model;
+    mvpUbObject_.model = model;
 
     const glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), // Camera position
                                        glm::vec3(0.0f, 0.0f, 0.0f), // Look at position
                                        glm::vec3(0.0f, 0.0f, 1.0f)  // Up vector
     );
-    mvpUbObject.view = view;
+    mvpUbObject_.view = view;
 
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), // FOV
@@ -374,8 +374,8 @@ void VulkanApplication::CalculateAndSetMvp()
                                       10.0f                // Far clipping plane
     );
     proj[1][1] *= -1;                                      // Vulkan trick for projection
-    mvpUbObject.projection = proj;
+    mvpUbObject_.projection = proj;
 
-    SetBuffer(GetParamStr(AppConstants::MvpUniformBuffer), &mvpUbObject, sizeof(MvpData));
+    SetBuffer(GetParamStr(AppConstants::MvpUniformBuffer), &mvpUbObject_, sizeof(MvpData));
 }
 } // namespace examples::fundamentals::drawing_3d::drawing_cube

@@ -159,7 +159,7 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::MainUniformBuffer), sizeof(mvpData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {GetParamStr(AppConstants::MainUniformBuffer), sizeof(mvpData_), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(crateTextureHandler_.Data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
@@ -346,7 +346,7 @@ void VulkanApplication::UpdateDescriptorSets()
 
     std::vector<VkDescriptorBufferInfo> bufferInfos;
     bufferInfos.emplace_back(buffers_[GetParamStr(AppConstants::MainUniformBuffer)]->GetBuffer()->GetHandle(), 0,
-                             sizeof(mvpData));
+                             sizeof(mvpData_));
 
     ImageWriteRequest samplerUpdateRequest;
     samplerUpdateRequest.LayoutName = GetParamStr(AppConstants::MainDescSetLayout);
@@ -437,10 +437,10 @@ void VulkanApplication::CalculateAndSetMvp()
 
 
         // Calculate MVP matrix
-        mvpData[i].mvpMatrix = proj * view * model;
+        mvpData_[i].mvpMatrix = proj * view * model;
     }
 
-    SetBuffer(GetParamStr(AppConstants::MainUniformBuffer), mvpData, sizeof(mvpData));
+    SetBuffer(GetParamStr(AppConstants::MainUniformBuffer), mvpData_, sizeof(mvpData_));
 }
 
 void VulkanApplication::ProcessInput()

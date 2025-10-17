@@ -98,6 +98,6 @@ private:
     float lastY_ = 0.0f;
 
     // Camera
-    std::unique_ptr<common::utility::PerspectiveCamera> camera;
+    std::unique_ptr<common::utility::PerspectiveCamera> camera_;
 };
 } // namespace examples::fundamentals::swap_chains_and_viewports::multi_viewport

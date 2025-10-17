@@ -35,7 +35,7 @@ bool VulkanApplication::Init()
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
 
         float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        camera = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 8.0f), aspectRatio);
+        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 8.0f), aspectRatio);
 
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
@@ -396,7 +396,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     VkClearRect clearRect = {.rect = scissor, .baseArrayLayer = 0, .layerCount = 1};
     currentCmdBuffer->ClearAttachments({clearAttachment}, {clearRect});
 
-    for (auto& mvp: mvpData) {
+    for (auto& mvp: mvpData_) {
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvp);
         currentCmdBuffer->DrawIndexed(indices.size(), 1, 0, 0, 0);
     }
@@ -413,11 +413,11 @@ void VulkanApplication::CalculateAndSetMvp()
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, modelPositions[i]);
 
-        const glm::mat4 view = camera->GetViewMatrix();
-        glm::mat4 proj = camera->GetProjectionMatrix();
+        const glm::mat4 view = camera_->GetViewMatrix();
+        glm::mat4 proj = camera_->GetProjectionMatrix();
 
         // Calculate MVP matrix
-        mvpData[i].mvpMatrix = proj * view * model;
+        mvpData_[i].mvpMatrix = proj * view * model;
     }
 }
 } // namespace examples::fundamentals::swap_chains_and_viewports::scissor_animation

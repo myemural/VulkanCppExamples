@@ -35,7 +35,7 @@ bool VulkanApplication::Init()
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
 
         float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        camera = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
+        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
 
         InitInputSystem();
 
@@ -70,9 +70,9 @@ void VulkanApplication::DrawFrame()
 
     uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
 
-    timeSpeedUbo.time = static_cast<float>(glfwGetTime());
-    timeSpeedUbo.speed = GetParamFloat(AppSettings::CloudSpeed);
-    resources_->SetBuffer(GetParamStr(AppConstants::TimeSpeedUniformBuffer), &timeSpeedUbo,
+    timeSpeedUbo_.time = static_cast<float>(glfwGetTime());
+    timeSpeedUbo_.speed = GetParamFloat(AppSettings::CloudSpeed);
+    resources_->SetBuffer(GetParamStr(AppConstants::TimeSpeedUniformBuffer), &timeSpeedUbo_,
                           sizeof(UniformBufferObject));
     CalculateAndSetMvp();
     RecordPresentCommandBuffers(imageIndex);
@@ -127,7 +127,7 @@ void VulkanApplication::InitInputSystem()
         xOffset *= sensitivity;
         yOffset *= sensitivity;
 
-        camera->Rotate(xOffset, yOffset);
+        camera_->Rotate(xOffset, yOffset);
     });
 }
 
@@ -568,7 +568,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::CubeIndexBuffer)));
         currentCmdBuffer->BindPipeline(cubePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
-        for (auto& cubeMvp: cubeMvpData) {
+        for (auto& cubeMvp: cubeMvpData_) {
             currentCmdBuffer->PushConstants(cubePipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
                                             &cubeMvp);
             currentCmdBuffer->DrawIndexed(cubeIndices.size(), 1, 0, 0, 0);
@@ -588,11 +588,11 @@ void VulkanApplication::CalculateAndSetMvp()
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, modelPositions[i]);
 
-        const glm::mat4 view = camera->GetViewMatrix();
-        glm::mat4 proj = camera->GetProjectionMatrix();
+        const glm::mat4 view = camera_->GetViewMatrix();
+        glm::mat4 proj = camera_->GetProjectionMatrix();
 
         // Calculate MVP matrix
-        cubeMvpData[i].mvpMatrix = proj * view * model;
+        cubeMvpData_[i].mvpMatrix = proj * view * model;
     }
 }
 
@@ -600,16 +600,16 @@ void VulkanApplication::ProcessInput() const
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {
-        camera->Move(camera->GetFrontVector() * cameraSpeed);
+        camera_->Move(camera_->GetFrontVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_S)) {
-        camera->Move(-camera->GetFrontVector() * cameraSpeed);
+        camera_->Move(-camera_->GetFrontVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_A)) {
-        camera->Move(-camera->GetRightVector() * cameraSpeed);
+        camera_->Move(-camera_->GetRightVector() * cameraSpeed);
     }
     if (window_->IsKeyPressed(GLFW_KEY_D)) {
-        camera->Move(camera->GetRightVector() * cameraSpeed);
+        camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
 } // namespace examples::fundamentals::pipelines_and_passes::multiple_render_passes

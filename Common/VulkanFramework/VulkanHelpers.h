@@ -146,8 +146,8 @@ inline VkRect2D GetAnimatedScissorRect(const float time, const float viewportWid
     constexpr float speed = 1.0f; // rad/sec
     const float orbitRadiusX = (viewportWidth - scissorWidth) * 0.45f;
     const float orbitRadiusY = (viewportHeight - scissorHeight) * 0.45f;
-    const float centerX = viewportWidth * 0.5f + orbitRadiusX * std::cos(time * speed);
-    const float centerY = viewportHeight * 0.5f + orbitRadiusY * std::sin(time * speed);
+    const float centerX = viewportWidth * 0.5f + orbitRadiusX * cos(time * speed);
+    const float centerY = viewportHeight * 0.5f + orbitRadiusY * sin(time * speed);
 
     VkRect2D rect{};
     rect.offset.x = static_cast<int32_t>(std::clamp(centerX - scissorWidth * 0.5f, 0.0f, viewportWidth - scissorWidth));
