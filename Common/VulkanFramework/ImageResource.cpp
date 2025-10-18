@@ -166,4 +166,7 @@ void ImageResource::CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::Vul
     queue->Submit({cmdBufferTransfer});
     queue->WaitIdle();
 }
+
+void ImageResource::DeleteImageView(const std::string& imageViewName) { imageViews_.erase(imageViewName); }
+
 } // namespace common::vulkan_framework

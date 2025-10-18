@@ -89,6 +89,12 @@ public:
                             const VkBufferImageCopy& copyRegion) const;
 
     /**
+     * @brief Deletes image view from the resource.
+     * @param imageViewName Image view name.
+     */
+    void DeleteImageView(const std::string& imageViewName);
+
+    /**
      * @brief Returns name of the image resource.
      * @return Returns name of the image resource.
      */

@@ -9,7 +9,7 @@ The examples in this subsection, listed from easy to complex, are as follows:
 1. [Textured Quad](/Examples/Fundamentals/ImagesAndSamplers/TexturedQuad)
    - `TexturedQuad`
 2. [Combined Image Sampler](/Examples/Fundamentals/ImagesAndSamplers/CombinedImageSampler)
-    - `CombinedImageSampler`
+   - `CombinedImageSampler`
 3. [Using Different Wrap and Filtering Modes](/Examples/Fundamentals/ImagesAndSamplers/WrapAndFilteringModes)
    - `WrapAndFilteringModes`
 4. [Using Multiple Textures](/Examples/Fundamentals/ImagesAndSamplers/UsingMultipleTextures)

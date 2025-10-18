@@ -9,7 +9,7 @@ The examples in this subsection, listed from easy to complex, are as follows:
 1. [Drawing a Cube](/Examples/Fundamentals/Drawing3D/DrawingCube)
    - `DrawingCube`
 2. [Basic Camera Control](/Examples/Fundamentals/Drawing3D/BasicCameraControl)
-    - `BasicCameraControl`
+   - `BasicCameraControl`
 3. [Face Culling](/Examples/Fundamentals/Drawing3D/FaceCulling)
    - `FaceCulling`
 4. [Instanced Rendering](/Examples/Fundamentals/Drawing3D/InstancedRendering)

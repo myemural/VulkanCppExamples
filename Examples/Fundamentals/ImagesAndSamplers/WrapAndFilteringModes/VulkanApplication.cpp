@@ -112,7 +112,9 @@ void VulkanApplication::CreateResources()
         .PoolSizes = {{VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1}, {VK_DESCRIPTOR_TYPE_SAMPLER, 4}},
         .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
                      .Bindings = {{0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}}};
+                                  {1, VK_DESCRIPTOR_TYPE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
+        .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
+                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
     CreateDescriptorSets(descriptorSetCreateInfo);
 
     CreateQuadTextureImage();

@@ -151,7 +151,25 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
     images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
+void ResourceManager::DeleteBuffer(const std::string& bufferName) { buffers_.erase(bufferName); }
 
-void ResourceManager::DeleteImage(const std::string& name) { images_.erase(name); }
+void ResourceManager::DeleteImage(const std::string& imageName) { images_.erase(imageName); }
+
+void ResourceManager::DeleteSampler(const std::string& samplerName) { samplers_.erase(samplerName); }
+
+void ResourceManager::DeleteShaderModule(const std::string& shaderModule) const
+{
+    shaderResources_->DeleteShaderModule(shaderModule);
+}
+
+void ResourceManager::DeleteDescriptorLayout(const std::string& layoutName) const
+{
+    descriptorRegistry_->DeleteDescriptorLayout(layoutName);
+}
+
+void ResourceManager::DeleteDescriptorSet(const std::string& setName) const
+{
+    descriptorRegistry_->DeleteDescriptorSet(setName);
+}
 
 } // namespace common::vulkan_framework

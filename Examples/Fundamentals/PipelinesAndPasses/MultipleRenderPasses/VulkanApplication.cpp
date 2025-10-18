@@ -179,12 +179,17 @@ void VulkanApplication::CreateResources()
     resourceCreateInfo.Descriptors = {
         .MaxSets = 3,
         .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}, {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}},
-        .Layouts = {
-            {.Name = GetParamStr(AppConstants::CubeDescSetLayout),
-             .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
-            {.Name = GetParamStr(AppConstants::BackgroundDescSetLayout),
-             .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                          {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}}};
+        .Layouts = {{.Name = GetParamStr(AppConstants::CubeDescSetLayout),
+                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+                                   nullptr}}},
+                    {.Name = GetParamStr(AppConstants::BackgroundDescSetLayout),
+                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+                                   nullptr},
+                                  {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
+        .DescriptorSets = {{.Name = GetParamStr(AppConstants::CubeDescSetLayout),
+                            .LayoutName = GetParamStr(AppConstants::CubeDescSetLayout)},
+                           {.Name = GetParamStr(AppConstants::BackgroundDescSetLayout),
+                            .LayoutName = GetParamStr(AppConstants::BackgroundDescSetLayout)}}};
 
     resourceCreateInfo.Images = {
         ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CrateImage),

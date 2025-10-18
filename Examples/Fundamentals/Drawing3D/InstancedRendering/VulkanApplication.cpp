@@ -179,10 +179,12 @@ void VulkanApplication::CreateResources()
     const DescriptorResourceCreateInfo descriptorSetCreateInfo = {
         .MaxSets = 1,
         .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}},
-        .Layouts = {
-            {.Name = GetParamStr(AppConstants::MainDescSetLayout),
-             .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                          {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr}}}}};
+        .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
+                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+                                   nullptr},
+                                  {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr}}}},
+        .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
+                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
     CreateDescriptorSets(descriptorSetCreateInfo);
 
     const std::vector<ImageResourceCreateInfo> imageResourceCreateInfos = {

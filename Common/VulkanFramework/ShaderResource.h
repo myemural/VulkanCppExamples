@@ -54,6 +54,12 @@ public:
         return shaderModules_[name];
     }
 
+    /**
+     * @brief Deletes shader module from the resource.
+     * @param moduleName Shader module name.
+     */
+    void DeleteShaderModule(const std::string& moduleName);
+
 private:
     std::weak_ptr<vulkan_wrapper::VulkanDevice> device_;
 

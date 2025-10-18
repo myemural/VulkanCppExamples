@@ -27,9 +27,16 @@ struct DescriptorResourceCreateInfo
         std::vector<VkDescriptorSetLayoutBinding> Bindings;
     };
 
+    struct DescriptorSet
+    {
+        std::string Name;
+        std::string LayoutName;
+    };
+
     std::uint32_t MaxSets;
     std::vector<VkDescriptorPoolSize> PoolSizes;
     std::vector<Layout> Layouts;
+    std::vector<DescriptorSet> DescriptorSets;
 };
 
 class DescriptorRegistry
@@ -62,14 +69,16 @@ public:
      * @param bindings Specifies descriptor set layout bindings.
      * @return Returns a reference to this object so that the function can be called repeatedly.
      */
-    DescriptorRegistry& AddLayout(const std::string& layoutName,
-                                  const std::vector<VkDescriptorSetLayoutBinding>& bindings);
+    DescriptorRegistry& CreateLayout(const std::string& layoutName,
+                                     const std::vector<VkDescriptorSetLayoutBinding>& bindings);
 
     /**
      * @brief Creates a descriptor set and add to registry map.
-     * @param layoutName Specifies the layout name to be used when creating a descriptor set.
+     * @param descriptorSetName Name of the descriptor set.
+     * @param layoutName Name of the layout that associated with the descriptor set.
+     * @return Returns a reference to this object so that the function can be called repeatedly.
      */
-    void CreateDescriptorSet(const std::string& layoutName);
+    DescriptorRegistry& CreateSet(const std::string& descriptorSetName, const std::string& layoutName);
 
     /**
      * @brief Gets specified descriptor set layout.
@@ -84,6 +93,19 @@ public:
      * @return Returns descriptor set.
      */
     std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> GetDescriptorSet(const std::string& setName);
+
+    /**
+     * @brief Deletes a descriptor set layout.
+     * @param layoutName Name of the descriptor set layout.
+     */
+    void DeleteDescriptorLayout(const std::string& layoutName);
+
+    /**
+     * @brief Deletes a descriptor set.
+     * @param setName Name of the descriptor set .
+     */
+    void DeleteDescriptorSet(const std::string& setName);
+
 
 private:
     std::shared_ptr<vulkan_wrapper::VulkanDevice> device_;

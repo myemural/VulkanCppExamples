@@ -15,8 +15,11 @@ void DescriptorRegistry::CreateDescriptors(const DescriptorResourceCreateInfo& c
     CreatePool(createInfo.MaxSets, createInfo.PoolSizes);
 
     for (const auto& [name, bindings]: createInfo.Layouts) {
-        AddLayout(name, bindings);
-        CreateDescriptorSet(name);
+        CreateLayout(name, bindings);
+    }
+
+    for (const auto& [name, layoutName] : createInfo.DescriptorSets) {
+        CreateSet(name, layoutName);
     }
 }
 
@@ -31,7 +34,7 @@ void DescriptorRegistry::CreatePool(const std::uint32_t maxSets,
     }
 }
 
-DescriptorRegistry& DescriptorRegistry::AddLayout(const std::string& layoutName,
+DescriptorRegistry& DescriptorRegistry::CreateLayout(const std::string& layoutName,
                                                   const std::vector<VkDescriptorSetLayoutBinding>& bindings)
 {
     descriptorSetLayouts_[layoutName] = device_->CreateDescriptorSetLayout(bindings);
@@ -42,13 +45,15 @@ DescriptorRegistry& DescriptorRegistry::AddLayout(const std::string& layoutName,
     return *this;
 }
 
-void DescriptorRegistry::CreateDescriptorSet(const std::string& layoutName)
+DescriptorRegistry& DescriptorRegistry::CreateSet(const std::string& descriptorSetName, const std::string& layoutName)
 {
     const auto descSets = descPool_->CreateDescriptorSets({descriptorSetLayouts_[layoutName]});
     if (descSets.empty()) {
         throw std::runtime_error("Failed to create descriptor sets!");
     }
-    descriptorSets_[layoutName] = descSets.front();
+    descriptorSets_[descriptorSetName] = descSets.front();
+
+    return *this;
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanDescriptorSetLayout>
@@ -61,4 +66,8 @@ std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> DescriptorRegistry::GetDesc
 {
     return descriptorSets_.at(setName);
 }
+
+void DescriptorRegistry::DeleteDescriptorLayout(const std::string& layoutName) { descriptorSetLayouts_.erase(layoutName); }
+
+void DescriptorRegistry::DeleteDescriptorSet(const std::string& setName) { descriptorSets_.erase(setName); }
 } // namespace common::vulkan_framework

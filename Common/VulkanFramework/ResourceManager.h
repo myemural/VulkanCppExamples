@@ -148,15 +148,45 @@ public:
      * @param textureHandler Handler of the texture resource.
      */
     void SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
-                          const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
-                          const std::string& imageName,
-                          const utility::TextureHandler& textureHandler);
+                             const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                             const std::string& imageName,
+                             const utility::TextureHandler& textureHandler);
+
+    /**
+     * @brief Deletes buffer resource from resource manager.
+     * @param bufferName Name of the buffer resource.
+     */
+    void DeleteBuffer(const std::string& bufferName);
 
     /**
      * @brief Deletes image resource from resource manager.
-     * @param name Name of the image resource.
+     * @param imageName Name of the image resource.
      */
-    void DeleteImage(const std::string& name);
+    void DeleteImage(const std::string& imageName);
+
+    /**
+     * @brief Deletes sampler resource from resource manager.
+     * @param samplerName Name of the sampler resource.
+     */
+    void DeleteSampler(const std::string& samplerName);
+
+    /**
+     * @brief Deletes shader module resource from resource manager.
+     * @param shaderModule Name of the shader module resource.
+     */
+    void DeleteShaderModule(const std::string& shaderModule) const;
+
+    /**
+     * @brief Deletes descriptor set layout resource from resource manager.
+     * @param layoutName Name of the descriptor set layout resource.
+     */
+    void DeleteDescriptorLayout(const std::string& layoutName) const;
+
+    /**
+     * @brief Deletes descriptor set resource from resource manager.
+     * @param setName Name of the descriptor set resource.
+     */
+    void DeleteDescriptorSet(const std::string& setName) const;
 
 private:
     std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice> physicalDevice_;

@@ -30,4 +30,6 @@ void ShaderResource::CreateShaders(const ShaderModulesCreateInfo& createInfo)
         shaderModules_[name] = shaderModule;
     }
 }
+
+void ShaderResource::DeleteShaderModule(const std::string& moduleName) { shaderModules_.erase(moduleName); }
 } // namespace common::vulkan_framework

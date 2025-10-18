@@ -172,14 +172,18 @@ void VulkanApplication::CreateResources()
                                                .FileName = GetParamStr(AppConstants::SceneFragmentShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {
-        .MaxSets = 2,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}},
-        .Layouts = {
-            {.Name = GetParamStr(AppConstants::SceneDescSetLayout),
-             .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
-            {.Name = GetParamStr(AppConstants::QuadDescSetLayout),
-             .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}}};
+    resourceCreateInfo.Descriptors = {.MaxSets = 2,
+                                      .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}},
+                                      .Layouts = {{.Name = GetParamStr(AppConstants::SceneDescSetLayout),
+                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+                                                                 VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
+                                                  {.Name = GetParamStr(AppConstants::QuadDescSetLayout),
+                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+                                                                 VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
+                                      .DescriptorSets = {{.Name = GetParamStr(AppConstants::SceneDescSetLayout),
+                                                          .LayoutName = GetParamStr(AppConstants::SceneDescSetLayout)},
+                                                         {.Name = GetParamStr(AppConstants::QuadDescSetLayout),
+                                                          .LayoutName = GetParamStr(AppConstants::QuadDescSetLayout)}}};
 
     resourceCreateInfo.Images = {
         ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CrateImage),
