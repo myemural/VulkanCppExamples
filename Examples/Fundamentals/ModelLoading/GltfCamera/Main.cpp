@@ -33,9 +33,14 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
 
+    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CamerasModelPath, "Models/Cameras.gltf");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);

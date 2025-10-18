@@ -61,6 +61,8 @@ namespace
     }
 } // namespace
 
+ModelLoader::ModelLoader(const std::string& basePath) : basePath_{basePath} {}
+
 std::shared_ptr<GltfModelHandler> ModelLoader::LoadBinaryGltfFromFile(const std::string& filePath)
 {
     tinygltf::Model gltfModel;
@@ -72,7 +74,7 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadBinaryGltfFromFile(const std:
         return nullptr;
     }
 
-    if (!gltfLoader_.LoadBinaryFromFile(&gltfModel, &error, &warning, filePath)) {
+    if (!gltfLoader_.LoadBinaryFromFile(&gltfModel, &error, &warning, basePath_ + filePath)) {
         std::cerr << "GLTF file could not be loaded: " << error << std::endl;
         return nullptr;
     }
@@ -118,7 +120,7 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadAsciiGltfFromFile(const std::
     std::string error;
     std::string warning;
 
-    if (!gltfLoader_.LoadASCIIFromFile(&gltfModel, &error, &warning, filePath)) {
+    if (!gltfLoader_.LoadASCIIFromFile(&gltfModel, &error, &warning, basePath_ + filePath)) {
         std::cerr << "GLTF file could not be loaded: " << error << std::endl;
         return nullptr;
     }

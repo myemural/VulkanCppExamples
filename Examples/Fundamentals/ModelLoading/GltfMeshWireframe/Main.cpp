@@ -34,7 +34,7 @@ inline ParameterSchema CreateParameterSchema()
 
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-
+    schema.RegisterImmutableParam<std::string>(AppConstants::AvocadoModelPath, "Models/Avocado.glb");
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);

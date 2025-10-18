@@ -26,6 +26,7 @@ namespace AppConstants
     // Resources
     constexpr auto DepthImage = "AppConstants.DepthImage";
     constexpr auto DepthImageView = "AppConstants.DepthImageView";
+    constexpr auto AvocadoModelPath = "AppConstants.AvocadoModelPath";
 } // namespace AppConstants
 
 namespace AppSettings

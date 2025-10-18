@@ -30,6 +30,7 @@ namespace AppConstants
     constexpr auto DepthImageView = "AppConstants.DepthImageView";
     constexpr auto MainSampler = "AppConstants.MainSampler";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
+    constexpr auto AvocadoModelPath = "AppConstants.AvocadoModelPath";
 } // namespace AppConstants
 
 namespace AppSettings

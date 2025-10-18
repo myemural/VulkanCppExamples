@@ -45,6 +45,8 @@ private:
 
     void CreatePipeline();
 
+    void UpdateDescriptorSets() const;
+
     void CreateCommandBuffers();
 
     void RecordPresentCommandBuffers(std::uint32_t currentImageIndex);
@@ -56,6 +58,9 @@ private:
 
     // Models
     std::shared_ptr<common::utility::GltfModelHandler> quadModel_;
+
+    // Texture resource
+    common::utility::TextureHandler crateTextureHandler_{};
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;

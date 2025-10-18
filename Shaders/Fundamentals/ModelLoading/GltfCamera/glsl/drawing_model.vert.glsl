@@ -10,7 +10,7 @@
 
 layout(location = 0) in vec3 inPosition;
 
-layout(location = 0) out vec3 fragPosition;
+layout(location = 0) out vec2 fragUV;
 
 layout(push_constant) uniform PushConstants {
     mat4 mvpMatrix;
@@ -19,5 +19,22 @@ layout(push_constant) uniform PushConstants {
 void main()
 {
     gl_Position = pc.mvpMatrix * vec4(inPosition, 1.0);
-    fragPosition = gl_Position.xyz;
+
+    int vertexIndex = gl_VertexIndex % 4;
+
+    // Manual texture coordinates for quad
+    switch (vertexIndex) {
+        case 0:
+            fragUV = vec2(0.0, 0.0);
+            break;
+        case 1:
+            fragUV = vec2(0.0, 1.0);
+            break;
+        case 2:
+            fragUV = vec2(1.0, 0.0);
+            break;
+        case 3:
+            fragUV = vec2(1.0, 1.0);
+            break;
+    }
 }

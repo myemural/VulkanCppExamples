@@ -9,9 +9,11 @@
 // ------------------------------------------------------------------------
 
 layout(location = 0) out vec4 outColor;
-layout(location = 0) in vec3 fragPosition;
+layout(location = 0) in vec2 fragUV;
+
+layout(set = 0, binding = 0) uniform sampler2D uCombinedSampler;
 
 void main()
 {
-    outColor = vec4(fragPosition, 1.0);
+    outColor = texture(uCombinedSampler, fragUV);
 }

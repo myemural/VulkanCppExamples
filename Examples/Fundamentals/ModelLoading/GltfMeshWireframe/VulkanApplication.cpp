@@ -132,8 +132,8 @@ void VulkanApplication::CreateResources()
             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     // Load models
-    ModelLoader modelLoader;
-    avocadoModel_ = modelLoader.LoadBinaryGltfFromFile(ASSETS_DIR + std::string("Models/Avocado.glb"));
+    ModelLoader modelLoader{ASSETS_DIR};
+    avocadoModel_ = modelLoader.LoadBinaryGltfFromFile(GetParamStr(AppConstants::AvocadoModelPath));
 
     ResourceDescriptor resourceCreateInfo;
 

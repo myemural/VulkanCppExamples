@@ -24,8 +24,14 @@ namespace AppConstants
     constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
 
     // Resources
+    constexpr auto CrateImage = "AppConstants.CrateImage";
+    constexpr auto CrateImageView = "AppConstants.CrateImageView";
     constexpr auto DepthImage = "AppConstants.DepthImage";
     constexpr auto DepthImageView = "AppConstants.DepthImageView";
+    constexpr auto MainSampler = "AppConstants.MainSampler";
+    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
+    constexpr auto CamerasModelPath = "AppConstants.CamerasModelPath";
+    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
 } // namespace AppConstants
 
 namespace AppSettings

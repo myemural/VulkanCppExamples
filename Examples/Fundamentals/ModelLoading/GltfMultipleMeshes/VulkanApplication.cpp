@@ -131,8 +131,8 @@ void VulkanApplication::CreateResources()
             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     // Load models
-    ModelLoader modelLoader;
-    lanternModel_ = modelLoader.LoadBinaryGltfFromFile(ASSETS_DIR + std::string("Models/Lantern.glb"));
+    ModelLoader modelLoader{ASSETS_DIR};
+    lanternModel_ = modelLoader.LoadBinaryGltfFromFile(GetParamStr(AppConstants::LanternModelPath));
 
     // Load model textures
     const auto meshMatIndex = lanternModel_->Meshes[0].MaterialIndex;

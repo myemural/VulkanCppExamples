@@ -22,6 +22,13 @@ namespace common::utility
 class ModelLoader
 {
 public:
+    /**
+     * @param basePath Base path of the model.
+     */
+    explicit ModelLoader(const std::string& basePath);
+
+    ~ModelLoader() = default;
+
     [[nodiscard]] std::shared_ptr<GltfModelHandler> LoadBinaryGltfFromFile(const std::string& filePath);
 
     [[nodiscard]] std::shared_ptr<GltfModelHandler> LoadAsciiGltfFromFile(const std::string& filePath);
@@ -41,6 +48,7 @@ private:
 
     bool ProcessCameras(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
 
+    std::string basePath_;
     tinygltf::TinyGLTF gltfLoader_;
 };
 

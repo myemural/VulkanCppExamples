@@ -39,7 +39,7 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-
+    schema.RegisterImmutableParam<std::string>(AppConstants::LanternModelPath, "Models/Lantern.glb");
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
