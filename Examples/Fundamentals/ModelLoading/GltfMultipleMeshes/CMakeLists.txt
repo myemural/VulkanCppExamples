@@ -1,5 +1,5 @@
 set(CURRENT_TARGET_NAME GltfMultipleMeshes)
-set(CURRENT_EXAMPLE_NAME "Multiple glTF Meshes and Primitives")
+set(CURRENT_EXAMPLE_NAME "Multiple glTF Meshes and Node Transformations")
 set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper ModelLoadingBase)
 
 include(BuildTarget)

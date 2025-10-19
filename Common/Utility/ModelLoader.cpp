@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <iostream>
 
+#include <utility>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -20,6 +21,13 @@ namespace common::utility
 {
 namespace
 {
+    std::string GenerateModelName(const std::string& filePath)
+    {
+        const std::filesystem::path path = filePath;
+        std::string fileName = path.stem().string();
+        return fileName;
+    }
+
     glm::mat4 GetLocalTransform(const tinygltf::Node& node)
     {
         glm::mat4 mat(1.0f);
@@ -50,10 +58,12 @@ namespace
         return mat;
     }
 
-    void ComputeWorldTransform(std::vector<GltfNode>& nodes, std::uint32_t nodeIndex, const glm::mat4& parentWorld)
+    void ComputeWorldTransform(std::vector<GltfNode>& nodes,
+                               const std::uint32_t nodeIndex,
+                               const glm::mat4& parentWorldMatrix)
     {
         auto& node = nodes[nodeIndex];
-        node.WorldTransform = parentWorld * node.LocalTransform;
+        node.WorldTransform = parentWorldMatrix * node.LocalTransform;
 
         for (const auto childIndex: node.ChildIndices) {
             ComputeWorldTransform(nodes, childIndex, node.WorldTransform);
@@ -61,11 +71,10 @@ namespace
     }
 } // namespace
 
-ModelLoader::ModelLoader(const std::string& basePath) : basePath_{basePath} {}
+ModelLoader::ModelLoader(std::string basePath) : basePath_{std::move(basePath)} {}
 
 std::shared_ptr<GltfModelHandler> ModelLoader::LoadBinaryGltfFromFile(const std::string& filePath)
 {
-    tinygltf::Model gltfModel;
     std::string error;
     std::string warning;
 
@@ -74,86 +83,70 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadBinaryGltfFromFile(const std:
         return nullptr;
     }
 
-    if (!gltfLoader_.LoadBinaryFromFile(&gltfModel, &error, &warning, basePath_ + filePath)) {
+    if (!gltfLoader_.LoadBinaryFromFile(&gltfModel_, &error, &warning, basePath_ + filePath)) {
         std::cerr << "GLTF file could not be loaded: " << error << std::endl;
         return nullptr;
+    }
+
+    if (!error.empty()) {
+        std::cout << "GLTF load error: " << error << std::endl;
     }
 
     if (!warning.empty()) {
         std::cout << "GLTF load warning: " << warning << std::endl;
     }
 
-    auto gltfModelHandler = std::make_shared<GltfModelHandler>();
-    gltfModelHandler->Name = GenerateModelName(filePath);
-
-    if (!ProcessTextures(gltfModelHandler, gltfModel)) {
-        std::cerr << "GLTF processing textures error!" << std::endl;
-        return nullptr;
-    }
-
-    if (!ProcessMaterials(gltfModelHandler, gltfModel)) {
-        std::cerr << "GLTF processing materials error!" << std::endl;
-        return nullptr;
-    }
-
-    if (!ProcessMeshes(gltfModelHandler, gltfModel)) {
-        std::cerr << "GLTF processing meshes error!" << std::endl;
-        return nullptr;
-    }
-
-    if (!ProcessNodes(gltfModelHandler, gltfModel)) {
-        std::cerr << "GLTF processing nodes error!" << std::endl;
-        return nullptr;
-    }
-
-    if (!ProcessCameras(gltfModelHandler, gltfModel)) {
-        std::cerr << "GLTF processing cameras error!" << std::endl;
-        return nullptr;
-    }
-
-    return gltfModelHandler;
+    return ProcessGltfModel(filePath);
 }
 
 std::shared_ptr<GltfModelHandler> ModelLoader::LoadAsciiGltfFromFile(const std::string& filePath)
 {
-    tinygltf::Model gltfModel;
     std::string error;
     std::string warning;
 
-    if (!gltfLoader_.LoadASCIIFromFile(&gltfModel, &error, &warning, basePath_ + filePath)) {
+    if (!gltfLoader_.LoadASCIIFromFile(&gltfModel_, &error, &warning, basePath_ + filePath)) {
         std::cerr << "GLTF file could not be loaded: " << error << std::endl;
         return nullptr;
+    }
+
+    if (!error.empty()) {
+        std::cout << "GLTF load error: " << error << std::endl;
     }
 
     if (!warning.empty()) {
         std::cout << "GLTF load warning: " << warning << std::endl;
     }
 
+    return ProcessGltfModel(filePath);
+}
+
+std::shared_ptr<GltfModelHandler> ModelLoader::ProcessGltfModel(const std::string& filePath) const
+{
     auto gltfModelHandler = std::make_shared<GltfModelHandler>();
     gltfModelHandler->Name = GenerateModelName(filePath);
 
     const std::string parentPath = (std::filesystem::path{filePath}.parent_path() / "").string();
-    if (!ProcessTextures(gltfModelHandler, gltfModel, parentPath)) {
+    if (!ProcessTextures(gltfModelHandler, parentPath)) {
         std::cerr << "GLTF processing textures error!" << std::endl;
         return nullptr;
     }
 
-    if (!ProcessMaterials(gltfModelHandler, gltfModel)) {
+    if (!ProcessMaterials(gltfModelHandler)) {
         std::cerr << "GLTF processing materials error!" << std::endl;
         return nullptr;
     }
 
-    if (!ProcessMeshes(gltfModelHandler, gltfModel)) {
+    if (!ProcessMeshes(gltfModelHandler)) {
         std::cerr << "GLTF processing meshes error!" << std::endl;
         return nullptr;
     }
 
-    if (!ProcessNodes(gltfModelHandler, gltfModel)) {
+    if (!ProcessNodes(gltfModelHandler)) {
         std::cerr << "GLTF processing nodes error!" << std::endl;
         return nullptr;
     }
 
-    if (!ProcessCameras(gltfModelHandler, gltfModel)) {
+    if (!ProcessCameras(gltfModelHandler)) {
         std::cerr << "GLTF processing cameras error!" << std::endl;
         return nullptr;
     }
@@ -161,21 +154,12 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadAsciiGltfFromFile(const std::
     return gltfModelHandler;
 }
 
-std::string ModelLoader::GenerateModelName(const std::string& filePath)
+bool ModelLoader::ProcessTextures(const std::shared_ptr<GltfModelHandler>& handler, const std::string& parentPath) const
 {
-    std::filesystem::path path = filePath;
-    std::string fileName = path.stem().string();
-    return fileName;
-}
-
-bool ModelLoader::ProcessTextures(const std::shared_ptr<GltfModelHandler>& handler,
-                                  const tinygltf::Model& gltfModel,
-                                  const std::string& parentPath)
-{
-    for (const auto& tex: gltfModel.textures) {
-        if (const int texIndex = tex.source; texIndex >= 0 && texIndex < gltfModel.images.size()) {
+    for (const auto& tex: gltfModel_.textures) {
+        if (const int texIndex = tex.source; texIndex >= 0 && texIndex < gltfModel_.images.size()) {
             TextureHandler textureHandler;
-            if (const auto& image = gltfModel.images[texIndex]; image.uri.empty()) {
+            if (const auto& image = gltfModel_.images[texIndex]; image.uri.empty()) {
                 textureHandler.Width = image.width;
                 textureHandler.Height = image.height;
                 textureHandler.Channels = image.component;
@@ -195,15 +179,18 @@ bool ModelLoader::ProcessTextures(const std::shared_ptr<GltfModelHandler>& handl
     return true;
 }
 
-bool ModelLoader::ProcessMaterials(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel)
+bool ModelLoader::ProcessMaterials(const std::shared_ptr<GltfModelHandler>& handler) const
 {
     static int i = 0;
-    for (const auto& mat: gltfModel.materials) {
+    for (const auto& mat: gltfModel_.materials) {
         GltfMaterial material;
         std::string matName = mat.name.empty() ? "mat" + std::to_string(i++) : mat.name;
         material.Name = handler->Name + "_" + matName;
         if (mat.values.contains("baseColorTexture")) {
             material.PbrMetallicRoughness.BaseColorTextureIndex = mat.values.at("baseColorTexture").TextureIndex();
+        } else {
+            std::cerr << "Currently material that does not contain baseColorTexture is not supported!" << std::endl;
+            return false;
         }
 
         handler->Materials.push_back(material);
@@ -212,10 +199,10 @@ bool ModelLoader::ProcessMaterials(const std::shared_ptr<GltfModelHandler>& hand
     return true;
 }
 
-bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel)
+bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler) const
 {
     static int meshCount = 0;
-    for (const auto& mesh: gltfModel.meshes) {
+    for (const auto& mesh: gltfModel_.meshes) {
         for (const auto& primitive: mesh.primitives) {
             GltfMesh gltfMesh;
             std::string meshName = mesh.name.empty() ? "mesh" + std::to_string(meshCount++) : mesh.name;
@@ -224,9 +211,9 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
             // Vertex Positions
             std::vector<float> posData;
             if (primitive.attributes.contains("POSITION")) {
-                const auto& posAccessor = gltfModel.accessors[primitive.attributes.at("POSITION")];
-                const auto& posBufferView = gltfModel.bufferViews[posAccessor.bufferView];
-                const auto& posBuffer = gltfModel.buffers[posBufferView.buffer];
+                const auto& posAccessor = gltfModel_.accessors[primitive.attributes.at("POSITION")];
+                const auto& posBufferView = gltfModel_.bufferViews[posAccessor.bufferView];
+                const auto& posBuffer = gltfModel_.buffers[posBufferView.buffer];
 
                 size_t start = posBufferView.byteOffset + posAccessor.byteOffset;
                 size_t length = posAccessor.count * tinygltf::GetNumComponentsInType(posAccessor.type);
@@ -241,9 +228,9 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
             // Vertex Normals
             std::vector<float> normData;
             if (primitive.attributes.contains("NORMAL")) {
-                const auto& normAccessor = gltfModel.accessors[primitive.attributes.at("NORMAL")];
-                const auto& normBufferView = gltfModel.bufferViews[normAccessor.bufferView];
-                const auto& normBuffer = gltfModel.buffers[normBufferView.buffer];
+                const auto& normAccessor = gltfModel_.accessors[primitive.attributes.at("NORMAL")];
+                const auto& normBufferView = gltfModel_.bufferViews[normAccessor.bufferView];
+                const auto& normBuffer = gltfModel_.buffers[normBufferView.buffer];
 
                 size_t start = normBufferView.byteOffset + normAccessor.byteOffset;
                 size_t length = normAccessor.count * tinygltf::GetNumComponentsInType(normAccessor.type);
@@ -255,9 +242,9 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
             // Vertex TexCoords (only TEXCOORD_0 for now)
             std::vector<float> texData;
             if (primitive.attributes.contains("TEXCOORD_0")) {
-                const auto& texAccessor = gltfModel.accessors[primitive.attributes.at("TEXCOORD_0")];
-                const auto& texBufferView = gltfModel.bufferViews[texAccessor.bufferView];
-                const auto& texBuffer = gltfModel.buffers[texBufferView.buffer];
+                const auto& texAccessor = gltfModel_.accessors[primitive.attributes.at("TEXCOORD_0")];
+                const auto& texBufferView = gltfModel_.bufferViews[texAccessor.bufferView];
+                const auto& texBuffer = gltfModel_.buffers[texBufferView.buffer];
 
                 size_t start = texBufferView.byteOffset + texAccessor.byteOffset;
                 size_t length = texAccessor.count * tinygltf::GetNumComponentsInType(texAccessor.type);
@@ -267,7 +254,7 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
             }
 
             // Process vertices
-            const auto& posAccessor = gltfModel.accessors[primitive.attributes.at("POSITION")];
+            const auto& posAccessor = gltfModel_.accessors[primitive.attributes.at("POSITION")];
             for (size_t i = 0; i < posAccessor.count; ++i) {
                 GltfPrimitiveAttrib attribute;
                 attribute.Position = glm::vec3(posData[i * 3 + 0], posData[i * 3 + 1], posData[i * 3 + 2]);
@@ -275,15 +262,15 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
                     attribute.Normal = glm::vec3(normData[i * 3 + 0], normData[i * 3 + 1], normData[i * 3 + 2]);
                 }
                 if (!texData.empty()) {
-                    attribute.TexCoords.emplace_back(glm::vec2(texData[i * 2 + 0], texData[i * 2 + 1]));
+                    attribute.TexCoords.emplace_back(texData[i * 2 + 0], texData[i * 2 + 1]);
                 }
                 gltfMesh.Vertices.push_back(attribute);
             }
 
             // Indices
-            const auto& idxAccessor = gltfModel.accessors[primitive.indices];
-            const auto& idxBufferView = gltfModel.bufferViews[idxAccessor.bufferView];
-            const auto& idxBuffer = gltfModel.buffers[idxBufferView.buffer];
+            const auto& idxAccessor = gltfModel_.accessors[primitive.indices];
+            const auto& idxBufferView = gltfModel_.bufferViews[idxAccessor.bufferView];
+            const auto& idxBuffer = gltfModel_.buffers[idxBufferView.buffer];
 
             if (idxAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
                 size_t start = idxBufferView.byteOffset + idxAccessor.byteOffset;
@@ -304,32 +291,32 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
     return true;
 }
 
-bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel)
+bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler) const
 {
-    std::vector<GltfNode> gltfNodes{gltfModel.nodes.size()};
+    std::vector<GltfNode> gltfNodes{gltfModel_.nodes.size()};
 
     // Set mesh index, child indices, camera index and local transform
-    for (size_t i = 0; i < gltfModel.nodes.size(); ++i) {
-        if (gltfModel.nodes[i].mesh != -1) {
-            gltfNodes[i].MeshIndex = gltfModel.nodes[i].mesh;
+    for (size_t i = 0; i < gltfModel_.nodes.size(); ++i) {
+        if (gltfModel_.nodes[i].mesh != -1) {
+            gltfNodes[i].MeshIndex = gltfModel_.nodes[i].mesh;
         }
-        for (const auto child: gltfModel.nodes[i].children) {
+        for (const auto child: gltfModel_.nodes[i].children) {
             gltfNodes[i].ChildIndices.emplace_back(static_cast<uint32_t>(child));
         }
-        gltfNodes[i].CameraIndex = gltfModel.nodes[i].camera != -1 ? gltfModel.nodes[i].camera : UINT32_MAX;
-        gltfNodes[i].LocalTransform = GetLocalTransform(gltfModel.nodes[i]);
+        gltfNodes[i].CameraIndex = gltfModel_.nodes[i].camera != -1 ? gltfModel_.nodes[i].camera : UINT32_MAX;
+        gltfNodes[i].LocalTransform = GetLocalTransform(gltfModel_.nodes[i]);
     }
 
     // Set parents
-    for (size_t i = 0; i < gltfModel.nodes.size(); ++i) {
-        for (const auto childIndex: gltfModel.nodes[i].children) {
+    for (size_t i = 0; i < gltfModel_.nodes.size(); ++i) {
+        for (const auto childIndex: gltfModel_.nodes[i].children) {
             gltfNodes[childIndex].ParentIndex = static_cast<std::uint32_t>(i);
         }
     }
 
     // Calculate world transforms
-    handler->CurrentSceneIndex = gltfModel.defaultScene > -1 ? gltfModel.defaultScene : 0;
-    const tinygltf::Scene& scene = gltfModel.scenes[handler->CurrentSceneIndex];
+    handler->CurrentSceneIndex = gltfModel_.defaultScene > -1 ? gltfModel_.defaultScene : 0;
+    const auto& scene = gltfModel_.scenes[handler->CurrentSceneIndex];
     for (const auto rootNode: scene.nodes) {
         ComputeWorldTransform(gltfNodes, static_cast<std::uint32_t>(rootNode), glm::mat4(1.0f));
     }
@@ -339,9 +326,9 @@ bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler,
     return true;
 }
 
-bool ModelLoader::ProcessCameras(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel)
+bool ModelLoader::ProcessCameras(const std::shared_ptr<GltfModelHandler>& handler) const
 {
-    for (const auto& camera: gltfModel.cameras) {
+    for (const auto& camera: gltfModel_.cameras) {
         GltfCamera gltfCamera;
         gltfCamera.Name = camera.name;
         gltfCamera.Type = camera.type == "perspective" ? GltfCameraType::PERSPECTIVE : GltfCameraType::ORTHOGRAPHIC;

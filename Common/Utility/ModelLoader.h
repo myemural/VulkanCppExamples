@@ -25,7 +25,7 @@ public:
     /**
      * @param basePath Base path of the model.
      */
-    explicit ModelLoader(const std::string& basePath);
+    explicit ModelLoader(std::string basePath);
 
     ~ModelLoader() = default;
 
@@ -34,22 +34,22 @@ public:
     [[nodiscard]] std::shared_ptr<GltfModelHandler> LoadAsciiGltfFromFile(const std::string& filePath);
 
 private:
-    std::string GenerateModelName(const std::string& filePath);
+    [[nodiscard]] std::shared_ptr<GltfModelHandler> ProcessGltfModel(const std::string& filePath) const;
 
-    bool ProcessTextures(const std::shared_ptr<GltfModelHandler>& handler,
-                         const tinygltf::Model& gltfModel,
-                         const std::string& parentPath = "");
+    [[nodiscard]] bool ProcessTextures(const std::shared_ptr<GltfModelHandler>& handler,
+                                       const std::string& parentPath = "") const;
 
-    bool ProcessMaterials(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
+    [[nodiscard]] bool ProcessMaterials(const std::shared_ptr<GltfModelHandler>& handler) const;
 
-    bool ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
+    [[nodiscard]] bool ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler) const;
 
-    bool ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
+    [[nodiscard]] bool ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler) const;
 
-    bool ProcessCameras(const std::shared_ptr<GltfModelHandler>& handler, const tinygltf::Model& gltfModel);
+    [[nodiscard]] bool ProcessCameras(const std::shared_ptr<GltfModelHandler>& handler) const;
 
     std::string basePath_;
     tinygltf::TinyGLTF gltfLoader_;
+    tinygltf::Model gltfModel_;
 };
 
 } // namespace common::utility
