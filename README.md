@@ -1,34 +1,31 @@
 # Vulkan C++ Examples
 
-This repo, which will include many examples from basic to advanced levels, contains comprehensive Vulkan examples built with modern C++.
+This repo aims to include implementations of many Vulkan examples that built with C++20 standard, from simple to advanced. First examples based on the basic features of Vulkan, then real-time rendering topics such as light, shadow, PBR and post-processing will be added.
+
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Clone](#clone)
+  - [Build](#build)
+- [General Info](#general-info)
+  - [Common Parameters](#common-parameters)
+- [Environment Support](#environment-support)
+- [Contributing](#contributing)
+  - [Code of Conduct](#code-of-conduct)
+  - [How to Contribute?](#how-to-contribute)
+- [License](#license)
 
 ## Getting Started
 
-### Operating System Support
-
-Currently only tested on Windows. Other operating systems will be added.
-
-| Operating System | Support   | Minimum Tested Version |
-|------------------|-----------|------------------------|
-| Windows          | Yes       | Windows 11 Pro 24H2    |
-| GNU/Linux        | No        | -                      |
-| MacOS            | No        | -                      |
-| Android          | No        | -                      |
-| iOS              | No        | -                      |
-
 ### Prerequisites
 
-Vulkan dependencies:
-- LunarG VulkanSDK 1.3.268.0 (currently tested)
+Before start, you should download and install the latest LunarG Vulkan SDK from here (*1.4.328.1* version has been tested): https://vulkan.lunarg.com/sdk/home
 
-3rd party libraries (repos) that are dependent on:
+To compile and test the examples, the *MSVC 19.40+* compiler and *CMake 3.31+* are recommended. All third party libraries are added with using [Git Submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules). Therefore, you do not need to worry about installing them separately. Here is a list of 3rd party libraries (repos) that are dependent on:
 - GLFW
 - glm (OpenGL Mathematics)
-- stb (Single-file Public Domain Libraries)
+- tinygltf
 
-For compiling and testing:
-- CMake 3.31+
-- MSVC 19.40+ (for Windows)
+**NOTE:** Normally, the *stb_image* library is also used for texture loading. However, this library is already integrated with the *tinygltf* library.
 
 ### Clone
 
@@ -65,15 +62,15 @@ Every example has its own directory and CMake target. You can build what you wan
 
 **Vulkan Parameters**
 
-| Parameter / Key           | Type                           | Usage in Code                    | Description                                          | Default Value            |
-|---------------------------|--------------------------------|----------------------------------|------------------------------------------------------|--------------------------|
-| Vulkan.ApplicationName    | std::string                    | VulkanParams::ApplicationName    | Name of the Vulkan application                       |                          |
-| Vulkan.VulkanApiVersion   | std::uint32_t                  | VulkanParams::VulkanApiVersion   | Version of the Vulkan API                            | VK_API_VERSION_1_0       |
-| Vulkan.ApplicationVersion | std::uint32_t                  | VulkanParams::ApplicationVersion | Version of the Vulkan application                    | VK_MAKE_VERSION(1, 0, 0) |
-| Vulkan.EngineName         | std::string                    | VulkanParams::EngineName         | Name of the engine                                   | "DefaultEngine"          |
-| Vulkan.EngineVersion      | std::uint32_t                  | VulkanParams::EngineVersion      | Version of the engine                                | VK_MAKE_VERSION(1, 0, 0) |
-| Vulkan.InstanceLayers     | std::vector&lt;std::string&gt; | VulkanParams::InstanceLayers     | List of the instance layers                          |                          |
-| Vulkan.InstanceExtensions | std::vector&lt;std::string&gt; | VulkanParams::InstanceExtensions | List of the instance extensions                      |                          |
+| Parameter / Key           | Type                           | Usage in Code                    | Description                       | Default Value            |
+|---------------------------|--------------------------------|----------------------------------|-----------------------------------|--------------------------|
+| Vulkan.ApplicationName    | std::string                    | VulkanParams::ApplicationName    | Name of the Vulkan application    |                          |
+| Vulkan.VulkanApiVersion   | std::uint32_t                  | VulkanParams::VulkanApiVersion   | Version of the Vulkan API         | VK_API_VERSION_1_0       |
+| Vulkan.ApplicationVersion | std::uint32_t                  | VulkanParams::ApplicationVersion | Version of the Vulkan application | VK_MAKE_VERSION(1, 0, 0) |
+| Vulkan.EngineName         | std::string                    | VulkanParams::EngineName         | Name of the engine                | "DefaultEngine"          |
+| Vulkan.EngineVersion      | std::uint32_t                  | VulkanParams::EngineVersion      | Version of the engine             | VK_MAKE_VERSION(1, 0, 0) |
+| Vulkan.InstanceLayers     | std::vector&lt;std::string&gt; | VulkanParams::InstanceLayers     | List of the instance layers       |                          |
+| Vulkan.InstanceExtensions | std::vector&lt;std::string&gt; | VulkanParams::InstanceExtensions | List of the instance extensions   |                          |
 
 ## Examples
 
@@ -120,3 +117,33 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Using Multi-Viewports for Different Colors](/Examples/Fundamentals/SwapChainsAndViewports/MultiViewport)
   - [Split Screen with Dynamic Viewport](/Examples/Fundamentals/SwapChainsAndViewports/DynamicViewport)
   - [Scissor Animation](/Examples/Fundamentals/SwapChainsAndViewports/ScissorAnimation)
+- **[Model Loading](/Examples/Fundamentals/ModelLoading)**
+  - [Rendering glTF Mesh with Wireframe](/Examples/Fundamentals/ModelLoading/GltfMeshWireframe)
+  - [Rendering Textured glTF Mesh](/Examples/Fundamentals/ModelLoading/GltfMeshTextured)
+  - [Multiple glTF Meshes and Node Transformations](/Examples/Fundamentals/ModelLoading/GltfMultipleMeshes)
+  - [Camera Usage with glTF](/Examples/Fundamentals/ModelLoading/GltfCamera)
+
+## Environment Support
+
+Currently only tested on Windows. Other operating systems will be added.
+
+| Operating System | Support | Minimum Tested Version |
+|------------------|---------|------------------------|
+| Windows          | Yes     | Windows 11 Pro 24H2    |
+| GNU/Linux        | No      | -                      |
+| MacOS            | No      | -                      |
+
+
+## Contributing
+
+### Code of Conduct
+
+Before start, please review our [CODE_OF_CONDUCT.md](/CODE_OF_CONDUCT.md) to learn community rules and agreements.
+
+### How to Contribute?
+
+You can contribute to this repo with suggestions, code corrections, or bug reports. You can suggest changes to the visual outputs of the examples. If you have an example you'd like to see in the repo, you can report it or open a Pull Request for your own implementations. Additionally, you can open any title you like in the Issues section. There's currently no specific format for topics, so feel free to open any topic you like.
+
+## License
+
+Distributed under the MIT License. See [LICENSE](/LICENSE) file for more information.

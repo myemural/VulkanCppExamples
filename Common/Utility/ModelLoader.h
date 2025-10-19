@@ -29,8 +29,18 @@ public:
 
     ~ModelLoader() = default;
 
+    /**
+     * @brief Reads glTF binary model from file and returns the data with tha handler.
+     * @param filePath File path of the binary glTF model.
+     * @return Returns glTF model handler.
+     */
     [[nodiscard]] std::shared_ptr<GltfModelHandler> LoadBinaryGltfFromFile(const std::string& filePath);
 
+    /**
+     * @brief Reads glTF ASCII model from file and returns the data with tha handler.
+     * @param filePath File path of the ASCII glTF model.
+     * @return Returns glTF model handler.
+     */
     [[nodiscard]] std::shared_ptr<GltfModelHandler> LoadAsciiGltfFromFile(const std::string& filePath);
 
 private:

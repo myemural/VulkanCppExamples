@@ -15,7 +15,11 @@ def pascal_to_snake(name: str) -> str:
     """
     s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     s2 = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1)
-    return s2.lower()
+    result = s2.lower()
+
+    # Fix postfixes like 2D, 3D etc.
+    result = re.sub(r'(_?)([23])_d$', r'_\2d', result)
+    return result
 
 
 def expected_namespace(file_path: str) -> str:

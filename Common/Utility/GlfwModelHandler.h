@@ -38,16 +38,6 @@ struct GltfMaterial
     {
         int BaseColorTextureIndex = -1;
     } PbrMetallicRoughness;
-
-    std::string GetImageName() const
-    {
-        return Name + "_Image";
-    }
-
-    std::string GetImageViewName() const
-    {
-        return Name + "_ImageView";
-    }
 };
 
 struct GltfMesh
@@ -60,12 +50,12 @@ struct GltfMesh
     template<typename VertexType>
     std::vector<VertexType> GetVerticesAs();
 
-    std::string GetVertexBufferName() const
+    [[nodiscard]] std::string GetVertexBufferName() const
     {
         return Name + "_VertexBuffer";
     }
 
-    std::string GetIndexBufferName() const
+    [[nodiscard]] std::string GetIndexBufferName() const
     {
         return Name + "_IndexBuffer";
     }
