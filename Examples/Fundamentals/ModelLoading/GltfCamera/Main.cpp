@@ -63,7 +63,7 @@ bool SetParams(ParameterServer& params)
 
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.3f, 0.3f, 1.0f});
-        params.Set(AppSettings::IsPerspectiveCamera, false);
+        params.Set(AppSettings::IsPerspectiveCamera, true);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
