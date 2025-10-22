@@ -27,4 +27,4 @@ The examples in this subsection, listed from easy to complex, are as follows:
 
 ## Architecture of the Subsection
 
-The `VulkanApplication` classes used in the examples, except for the `CreatingWindow` and `GetDeviceInfo` examples, are derived from the `ApplicationBasics` class. The `ApplicationBasics` class includes common functions such as selecting a PhysicalDevice and creating a Surface, Device, Queue, and creating SwapChain and Framebuffers with ImageViews taken from this SwapChain; creating CommandPool, synchronization objects, and RenderPass.
+The `VulkanApplication` classes used in the examples, except for the `CreatingWindow` and `GetDeviceInfo` examples, are derived from the `ApplicationBasics` class. The `ApplicationBasics` class includes common functions such as selecting a PhysicalDevice and creating a Surface, Device, Queue; creating SwapChain and Framebuffers with ImageViews taken from this SwapChain; creating CommandPool, synchronization objects, and RenderPass.
