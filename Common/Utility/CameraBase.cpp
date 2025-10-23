@@ -6,6 +6,8 @@
 
 #include "CameraBase.h"
 
+#include <cmath>
+
 #include <glm/ext/matrix_transform.hpp>
 
 namespace common::utility
@@ -73,9 +75,9 @@ void CameraBase::Rotate(const float yawDelta, const float pitchDelta)
 void CameraBase::UpdateVectors()
 {
     glm::vec3 front;
-    front.x = cos(glm::radians(yaw_)) * cos(glm::radians(pitch_));
-    front.y = sin(glm::radians(pitch_));
-    front.z = sin(glm::radians(yaw_)) * cos(glm::radians(pitch_));
+    front.x = std::cos(glm::radians(yaw_)) * std::cos(glm::radians(pitch_));
+    front.y = std::sin(glm::radians(pitch_));
+    front.z = std::sin(glm::radians(yaw_)) * std::cos(glm::radians(pitch_));
     cameraFront_ = glm::normalize(front);
 
     cameraRight_ = glm::normalize(glm::cross(cameraFront_, worldUp_));
