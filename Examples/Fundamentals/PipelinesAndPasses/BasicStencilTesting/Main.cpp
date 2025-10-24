@@ -1,6 +1,6 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, outlines are drawn around objects using multiple pipelines.
+ * @brief   In this example, outlines are drawn around objects using multiple pipelines and stencil testing.
  * @author  Mustafa Yemural (myemural)
  * @date    27.09.2025
  *
