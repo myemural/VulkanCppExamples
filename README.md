@@ -105,7 +105,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Face Culling](/Examples/Fundamentals/Drawing3D/FaceCulling)
   - [Instanced Rendering](/Examples/Fundamentals/Drawing3D/InstancedRendering)
   - [Depth Testing Operations](/Examples/Fundamentals/Drawing3D/DepthTestingOperations)
-- **[PipelinesAndPasses](/Examples/Fundamentals/PipelinesAndPasses)**
+- **[Pipelines And Passes](/Examples/Fundamentals/PipelinesAndPasses)**
   - [Simple Ghosting Effect](/Examples/Fundamentals/PipelinesAndPasses/LoadStoreOps)
   - [Changing Blending Factor with Dynamic State](/Examples/Fundamentals/PipelinesAndPasses/DynamicStatePipelines)
   - [Using Multiple Pipelines and Pipeline Derivatives](/Examples/Fundamentals/PipelinesAndPasses/MultiplePipelines)
