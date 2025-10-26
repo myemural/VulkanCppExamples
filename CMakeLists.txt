@@ -7,6 +7,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/Cmake")
 
 option(ENABLE_EXAMPLE_TESTS "Enable running example tests" ON)
 
+# Compiler options
+if (MSVC)
+    add_link_options(/INCREMENTAL:NO) # Turn off incremental linking
+endif()
+
 # Try to auto locate Vulkan
 find_package(Vulkan REQUIRED)
 
