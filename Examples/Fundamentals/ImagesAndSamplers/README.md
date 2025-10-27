@@ -21,4 +21,11 @@ The examples in this subsection, listed from easy to complex, are as follows:
 
 ## Architecture of the Subsection
 
-TBD
+The example in this subsection are using `ApplicationImagesAndSamplers` class. This class is almost same with the `ApplicationDescriptorSets` class. But in addition to `ApplicationDescriptorSets` class, `ApplicationImagesAndSamplers` is using two VulkanFramework classes:
+
+- `common::vulkan_framework::DescriptorRegistry`
+- `common::vulkan_framework::DescriptorUpdater`
+
+`DescriptorRegistry` class creates descriptor set and descriptor set layout objects with given information structure. `DescriptorUpdater` class updates the resource binding of the descriptor sets. Creating and updating descriptor sets functionalities are associated with the `ApplicationImagesAndSamplers` class. So the examples that derived from this class can use these functionalities from their base classes.
+
+In addition, `ApplicationImagesAndSamplers` class provides `ChangeImageLayout` method to change image layout from one to other easily.
