@@ -135,6 +135,36 @@ VkFormat VulkanPhysicalDevice::FindSupportedFormat(const std::vector<VkFormat>& 
     throw std::runtime_error("Appropriate target format couldn't be detected!");
 }
 
+VkSampleCountFlagBits VulkanPhysicalDevice::GetMaxUsableSampleCount() const
+{
+    VkPhysicalDeviceProperties physicalDeviceProperties;
+    vkGetPhysicalDeviceProperties(handle_, &physicalDeviceProperties);
+
+    const VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts &
+                                      physicalDeviceProperties.limits.framebufferDepthSampleCounts;
+
+    if (counts & VK_SAMPLE_COUNT_64_BIT) {
+        return VK_SAMPLE_COUNT_64_BIT;
+    }
+    if (counts & VK_SAMPLE_COUNT_32_BIT) {
+        return VK_SAMPLE_COUNT_32_BIT;
+    }
+    if (counts & VK_SAMPLE_COUNT_16_BIT) {
+        return VK_SAMPLE_COUNT_16_BIT;
+    }
+    if (counts & VK_SAMPLE_COUNT_8_BIT) {
+        return VK_SAMPLE_COUNT_8_BIT;
+    }
+    if (counts & VK_SAMPLE_COUNT_4_BIT) {
+        return VK_SAMPLE_COUNT_4_BIT;
+    }
+    if (counts & VK_SAMPLE_COUNT_2_BIT) {
+        return VK_SAMPLE_COUNT_2_BIT;
+    }
+
+    return VK_SAMPLE_COUNT_1_BIT;
+}
+
 std::shared_ptr<VulkanDevice>
 VulkanPhysicalDevice::CreateDevice(const std::function<void(VulkanDeviceBuilder&)>& builderFunc)
 {

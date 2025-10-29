@@ -54,6 +54,8 @@ public:
                                  const VkFormatFeatureFlags& features,
                                  const VkImageTiling& tiling = VK_IMAGE_TILING_OPTIMAL) const;
 
+    VkSampleCountFlagBits GetMaxUsableSampleCount() const;
+
     std::shared_ptr<VulkanDevice> CreateDevice(const std::function<void(VulkanDeviceBuilder&)>& builderFunc);
 };
 
