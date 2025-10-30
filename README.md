@@ -124,6 +124,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Camera Usage with glTF](/Examples/Fundamentals/ModelLoading/GltfCamera)
 - **[Multisampling](/Examples/Fundamentals/Multisampling)**
   - [MSAA Basics](/Examples/Fundamentals/Multisampling/MsaaBasics)
+  - [Sample Shading](/Examples/Fundamentals/Multisampling/SampleShading)
 
 ## Environment Support
 
