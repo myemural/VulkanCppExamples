@@ -16,6 +16,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -27,12 +28,12 @@ class VulkanRenderPass;
 class VulkanPipeline final : public VulkanObject<VulkanDevice, VkPipeline>
 {
 public:
-    explicit VulkanPipeline(std::shared_ptr<VulkanDevice> device, VkPipeline pipeline);
+    COMMON_API explicit VulkanPipeline(std::shared_ptr<VulkanDevice> device, VkPipeline pipeline);
 
-    ~VulkanPipeline() override;
+    COMMON_API ~VulkanPipeline() override;
 };
 
-class VulkanGraphicsPipelineBuilder
+class COMMON_API VulkanGraphicsPipelineBuilder
 {
 public:
     VulkanGraphicsPipelineBuilder();

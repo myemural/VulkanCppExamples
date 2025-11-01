@@ -11,12 +11,13 @@
  */
 #pragma once
 
+#include "CoreDefines.h"
 #include "VulkanDevice.h"
 #include "VulkanSampler.h"
 
 namespace common::vulkan_framework
 {
-struct SamplerResourceCreateInfo
+struct COMMON_API SamplerResourceCreateInfo
 {
     std::string Name;
     VkSamplerCreateFlags CreateFlags = 0;
@@ -58,7 +59,7 @@ struct SamplerResourceCreateInfo
     VkBool32 UnnormalizedCoordinates = VK_FALSE;
 };
 
-class SamplerResource
+class COMMON_API SamplerResource
 {
 public:
     /**

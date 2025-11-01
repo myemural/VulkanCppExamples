@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -24,12 +25,12 @@ class VulkanDevice;
 class VulkanFence final : public VulkanObject<VulkanDevice, VkFence>
 {
 public:
-    VulkanFence(std::shared_ptr<VulkanDevice> device, VkFence fence);
+    COMMON_API VulkanFence(std::shared_ptr<VulkanDevice> device, VkFence fence);
 
-    ~VulkanFence() override;
+    COMMON_API ~VulkanFence() override;
 
-    void WaitForFence(bool waitAll, uint64_t timeout) const;
+    COMMON_API void WaitForFence(bool waitAll, uint64_t timeout) const;
 
-    void ResetFence() const;
+    COMMON_API void ResetFence() const;
 };
 } // namespace common::vulkan_wrapper

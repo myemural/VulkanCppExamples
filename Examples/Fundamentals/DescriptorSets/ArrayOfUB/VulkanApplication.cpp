@@ -8,6 +8,8 @@
 
 #include <array>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "ShaderLoader.h"
@@ -15,8 +17,6 @@
 #include "VulkanDescriptorPool.h"
 #include "VulkanHelpers.h"
 #include "VulkanShaderModule.h"
-
-#include "glm/gtc/matrix_transform.hpp"
 
 namespace examples::fundamentals::descriptor_sets::array_of_ub
 {
@@ -313,7 +313,7 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t indexCount)
 
 void VulkanApplication::UpdateUniformBuffers()
 {
-    const auto currentTime = static_cast<float>(glfwGetTime());
+    const auto currentTime = static_cast<float>(GetCurrentTime());
     const float translation = std::sin(currentTime) * 0.2f;
     const float rotation = currentTime * 2.5f;
     const float scalingFactor = std::sin(currentTime) * 0.5f + 1.0f; // Range: 0.5 - 1.5

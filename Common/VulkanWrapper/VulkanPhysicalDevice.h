@@ -17,6 +17,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -30,36 +31,36 @@ class VulkanPhysicalDevice final : public VulkanObject<void, VkPhysicalDevice>,
                                    public std::enable_shared_from_this<VulkanPhysicalDevice>
 {
 public:
-    explicit VulkanPhysicalDevice(VkPhysicalDevice physicalDevice);
+    COMMON_API explicit VulkanPhysicalDevice(VkPhysicalDevice physicalDevice);
 
-    ~VulkanPhysicalDevice() override = default;
+    COMMON_API ~VulkanPhysicalDevice() override = default;
 
-    std::uint32_t FindMemoryType(std::uint32_t typeFilter, const VkMemoryPropertyFlags& properties) const;
+    COMMON_API std::uint32_t FindMemoryType(std::uint32_t typeFilter, const VkMemoryPropertyFlags& properties) const;
 
-    VkPhysicalDeviceProperties GetProperties() const;
+    COMMON_API VkPhysicalDeviceProperties GetProperties() const;
 
-    std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const;
+    COMMON_API std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const;
 
-    std::uint32_t GetSurfaceSupportedQueueFamilyIndex(const VkSurfaceKHR& surface) const;
+    COMMON_API std::uint32_t GetSurfaceSupportedQueueFamilyIndex(const VkSurfaceKHR& surface) const;
 
-    std::optional<VkSurfaceCapabilitiesKHR> GetSurfaceCapabilities(VkSurfaceKHR surface) const;
+    COMMON_API std::optional<VkSurfaceCapabilitiesKHR> GetSurfaceCapabilities(VkSurfaceKHR surface) const;
 
-    std::optional<VkSurfaceFormatKHR> GetSurfaceFormat(const VkSurfaceKHR& surface,
+    COMMON_API std::optional<VkSurfaceFormatKHR> GetSurfaceFormat(const VkSurfaceKHR& surface,
                                                        const VkFormat& selectedFormat,
                                                        const VkColorSpaceKHR& selectedColorSpace) const;
 
-    VkPhysicalDeviceFeatures GetSupportedFeatures() const;
+    COMMON_API VkPhysicalDeviceFeatures GetSupportedFeatures() const;
 
-    VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidateFormats,
+    COMMON_API VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidateFormats,
                                  const VkFormatFeatureFlags& features,
                                  const VkImageTiling& tiling = VK_IMAGE_TILING_OPTIMAL) const;
 
-    VkSampleCountFlagBits GetMaxUsableSampleCount() const;
+    COMMON_API VkSampleCountFlagBits GetMaxUsableSampleCount() const;
 
-    std::shared_ptr<VulkanDevice> CreateDevice(const std::function<void(VulkanDeviceBuilder&)>& builderFunc);
+    COMMON_API std::shared_ptr<VulkanDevice> CreateDevice(const std::function<void(VulkanDeviceBuilder&)>& builderFunc);
 };
 
-class VulkanPhysicalDeviceSelector
+class COMMON_API VulkanPhysicalDeviceSelector
 {
 public:
     VulkanPhysicalDeviceSelector() = default;

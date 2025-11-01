@@ -16,6 +16,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -25,14 +26,14 @@ class VulkanDevice;
 class VulkanRenderPass final : public VulkanObject<VulkanDevice, VkRenderPass>
 {
 public:
-    VulkanRenderPass(std::shared_ptr<VulkanDevice> device, VkRenderPass renderPass);
+    COMMON_API VulkanRenderPass(std::shared_ptr<VulkanDevice> device, VkRenderPass renderPass);
 
-    ~VulkanRenderPass() override;
+    COMMON_API ~VulkanRenderPass() override;
 
-    [[nodiscard]] VkExtent2D GetRenderAreaGranularity() const;
+    [[nodiscard]] COMMON_API VkExtent2D GetRenderAreaGranularity() const;
 };
 
-class VulkanRenderPassBuilder
+class COMMON_API VulkanRenderPassBuilder
 {
 public:
     VulkanRenderPassBuilder();

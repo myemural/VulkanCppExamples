@@ -17,12 +17,13 @@
 
 #include "GLFW/glfw3.h"
 
+#include "CoreDefines.h"
 #include "InputDispatcher.h"
 
 namespace common::window_wrapper
 {
 
-class Window
+class COMMON_API Window
 {
 public:
     /**

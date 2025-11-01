@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
@@ -415,7 +416,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::CalculateAndSetMvp()
 {
-    const auto currentTime = static_cast<float>(glfwGetTime());
+    const auto currentTime = static_cast<float>(GetCurrentTime());
 
     for (size_t i = 0; i < NUM_CUBES; i++) {
         auto model = glm::mat4(1.0f);

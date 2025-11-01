@@ -14,6 +14,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -23,8 +24,8 @@ class VulkanDevice;
 class VulkanDescriptorSetLayout final : public VulkanObject<VulkanDevice, VkDescriptorSetLayout>
 {
 public:
-    explicit VulkanDescriptorSetLayout(std::shared_ptr<VulkanDevice> device, VkDescriptorSetLayout descriptorSetLayout);
+    COMMON_API explicit VulkanDescriptorSetLayout(std::shared_ptr<VulkanDevice> device, VkDescriptorSetLayout descriptorSetLayout);
 
-    ~VulkanDescriptorSetLayout() override;
+    COMMON_API ~VulkanDescriptorSetLayout() override;
 };
 } // namespace common::vulkan_wrapper

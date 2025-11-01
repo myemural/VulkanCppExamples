@@ -11,6 +11,7 @@
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "ShaderLoader.h"
+#include "TimeUtils.h"
 #include "VulkanBuffer.h"
 #include "VulkanDescriptorPool.h"
 #include "VulkanHelpers.h"
@@ -69,7 +70,7 @@ void VulkanApplication::DrawFrame()
 
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
-    const auto currentTime = static_cast<float>(glfwGetTime());
+    const auto currentTime = static_cast<float>(GetCurrentTime());
     const auto currentValue = 0.5f + 0.5f * std::sin(currentTime * 1.1f);
     const Color3 topLeftColor{currentValue, 0.0f, 0.0f};
     SetBuffer(GetParamStr(AppConstants::TopLeftUB), &topLeftColor, sizeof(Color3));

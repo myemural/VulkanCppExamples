@@ -12,10 +12,12 @@
 
 #include <glm/glm.hpp>
 
+#include "CoreDefines.h"
+
 namespace common::utility
 {
 
-class CameraBase
+class COMMON_API CameraBase
 {
 public:
     /**

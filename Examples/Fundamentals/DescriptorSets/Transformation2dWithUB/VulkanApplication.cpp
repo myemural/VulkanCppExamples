@@ -13,6 +13,7 @@
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "ShaderLoader.h"
+#include "TimeUtils.h"
 #include "VulkanDescriptorPool.h"
 #include "VulkanHelpers.h"
 #include "VulkanShaderModule.h"
@@ -70,7 +71,7 @@ void VulkanApplication::DrawFrame()
 
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
-    const auto currentTime = static_cast<float>(glfwGetTime());
+    const auto currentTime = static_cast<float>(GetCurrentTime());
     const float scale = std::sin(currentTime) * 0.5f + 1.0f; // Range: 0.5 - 1.5
     modelUbObject.model = glm::rotate(glm::mat4(1.0f), currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
     modelUbObject.model = glm::scale(modelUbObject.model, glm::vec3(scale, scale, 1.0f));

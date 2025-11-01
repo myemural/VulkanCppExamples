@@ -12,6 +12,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "CoreDefines.h"
+
 namespace common::utility
 {
 
@@ -21,7 +23,7 @@ enum class TextureChannelFormat
     RGBA
 };
 
-struct TextureHandler
+struct COMMON_API TextureHandler
 {
     std::vector<unsigned char> Data;
     std::uint32_t Width = UINT32_MAX;

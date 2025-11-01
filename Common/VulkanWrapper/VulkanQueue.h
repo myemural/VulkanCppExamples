@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -28,23 +29,23 @@ class VulkanSemaphore;
 class VulkanQueue final : public VulkanObject<VulkanDevice, VkQueue>
 {
 public:
-    VulkanQueue(std::shared_ptr<VulkanDevice> device, VkQueue queue);
+    COMMON_API VulkanQueue(std::shared_ptr<VulkanDevice> device, VkQueue queue);
 
-    ~VulkanQueue() override = default;
+    COMMON_API ~VulkanQueue() override = default;
 
-    void Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer>>& cmdBuffers,
+    COMMON_API void Submit(const std::vector<std::shared_ptr<VulkanCommandBuffer>>& cmdBuffers,
                 const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores = {},
                 const std::vector<std::shared_ptr<VulkanSemaphore>>& signalSemaphores = {},
                 const std::shared_ptr<VulkanFence>& fence = VK_NULL_HANDLE,
                 const std::vector<VkPipelineStageFlags>& waitStages = {}) const;
 
-    void Present(const std::vector<std::shared_ptr<VulkanSwapChain>>& swapChains,
+    COMMON_API void Present(const std::vector<std::shared_ptr<VulkanSwapChain>>& swapChains,
                  const std::vector<std::uint32_t>& swapChainImageIndices,
                  const std::vector<std::shared_ptr<VulkanSemaphore>>& waitSemaphores);
 
-    void WaitIdle() const;
+    COMMON_API void WaitIdle() const;
 
-    VkResult GetPresentResult() const;
+    [[nodiscard]] COMMON_API VkResult GetPresentResult() const;
 
 private:
     VkResult presentResult_;

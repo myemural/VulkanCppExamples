@@ -12,12 +12,13 @@
 #include <map>
 #include <string>
 
+#include "CoreDefines.h"
 #include "ShaderLoader.h"
 #include "VulkanDevice.h"
 
 namespace common::vulkan_framework
 {
-struct ShaderModulesCreateInfo
+struct COMMON_API ShaderModulesCreateInfo
 {
     struct Module
     {
@@ -30,7 +31,7 @@ struct ShaderModulesCreateInfo
     std::vector<Module> Modules;
 };
 
-class ShaderResource
+class COMMON_API ShaderResource
 {
 public:
     /**

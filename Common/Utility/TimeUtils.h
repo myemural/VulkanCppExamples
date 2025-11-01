@@ -9,7 +9,8 @@
  * https://opensource.org/licenses/MIT
  */
 #pragma once
-#include <chrono>
+
+#include "CoreDefines.h"
 
 namespace common::utility
 {
@@ -17,9 +18,5 @@ namespace common::utility
  * @brief Returns current time in seconds.
  * @return Returns current time in seconds.
  */
-inline double GetCurrentTime()
-{
-    using clock = std::chrono::steady_clock;
-    return std::chrono::duration<double>(clock::now().time_since_epoch()).count();
-}
+COMMON_API double GetCurrentTime();
 } // namespace common::utility

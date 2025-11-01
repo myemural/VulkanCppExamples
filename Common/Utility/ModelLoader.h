@@ -14,12 +14,13 @@
 
 #include "tiny_gltf.h"
 
+#include "CoreDefines.h"
 #include "GlfwModelHandler.h"
 
 namespace common::utility
 {
 
-class ModelLoader
+class COMMON_API ModelLoader
 {
 public:
     /**

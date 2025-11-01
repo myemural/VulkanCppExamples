@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -24,12 +25,12 @@ class VulkanDevice;
 class VulkanSampler final : public VulkanObject<VulkanDevice, VkSampler>
 {
 public:
-    explicit VulkanSampler(std::shared_ptr<VulkanDevice> device, VkSampler sampler);
+    COMMON_API explicit VulkanSampler(std::shared_ptr<VulkanDevice> device, VkSampler sampler);
 
-    ~VulkanSampler() override;
+    COMMON_API ~VulkanSampler() override;
 };
 
-class VulkanSamplerBuilder
+class COMMON_API VulkanSamplerBuilder
 {
 public:
     VulkanSamplerBuilder();

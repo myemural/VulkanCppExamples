@@ -19,9 +19,11 @@
 #include <unordered_map>
 #include <utility>
 
+#include "CoreDefines.h"
+
 namespace common::utility
 {
-class ParameterSchema
+class COMMON_API ParameterSchema
 {
 public:
     struct ParameterInfo
@@ -108,7 +110,7 @@ private:
     std::unordered_map<std::string, ParameterInfo> params_;
 };
 
-class ParameterServer
+class COMMON_API ParameterServer
 {
 public:
     explicit ParameterServer(ParameterSchema schema) : schema_{std::move(schema)} {}

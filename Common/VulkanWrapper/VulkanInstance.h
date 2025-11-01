@@ -17,6 +17,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -24,14 +25,14 @@ namespace common::vulkan_wrapper
 class VulkanInstance final : public VulkanObject<void, VkInstance>
 {
 public:
-    explicit VulkanInstance(VkInstance instance);
+    COMMON_API explicit VulkanInstance(VkInstance instance);
 
-    ~VulkanInstance() override;
+    COMMON_API ~VulkanInstance() override;
 
-    [[nodiscard]] PFN_vkVoidFunction GetInstanceProcAddr(const std::string& name) const;
+    [[nodiscard]] COMMON_API PFN_vkVoidFunction GetInstanceProcAddr(const std::string& name) const;
 };
 
-class VulkanInstanceBuilder
+class COMMON_API VulkanInstanceBuilder
 {
 public:
     VulkanInstanceBuilder();

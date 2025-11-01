@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME TexturedQuad)
 set(CURRENT_EXAMPLE_NAME "Drawing a Textured Quad")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper ImagesAndSamplersBase)
+set(CURRENT_LIB_NAMES Common ImagesAndSamplersBase)
 
 include(BuildTarget)
 include(CompileShaders)

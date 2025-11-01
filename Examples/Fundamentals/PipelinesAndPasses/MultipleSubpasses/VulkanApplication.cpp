@@ -9,12 +9,14 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
@@ -454,7 +456,7 @@ void VulkanApplication::CalculateAndSetMvp()
             const float radius = 1.2f + static_cast<float>(i) * 1.0f;
             const glm::vec3 center(modelPositions[i]);
             const float speed = glm::radians(40.0f + static_cast<float>(i) * 20.0f);
-            const float angle = speed * static_cast<float>(glfwGetTime());
+            const float angle = speed * static_cast<float>(GetCurrentTime());
 
             glm::vec3 position;
             position.x = center.x + radius * cos(angle);

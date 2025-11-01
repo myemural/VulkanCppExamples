@@ -12,12 +12,13 @@
 
 #include <string>
 
+#include "CoreDefines.h"
 #include "TextureHandler.h"
 
 namespace common::utility
 {
 
-class TextureLoader
+class COMMON_API TextureLoader
 {
 public:
     /**

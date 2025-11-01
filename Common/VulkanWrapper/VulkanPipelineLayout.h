@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -24,8 +25,8 @@ class VulkanDevice;
 class VulkanPipelineLayout final : public VulkanObject<VulkanDevice, VkPipelineLayout>
 {
 public:
-    explicit VulkanPipelineLayout(std::shared_ptr<VulkanDevice> device, VkPipelineLayout pipelineLayout);
+    COMMON_API explicit VulkanPipelineLayout(std::shared_ptr<VulkanDevice> device, VkPipelineLayout pipelineLayout);
 
-    ~VulkanPipelineLayout() override;
+    COMMON_API ~VulkanPipelineLayout() override;
 };
 } // namespace common::vulkan_wrapper

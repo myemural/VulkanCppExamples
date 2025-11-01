@@ -9,12 +9,14 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
@@ -474,7 +476,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         } else if (i > 6) {
             currentCmdBuffer->BindPipeline(derivativePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         } else {
-            currentLineWidth_ = 2.0f + sin(static_cast<float>(glfwGetTime()));
+            currentLineWidth_ = 2.0f + sin(static_cast<float>(GetCurrentTime()));
             currentCmdBuffer->SetLineWidth(currentLineWidth_);
             currentCmdBuffer->BindPipeline(wireframePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         }

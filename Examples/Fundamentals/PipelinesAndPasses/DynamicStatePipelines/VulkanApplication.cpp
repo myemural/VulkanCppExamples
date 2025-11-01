@@ -9,12 +9,14 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
@@ -419,7 +421,7 @@ void VulkanApplication::CalculateAndSetMvp()
 
 void VulkanApplication::CalculateAndSetBlendConstants()
 {
-    const auto time = static_cast<float>(glfwGetTime());
+    const auto time = static_cast<float>(GetCurrentTime());
     const float value = 0.5f + 0.5f * sin(time);
     currentBlendConstants_ = Color4(value, value, value, 1.0f);
 }

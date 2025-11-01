@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME GetDeviceInfo)
 set(CURRENT_EXAMPLE_NAME "Getting Vulkan and Device Info")
-set(CURRENT_LIB_NAMES VulkanWrapper)
+set(CURRENT_LIB_NAMES Common)
 
 include(BuildTarget)
 

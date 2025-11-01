@@ -17,6 +17,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -26,15 +27,17 @@ class VulkanDescriptorPool;
 class VulkanDescriptorSet final : public VulkanObject<VulkanDescriptorPool, VkDescriptorSet>
 {
 public:
-    explicit VulkanDescriptorSet(std::shared_ptr<VulkanDescriptorPool> descPool, VkDescriptorSet descriptorSet);
+    COMMON_API explicit VulkanDescriptorSet(std::shared_ptr<VulkanDescriptorPool> descPool,
+                                            VkDescriptorSet descriptorSet);
 
-    VkWriteDescriptorSet CreateWriteDescriptorSet(std::uint32_t dstBinding,
-                                                  std::uint32_t dstArrayElement,
-                                                  std::uint32_t descCount,
-                                                  const VkDescriptorType& descType,
-                                                  const std::vector<VkDescriptorBufferInfo>& descBufferInfos = {},
-                                                  const std::vector<VkDescriptorImageInfo>& descImageInfos = {}) const;
+    [[nodiscard]] COMMON_API VkWriteDescriptorSet
+    CreateWriteDescriptorSet(std::uint32_t dstBinding,
+                             std::uint32_t dstArrayElement,
+                             std::uint32_t descCount,
+                             const VkDescriptorType& descType,
+                             const std::vector<VkDescriptorBufferInfo>& descBufferInfos = {},
+                             const std::vector<VkDescriptorImageInfo>& descImageInfos = {}) const;
 
-    ~VulkanDescriptorSet() override;
+    COMMON_API ~VulkanDescriptorSet() override;
 };
 } // namespace common::vulkan_wrapper

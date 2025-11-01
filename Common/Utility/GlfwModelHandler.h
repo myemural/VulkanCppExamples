@@ -14,12 +14,13 @@
 
 #include <glm/glm.hpp>
 
+#include "CoreDefines.h"
 #include "TextureHandler.h"
 
 namespace common::utility
 {
 
-struct GltfPrimitiveAttrib
+struct COMMON_API GltfPrimitiveAttrib
 {
     glm::vec3 Position;
     glm::vec3 Normal;
@@ -31,7 +32,7 @@ struct GltfPrimitiveAttrib
     // WEIGHTS_n
 };
 
-struct GltfMaterial
+struct COMMON_API GltfMaterial
 {
     std::string Name;
     struct PbrMetallicRoughness
@@ -40,7 +41,7 @@ struct GltfMaterial
     } PbrMetallicRoughness;
 };
 
-struct GltfMesh
+struct COMMON_API GltfMesh
 {
     std::string Name;
     std::vector<GltfPrimitiveAttrib> Vertices;
@@ -61,7 +62,7 @@ struct GltfMesh
     }
 };
 
-struct GltfNode
+struct COMMON_API GltfNode
 {
     std::uint32_t ParentIndex = UINT32_MAX;
     std::vector<std::uint32_t> ChildIndices;
@@ -77,7 +78,7 @@ enum class GltfCameraType
     ORTHOGRAPHIC
 };
 
-struct GltfCamera
+struct COMMON_API GltfCamera
 {
     std::string Name;
     GltfCameraType Type;
@@ -99,7 +100,7 @@ struct GltfCamera
     } OrthographicFeatures;
 };
 
-struct GltfModelHandler
+struct COMMON_API GltfModelHandler
 {
     std::string Name;
     std::uint32_t CurrentSceneIndex = UINT32_MAX;

@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME DynamicStatePipelines)
 set(CURRENT_EXAMPLE_NAME "Changing Blending Factor with Dynamic State")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper PipelinesAndPassesBase)
+set(CURRENT_LIB_NAMES Common PipelinesAndPassesBase)
 
 include(BuildTarget)
 include(CompileShaders)

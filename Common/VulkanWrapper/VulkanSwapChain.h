@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -28,26 +29,26 @@ class VulkanSurface;
 class VulkanSwapChain final : public VulkanObject<VulkanDevice, VkSwapchainKHR>
 {
 public:
-    VulkanSwapChain(std::shared_ptr<VulkanDevice> device, VkSwapchainKHR swapChain);
+    COMMON_API VulkanSwapChain(std::shared_ptr<VulkanDevice> device, VkSwapchainKHR swapChain);
 
-    ~VulkanSwapChain() override;
+    COMMON_API ~VulkanSwapChain() override;
 
-    void SetSwapChainImageViews(const std::shared_ptr<VulkanDevice>& device, const VkFormat& imageFormat);
+    COMMON_API void SetSwapChainImageViews(const std::shared_ptr<VulkanDevice>& device, const VkFormat& imageFormat);
 
-    [[nodiscard]] std::vector<std::shared_ptr<VulkanImageView>> GetSwapChainImageViews() const;
+    [[nodiscard]] COMMON_API std::vector<std::shared_ptr<VulkanImageView>> GetSwapChainImageViews() const;
 
-    [[nodiscard]] std::uint32_t AcquireNextImage(const std::shared_ptr<VulkanSemaphore>& semaphore,
+    [[nodiscard]] COMMON_API std::uint32_t AcquireNextImage(const std::shared_ptr<VulkanSemaphore>& semaphore,
                                                  const std::shared_ptr<VulkanFence>& fence,
                                                  std::uint64_t timeout = UINT64_MAX);
 
-    [[nodiscard]] VkResult GetAcquireResult() const;
+    [[nodiscard]] COMMON_API VkResult GetAcquireResult() const;
 
 private:
     std::vector<std::shared_ptr<VulkanImageView>> swapChainImageViews_;
     VkResult acquireResult_;
 };
 
-class VulkanSwapChainBuilder
+class COMMON_API VulkanSwapChainBuilder
 {
 public:
     VulkanSwapChainBuilder();

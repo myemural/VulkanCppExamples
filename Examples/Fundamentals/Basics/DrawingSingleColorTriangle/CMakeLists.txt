@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME DrawingSingleColorTriangle)
 set(CURRENT_EXAMPLE_NAME "Drawing a Single Color Triangle")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper BasicsBase)
+set(CURRENT_LIB_NAMES Common BasicsBase)
 
 include(BuildTarget)
 include(CompileShaders)

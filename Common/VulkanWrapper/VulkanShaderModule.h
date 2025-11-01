@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -24,8 +25,8 @@ class VulkanDevice;
 class VulkanShaderModule final : public VulkanObject<VulkanDevice, VkShaderModule>
 {
 public:
-    explicit VulkanShaderModule(std::shared_ptr<VulkanDevice> device, VkShaderModule shaderModule);
+    COMMON_API explicit VulkanShaderModule(std::shared_ptr<VulkanDevice> device, VkShaderModule shaderModule);
 
-    ~VulkanShaderModule() override;
+    COMMON_API ~VulkanShaderModule() override;
 };
 } // namespace common::vulkan_wrapper

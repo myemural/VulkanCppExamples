@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME SampleShading)
 set(CURRENT_EXAMPLE_NAME "Sample Shading")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper MultisamplingBase)
+set(CURRENT_LIB_NAMES Common MultisamplingBase)
 
 include(BuildTarget)
 include(CompileShaders)

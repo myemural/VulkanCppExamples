@@ -13,6 +13,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -23,12 +24,12 @@ class VulkanImage;
 class VulkanImageView final : public VulkanObject<VulkanDevice, VkImageView>
 {
 public:
-    VulkanImageView(std::shared_ptr<VulkanDevice> device, VkImageView imageView);
+    COMMON_API VulkanImageView(std::shared_ptr<VulkanDevice> device, VkImageView imageView);
 
-    ~VulkanImageView() override;
+    COMMON_API ~VulkanImageView() override;
 };
 
-class VulkanImageViewBuilder
+class COMMON_API VulkanImageViewBuilder
 {
 public:
     VulkanImageViewBuilder();

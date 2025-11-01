@@ -9,12 +9,14 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
@@ -387,7 +389,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)));
 
     VkRect2D scissor =
-            GetAnimatedScissorRect(static_cast<float>(glfwGetTime()), static_cast<float>(currentWindowWidth_),
+            GetAnimatedScissorRect(static_cast<float>(GetCurrentTime()), static_cast<float>(currentWindowWidth_),
                                    static_cast<float>(currentWindowHeight_));
     currentCmdBuffer->SetScissors(0, {scissor});
 

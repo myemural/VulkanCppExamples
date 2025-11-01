@@ -16,6 +16,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -27,12 +28,12 @@ class VulkanImageView;
 class VulkanFramebuffer final : public VulkanObject<VulkanDevice, VkFramebuffer>
 {
 public:
-    VulkanFramebuffer(std::shared_ptr<VulkanDevice> device, VkFramebuffer framebuffer);
+    COMMON_API VulkanFramebuffer(std::shared_ptr<VulkanDevice> device, VkFramebuffer framebuffer);
 
-    ~VulkanFramebuffer() override;
+    COMMON_API ~VulkanFramebuffer() override;
 };
 
-class VulkanFramebufferBuilder
+class COMMON_API VulkanFramebufferBuilder
 {
 public:
     VulkanFramebufferBuilder();

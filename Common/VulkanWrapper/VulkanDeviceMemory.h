@@ -16,6 +16,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -25,15 +26,15 @@ class VulkanDevice;
 class VulkanDeviceMemory final : public VulkanObject<VulkanDevice, VkDeviceMemory>
 {
 public:
-    VulkanDeviceMemory(std::shared_ptr<VulkanDevice> device, VkDeviceMemory deviceMemory);
+    COMMON_API VulkanDeviceMemory(std::shared_ptr<VulkanDevice> device, VkDeviceMemory deviceMemory);
 
-    ~VulkanDeviceMemory() override;
+    COMMON_API ~VulkanDeviceMemory() override;
 
-    [[nodiscard]] void* MapMemory(VkDeviceSize size, VkDeviceSize offset, const VkMemoryMapFlags& flags = 0) const;
+    [[nodiscard]] COMMON_API void* MapMemory(VkDeviceSize size, VkDeviceSize offset, const VkMemoryMapFlags& flags = 0) const;
 
     // Pair: size, offset
-    void FlushMappedMemoryRanges(const std::vector<std::pair<VkDeviceSize, VkDeviceSize>>& mappedMemoryRanges) const;
+    COMMON_API void FlushMappedMemoryRanges(const std::vector<std::pair<VkDeviceSize, VkDeviceSize>>& mappedMemoryRanges) const;
 
-    void UnmapMemory() const;
+    COMMON_API void UnmapMemory() const;
 };
 } // namespace common::vulkan_wrapper

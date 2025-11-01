@@ -10,14 +10,15 @@
  */
 #pragma once
 
-#include "CameraBase.h"
-
 #include <glm/glm.hpp>
+
+#include "CameraBase.h"
+#include "CoreDefines.h"
 
 namespace common::utility
 {
 
-class PerspectiveCamera final : public CameraBase
+class COMMON_API PerspectiveCamera final : public CameraBase
 {
 public:
     /**

@@ -18,6 +18,8 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
+
 namespace common::vulkan_wrapper
 {
 class VulkanDevice;
@@ -27,17 +29,17 @@ class VulkanCommandPool final : public VulkanObject<VulkanDevice, VkCommandPool>
                                 public std::enable_shared_from_this<VulkanCommandPool>
 {
 public:
-    VulkanCommandPool(std::shared_ptr<VulkanDevice> device, VkCommandPool cmdPool);
+    COMMON_API VulkanCommandPool(std::shared_ptr<VulkanDevice> device, VkCommandPool cmdPool);
 
-    ~VulkanCommandPool() override;
+    COMMON_API ~VulkanCommandPool() override;
 
-    std::vector<std::shared_ptr<VulkanCommandBuffer>> CreateCommandBuffers(std::uint32_t count,
+    COMMON_API std::vector<std::shared_ptr<VulkanCommandBuffer>> CreateCommandBuffers(std::uint32_t count,
                                                                            const VkCommandBufferLevel& level);
 
-    bool ResetCommandPool(const VkCommandPoolResetFlags& resetFlags = 0) const;
+    COMMON_API bool ResetCommandPool(const VkCommandPoolResetFlags& resetFlags = 0) const;
 };
 
-class VulkanCommandPoolBuilder
+class COMMON_API VulkanCommandPoolBuilder
 {
 public:
     VulkanCommandPoolBuilder();

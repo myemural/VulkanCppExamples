@@ -16,6 +16,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -26,15 +27,16 @@ class VulkanDeviceMemory;
 class VulkanImage final : public VulkanObject<VulkanDevice, VkImage>
 {
 public:
-    VulkanImage(std::shared_ptr<VulkanDevice> device, VkImage image);
+    COMMON_API VulkanImage(std::shared_ptr<VulkanDevice> device, VkImage image);
 
-    ~VulkanImage() override;
+    COMMON_API ~VulkanImage() override;
 
-    [[nodiscard]] VkMemoryRequirements GetImageMemoryRequirements() const;
+    [[nodiscard]] COMMON_API VkMemoryRequirements GetImageMemoryRequirements() const;
 
-    void BindImageMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory, VkDeviceSize memoryOffset) const;
+    COMMON_API void BindImageMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory,
+                                    VkDeviceSize memoryOffset) const;
 
-    [[nodiscard]] VkImageMemoryBarrier
+    [[nodiscard]] COMMON_API VkImageMemoryBarrier
     CreateImageMemoryBarrier(const VkAccessFlags& srcAccessMask,
                              const VkAccessFlags& dstAccessMask,
                              const VkImageLayout& oldLayout,
@@ -42,7 +44,7 @@ public:
                              const std::optional<VkImageSubresourceRange>& subresourceRange = std::nullopt) const;
 };
 
-class VulkanImageBuilder
+class COMMON_API VulkanImageBuilder
 {
 public:
     VulkanImageBuilder();

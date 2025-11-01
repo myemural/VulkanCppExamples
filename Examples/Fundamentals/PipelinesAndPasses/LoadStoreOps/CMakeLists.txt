@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME LoadStoreOps)
 set(CURRENT_EXAMPLE_NAME "Simple Ghosting Effect")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper PipelinesAndPassesBase)
+set(CURRENT_LIB_NAMES Common PipelinesAndPassesBase)
 
 include(BuildTarget)
 include(CompileShaders)

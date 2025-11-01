@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME MsaaBasics)
 set(CURRENT_EXAMPLE_NAME "MSAA Basics")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper MultisamplingBase)
+set(CURRENT_LIB_NAMES Common MultisamplingBase)
 
 include(BuildTarget)
 include(CompileShaders)

@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -24,8 +25,8 @@ class VulkanDevice;
 class VulkanSemaphore final : public VulkanObject<VulkanDevice, VkSemaphore>
 {
 public:
-    explicit VulkanSemaphore(std::shared_ptr<VulkanDevice> device, VkSemaphore semaphore);
+    COMMON_API explicit VulkanSemaphore(std::shared_ptr<VulkanDevice> device, VkSemaphore semaphore);
 
-    ~VulkanSemaphore() override;
+    COMMON_API ~VulkanSemaphore() override;
 };
 } // namespace common::vulkan_wrapper

@@ -10,11 +10,12 @@
  */
 #pragma once
 
+#include "CoreDefines.h"
 #include "DescriptorRegistry.h"
 
 namespace common::vulkan_framework
 {
-struct BufferWriteRequest
+struct COMMON_API BufferWriteRequest
 {
     std::string LayoutName;
     uint32_t BindingIndex;
@@ -23,7 +24,7 @@ struct BufferWriteRequest
     uint32_t ArrayElement = 0;
 };
 
-struct ImageWriteRequest
+struct COMMON_API ImageWriteRequest
 {
     std::string LayoutName;
     uint32_t BindingIndex;
@@ -32,7 +33,7 @@ struct ImageWriteRequest
     uint32_t ArrayElement = 0;
 };
 
-struct TexelBufferWriteRequest
+struct COMMON_API TexelBufferWriteRequest
 {
     std::string LayoutName;
     uint32_t BindingIndex;
@@ -41,7 +42,7 @@ struct TexelBufferWriteRequest
     uint32_t ArrayElement = 0;
 };
 
-struct CopySetRequest
+struct COMMON_API CopySetRequest
 {
     std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> SourceSet;
     uint32_t SourceBindingIndex;
@@ -52,7 +53,7 @@ struct CopySetRequest
     uint32_t Count;
 };
 
-struct DescriptorUpdateInfo
+struct COMMON_API DescriptorUpdateInfo
 {
     std::vector<BufferWriteRequest> BufferWriteRequests;
     std::vector<ImageWriteRequest> ImageWriteRequests;
@@ -60,7 +61,7 @@ struct DescriptorUpdateInfo
     std::vector<CopySetRequest> CopySetRequests;
 };
 
-class DescriptorUpdater
+class COMMON_API DescriptorUpdater
 {
 public:
     DescriptorUpdater(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device, DescriptorRegistry& registry);

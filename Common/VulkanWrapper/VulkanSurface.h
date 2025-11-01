@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -24,8 +25,8 @@ class VulkanInstance;
 class VulkanSurface final : public VulkanObject<VulkanInstance, VkSurfaceKHR>
 {
 public:
-    VulkanSurface(std::shared_ptr<VulkanInstance> instance, VkSurfaceKHR surface);
+    COMMON_API VulkanSurface(std::shared_ptr<VulkanInstance> instance, VkSurfaceKHR surface);
 
-    ~VulkanSurface() override;
+    COMMON_API ~VulkanSurface() override;
 };
 } // namespace common::vulkan_wrapper

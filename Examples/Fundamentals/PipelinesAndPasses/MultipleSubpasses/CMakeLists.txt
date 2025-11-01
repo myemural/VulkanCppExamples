@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME MultipleSubpasses)
 set(CURRENT_EXAMPLE_NAME "Using Multiple Subpasses and Input Attachments")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper PipelinesAndPassesBase)
+set(CURRENT_LIB_NAMES Common PipelinesAndPassesBase)
 
 include(BuildTarget)
 include(CompileShaders)

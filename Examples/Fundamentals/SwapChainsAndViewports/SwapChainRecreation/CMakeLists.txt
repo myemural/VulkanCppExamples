@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME SwapChainRecreation)
 set(CURRENT_EXAMPLE_NAME "Handling Window Resizing")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper SwapChainsAndViewportsBase)
+set(CURRENT_LIB_NAMES Common SwapChainsAndViewportsBase)
 
 include(BuildTarget)
 include(CompileShaders)

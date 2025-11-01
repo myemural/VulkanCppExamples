@@ -5,7 +5,7 @@ This repo aims to include implementations of many Vulkan examples that built wit
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Clone](#clone)
-  - [Build](#build)
+  - [Build and Run](#build-and-run)
 - [General Info](#general-info)
   - [Common Parameters](#common-parameters)
 - [Environment Support](#environment-support)
@@ -42,9 +42,9 @@ git submodule init
 git submodule update
 ~~~
 
-### Build
+### Build and Run
 
-Every example has its own directory and CMake target. You can build what you want with CMake command line tools or IDE tools.
+Every example has its own directory and CMake target. You can build what you want with CMake command line tools or IDE tools. Additionally, the built examples create executable files in the `bin/<CONFIG>` directory. You can run any example from this directory.
 
 ## General Info
 

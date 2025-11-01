@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#include "CoreDefines.h"
+
 namespace common::utility
 {
 enum class ShaderBaseType
@@ -22,7 +24,7 @@ enum class ShaderBaseType
     HLSL
 };
 
-class ShaderLoader
+class COMMON_API ShaderLoader
 {
 public:
     /**

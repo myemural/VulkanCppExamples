@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -27,13 +28,13 @@ class VulkanDescriptorPool final : public VulkanObject<VulkanDevice, VkDescripto
                                    public std::enable_shared_from_this<VulkanDescriptorPool>
 {
 public:
-    explicit VulkanDescriptorPool(std::shared_ptr<VulkanDevice> device, VkDescriptorPool descriptorPool);
+    COMMON_API explicit VulkanDescriptorPool(std::shared_ptr<VulkanDevice> device, VkDescriptorPool descriptorPool);
 
-    std::vector<std::shared_ptr<VulkanDescriptorSet>>
+    COMMON_API std::vector<std::shared_ptr<VulkanDescriptorSet>>
     CreateDescriptorSets(const std::vector<std::shared_ptr<VulkanDescriptorSetLayout>>& descriptorSetLayouts);
 
-    void ResetDescriptorPool(const VkDescriptorPoolResetFlags& resetFlags = 0) const;
+    COMMON_API void ResetDescriptorPool(const VkDescriptorPoolResetFlags& resetFlags = 0) const;
 
-    ~VulkanDescriptorPool() override;
+    COMMON_API ~VulkanDescriptorPool() override;
 };
 } // namespace common::vulkan_wrapper

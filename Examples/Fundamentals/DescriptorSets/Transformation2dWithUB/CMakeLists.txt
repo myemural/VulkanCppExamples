@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME Transformation2dWithUB)
 set(CURRENT_EXAMPLE_NAME "Rotating and Scaling a Square Constantly")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper DescriptorSetsBase)
+set(CURRENT_LIB_NAMES Common DescriptorSetsBase)
 
 include(BuildTarget)
 include(CompileShaders)

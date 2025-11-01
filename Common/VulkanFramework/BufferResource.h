@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include "CoreDefines.h"
 #include "VulkanBuffer.h"
 #include "VulkanDevice.h"
 #include "VulkanDeviceMemory.h"
@@ -21,7 +22,7 @@
 namespace common::vulkan_framework
 {
 
-struct BufferResourceCreateInfo
+struct COMMON_API BufferResourceCreateInfo
 {
     std::string Name;
     std::uint32_t BufferSizeInBytes;
@@ -29,7 +30,7 @@ struct BufferResourceCreateInfo
     VkMemoryPropertyFlags MemoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 };
 
-class BufferResource
+class COMMON_API BufferResource
 {
 public:
     /**

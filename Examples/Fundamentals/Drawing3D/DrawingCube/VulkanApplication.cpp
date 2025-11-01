@@ -13,6 +13,7 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
@@ -357,7 +358,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t indexCou
 
 void VulkanApplication::CalculateAndSetMvp()
 {
-    const auto currentTime = static_cast<float>(glfwGetTime());
+    const auto currentTime = static_cast<float>(GetCurrentTime());
     auto model = glm::mat4(1.0f);
     model = glm::rotate(model, currentTime * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::rotate(model, currentTime * glm::radians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));

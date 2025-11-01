@@ -12,6 +12,7 @@
 #pragma once
 
 #include "BufferResource.h"
+#include "CoreDefines.h"
 #include "DescriptorRegistry.h"
 #include "DescriptorUpdater.h"
 #include "ImageResource.h"
@@ -23,7 +24,7 @@
 
 namespace common::vulkan_framework
 {
-struct ResourceDescriptor
+struct COMMON_API ResourceDescriptor
 {
     std::optional<std::vector<BufferResourceCreateInfo>> Buffers;
     std::optional<std::vector<ImageResourceCreateInfo>> Images;
@@ -32,7 +33,7 @@ struct ResourceDescriptor
     std::optional<DescriptorResourceCreateInfo> Descriptors;
 };
 
-class ResourceManager
+class COMMON_API ResourceManager
 {
 public:
     /**

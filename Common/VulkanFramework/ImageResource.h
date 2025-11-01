@@ -11,6 +11,7 @@
  */
 #pragma once
 
+#include "CoreDefines.h"
 #include "VulkanDevice.h"
 #include "VulkanDeviceMemory.h"
 #include "VulkanImage.h"
@@ -19,7 +20,7 @@
 
 namespace common::vulkan_framework
 {
-struct ImageViewCreateInfo
+struct COMMON_API ImageViewCreateInfo
 {
     std::string ViewName;
     VkImageViewCreateFlags CreateFlags = 0;
@@ -30,7 +31,7 @@ struct ImageViewCreateInfo
     VkImageSubresourceRange SubresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 };
 
-struct ImageResourceCreateInfo
+struct COMMON_API ImageResourceCreateInfo
 {
     std::string Name;
     VkMemoryPropertyFlags MemProperties;
@@ -48,7 +49,7 @@ struct ImageResourceCreateInfo
     std::vector<ImageViewCreateInfo> Views;
 };
 
-class ImageResource
+class COMMON_API ImageResource
 {
 public:
     /**

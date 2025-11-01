@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -29,82 +30,82 @@ class VulkanPipelineLayout;
 class VulkanCommandBuffer final : public VulkanObject<VulkanCommandPool, VkCommandBuffer>
 {
 public:
-    VulkanCommandBuffer(std::shared_ptr<VulkanCommandPool> cmdPool, VkCommandBuffer cmdBuffer);
+    COMMON_API VulkanCommandBuffer(std::shared_ptr<VulkanCommandPool> cmdPool, VkCommandBuffer cmdBuffer);
 
-    ~VulkanCommandBuffer() override;
+    COMMON_API ~VulkanCommandBuffer() override;
 
-    bool BeginCommandBuffer(const std::function<void(VkCommandBufferBeginInfo&)>& beginInfoCallback) const;
+    COMMON_API bool BeginCommandBuffer(const std::function<void(VkCommandBufferBeginInfo&)>& beginInfoCallback) const;
 
-    [[nodiscard]] bool EndCommandBuffer() const;
+    [[nodiscard]] COMMON_API bool EndCommandBuffer() const;
 
-    [[nodiscard]] bool ResetCommandBuffer(const VkCommandBufferResetFlags& resetFlags = 0) const;
+    [[nodiscard]] COMMON_API bool ResetCommandBuffer(const VkCommandBufferResetFlags& resetFlags = 0) const;
 
-    void BeginRenderPass(const std::function<void(VkRenderPassBeginInfo&)>& beginInfoCallback,
+    COMMON_API void BeginRenderPass(const std::function<void(VkRenderPassBeginInfo&)>& beginInfoCallback,
                          const VkSubpassContents& subpassContents) const;
 
-    void EndRenderPass() const;
+    COMMON_API void EndRenderPass() const;
 
-    void NextSubpass(const VkSubpassContents& subpassContents) const;
+    COMMON_API void NextSubpass(const VkSubpassContents& subpassContents) const;
 
-    void BindDescriptorSets(const VkPipelineBindPoint& pipelineBindPoint,
+    COMMON_API void BindDescriptorSets(const VkPipelineBindPoint& pipelineBindPoint,
                             const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
                             std::uint32_t firstSet,
                             const std::vector<std::shared_ptr<VulkanDescriptorSet>>& descriptorSets = {},
                             const std::vector<std::uint32_t>& dynamicOffsets = {}) const;
 
-    void BindIndexBuffer(const std::shared_ptr<VulkanBuffer>& indexBuffer,
+    COMMON_API void BindIndexBuffer(const std::shared_ptr<VulkanBuffer>& indexBuffer,
                          const VkDeviceSize& offset = 0,
                          const VkIndexType& indexType = VK_INDEX_TYPE_UINT16) const;
 
-    void BindPipeline(const std::shared_ptr<VulkanPipeline>& pipeline, const VkPipelineBindPoint& bindPoint) const;
+    COMMON_API void BindPipeline(const std::shared_ptr<VulkanPipeline>& pipeline, const VkPipelineBindPoint& bindPoint) const;
 
-    void BindVertexBuffers(const std::vector<std::shared_ptr<VulkanBuffer>>& vertexBuffers,
+    COMMON_API void BindVertexBuffers(const std::vector<std::shared_ptr<VulkanBuffer>>& vertexBuffers,
                            std::uint32_t firstBinding,
                            std::uint32_t bindingCount,
                            const std::vector<VkDeviceSize>& offsets) const;
 
-    void CopyBuffer(const std::shared_ptr<VulkanBuffer>& srcBuffer,
+    COMMON_API void CopyBuffer(const std::shared_ptr<VulkanBuffer>& srcBuffer,
                     const std::shared_ptr<VulkanBuffer>& dstBuffer,
                     const std::vector<VkBufferCopy>& regions) const;
 
-    void CopyBufferToImage(const std::shared_ptr<VulkanBuffer>& srcBuffer,
+    COMMON_API void CopyBufferToImage(const std::shared_ptr<VulkanBuffer>& srcBuffer,
                            const std::shared_ptr<VulkanImage>& dstImage,
                            const VkImageLayout& imageLayout,
                            const std::vector<VkBufferImageCopy>& regions) const;
 
-    void Draw(std::uint32_t vertexCount,
+    COMMON_API void Draw(std::uint32_t vertexCount,
               std::uint32_t instanceCount,
               std::uint32_t firstVertex,
               std::uint32_t firstInstance) const;
 
-    void DrawIndexed(std::uint32_t indexCount,
+    COMMON_API void DrawIndexed(std::uint32_t indexCount,
                      std::uint32_t instanceCount,
                      std::uint32_t firstIndex,
                      std::int32_t vertexOffset,
                      std::uint32_t firstInstance) const;
 
-    void PipelineBarrier(const VkPipelineStageFlags& srcStage,
+    COMMON_API void PipelineBarrier(const VkPipelineStageFlags& srcStage,
                          const VkPipelineStageFlags& dstStage,
                          const std::vector<VkImageMemoryBarrier>& imageMemoryBarrier,
                          const std::vector<VkBufferMemoryBarrier>& bufferMemoryBarriers = {},
                          const std::vector<VkMemoryBarrier>& memoryBarriers = {},
                          const VkDependencyFlags& dependencyFlags = 0) const;
 
-    void PushConstants(const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
+    COMMON_API void PushConstants(const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
                        const VkShaderStageFlags& stageFlags,
                        std::uint32_t offset,
                        std::uint32_t size,
                        const void* values) const;
 
-    void SetBlendConstants(float r, float g, float b, float a) const;
+    COMMON_API void SetBlendConstants(float r, float g, float b, float a) const;
 
-    void SetLineWidth(float lineWidth) const;
+    COMMON_API void SetLineWidth(float lineWidth) const;
 
-    void ClearAttachments(const std::vector<VkClearAttachment>& attachments,
+    COMMON_API void ClearAttachments(const std::vector<VkClearAttachment>& attachments,
                           const std::vector<VkClearRect>& rects) const;
 
-    void SetViewports(std::uint32_t firstViewport, const std::vector<VkViewport>& viewports) const;
+    COMMON_API void SetViewports(std::uint32_t firstViewport, const std::vector<VkViewport>& viewports) const;
 
-    void SetScissors(std::uint32_t firstScissor, const std::vector<VkRect2D>& scissors) const;
+    COMMON_API void SetScissors(std::uint32_t firstScissor, const std::vector<VkRect2D>& scissors) const;
 };
 } // namespace common::vulkan_wrapper

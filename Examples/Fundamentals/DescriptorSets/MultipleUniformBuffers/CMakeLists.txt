@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME MultipleUniformBuffers)
 set(CURRENT_EXAMPLE_NAME "Multiple Uniform Buffers")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper DescriptorSetsBase)
+set(CURRENT_LIB_NAMES Common DescriptorSetsBase)
 
 include(BuildTarget)
 include(CompileShaders)

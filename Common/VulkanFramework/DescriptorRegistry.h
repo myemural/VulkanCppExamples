@@ -12,6 +12,7 @@
 
 #include <map>
 
+#include "CoreDefines.h"
 #include "VulkanDescriptorPool.h"
 #include "VulkanDescriptorSet.h"
 #include "VulkanDevice.h"
@@ -19,7 +20,7 @@
 namespace common::vulkan_framework
 {
 
-struct DescriptorResourceCreateInfo
+struct COMMON_API DescriptorResourceCreateInfo
 {
     struct Layout
     {
@@ -39,7 +40,7 @@ struct DescriptorResourceCreateInfo
     std::vector<DescriptorSet> DescriptorSets;
 };
 
-class DescriptorRegistry
+class COMMON_API DescriptorRegistry
 {
 public:
     /**

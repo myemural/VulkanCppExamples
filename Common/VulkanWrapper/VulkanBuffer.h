@@ -15,6 +15,7 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "CoreDefines.h"
 #include "VulkanObject.h"
 
 namespace common::vulkan_wrapper
@@ -25,16 +26,16 @@ class VulkanDeviceMemory;
 class VulkanBuffer final : public VulkanObject<VulkanDevice, VkBuffer>
 {
 public:
-    VulkanBuffer(std::shared_ptr<VulkanDevice> device, VkBuffer buffer);
+    COMMON_API VulkanBuffer(std::shared_ptr<VulkanDevice> device, VkBuffer buffer);
 
-    ~VulkanBuffer() override;
+    COMMON_API ~VulkanBuffer() override;
 
-    [[nodiscard]] VkMemoryRequirements GetBufferMemoryRequirements() const;
+    [[nodiscard]] COMMON_API VkMemoryRequirements GetBufferMemoryRequirements() const;
 
-    void BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory, VkDeviceSize memoryOffset) const;
+    COMMON_API void BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory, VkDeviceSize memoryOffset) const;
 };
 
-class VulkanBufferBuilder
+class COMMON_API VulkanBufferBuilder
 {
 public:
     VulkanBufferBuilder();

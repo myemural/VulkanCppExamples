@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME CreatingWindow)
 set(CURRENT_EXAMPLE_NAME "Creating a Window")
-set(CURRENT_LIB_NAMES WindowWrapper)
+set(CURRENT_LIB_NAMES Common)
 
 include(BuildTarget)
 

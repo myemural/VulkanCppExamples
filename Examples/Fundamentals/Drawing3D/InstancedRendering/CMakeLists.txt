@@ -1,6 +1,6 @@
 set(CURRENT_TARGET_NAME InstancedRendering)
 set(CURRENT_EXAMPLE_NAME "Instanced Rendering")
-set(CURRENT_LIB_NAMES Utility VulkanFramework VulkanWrapper WindowWrapper Drawing3dBase)
+set(CURRENT_LIB_NAMES Common Drawing3dBase)
 
 include(BuildTarget)
 include(CompileShaders)

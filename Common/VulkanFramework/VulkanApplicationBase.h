@@ -12,12 +12,13 @@
 
 #include <memory>
 
+#include "CoreDefines.h"
 #include "ParameterServer.h"
 #include "VulkanInstance.h"
 
 namespace common::vulkan_framework
 {
-class VulkanApplicationBase
+class COMMON_API VulkanApplicationBase
 {
 public:
     virtual ~VulkanApplicationBase() = default;
