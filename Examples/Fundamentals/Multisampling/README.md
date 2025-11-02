@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `MsaaBasics`
 2. [Sample Shading](/Examples/Fundamentals/Multisampling/SampleShading)
    - `SampleShading`
+3. [Explicit Resolving](/Examples/Fundamentals/Multisampling/ExplicitResolving)
+   - `ExplicitResolving`
 
 ## Architecture of the Subsection
 

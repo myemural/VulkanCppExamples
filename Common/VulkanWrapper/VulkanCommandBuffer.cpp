@@ -207,4 +207,14 @@ void VulkanCommandBuffer::SetScissors(std::uint32_t firstScissor, const std::vec
 {
     vkCmdSetScissor(handle_, firstScissor, scissors.size(), scissors.empty() ? nullptr : scissors.data());
 }
+
+void VulkanCommandBuffer::ResolveImage(const std::shared_ptr<VulkanImage>& srcImage,
+                                       const VkImageLayout& srcImageLayout,
+                                       const std::shared_ptr<VulkanImage>& dstImage,
+                                       const VkImageLayout& dstImageLayout,
+                                       const std::vector<VkImageResolve>& regions) const
+{
+    vkCmdResolveImage(handle_, srcImage->GetHandle(), srcImageLayout, dstImage->GetHandle(), dstImageLayout,
+                      regions.size(), regions.empty() ? nullptr : regions.data());
+}
 } // namespace common::vulkan_wrapper

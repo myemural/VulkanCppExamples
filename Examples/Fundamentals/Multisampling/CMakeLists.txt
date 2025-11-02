@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(MsaaBasics)
 add_subdirectory(SampleShading)
+add_subdirectory(ExplicitResolving)

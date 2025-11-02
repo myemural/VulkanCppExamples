@@ -125,6 +125,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Multisampling](/Examples/Fundamentals/Multisampling)**
   - [MSAA Basics](/Examples/Fundamentals/Multisampling/MsaaBasics)
   - [Sample Shading](/Examples/Fundamentals/Multisampling/SampleShading)
+  - [Explicit Resolving](/Examples/Fundamentals/Multisampling/ExplicitResolving)
 
 ## Environment Support
 
