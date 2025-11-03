@@ -137,22 +137,22 @@ void VulkanApplication::CreateResources()
 
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    crateTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::CrateTexturePath));
+    marbleTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::MarbleTexturePath));
 
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    const std::uint32_t cubeVertexBufSize = cubeVertices.size() * sizeof(VertexPos3Uv2);
-    const uint32_t cubeIndexBufSize = cubeIndices.size() * sizeof(cubeIndices[0]);
+    const std::uint32_t sphereVertexBufSize = sphereVertices.size() * sizeof(VertexPos3Uv2);
+    const uint32_t sphereIndexBufSize = sphereIndices.size() * sizeof(sphereIndices[0]);
     const std::uint32_t planeVertexBufSize = planeVertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t planeIndexBufSize = planeIndices.size() * sizeof(planeIndices[0]);
 
     resourceCreateInfo.Buffers = {
-        {.Name = GetParamStr(AppConstants::CubeVertexBuffer),
-         .BufferSizeInBytes = cubeVertexBufSize,
+        {.Name = GetParamStr(AppConstants::SphereVertexBuffer),
+         .BufferSizeInBytes = sphereVertexBufSize,
          .UsageFlags = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          .MemoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::CubeIndexBuffer), cubeIndexBufSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        {GetParamStr(AppConstants::SphereIndexBuffer), sphereIndexBufSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::PlaneVertexBuffer), planeVertexBufSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
@@ -186,11 +186,11 @@ void VulkanApplication::CreateResources()
                                                           .LayoutName = GetParamStr(AppConstants::QuadDescSetLayout)}}};
 
     resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CrateImage),
+        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MarbleImage),
                                 .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                 .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CrateImageView),
+                                .Dimensions = {marbleTextureHandler_.Width, marbleTextureHandler_.Height, 1},
+                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MarbleImageView),
                                                               .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
             .Name = GetParamStr(AppConstants::MultisampledImage),
@@ -246,16 +246,16 @@ void VulkanApplication::CreateResources()
 
 void VulkanApplication::InitResources() const
 {
-    resources_->SetBuffer(GetParamStr(AppConstants::CubeVertexBuffer), cubeVertices.data(),
-                          cubeVertices.size() * sizeof(VertexPos3Uv2));
-    resources_->SetBuffer(GetParamStr(AppConstants::CubeIndexBuffer), cubeIndices.data(),
-                          cubeIndices.size() * sizeof(cubeIndices[0]));
+    resources_->SetBuffer(GetParamStr(AppConstants::SphereVertexBuffer), sphereVertices.data(),
+                          sphereVertices.size() * sizeof(VertexPos3Uv2));
+    resources_->SetBuffer(GetParamStr(AppConstants::SphereIndexBuffer), sphereIndices.data(),
+                          sphereIndices.size() * sizeof(sphereIndices[0]));
     resources_->SetBuffer(GetParamStr(AppConstants::PlaneVertexBuffer), planeVertices.data(),
                           planeVertices.size() * sizeof(VertexPos3Uv2));
     resources_->SetBuffer(GetParamStr(AppConstants::PlaneIndexBuffer), planeIndices.data(),
                           planeIndices.size() * sizeof(planeIndices[0]));
 
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage), crateTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MarbleImage), marbleTextureHandler_);
 
     UpdateDescriptorSets();
 }
@@ -475,7 +475,7 @@ void VulkanApplication::UpdateDescriptorSets() const
     std::vector<VkDescriptorImageInfo> sceneImageInfos;
     sceneImageInfos.emplace_back(
             resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-            resources_->GetImageView(GetParamStr(AppConstants::CrateImage), GetParamStr(AppConstants::CrateImageView))
+            resources_->GetImageView(GetParamStr(AppConstants::MarbleImage), GetParamStr(AppConstants::MarbleImageView))
                     ->GetHandle(),
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -599,7 +599,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::CalculateAndSetMvp()
 {
-    for (size_t i = 0; i < NUM_CUBES; i++) {
+    for (size_t i = 0; i < NUM_SPHERE; i++) {
         auto model = glm::mat4(1.0f);
         model = glm::translate(model, modelPositions[i]);
 
@@ -632,12 +632,12 @@ void VulkanApplication::RenderScene(const std::shared_ptr<VulkanCommandBuffer>& 
 {
     const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::SceneDescSetLayout))};
     cmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, scenePipelineLayout_, 0, descSets);
-    cmdBuffer->BindVertexBuffers({resources_->GetBuffer(GetParamStr(AppConstants::CubeVertexBuffer))}, 0, 1, {0});
-    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::CubeIndexBuffer)));
+    cmdBuffer->BindVertexBuffers({resources_->GetBuffer(GetParamStr(AppConstants::SphereVertexBuffer))}, 0, 1, {0});
+    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::SphereIndexBuffer)));
 
     for (auto& mvp: mvpData_) {
         cmdBuffer->PushConstants(scenePipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvp);
-        cmdBuffer->DrawIndexed(cubeIndices.size(), 1, 0, 0, 0);
+        cmdBuffer->DrawIndexed(sphereIndices.size(), 1, 0, 0, 0);
     }
 }
 

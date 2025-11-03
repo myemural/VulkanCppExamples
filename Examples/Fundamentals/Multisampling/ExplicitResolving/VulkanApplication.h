@@ -70,10 +70,10 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
     VkSampleCountFlagBits maxSampleCount_ = VK_SAMPLE_COUNT_2_BIT;
-    MvpData mvpData_[NUM_CUBES] = {glm::mat4(1.0)};
+    MvpData mvpData_[NUM_SPHERE] = {glm::mat4(1.0)};
 
     // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
+    common::utility::TextureHandler marbleTextureHandler_{};
 
     // Render Passes
     std::shared_ptr<common::vulkan_wrapper::VulkanRenderPass> offscreenRP_;
@@ -81,7 +81,6 @@ private:
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> scenePipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> quadPipelineLayout_;
-    std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> scenePipeline_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> quadPipeline_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> offscreenPipeline_;
 

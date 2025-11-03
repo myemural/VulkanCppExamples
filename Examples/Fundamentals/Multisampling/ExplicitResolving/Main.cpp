@@ -39,12 +39,12 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::QuadFragmentShaderKey, "fragQuad");
     schema.RegisterImmutableParam<std::string>(AppConstants::SceneFragmentShaderKey, "fragScene");
 
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexBuffer, "cubeVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeIndexBuffer, "cubeIndexBuffer");
+    schema.RegisterImmutableParam<std::string>(AppConstants::SphereVertexBuffer, "sphereVertexBuffer");
+    schema.RegisterImmutableParam<std::string>(AppConstants::SphereIndexBuffer, "sphereIndexBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::PlaneVertexBuffer, "planeVertexBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::PlaneIndexBuffer, "planeIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MarbleImage, "marbleImage");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MarbleImageView, "marbleImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::MultisampledImage, "multisampledImage");
     schema.RegisterImmutableParam<std::string>(AppConstants::MultisampledImageView, "multisampledImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::ResolvedImage, "resolvedImage");
@@ -54,7 +54,7 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
     schema.RegisterImmutableParam<std::string>(AppConstants::SceneDescSetLayout, "sceneDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::QuadDescSetLayout, "quadDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MarbleTexturePath, "Textures/marble.jpg");
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);

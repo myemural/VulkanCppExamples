@@ -28,12 +28,12 @@ namespace AppConstants
     constexpr auto SceneFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
 
     // Resources
-    constexpr auto CubeVertexBuffer = "AppConstants.CubeVertexBuffer";
-    constexpr auto CubeIndexBuffer = "AppConstants.CubeIndexBuffer";
+    constexpr auto SphereVertexBuffer = "AppConstants.SphereVertexBuffer";
+    constexpr auto SphereIndexBuffer = "AppConstants.SphereIndexBuffer";
     constexpr auto PlaneVertexBuffer = "AppConstants.PlaneVertexBuffer";
     constexpr auto PlaneIndexBuffer = "AppConstants.PlaneIndexBuffer";
-    constexpr auto CrateImage = "AppConstants.CrateImage";
-    constexpr auto CrateImageView = "AppConstants.CrateImageView";
+    constexpr auto MarbleImage = "AppConstants.MarbleImage";
+    constexpr auto MarbleImageView = "AppConstants.MarbleImageView";
     constexpr auto MultisampledImage = "AppConstants.MultisampledImage";
     constexpr auto MultisampledImageView = "AppConstants.MultisampledImageView";
     constexpr auto ResolvedImage = "AppConstants.ResolvedImage";
@@ -43,7 +43,7 @@ namespace AppConstants
     constexpr auto MainSampler = "AppConstants.MainSampler";
     constexpr auto SceneDescSetLayout = "AppConstants.SceneDescSetLayout";
     constexpr auto QuadDescSetLayout = "AppConstants.QuadDescSetLayout";
-    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
+    constexpr auto MarbleTexturePath = "AppConstants.MarbleTexturePath";
 } // namespace AppConstants
 
 namespace AppSettings
