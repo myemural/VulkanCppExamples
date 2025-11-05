@@ -124,3 +124,11 @@ In this section you can find which instance currently supports which shader type
 | [Rendering Textured glTF Mesh](/Examples/Fundamentals/ModelLoading/GltfMeshTextured)                    | :white_check_mark: | :white_check_mark: |
 | [Multiple glTF Meshes and Node Transformations](/Examples/Fundamentals/ModelLoading/GltfMultipleMeshes) | :white_check_mark: | :white_check_mark: |
 | [Camera Usage with glTF](/Examples/Fundamentals/ModelLoading/GltfCamera)                                | :white_check_mark: | :white_check_mark: |
+
+**Multisampling**
+
+| Example                                                                      | GLSL Support       | HLSL Support       |
+|------------------------------------------------------------------------------|--------------------|--------------------|
+| [MSAA Basics](/Examples/Fundamentals/Multisampling/MsaaBasics)               | :white_check_mark: | :white_check_mark: |
+| [Sample Shading](/Examples/Fundamentals/Multisampling/SampleShading)         | :white_check_mark: | :white_check_mark: |
+| [Explicit Resolving](/Examples/Fundamentals/Multisampling/ExplicitResolving) | :white_check_mark: | :white_check_mark: |
