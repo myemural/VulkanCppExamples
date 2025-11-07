@@ -217,4 +217,10 @@ void VulkanCommandBuffer::ResolveImage(const std::shared_ptr<VulkanImage>& srcIm
     vkCmdResolveImage(handle_, srcImage->GetHandle(), srcImageLayout, dstImage->GetHandle(), dstImageLayout,
                       regions.size(), regions.empty() ? nullptr : regions.data());
 }
+
+void
+VulkanCommandBuffer::Dispatch(const uint32_t groupCountX, const uint32_t groupCountY, const uint32_t groupCountZ) const
+{
+    vkCmdDispatch(handle_, groupCountX, groupCountY, groupCountZ);
+}
 } // namespace common::vulkan_wrapper

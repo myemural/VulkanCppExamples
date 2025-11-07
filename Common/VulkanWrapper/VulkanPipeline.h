@@ -92,4 +92,25 @@ private:
     VkPipelineColorBlendStateCreateInfo colorBlendState_;
     VkPipelineDynamicStateCreateInfo dynamicState_;
 };
+
+class COMMON_API VulkanComputePipelineBuilder
+{
+public:
+    VulkanComputePipelineBuilder();
+
+    VulkanComputePipelineBuilder& SetCreateFlags(const VkPipelineCreateFlags& flags);
+
+    VulkanComputePipelineBuilder&
+    SetShaderStage(const std::function<void(VkPipelineShaderStageCreateInfo&)>& builderFunc);
+
+    VulkanComputePipelineBuilder& SetBasePipeline(const std::shared_ptr<VulkanPipeline>& basePipeline,
+                                                   std::int32_t basePipelineIndex);
+
+    std::shared_ptr<VulkanPipeline> Build(std::shared_ptr<VulkanDevice> device,
+                                          const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout);
+
+private:
+    VkComputePipelineCreateInfo createInfo_;
+    VkPipelineShaderStageCreateInfo shaderStage_;
+};
 } // namespace common::vulkan_wrapper

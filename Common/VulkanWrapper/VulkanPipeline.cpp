@@ -177,6 +177,19 @@ inline VkPipelineDynamicStateCreateInfo GetDefaultDynamicStateCreateInfo()
     return createInfo;
 }
 
+inline VkComputePipelineCreateInfo GetDefaultComputePipelineCreateInfo()
+{
+    VkComputePipelineCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+    createInfo.pNext = nullptr;
+    createInfo.flags = 0;
+    createInfo.stage = GetDefaultShaderStageCreateInfo();
+    createInfo.layout = VK_NULL_HANDLE;
+    createInfo.basePipelineHandle = VK_NULL_HANDLE;
+    createInfo.basePipelineIndex = -1;
+    return createInfo;
+}
+
 VulkanPipeline::VulkanPipeline(std::shared_ptr<VulkanDevice> device, VkPipeline pipeline)
     : VulkanObject(std::move(device), pipeline)
 {
@@ -332,4 +345,51 @@ VulkanGraphicsPipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
 
     return std::make_shared<VulkanPipeline>(std::move(device), graphicsPipeline);
 }
+
+VulkanComputePipelineBuilder::VulkanComputePipelineBuilder()
+    : createInfo_{GetDefaultComputePipelineCreateInfo()}, shaderStage_{GetDefaultShaderStageCreateInfo()}
+{
+}
+
+VulkanComputePipelineBuilder& VulkanComputePipelineBuilder::SetCreateFlags(const VkPipelineCreateFlags& flags)
+{
+    createInfo_.flags = flags;
+    return *this;
+}
+
+VulkanComputePipelineBuilder&
+VulkanComputePipelineBuilder::SetShaderStage(const std::function<void(VkPipelineShaderStageCreateInfo&)>& builderFunc)
+{
+    VkPipelineShaderStageCreateInfo shaderStageCreateInfo = GetDefaultShaderStageCreateInfo();
+    builderFunc(shaderStageCreateInfo);
+    shaderStage_ = shaderStageCreateInfo;
+    return *this;
+}
+
+VulkanComputePipelineBuilder&
+VulkanComputePipelineBuilder::SetBasePipeline(const std::shared_ptr<VulkanPipeline>& basePipeline,
+                                              const std::int32_t basePipelineIndex)
+{
+    createInfo_.basePipelineHandle = basePipeline->GetHandle();
+    createInfo_.basePipelineIndex = basePipelineIndex;
+    return *this;
+}
+
+std::shared_ptr<VulkanPipeline>
+VulkanComputePipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
+                                    const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout)
+{
+    createInfo_.stage = shaderStage_;
+    createInfo_.layout = pipelineLayout->GetHandle();
+
+    VkPipeline computePipeline = VK_NULL_HANDLE;
+    if (vkCreateComputePipelines(device->GetHandle(), VK_NULL_HANDLE, 1, &createInfo_, nullptr, &computePipeline) !=
+        VK_SUCCESS) {
+        std::cerr << "Failed to create compute pipeline!" << std::endl;
+        return nullptr;
+    }
+
+    return std::make_shared<VulkanPipeline>(std::move(device), computePipeline);
+}
+
 } // namespace common::vulkan_wrapper

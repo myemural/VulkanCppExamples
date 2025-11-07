@@ -23,6 +23,7 @@ namespace common::vulkan_wrapper
 class VulkanBuffer;
 class VulkanBufferBuilder;
 class VulkanCommandPool;
+class VulkanComputePipelineBuilder;
 class VulkanDescriptorPool;
 class VulkanDescriptorSetLayout;
 class VulkanDeviceMemory;
@@ -63,18 +64,20 @@ public:
     COMMON_API std::shared_ptr<VulkanFence> CreateFence(const VkFenceCreateFlags& flags);
 
     COMMON_API std::shared_ptr<VulkanCommandPool> CreateCommandPool(std::uint32_t queueFamilyIndex,
-                                                         const VkCommandPoolCreateFlags& flags = 0);
+                                                                    const VkCommandPoolCreateFlags& flags = 0);
 
-    COMMON_API std::shared_ptr<VulkanDescriptorPool> CreateDescriptorPool(std::uint32_t maxSets,
-                                                               const std::vector<VkDescriptorPoolSize>& poolSizes,
-                                                               const VkDescriptorPoolCreateFlags& flags = 0);
+    COMMON_API std::shared_ptr<VulkanDescriptorPool>
+    CreateDescriptorPool(std::uint32_t maxSets,
+                         const std::vector<VkDescriptorPoolSize>& poolSizes,
+                         const VkDescriptorPoolCreateFlags& flags = 0);
 
     COMMON_API std::shared_ptr<VulkanDescriptorSetLayout>
     CreateDescriptorSetLayout(const std::vector<VkDescriptorSetLayoutBinding>& bindings,
                               const VkDescriptorSetLayoutCreateFlags& flags = 0);
 
-    COMMON_API std::shared_ptr<VulkanSwapChain> CreateSwapChain(const std::shared_ptr<VulkanSurface>& surface,
-                                                     const std::function<void(VulkanSwapChainBuilder&)>& builderFunc);
+    COMMON_API std::shared_ptr<VulkanSwapChain>
+    CreateSwapChain(const std::shared_ptr<VulkanSurface>& surface,
+                    const std::function<void(VulkanSwapChainBuilder&)>& builderFunc);
 
     COMMON_API std::shared_ptr<VulkanRenderPass>
     CreateRenderPass(const std::function<void(VulkanRenderPassBuilder&)>& builderFunc);
@@ -86,8 +89,9 @@ public:
 
     COMMON_API std::shared_ptr<VulkanImage> CreateImage(const std::function<void(VulkanImageBuilder&)>& builderFunc);
 
-    COMMON_API std::shared_ptr<VulkanImageView> CreateImageView(const std::shared_ptr<VulkanImage>& image,
-                                                     const std::function<void(VulkanImageViewBuilder&)>& builderFunc);
+    COMMON_API std::shared_ptr<VulkanImageView>
+    CreateImageView(const std::shared_ptr<VulkanImage>& image,
+                    const std::function<void(VulkanImageViewBuilder&)>& builderFunc);
 
     COMMON_API std::shared_ptr<VulkanShaderModule> CreateShaderModule(const std::vector<std::uint32_t>& moduleCode);
 
@@ -101,14 +105,20 @@ public:
                            const std::shared_ptr<VulkanRenderPass>& renderPass,
                            const std::function<void(VulkanGraphicsPipelineBuilder&)>& builderFunc);
 
+    COMMON_API std::shared_ptr<VulkanPipeline>
+    CreateComputePipeline(const std::shared_ptr<VulkanPipelineLayout>& layout,
+                          const std::function<void(VulkanComputePipelineBuilder&)>& builderFunc);
+
     COMMON_API std::shared_ptr<VulkanBuffer> CreateBuffer(const std::function<void(VulkanBufferBuilder&)>& builderFunc);
 
-    COMMON_API std::shared_ptr<VulkanDeviceMemory> AllocateMemory(const VkDeviceSize& size, std::uint32_t memoryTypeIndex);
+    COMMON_API std::shared_ptr<VulkanDeviceMemory> AllocateMemory(const VkDeviceSize& size,
+                                                                  std::uint32_t memoryTypeIndex);
 
     COMMON_API void UpdateDescriptorSets(const std::vector<VkWriteDescriptorSet>& writeDescriptorSets,
-                              const std::vector<VkCopyDescriptorSet>& copyDescriptorSets = {}) const;
+                                         const std::vector<VkCopyDescriptorSet>& copyDescriptorSets = {}) const;
 
-    COMMON_API std::shared_ptr<VulkanSampler> CreateSampler(const std::function<void(VulkanSamplerBuilder&)>& builderFunc);
+    COMMON_API std::shared_ptr<VulkanSampler>
+    CreateSampler(const std::function<void(VulkanSamplerBuilder&)>& builderFunc);
 
     COMMON_API void WaitIdle() const;
 };

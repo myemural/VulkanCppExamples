@@ -114,5 +114,7 @@ public:
                                  const std::shared_ptr<VulkanImage>& dstImage,
                                  const VkImageLayout& dstImageLayout,
                                  const std::vector<VkImageResolve>& regions) const;
+
+    COMMON_API void Dispatch(uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) const;
 };
 } // namespace common::vulkan_wrapper

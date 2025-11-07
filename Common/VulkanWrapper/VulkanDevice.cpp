@@ -303,6 +303,18 @@ VulkanDevice::CreateGraphicsPipeline(const std::shared_ptr<VulkanPipelineLayout>
     return graphicsPipelineBuilder.Build(device, layout, renderPass);
 }
 
+std::shared_ptr<VulkanPipeline>
+VulkanDevice::CreateComputePipeline(const std::shared_ptr<VulkanPipelineLayout>& layout,
+                                    const std::function<void(VulkanComputePipelineBuilder&)>& builderFunc)
+{
+    const auto device = shared_from_this();
+
+    VulkanComputePipelineBuilder computePipelineBuilder;
+    builderFunc(computePipelineBuilder);
+
+    return computePipelineBuilder.Build(device, layout);
+}
+
 std::shared_ptr<VulkanBuffer> VulkanDevice::CreateBuffer(const std::function<void(VulkanBufferBuilder&)>& builderFunc)
 {
     const auto device = shared_from_this();
