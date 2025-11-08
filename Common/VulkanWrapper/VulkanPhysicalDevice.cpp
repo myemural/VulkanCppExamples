@@ -215,7 +215,7 @@ VulkanPhysicalDeviceSelector::Select(const std::shared_ptr<VulkanInstance>& inst
 
     // Filter by Device Type
     if (deviceType_ != VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM) {
-        std::erase_if(devices, [=](auto& device) {
+        std::erase_if(devices, [&](auto& device) {
             VkPhysicalDeviceProperties properties;
             vkGetPhysicalDeviceProperties(device, &properties);
             return properties.deviceType != deviceType_;
@@ -224,7 +224,7 @@ VulkanPhysicalDeviceSelector::Select(const std::shared_ptr<VulkanInstance>& inst
 
     // Filter by Queue Types
     if (queueTypeFlags_ != VK_QUEUE_FLAG_BITS_MAX_ENUM) {
-        std::erase_if(devices, [=](auto& device) {
+        std::erase_if(devices, [&](auto& device) {
             uint32_t queueFamilyCount = 0;
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 
@@ -242,7 +242,7 @@ VulkanPhysicalDeviceSelector::Select(const std::shared_ptr<VulkanInstance>& inst
 
     // Filter by Surface
     if (surface_) {
-        std::erase_if(devices, [=](auto& device) {
+        std::erase_if(devices, [&](auto& device) {
             uint32_t queueFamilyCount = 0;
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 

@@ -10,11 +10,12 @@
  */
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <string>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
+#include <vulkan/vulkan_core.h>
 #include "GLFW/glfw3.h"
 
 #include "CoreDefines.h"

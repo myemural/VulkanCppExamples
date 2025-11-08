@@ -7,6 +7,7 @@
 #include "VulkanApplication.h"
 
 #include <array>
+#include <cstring>
 #include <queue>
 
 #include "AppConfig.h"

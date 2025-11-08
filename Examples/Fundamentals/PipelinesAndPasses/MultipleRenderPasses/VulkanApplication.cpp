@@ -261,21 +261,10 @@ void VulkanApplication::CreateRenderPasses()
                    attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
                    attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
                })
-                .AddAttachment([&](auto& attachmentCreateInfo) {
-                    attachmentCreateInfo.format = depthImageFormat_;
-                    attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-                    attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-                    attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-                    attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-                    attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-                })
                 .AddSubpass([&](auto& subpassCreateInfo) {
                     subpassCreateInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
                     subpassCreateInfo.colorAttachmentCount = 1;
                     subpassCreateInfo.pColorAttachments = &colorAttachmentRef;
-                    subpassCreateInfo.pDepthStencilAttachment = &depthAttachmentRef;
                 });
     });
 
@@ -291,13 +280,13 @@ void VulkanApplication::CreateRenderPasses()
                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
                    attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
                    attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-                   attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+                   attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
                    attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
                })
                 .AddAttachment([&](auto& attachmentCreateInfo) {
                     attachmentCreateInfo.format = depthImageFormat_;
                     attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
                     attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
                     attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
                     attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -377,11 +366,6 @@ void VulkanApplication::CreatePipelines()
                     blendStateCreateInfo.attachmentCount = 1;
                     blendStateCreateInfo.pAttachments = &colorBlendAttachment;
                 });
-                builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
-                    depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
-                    depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
-                    depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
-                });
             });
 
     if (!backgroundPipeline_) {
@@ -443,7 +427,7 @@ void VulkanApplication::CreateFramebuffers(const std::shared_ptr<VulkanImageView
 {
     for (const auto& swapImage: swapChainImageViews_) {
         const auto backgroundFramebuffer =
-                device_->CreateFramebuffer(backgroundRenderPass_, {swapImage, depthImageView}, [&](auto& builder) {
+                device_->CreateFramebuffer(backgroundRenderPass_, {swapImage}, [&](auto& builder) {
                     builder.SetDimensions(currentWindowWidth_, currentWindowHeight_);
                 });
 
@@ -539,7 +523,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.framebuffer = backgroundFramebuffers_[currentImageIndex]->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
                     beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
-                    beginInfo.clearValueCount = clearValues.size();
+                    beginInfo.clearValueCount = 1;
                     beginInfo.pClearValues = clearValues.data();
                 },
                 VK_SUBPASS_CONTENTS_INLINE);

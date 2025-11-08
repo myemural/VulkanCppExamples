@@ -111,6 +111,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Using Multiple Pipelines and Pipeline Derivatives](/Examples/Fundamentals/PipelinesAndPasses/MultiplePipelines)
   - [Object Outlining with Stencil Testing](/Examples/Fundamentals/PipelinesAndPasses/BasicStencilTesting)
   - [Using Multiple Subpasses and Input Attachments](/Examples/Fundamentals/PipelinesAndPasses/MultipleSubpasses)
+  - [Using Multiple Render Passes](/Examples/Fundamentals/PipelinesAndPasses/MultipleRenderPasses)
   - [Rendering Scene to a Texture](/Examples/Fundamentals/PipelinesAndPasses/OffscreenRendering)
 - **[Swap Chains and Viewports](/Examples/Fundamentals/SwapChainsAndViewports)**
   - [Handling Window Resizing](/Examples/Fundamentals/SwapChainsAndViewports/SwapChainRecreation)
@@ -133,11 +134,11 @@ Every example has its own directory and CMake target. You can build what you wan
 
 Currently only tested on Windows. Other operating systems will be added.
 
-| Operating System | Support | Minimum Tested Version |
-|------------------|---------|------------------------|
-| Windows          | Yes     | Windows 11 Pro 24H2    |
-| GNU/Linux        | No      | -                      |
-| MacOS            | No      | -                      |
+| Operating System | Support | Tested Compiler  |
+|------------------|---------|------------------|
+| Windows          | Yes     | MSVC 19.42.34435 |
+| GNU/Linux        | Yes     | GCC 15.2.1       |
+| MacOS            | No      | -                |
 
 
 ## Contributing

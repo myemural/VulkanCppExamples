@@ -6,6 +6,8 @@
 
 #include "BufferResource.h"
 
+#include <cstring>
+
 namespace common::vulkan_framework
 {
 

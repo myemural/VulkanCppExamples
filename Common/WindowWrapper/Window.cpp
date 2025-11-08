@@ -40,8 +40,6 @@ bool Window::Init(const uint32_t windowWidth,
         return false;
     }
 
-    glfwMakeContextCurrent(window_);
-
     glfwSetWindowUserPointer(window_, this);
 
     glfwSetKeyCallback(window_, [](GLFWwindow* window, int key, int scancode, int action, int mods) {

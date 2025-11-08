@@ -9,7 +9,7 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include <iostream>
+#include <memory>
 
 #include "Window.h"
 

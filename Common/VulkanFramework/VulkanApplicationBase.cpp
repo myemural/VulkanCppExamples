@@ -55,7 +55,7 @@ float VulkanApplicationBase::GetParamFloat(const std::string& key) const { retur
 bool VulkanApplicationBase::CreateInstance()
 {
     instance_ = vulkan_wrapper::VulkanInstanceBuilder()
-                        .SetApplicationInfo([=](auto& info) {
+                        .SetApplicationInfo([this](auto& info) {
                             info.pApplicationName = GetParamStr(VulkanParams::ApplicationName).c_str();
                             info.pEngineName = GetParamStr(VulkanParams::EngineName).c_str();
                             info.engineVersion = GetParamU32(VulkanParams::EngineVersion);
