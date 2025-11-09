@@ -10,6 +10,7 @@
  */
 #pragma once
 
+#include <array>
 #include <numbers>
 #include <vector>
 
@@ -67,4 +68,56 @@ static std::vector<uint16_t> CreateSphereIndices(const uint32_t sectorCount, con
 
     return indices;
 }
+
+template<typename VertexType>
+std::vector<VertexType> CreateCubeVertices(const float size)
+{
+    const float h = size * 0.5f;
+
+    return {
+        // Front (Z+)
+        {{-h, -h, h}, {0, 0}},
+        {{h, -h, h}, {1, 0}},
+        {{h, h, h}, {1, 1}},
+        {{-h, h, h}, {0, 1}},
+        // Back (Z−)
+        {{h, -h, -h}, {0, 0}},
+        {{-h, -h, -h}, {1, 0}},
+        {{-h, h, -h}, {1, 1}},
+        {{h, h, -h}, {0, 1}},
+        // Left (X−)
+        {{-h, -h, -h}, {0, 0}},
+        {{-h, -h, h}, {1, 0}},
+        {{-h, h, h}, {1, 1}},
+        {{-h, h, -h}, {0, 1}},
+        // Right (X+)
+        {{h, -h, h}, {0, 0}},
+        {{h, -h, -h}, {1, 0}},
+        {{h, h, -h}, {1, 1}},
+        {{h, h, h}, {0, 1}},
+        // Top (Y+)
+        {{-h, h, h}, {0, 0}},
+        {{h, h, h}, {1, 0}},
+        {{h, h, -h}, {1, 1}},
+        {{-h, h, -h}, {0, 1}},
+        // Bottom (Y−)
+        {{-h, -h, -h}, {0, 0}},
+        {{h, -h, -h}, {1, 0}},
+        {{h, -h, h}, {1, 1}},
+        {{-h, -h, h}, {0, 1}},
+    };
+}
+
+static std::vector<uint16_t> CreateCubeIndices()
+{
+    return {
+        0,  1,  2,  0,  2,  3,  // Front
+        4,  5,  6,  4,  6,  7,  // Back
+        8,  9,  10, 8,  10, 11, // Left
+        12, 13, 14, 12, 14, 15, // Right
+        16, 17, 18, 16, 18, 19, // Top
+        20, 21, 22, 20, 22, 23  // Bottom
+    };
+}
+
 } // namespace common::utility

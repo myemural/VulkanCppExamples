@@ -129,6 +129,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Explicit Resolving](/Examples/Fundamentals/Multisampling/ExplicitResolving)
 - **[ComputeShaders](/Examples/Fundamentals/ComputeShaders)**
   - [Fullscreen Moving Gradient Generator](/Examples/Fundamentals/ComputeShaders/FullscreenGradient)
+  - [Checkerboard Texture Generator](/Examples/Fundamentals/ComputeShaders/CheckerboardGenerator)
 
 ## Environment Support
 

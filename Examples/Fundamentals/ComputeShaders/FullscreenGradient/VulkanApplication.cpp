@@ -13,6 +13,7 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "MathUtils.h"
 #include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
@@ -334,9 +335,10 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->PushConstants(gradientComputePipelineLayout_, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(float),
                                         &time);
 
-        const uint32_t groupX = (currentWindowWidth_ + 15) / 16;
-        const uint32_t groupY = (currentWindowHeight_ + 15) / 16;
-        currentCmdBuffer->Dispatch(groupX, groupY, 1);
+
+        const auto groupCountX = CeilDiv(currentWindowWidth_, LOCAL_SIZE_X);
+        const auto groupCountY = CeilDiv(currentWindowHeight_, LOCAL_SIZE_Y);
+        currentCmdBuffer->Dispatch(groupCountX, groupCountY, 1);
     }
 
     // Render phase

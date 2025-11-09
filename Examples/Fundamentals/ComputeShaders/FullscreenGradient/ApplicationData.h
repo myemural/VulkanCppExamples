@@ -16,6 +16,10 @@
 
 namespace examples::fundamentals::compute_shaders::fullscreen_gradient
 {
+
+#define LOCAL_SIZE_X 16
+#define LOCAL_SIZE_Y 16
+
 // Vertex Attribute Layout
 struct VertexPos3Uv2
 {
