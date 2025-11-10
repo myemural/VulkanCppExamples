@@ -450,8 +450,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Compute phase
     {
         // Change image layout from VK_IMAGE_LAYOUT_UNDEFINED to VK_IMAGE_LAYOUT_GENERAL
-        const auto gradientStorageImage = resources_->GetImage(GetParamStr(AppConstants::CheckerboardStorageImage));
-        const auto barrierUndefinedToGeneral = gradientStorageImage->CreateImageMemoryBarrier(
+        const auto storageImage = resources_->GetImage(GetParamStr(AppConstants::CheckerboardStorageImage));
+        const auto barrierUndefinedToGeneral = storageImage->CreateImageMemoryBarrier(
                 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
         currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                                           {barrierUndefinedToGeneral});
@@ -473,8 +473,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Render phase
     {
         // Change image layout from VK_IMAGE_LAYOUT_GENERAL to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-        const auto gradientStorageImage = resources_->GetImage(GetParamStr(AppConstants::CheckerboardStorageImage));
-        const auto barrierGeneralToShaderRead = gradientStorageImage->CreateImageMemoryBarrier(
+        const auto storageImage = resources_->GetImage(GetParamStr(AppConstants::CheckerboardStorageImage));
+        const auto barrierGeneralToShaderRead = storageImage->CreateImageMemoryBarrier(
                 VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_GENERAL,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,

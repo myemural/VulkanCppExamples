@@ -8,6 +8,7 @@ This repo aims to include implementations of many Vulkan examples that built wit
   - [Build and Run](#build-and-run)
 - [General Info](#general-info)
   - [Common Parameters](#common-parameters)
+- [All Examples](#all-examples)
 - [Environment Support](#environment-support)
 - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
@@ -72,7 +73,7 @@ Every example has its own directory and CMake target. You can build what you wan
 | Vulkan.InstanceLayers     | std::vector&lt;std::string&gt; | VulkanParams::InstanceLayers     | List of the instance layers       |                          |
 | Vulkan.InstanceExtensions | std::vector&lt;std::string&gt; | VulkanParams::InstanceExtensions | List of the instance extensions   |                          |
 
-## Examples
+## All Examples
 
 ### [Fundamentals](/Examples/Fundamentals)
 
@@ -130,6 +131,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[ComputeShaders](/Examples/Fundamentals/ComputeShaders)**
   - [Fullscreen Moving Gradient Generator](/Examples/Fundamentals/ComputeShaders/FullscreenGradient)
   - [Checkerboard Texture Generator](/Examples/Fundamentals/ComputeShaders/CheckerboardGenerator)
+  - [Mandelbrot Fractal Rendering](/Examples/Fundamentals/ComputeShaders/MandelbrotFractal)
 
 ## Environment Support
 

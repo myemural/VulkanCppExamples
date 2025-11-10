@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `FullscreenGradient`
 2. [Checkerboard Texture Generator](/Examples/Fundamentals/ComputeShaders/CheckerboardGenerator)
    - `CheckerboardGenerator`
+3. [Mandelbrot Fractal Rendering](/Examples/Fundamentals/ComputeShaders/MandelbrotFractal)
+   - `MandelbrotFractal`
 
 ## Architecture of the Subsection
 
