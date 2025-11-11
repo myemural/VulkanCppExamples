@@ -495,13 +495,13 @@ void VulkanApplication::UpdateDescriptorSets() const
                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest sceneImageUpdateRequest;
-    sceneImageUpdateRequest.LayoutName = GetParamStr(AppConstants::SceneDescSetLayout);
+    sceneImageUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::SceneDescSetLayout);
     sceneImageUpdateRequest.BindingIndex = 0;
     sceneImageUpdateRequest.Images = sceneImageInfos;
     sceneImageUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest quadImageUpdateRequest;
-    quadImageUpdateRequest.LayoutName = GetParamStr(AppConstants::QuadDescSetLayout);
+    quadImageUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::QuadDescSetLayout);
     quadImageUpdateRequest.BindingIndex = 0;
     quadImageUpdateRequest.Images = quadImageInfos;
     quadImageUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;

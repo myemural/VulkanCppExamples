@@ -229,7 +229,7 @@ void VulkanApplication::UpdateDescriptorSets() const
                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest imageUpdateRequest;
-    imageUpdateRequest.LayoutName = GetParamStr(AppConstants::MainDescSetLayout);
+    imageUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
     imageUpdateRequest.BindingIndex = 0;
     imageUpdateRequest.Images = imageInfos;
     imageUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;

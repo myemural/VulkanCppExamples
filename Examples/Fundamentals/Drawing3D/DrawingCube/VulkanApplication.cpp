@@ -294,13 +294,13 @@ void VulkanApplication::UpdateDescriptorSets()
                              VK_WHOLE_SIZE);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.LayoutName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
     samplerUpdateRequest.BindingIndex = 0;
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     BufferWriteRequest ubUpdateRequest;
-    ubUpdateRequest.LayoutName = GetParamStr(AppConstants::MainDescSetLayout);
+    ubUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
     ubUpdateRequest.BindingIndex = 1;
     ubUpdateRequest.Buffers = bufferInfos;
     ubUpdateRequest.Type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;

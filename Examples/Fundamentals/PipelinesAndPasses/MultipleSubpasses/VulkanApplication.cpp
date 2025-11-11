@@ -364,13 +364,13 @@ void VulkanApplication::UpdateDescriptorSets() const
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.LayoutName = GetParamStr(AppConstants::ObjectDescSetLayout);
+    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::ObjectDescSetLayout);
     samplerUpdateRequest.BindingIndex = 0;
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest inputDepthUpdateRequest;
-    inputDepthUpdateRequest.LayoutName = GetParamStr(AppConstants::DepthObjectDescSetLayout);
+    inputDepthUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::DepthObjectDescSetLayout);
     inputDepthUpdateRequest.BindingIndex = 0;
     inputDepthUpdateRequest.Images = depthImageInfos;
     inputDepthUpdateRequest.Type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;

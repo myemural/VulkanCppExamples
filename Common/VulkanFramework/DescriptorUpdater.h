@@ -17,27 +17,27 @@ namespace common::vulkan_framework
 {
 struct COMMON_API BufferWriteRequest
 {
-    std::string LayoutName;
-    uint32_t BindingIndex;
-    VkDescriptorType Type; // UNIFORM_BUFFER, STORAGE_BUFFER etc.
+    std::string DescriptorSetName;
+    uint32_t BindingIndex = UINT32_MAX;
+    VkDescriptorType Type = VK_DESCRIPTOR_TYPE_MAX_ENUM; // UNIFORM_BUFFER, STORAGE_BUFFER etc.
     std::vector<VkDescriptorBufferInfo> Buffers;
     uint32_t ArrayElement = 0;
 };
 
 struct COMMON_API ImageWriteRequest
 {
-    std::string LayoutName;
-    uint32_t BindingIndex;
+    std::string DescriptorSetName;
+    uint32_t BindingIndex = UINT32_MAX;
     std::vector<VkDescriptorImageInfo> Images;
-    VkDescriptorType Type; // COMBINED_IMAGE_SAMPLER, SAMPLED_IMAGE etc.
+    VkDescriptorType Type  = VK_DESCRIPTOR_TYPE_MAX_ENUM; // COMBINED_IMAGE_SAMPLER, SAMPLED_IMAGE etc.
     uint32_t ArrayElement = 0;
 };
 
 struct COMMON_API TexelBufferWriteRequest
 {
-    std::string LayoutName;
-    uint32_t BindingIndex;
-    VkDescriptorType Type; // UNIFORM_TEXEL_BUFFER, STORAGE_TEXEL_BUFFER etc.
+    std::string DescriptorSetName;
+    uint32_t BindingIndex = UINT32_MAX;
+    VkDescriptorType Type  = VK_DESCRIPTOR_TYPE_MAX_ENUM; // UNIFORM_TEXEL_BUFFER, STORAGE_TEXEL_BUFFER etc.
     std::vector<VkBufferView> BufferViews;
     uint32_t ArrayElement = 0;
 };
@@ -45,12 +45,12 @@ struct COMMON_API TexelBufferWriteRequest
 struct COMMON_API CopySetRequest
 {
     std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> SourceSet;
-    uint32_t SourceBindingIndex;
-    uint32_t SourceArrayElement;
+    uint32_t SourceBindingIndex = UINT32_MAX;
+    uint32_t SourceArrayElement = UINT32_MAX;
     std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> DestSet;
-    uint32_t DestBindingIndex;
-    uint32_t DestArrayElement;
-    uint32_t Count;
+    uint32_t DestBindingIndex = UINT32_MAX;
+    uint32_t DestArrayElement = UINT32_MAX;
+    uint32_t Count = UINT32_MAX;
 };
 
 struct COMMON_API DescriptorUpdateInfo
@@ -73,7 +73,7 @@ public:
     void AddBufferUpdate(const BufferWriteRequest& request) { bufferRequests_.push_back(request); }
 
     /**
-     * @brief Add a image write request to the update query.
+     * @brief Add an image write request to the update query.
      * @param request Image write request.
      */
     void AddImageUpdate(const ImageWriteRequest& request) { imageRequests_.push_back(request); }

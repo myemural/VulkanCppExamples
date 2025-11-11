@@ -22,7 +22,7 @@ void DescriptorUpdater::ApplyUpdates()
 
     // Buffer write requests
     for (auto& req: bufferRequests_) {
-        const auto set = registry_.GetDescriptorSet(req.LayoutName);
+        const auto set = registry_.GetDescriptorSet(req.DescriptorSetName);
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         write.dstSet = set->GetHandle();
@@ -36,7 +36,7 @@ void DescriptorUpdater::ApplyUpdates()
 
     // Image write requests
     for (auto& req: imageRequests_) {
-        const auto set = registry_.GetDescriptorSet(req.LayoutName);
+        const auto set = registry_.GetDescriptorSet(req.DescriptorSetName);
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         write.dstSet = set->GetHandle();
@@ -50,7 +50,7 @@ void DescriptorUpdater::ApplyUpdates()
 
     // Texel buffer write requests
     for (auto& req: texelRequests_) {
-        const auto set = registry_.GetDescriptorSet(req.LayoutName);
+        const auto set = registry_.GetDescriptorSet(req.DescriptorSetName);
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         write.dstSet = set->GetHandle();

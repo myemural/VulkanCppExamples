@@ -280,13 +280,13 @@ void VulkanApplication::UpdateDescriptorSets() const
                                    VK_IMAGE_LAYOUT_GENERAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.LayoutName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
     samplerUpdateRequest.BindingIndex = 0;
     samplerUpdateRequest.Images = imageSamplerInfos;
     samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest storageUpdateRequest;
-    storageUpdateRequest.LayoutName = GetParamStr(AppConstants::ComputeDescSetLayout);
+    storageUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::ComputeDescSetLayout);
     storageUpdateRequest.BindingIndex = 0;
     storageUpdateRequest.Images = imageStorageInfos;
     storageUpdateRequest.Type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;

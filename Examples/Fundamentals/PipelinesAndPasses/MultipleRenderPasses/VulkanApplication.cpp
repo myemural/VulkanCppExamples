@@ -470,19 +470,19 @@ void VulkanApplication::UpdateDescriptorSets() const
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerBackgroundUpdateRequest;
-    samplerBackgroundUpdateRequest.LayoutName = GetParamStr(AppConstants::BackgroundDescSetLayout);
+    samplerBackgroundUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::BackgroundDescSetLayout);
     samplerBackgroundUpdateRequest.BindingIndex = 0;
     samplerBackgroundUpdateRequest.Images = backgroundSamplerInfos;
     samplerBackgroundUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     BufferWriteRequest uboUpdateRequest;
-    uboUpdateRequest.LayoutName = GetParamStr(AppConstants::BackgroundDescSetLayout);
+    uboUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::BackgroundDescSetLayout);
     uboUpdateRequest.BindingIndex = 1;
     uboUpdateRequest.Buffers = bufferInfos;
     uboUpdateRequest.Type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
     ImageWriteRequest samplerCubeUpdateRequest;
-    samplerCubeUpdateRequest.LayoutName = GetParamStr(AppConstants::CubeDescSetLayout);
+    samplerCubeUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::CubeDescSetLayout);
     samplerCubeUpdateRequest.BindingIndex = 0;
     samplerCubeUpdateRequest.Images = cubeSamplerInfos;
     samplerCubeUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
