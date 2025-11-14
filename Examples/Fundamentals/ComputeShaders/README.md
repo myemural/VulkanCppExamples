@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `CheckerboardGenerator`
 3. [Mandelbrot Fractal Rendering](/Examples/Fundamentals/ComputeShaders/MandelbrotFractal)
    - `MandelbrotFractal`
+4. [Basic GPU-Generated Particle Effect](/Examples/Fundamentals/ComputeShaders/BasicParticles)
+   - `BasicParticles`
 
 ## Architecture of the Subsection
 

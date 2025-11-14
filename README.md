@@ -132,6 +132,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Fullscreen Moving Gradient Generator](/Examples/Fundamentals/ComputeShaders/FullscreenGradient)
   - [Checkerboard Texture Generator](/Examples/Fundamentals/ComputeShaders/CheckerboardGenerator)
   - [Mandelbrot Fractal Rendering](/Examples/Fundamentals/ComputeShaders/MandelbrotFractal)
+  - [Basic GPU-Generated Particle Effect](/Examples/Fundamentals/ComputeShaders/BasicParticles)
 
 ## Environment Support
 
