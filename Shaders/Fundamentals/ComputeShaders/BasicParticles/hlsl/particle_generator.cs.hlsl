@@ -1,5 +1,3 @@
-#version 450
-
 // ------------------------------------------------------------------------
 // Author: Mustafa Yemural
 // Description:
@@ -8,31 +6,32 @@
 // Licensed under the MIT License.
 // ------------------------------------------------------------------------
 
-layout(local_size_x = 256) in;
-
-struct Particle {
-    vec3 position;
-    vec3 velocity;
-    float lifetime;
+struct Particle
+{
+    float3 position;
+    float3 velocity;
+    float  lifetime;
 };
 
-layout(std430, binding = 0) buffer Particles {
-    Particle particles[];
-};
+RWStructuredBuffer<Particle> particles : register(u0);
 
-layout(push_constant) uniform PushConstants {
+struct PushConstants
+{
     float deltaTime;
-    int particleCount;
-} pc;
+    int   particleCount;
+};
+[[vk::push_constant]] PushConstants pc;
 
 float GetRandomNumber(uint seed)
 {
-    return fract(sin(float(seed) * 12.345) * 4567.89);
+    return frac(sin(float(seed) * 12.345) * 4567.89);
 }
 
-void main()
+[numthreads(256, 1, 1)]
+void main(uint3 dtid : SV_DispatchThreadID)
 {
-    uint id = gl_GlobalInvocationID.x;
+    uint id = dtid.x;
+
     if (id >= pc.particleCount) {
         return;
     }
@@ -40,18 +39,22 @@ void main()
     Particle p = particles[id];
 
     // Respawn if dead or invalid
-    if (p.lifetime <= 0.0 || isnan(p.lifetime)) {
+    if (p.lifetime <= 0.0 || isnan(p.lifetime))
+    {
         // Conical spawn
-        float angle = GetRandomNumber(id) * 6.2831853;
+        float angle  = GetRandomNumber(id)   * 6.2831853;
         float radius = GetRandomNumber(id+1) * 0.5;
+
         float vx = cos(angle) * radius;
         float vz = sin(angle) * radius;
         float vy = 1.0 + GetRandomNumber(id+2) * 1.5;
 
-        p.position = vec3(0.0);
-        p.velocity = vec3(vx, vy, vz);
+        p.position = float3(0.0, 0.0, 0.0);
+        p.velocity = float3(vx, vy, vz);
         p.lifetime = 0.1 + GetRandomNumber(id+3) * 1.0;
-    } else {
+    }
+    else
+    {
         // Move particles upward
         p.position += p.velocity * pc.deltaTime;
 

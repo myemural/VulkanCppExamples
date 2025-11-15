@@ -96,8 +96,22 @@ The topics covered by this subsection:
 
 ## [Multisampling](/Examples/Fundamentals/Multisampling)
 
-TBD
+The topics covered by this subsection:
+- Enabling multisampling in Vulkan
+- Getting maximum supported sample count of your window system
+- Implementing basic MSAA
+- Enabling sample shading
+- Writing fragment shaders based on samples
+- Explicit resolving of multisampled images
+- Draw explicitly resolved scene to the screen
 
 ## [Compute Shaders](/Examples/Fundamentals/ComputeShaders)
 
-TBD
+- Creating compute pipelines
+- Generating dynamic fullscreen gradient image from compute shader
+- Drawing results of the compute shader to the screen via storage images
+- Creating a texture from compute shader
+- Placing generated texture to the objects
+- Writing more complex compute shaders
+- Creating basic GPU-generated particles with compute shaders
+- Generating and using storage buffers

@@ -38,7 +38,7 @@ void main()
     float cycleTime = mod(pc.time, pc.loopTime);
     float scale = 4.0 / float(size.x) * exp(-pc.zoomSpeed * cycleTime);
 
-    // Coordinate calculation
+    // Coordinates calculation
     float x0 = (pix.x - size.x * 0.5) * scale + pc.center.x;
     float y0 = (pix.y - size.y * 0.5) * scale + pc.center.y;
 

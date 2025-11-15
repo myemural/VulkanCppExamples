@@ -29,13 +29,13 @@ inline ParameterSchema CreateParameterSchema()
     // Register Constants
     schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
 
-    schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "drawing_cube.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "drawing_cube.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleVertexShaderFile, "drawing_particles.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleFragmentShaderFile, "drawing_particles.frag.spv");
+    schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::HLSL);
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "drawing_cube.vs.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "drawing_cube.ps.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleVertexShaderFile, "drawing_particles.vs.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleFragmentShaderFile, "drawing_particles.ps.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::ParticleComputeShaderFile,
-                                               "particle_generator.comp.spv");
+                                               "particle_generator.cs.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::ParticleVertexShaderKey, "vertParticle");

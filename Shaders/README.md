@@ -132,3 +132,12 @@ In this section you can find which instance currently supports which shader type
 | [MSAA Basics](/Examples/Fundamentals/Multisampling/MsaaBasics)               | :white_check_mark: | :white_check_mark: |
 | [Sample Shading](/Examples/Fundamentals/Multisampling/SampleShading)         | :white_check_mark: | :white_check_mark: |
 | [Explicit Resolving](/Examples/Fundamentals/Multisampling/ExplicitResolving) | :white_check_mark: | :white_check_mark: |
+
+**Compute Shaders**
+
+| Example                                                                                          | GLSL Support       | HLSL Support       |
+|--------------------------------------------------------------------------------------------------|--------------------|--------------------|
+| [Fullscreen Moving Gradient Generator](/Examples/Fundamentals/ComputeShaders/FullscreenGradient) | :white_check_mark: | :white_check_mark: |
+| [Checkerboard Texture Generator](/Examples/Fundamentals/ComputeShaders/CheckerboardGenerator)    | :white_check_mark: | :white_check_mark: |
+| [Mandelbrot Fractal Rendering](/Examples/Fundamentals/ComputeShaders/MandelbrotFractal)          | :white_check_mark: | :white_check_mark: |
+| [Basic GPU-Generated Particle Effect](/Examples/Fundamentals/ComputeShaders/BasicParticles)      | :white_check_mark: | :white_check_mark: |

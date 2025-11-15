@@ -17,6 +17,14 @@
 namespace common::utility
 {
 
+/**
+ * @brief Calculates and returns vertices of a sphere.
+ * @tparam VertexType Structure of a vertex.
+ * @param radius Radius of the sphere.
+ * @param sectorCount Sector count of the sphere.
+ * @param stackCount Stack count of the sphere.
+ * @return Vertices for sphere.
+ */
 template<typename VertexType>
 std::vector<VertexType> CreateSphereVertices(const float radius, const uint32_t sectorCount, const uint32_t stackCount)
 {
@@ -43,6 +51,12 @@ std::vector<VertexType> CreateSphereVertices(const float radius, const uint32_t 
     return vertices;
 }
 
+/**
+ * @brief Calculates and returns indices of a sphere.
+ * @param sectorCount Sector count of the sphere.
+ * @param stackCount Stack count of the sphere.
+ * @return Indices of the sphere.
+ */
 static std::vector<uint16_t> CreateSphereIndices(const uint32_t sectorCount, const uint32_t stackCount)
 {
     std::vector<uint16_t> indices;
@@ -69,6 +83,12 @@ static std::vector<uint16_t> CreateSphereIndices(const uint32_t sectorCount, con
     return indices;
 }
 
+/**
+ * @brief Calculates and returns vertices of a cube.
+ * @tparam VertexType Structure of a vertex.
+ * @param size Size of the cube.
+ * @return Vertices of the cube.
+ */
 template<typename VertexType>
 std::vector<VertexType> CreateCubeVertices(const float size)
 {
@@ -108,6 +128,10 @@ std::vector<VertexType> CreateCubeVertices(const float size)
     };
 }
 
+/**
+ * @brief Returns indices of a cube.
+ * @return Indices of the cube.
+ */
 static std::vector<uint16_t> CreateCubeIndices()
 {
     return {
