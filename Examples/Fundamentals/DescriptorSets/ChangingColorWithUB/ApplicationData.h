@@ -16,13 +16,11 @@
 
 namespace examples::fundamentals::descriptor_sets::changing_color_with_ub
 {
-// Vertex Attribute Layout
-struct VertexPos2
-{
-    common::utility::Attribute<common::utility::Vec2, 0> Position; // layout(location=0) in vec2 position;
-};
 
-// Vertex Data
-const std::vector vertices{// Top-left triangle (Clockwise)
-                           VertexPos2{{0.0, -0.5}}, VertexPos2{{0.5, 0.5}}, VertexPos2{{-0.5, 0.5}}};
+// Vertex Data for Triangle (Clockwise)
+// clang-format off
+inline const std::vector<common::utility::VertexPos2> vertices{
+    {glm::vec2{0.0, -0.5}}, {glm::vec2{0.5, 0.5}}, {glm::vec2{-0.5, 0.5}}
+};
+// clang-format on
 } // namespace examples::fundamentals::descriptor_sets::changing_color_with_ub

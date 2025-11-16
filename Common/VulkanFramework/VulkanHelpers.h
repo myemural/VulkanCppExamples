@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include <glm/vec4.hpp>
 #include <vulkan/vulkan_core.h>
 
 #include "Vertex.h"
@@ -38,31 +39,19 @@ constexpr VkFormat GetVkFormat<float>()
 }
 
 template<>
-constexpr VkFormat GetVkFormat<utility::Vec2>()
+constexpr VkFormat GetVkFormat<glm::vec2>()
 {
     return VK_FORMAT_R32G32_SFLOAT;
 }
 
 template<>
-constexpr VkFormat GetVkFormat<utility::Vec3>()
+constexpr VkFormat GetVkFormat<glm::vec3>()
 {
     return VK_FORMAT_R32G32B32_SFLOAT;
 }
 
 template<>
-constexpr VkFormat GetVkFormat<utility::Color3>()
-{
-    return VK_FORMAT_R32G32B32_SFLOAT;
-}
-
-template<>
-constexpr VkFormat GetVkFormat<utility::Color4>()
-{
-    return VK_FORMAT_R32G32B32A32_SFLOAT;
-}
-
-template<>
-constexpr VkFormat GetVkFormat<float[4]>()
+constexpr VkFormat GetVkFormat<glm::vec4>()
 {
     return VK_FORMAT_R32G32B32A32_SFLOAT;
 }
@@ -122,8 +111,7 @@ VkVertexInputAttributeDescription GenerateAttributeDescriptionInternal(const uin
  * @param atlasHeight Atlas image height.
  * @return Returns the position and size values of the region on the atlas image (X, Y, Width, Height).
  */
-constexpr utility::Vec4
-CalculateUVRect(const VkRect2D& rect, const uint32_t atlasWidth, const uint32_t atlasHeight)
+constexpr glm::vec4 CalculateUVRect(const VkRect2D& rect, const uint32_t atlasWidth, const uint32_t atlasHeight)
 {
     const float u0 = static_cast<float>(rect.offset.x) / static_cast<float>(atlasWidth);
     const float v0 = static_cast<float>(rect.offset.y) / static_cast<float>(atlasHeight);

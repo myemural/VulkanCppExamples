@@ -385,8 +385,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             VK_SUBPASS_CONTENTS_INLINE);
 
     currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    currentCmdBuffer->SetBlendConstants(currentBlendConstants_.R, currentBlendConstants_.G, currentBlendConstants_.B,
-                                        currentBlendConstants_.A);
+    currentCmdBuffer->SetBlendConstants(currentBlendConstants_.x, currentBlendConstants_.y, currentBlendConstants_.z,
+                                        currentBlendConstants_.w);
     const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))};
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
     const std::vector vertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::MainVertexBuffer))};
@@ -423,7 +423,7 @@ void VulkanApplication::CalculateAndSetBlendConstants()
 {
     const auto time = static_cast<float>(GetCurrentTime());
     const float value = 0.5f + 0.5f * sin(time);
-    currentBlendConstants_ = Color4(value, value, value, 1.0f);
+    currentBlendConstants_ = glm::vec4(value, value, value, 1.0f);
 }
 
 void VulkanApplication::ProcessInput() const

@@ -10,9 +10,10 @@
  * https://opensource.org/licenses/MIT
  */
 
+#include <glm/vec3.hpp>
+
 #include "AppConfig.h"
 #include "ShaderLoader.h"
-#include "Vertex.h"
 #include "VulkanApplication.h"
 #include "Window.h"
 
@@ -43,7 +44,7 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
-    schema.RegisterParam<Color3>(AppSettings::InitialTriangleColor);
+    schema.RegisterParam<glm::vec3>(AppSettings::InitialTriangleColor);
 
     return schema;
 }
@@ -62,7 +63,7 @@ bool SetParams(ParameterServer& params)
 
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.6f, 0.2f, 1.0f});
-        params.Set(AppSettings::InitialTriangleColor, Color3{0.0f, 0.0f, 0.0f});
+        params.Set(AppSettings::InitialTriangleColor, glm::vec3{0.0f, 0.0f, 0.0f});
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

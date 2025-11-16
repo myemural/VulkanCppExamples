@@ -23,7 +23,7 @@ This example draws a single triangle to the screen. Then it tries to change colo
 | Parameter / Key           | Type              | Usage in Code              | Description                    | Default Value |
 |---------------------------|-------------------|----------------------------|--------------------------------|---------------|
 | AppSettings.ClearColor    | VkClearColorValue | AppSettings::ClearColor    | Background color of the screen |               |
-| AppSettings.TriangleColor | Color3            | AppSettings::TriangleColor | Triangle color                 |               |
+| AppSettings.TriangleColor | glm::vec3         | AppSettings::TriangleColor | Triangle color                 |               |
 
 
 ## Learning Objectives

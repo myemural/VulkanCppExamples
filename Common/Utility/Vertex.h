@@ -11,6 +11,9 @@
 
 #pragma once
 
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+
 namespace common::utility
 {
 /**
@@ -29,29 +32,34 @@ struct Attribute
     Type data;
 };
 
-// Vertex Attribute Types
-struct Vec2
+// Vertex Layouts
+
+struct VertexPos2
 {
-    float X, Y;
+    Attribute<glm::vec2, 0> Position; // layout(location=0) in vec2 position;
 };
 
-struct Vec3
+struct VertexPos2Color3
 {
-    float X, Y, Z;
+    Attribute<glm::vec2, 0> Position; // layout(location=0) in vec2 position;
+    Attribute<glm::vec3, 1> Color;    // layout(location=1) in vec3 color;
 };
 
-struct Vec4
+struct VertexPos2Uv2
 {
-    float X, Y, Z, W;
+    Attribute<glm::vec2, 0> Position; // layout(location=0) in vec2 position;
+    Attribute<glm::vec2, 1> Uv;       // layout(location=1) in vec2 texCoord;
 };
 
-struct Color3
+struct VertexPos3
 {
-    float R, G, B;
+    Attribute<glm::vec3, 0> Position; // layout(location=0) in vec3 position;
 };
 
-struct Color4
+struct VertexPos3Uv2
 {
-    float R, G, B, A;
+    Attribute<glm::vec3, 0> Position; // layout(location=0) in vec3 position;
+    Attribute<glm::vec2, 1> Uv;       // layout(location=1) in vec2 texCoord;
 };
+
 } // namespace common::utility

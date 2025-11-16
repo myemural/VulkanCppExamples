@@ -72,17 +72,17 @@ void VulkanApplication::DrawFrame()
 
     const auto currentTime = static_cast<float>(GetCurrentTime());
     const auto currentValue = 0.5f + 0.5f * std::sin(currentTime * 1.1f);
-    const Color3 topLeftColor{currentValue, 0.0f, 0.0f};
-    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &topLeftColor, sizeof(Color3));
+    const glm::vec3 topLeftColor{currentValue, 0.0f, 0.0f};
+    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &topLeftColor, sizeof(glm::vec3));
 
-    const Color3 topRightColor{0.0f, currentValue, 0.0f};
-    SetBuffer(GetParamStr(AppConstants::TopRightUB), &topRightColor, sizeof(Color3));
+    const glm::vec3 topRightColor{0.0f, currentValue, 0.0f};
+    SetBuffer(GetParamStr(AppConstants::TopRightUB), &topRightColor, sizeof(glm::vec3));
 
-    const Color3 bottomLeftColor{0.0f, 0.0f, currentValue};
-    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &bottomLeftColor, sizeof(Color3));
+    const glm::vec3 bottomLeftColor{0.0f, 0.0f, currentValue};
+    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &bottomLeftColor, sizeof(glm::vec3));
 
-    const Color3 bottomRightColor{currentValue, 0.0f, currentValue};
-    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &bottomRightColor, sizeof(Color3));
+    const glm::vec3 bottomRightColor{currentValue, 0.0f, currentValue};
+    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &bottomRightColor, sizeof(glm::vec3));
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
                    {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_],
@@ -96,7 +96,7 @@ void VulkanApplication::DrawFrame()
 void VulkanApplication::CreateResources()
 {
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
-    constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<Color3>(AppSettings::InitialTriangleColor));
+    constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<glm::vec3>(AppSettings::InitialTriangleColor));
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
         {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
@@ -129,14 +129,14 @@ void VulkanApplication::CreateResources()
 void VulkanApplication::InitResources()
 {
     const std::array screenSizes = {static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_)};
-    const auto initialTriangleColor = params_.Get<Color3>(AppSettings::InitialTriangleColor);
+    const auto initialTriangleColor = params_.Get<glm::vec3>(AppSettings::InitialTriangleColor);
 
     SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
     SetBuffer(GetParamStr(AppConstants::ScreenSizeUB), &screenSizes, sizeof(screenSizes));
-    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &initialTriangleColor, sizeof(Color3));
-    SetBuffer(GetParamStr(AppConstants::TopRightUB), &initialTriangleColor, sizeof(Color3));
-    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &initialTriangleColor, sizeof(Color3));
-    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &initialTriangleColor, sizeof(Color3));
+    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &initialTriangleColor, sizeof(glm::vec3));
+    SetBuffer(GetParamStr(AppConstants::TopRightUB), &initialTriangleColor, sizeof(glm::vec3));
+    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &initialTriangleColor, sizeof(glm::vec3));
+    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &initialTriangleColor, sizeof(glm::vec3));
 }
 
 void VulkanApplication::CreateDescriptorPool()

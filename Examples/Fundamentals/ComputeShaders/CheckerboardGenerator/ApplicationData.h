@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
@@ -25,24 +25,18 @@ namespace examples::fundamentals::compute_shaders::checkerboard_generator
 #define NUM_CUBES 5
 #define NUM_SPHERES 5
 
-// Vertex Attribute Layout
-struct VertexPos3Uv2
-{
-    common::utility::Attribute<common::utility::Vec3, 0> Position; // layout(location=0) in vec3 position;
-    common::utility::Attribute<common::utility::Vec2, 1> Uv;       // layout(location=1) in vec2 texCoord;
-};
+// Vertex Data for Cube
+inline const std::vector cubeVertices = common::utility::CreateCubeVertices<common::utility::VertexPos3Uv2>(1.0f);
 
-// Vertex Data for Cubes
-const std::vector cubeVertices = common::utility::CreateCubeVertices<VertexPos3Uv2>(1.0f);
+// Vertex Data for Sphere
+inline const std::vector sphereVertices =
+        common::utility::CreateSphereVertices<common::utility::VertexPos3Uv2>(0.5f, 32, 16);
 
-// Vertex Data for Spheres
-const std::vector sphereVertices = common::utility::CreateSphereVertices<VertexPos3Uv2>(0.5f, 32, 16);
-
-// Index Data for Quad
-const std::vector<uint16_t> cubeIndices = common::utility::CreateCubeIndices();
+// Index Data for Cube
+inline const std::vector<uint16_t> cubeIndices = common::utility::CreateCubeIndices();
 
 // Index Data for Sphere
-const std::vector<uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
+inline const std::vector<uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
 
 struct MvpData
 {

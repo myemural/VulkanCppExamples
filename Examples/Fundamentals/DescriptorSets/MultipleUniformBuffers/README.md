@@ -23,7 +23,7 @@ This example draws 4 triangles to the different areas of the screen. Then it app
 | Parameter / Key                  | Type              | Usage in Code                     | Description                    | Default Value |
 |----------------------------------|-------------------|-----------------------------------|--------------------------------|---------------|
 | AppSettings.ClearColor           | VkClearColorValue | AppSettings::ClearColor           | Background color of the screen |               |
-| AppSettings.InitialTriangleColor | Color3            | AppSettings::InitialTriangleColor | Initial color of the triangles |               |
+| AppSettings.InitialTriangleColor | glm::vec3         | AppSettings::InitialTriangleColor | Initial color of the triangles |               |
 
 
 ## Learning Objectives

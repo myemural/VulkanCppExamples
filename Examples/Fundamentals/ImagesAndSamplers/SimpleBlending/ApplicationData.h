@@ -16,28 +16,29 @@
 
 namespace examples::fundamentals::images_and_samplers::simple_blending
 {
-// Vertex Attribute Layout
-struct VertexPos2Uv2
-{
-    common::utility::Attribute<common::utility::Vec2, 0> Position; // layout(location=0) in vec2 position;
-    common::utility::Attribute<common::utility::Vec2, 1> Uv;       // layout(location=1) in vec2 texCoord;
-};
 
-// Vertex Data
-const std::vector vertices{// Quad
-                           VertexPos2Uv2{{-0.4, -0.4}, {2.0f, 0.0f}}, VertexPos2Uv2{{0.4, -0.4}, {0.0f, 0.0f}},
-                           VertexPos2Uv2{{0.4, 0.4}, {0.0f, 2.0f}}, VertexPos2Uv2{{-0.4, 0.4}, {2.0f, 2.0f}}};
-
-// Index Data
-const std::vector<uint16_t> indices{
-    0, 1, 2, // First triangle of quad
-    2, 3, 0  // Second triangle of quad
+// Vertex Data for Quad
+// clang-format off
+inline const std::vector<common::utility::VertexPos2Uv2> vertices {
+    {glm::vec2{-0.4, -0.4}, glm::vec2{2.0f, 0.0f}},
+    {glm::vec2{0.4, -0.4}, glm::vec2{0.0f, 0.0f}},
+    {glm::vec2{0.4, 0.4}, glm::vec2{0.0f, 2.0f}},
+    {glm::vec2{-0.4, 0.4}, glm::vec2{2.0f, 2.0f}}
 };
+// clang-format on
+
+// Index Data for Quad
+// clang-format off
+inline const std::vector<std::uint16_t> indices {
+    0, 1, 2, // First triangle
+    2, 3, 0  // Second triangle
+};
+// clang-format on
 
 // Push Constant Data
 struct alignas(8) PushConstantData
 {
-    common::utility::Vec2 Offset;
+    glm::vec2 Offset;
 };
 
 // Quad indices

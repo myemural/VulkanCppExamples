@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
@@ -21,32 +21,17 @@ namespace examples::fundamentals::multisampling::explicit_resolving
 {
 #define NUM_SPHERE 10
 
-// Vertex Attribute Layout
-struct VertexPos3Uv2
-{
-    common::utility::Attribute<common::utility::Vec3, 0> Position; // layout(location=0) in vec3 position;
-    common::utility::Attribute<common::utility::Vec2, 1> Uv;       // layout(location=1) in vec2 texCoord;
-};
-
 // Vertex Data for Sphere
-const std::vector sphereVertices = common::utility::CreateSphereVertices<VertexPos3Uv2>(0.5f, 32, 16);
-
-// Vertex Data for Plane (XY)
-const std::vector planeVertices{
-    VertexPos3Uv2{{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}}, // 0
-    VertexPos3Uv2{{1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},  // 1
-    VertexPos3Uv2{{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},   // 2
-    VertexPos3Uv2{{-1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},  // 3
-};
+inline const std::vector sphereVertices = common::utility::CreateSphereVertices<common::utility::VertexPos3Uv2>(0.5f, 32, 16);
 
 // Index Data for Sphere
-const std::vector<uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
+inline const std::vector<uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
 
-// Index Data for Plane
-const std::vector<uint16_t> planeIndices{
-    0, 1, 2, // First triangle
-    2, 3, 0  // Second triangle
-};
+// Vertex Data for Quad (XY)
+inline const std::vector planeVertices = common::utility::CreateQuadVerticesXY<common::utility::VertexPos3Uv2>(1.0f);
+
+// Index Data for Quad (XY)
+inline const std::vector<uint16_t> planeIndices = common::utility::CreateQuadIndices();
 
 // MVP Matrices (for Push Constants)
 struct MvpData

@@ -16,15 +16,18 @@
 
 namespace examples::fundamentals::basics::using_staging_buffer
 {
-// Vertex Attribute Layout
-struct VertexPos2
-{
-    common::utility::Attribute<common::utility::Vec2, 0> Position; // layout(location=0) in vec2 position;
-};
 
-// Vertex Data
-const std::vector vertices{// Octagon (using TRIANGLE_FAN)
-                           VertexPos2{{0.8, 0.0}},   VertexPos2{{0.6, 0.6}},   VertexPos2{{0.0, 0.80}},
-                           VertexPos2{{-0.6, 0.6}},  VertexPos2{{-0.80, 0.0}}, VertexPos2{{-0.6, -0.6}},
-                           VertexPos2{{0.0, -0.80}}, VertexPos2{{0.6, -0.6}}};
+// Vertex Data for Octagon (using TRIANGLE_FAN)
+// clang-format off
+const std::vector<common::utility::VertexPos2> vertices{
+    {glm::vec2{0.8, 0.0}},
+    {glm::vec2{0.6, 0.6}},
+    {glm::vec2{0.0, 0.80}},
+    {glm::vec2{-0.6, 0.6}},
+    {glm::vec2{-0.80, 0.0}},
+    {glm::vec2{-0.6, -0.6}},
+    {glm::vec2{0.0, -0.80}},
+    {glm::vec2{0.6, -0.6}}
+};
+// clang-format on
 } // namespace examples::fundamentals::basics::using_staging_buffer

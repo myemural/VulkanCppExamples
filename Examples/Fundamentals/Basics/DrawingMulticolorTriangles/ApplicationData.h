@@ -12,32 +12,35 @@
 
 #include <vector>
 
+#include <glm/glm.hpp>
+
 #include "Vertex.h"
 
 namespace examples::fundamentals::basics::drawing_multicolor_triangles
 {
-// Vertex Attribute Layout
-struct VertexPos2Color3
-{
-    common::utility::Attribute<common::utility::Vec2, 0> Position; // layout(location=0) in vec2 position;
-    common::utility::Attribute<common::utility::Color3, 1> Color;  // layout(location=1) in vec3 color;
-};
 
 // Vertex Data
-const std::vector vertices{
+// clang-format off
+inline const std::vector<common::utility::VertexPos2Color3> vertices {
     // Top-left triangle (Clockwise)
-    VertexPos2Color3{{-0.8, -0.8}, {1.0f, 0.0f, 0.0f}}, VertexPos2Color3{{-0.2, -0.8}, {1.0f, 0.0f, 0.0f}},
-    VertexPos2Color3{{-0.5, -0.2}, {1.0f, 1.0f, 1.0f}},
+    {glm::vec2{-0.8, -0.8}, glm::vec3{1.0f, 0.0f, 0.0f}},
+    {glm::vec2{-0.2, -0.8}, glm::vec3{1.0f, 0.0f, 0.0f}},
+    {glm::vec2{-0.5, -0.2}, glm::vec3{1.0f, 1.0f, 1.0f}},
 
     // Top-right triangle (Clockwise)
-    VertexPos2Color3{{0.2, -0.8}, {1.0f, 0.0f, 1.0f}}, VertexPos2Color3{{0.8, -0.8}, {1.0f, 0.0f, 1.0f}},
-    VertexPos2Color3{{0.5, -0.2}, {1.0f, 1.0f, 1.0f}},
+    {glm::vec2{0.2, -0.8}, glm::vec3{1.0f, 0.0f, 1.0f}},
+    {glm::vec2{0.8, -0.8}, glm::vec3{1.0f, 0.0f, 1.0f}},
+    {glm::vec2{0.5, -0.2}, glm::vec3{1.0f, 1.0f, 1.0f}},
 
     // Bottom-left triangle (Clockwise)
-    VertexPos2Color3{{-0.5, 0.2}, {1.0f, 1.0f, 1.0f}}, VertexPos2Color3{{-0.2, 0.8}, {0.0f, 0.0f, 1.0f}},
-    VertexPos2Color3{{-0.8, 0.8}, {0.0f, 0.0f, 1.0f}},
+    {glm::vec2{-0.5, 0.2}, glm::vec3{1.0f, 1.0f, 1.0f}},
+    {glm::vec2{-0.2, 0.8}, glm::vec3{0.0f, 0.0f, 1.0f}},
+    {glm::vec2{-0.8, 0.8}, glm::vec3{0.0f, 0.0f, 1.0f}},
 
     // Bottom-right triangle (Clockwise)
-    VertexPos2Color3{{0.5, 0.2}, {1.0f, 1.0f, 1.0f}}, VertexPos2Color3{{0.8, 0.8}, {1.0f, 1.0f, 0.0f}},
-    VertexPos2Color3{{0.2, 0.8}, {1.0f, 1.0f, 0.0f}}};
+    {glm::vec2{0.5, 0.2}, glm::vec3{1.0f, 1.0f, 1.0f}},
+    {glm::vec2{0.8, 0.8}, glm::vec3{1.0f, 1.0f, 0.0f}},
+    {glm::vec2{0.2, 0.8}, glm::vec3{1.0f, 1.0f, 0.0f}}
+};
+// clang-format on
 } // namespace examples::fundamentals::basics::drawing_multicolor_triangles

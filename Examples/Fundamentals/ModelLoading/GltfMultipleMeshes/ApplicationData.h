@@ -12,18 +12,13 @@
 
 #include <vector>
 
+#include <glm/mat4x4.hpp>
+
 #include "ModelLoader.h"
 #include "Vertex.h"
-#include "glm/glm.hpp"
 
 namespace examples::fundamentals::model_loading::gltf_multiple_meshes
 {
-// Vertex Attribute Layout
-struct VertexPos3Uv2
-{
-    common::utility::Attribute<common::utility::Vec3, 0> Position; // layout(location=0) in vec3 position;
-    common::utility::Attribute<common::utility::Vec2, 1> Uv;       // layout(location=1) in vec2 texCoord;
-};
 
 // MVP Matrices (for Push Constants)
 struct MvpData
@@ -35,16 +30,14 @@ struct MvpData
 namespace common::utility
 {
 template<>
-inline std::vector<examples::fundamentals::model_loading::gltf_multiple_meshes::VertexPos3Uv2> GltfMesh::GetVerticesAs()
+inline std::vector<VertexPos3Uv2> GltfMesh::GetVerticesAs()
 {
-    std::vector<examples::fundamentals::model_loading::gltf_multiple_meshes::VertexPos3Uv2> result;
+    std::vector<VertexPos3Uv2> result;
     for (const auto& vertex: Vertices) {
-        examples::fundamentals::model_loading::gltf_multiple_meshes::VertexPos3Uv2 current{};
-        current.Position.data.X = vertex.Position.x;
-        current.Position.data.Y = vertex.Position.y;
-        current.Position.data.Z = vertex.Position.z;
-        current.Uv.data.X = vertex.TexCoords[0].x;
-        current.Uv.data.Y = vertex.TexCoords[0].y;
+        VertexPos3Uv2 current{};
+        current.Position.data = vertex.Position;
+        current.Uv.data.x = vertex.TexCoords[0].x;
+        current.Uv.data.y = vertex.TexCoords[0].y;
         result.push_back(current);
     }
 

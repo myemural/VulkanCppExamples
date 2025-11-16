@@ -66,7 +66,7 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
     MvpData mvpData_[NUM_CUBES] = {glm::mat4(1.0)};
-    common::utility::Color4 currentBlendConstants_{1.0f, 1.0f, 1.0f, 1.0f};
+    glm::vec4 currentBlendConstants_{1.0f, 1.0f, 1.0f, 1.0f};
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};

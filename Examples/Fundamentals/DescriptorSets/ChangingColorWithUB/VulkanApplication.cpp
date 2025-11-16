@@ -81,7 +81,7 @@ void VulkanApplication::DrawFrame()
 void VulkanApplication::CreateResources()
 {
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
-    constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<Color3>(AppSettings::TriangleColor));
+    constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<glm::vec3>(AppSettings::TriangleColor));
 
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
         {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -107,8 +107,8 @@ void VulkanApplication::CreateResources()
 void VulkanApplication::InitResources()
 {
     SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
-    const auto triangleColor = params_.Get<Color3>(AppSettings::TriangleColor);
-    SetBuffer(GetParamStr(AppConstants::MainUniformBuffer), &triangleColor, sizeof(Color3));
+    const auto triangleColor = params_.Get<glm::vec3>(AppSettings::TriangleColor);
+    SetBuffer(GetParamStr(AppConstants::MainUniformBuffer), &triangleColor, sizeof(glm::vec3));
 }
 
 void VulkanApplication::CreateDescriptorPool()

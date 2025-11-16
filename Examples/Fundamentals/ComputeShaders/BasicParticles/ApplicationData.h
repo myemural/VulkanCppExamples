@@ -12,7 +12,7 @@
 
 #include <vector>
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
@@ -23,15 +23,8 @@ namespace examples::fundamentals::compute_shaders::basic_particles
 #define LOCAL_SIZE_X 256
 #define NUM_CUBES 10
 
-// Vertex Attribute Layout
-struct VertexPos3Uv2
-{
-    common::utility::Attribute<common::utility::Vec3, 0> Position; // layout(location=0) in vec3 position;
-    common::utility::Attribute<common::utility::Vec2, 1> Uv;       // layout(location=1) in vec2 texCoord;
-};
-
 // Vertex Data for Cubes
-const std::vector cubeVertices = common::utility::CreateCubeVertices<VertexPos3Uv2>(1.0f);
+const std::vector cubeVertices = common::utility::CreateCubeVertices<common::utility::VertexPos3Uv2>(1.0f);
 
 // Index Data for Quad
 const std::vector<uint16_t> cubeIndices = common::utility::CreateCubeIndices();
