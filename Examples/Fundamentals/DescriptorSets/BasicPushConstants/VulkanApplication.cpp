@@ -8,6 +8,7 @@
 
 #include <array>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "ShaderLoader.h"
@@ -93,6 +94,8 @@ void VulkanApplication::InitInputSystem() const
                 break;
             case GLFW_KEY_3:
                 currentColor = thirdColor;
+                break;
+            default:
                 break;
         }
     });

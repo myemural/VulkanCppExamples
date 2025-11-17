@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
-#include <glm/ext/matrix_transform.hpp>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "OrthographicCamera.h"

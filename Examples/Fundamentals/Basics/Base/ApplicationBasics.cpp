@@ -6,8 +6,6 @@
 
 #include "ApplicationBasics.h"
 
-#include <thread>
-
 #include "AppCommonConfig.h"
 #include "VulkanInstance.h"
 

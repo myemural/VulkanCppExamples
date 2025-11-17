@@ -10,8 +10,6 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::images_and_samplers::wrap_and_filtering_modes
 {
 namespace AppConstants

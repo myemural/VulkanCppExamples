@@ -9,6 +9,7 @@
  * https://opensource.org/licenses/MIT
  */
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ParameterServer.h"
 #include "VulkanApplication.h"

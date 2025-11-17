@@ -10,6 +10,7 @@
  * https://opensource.org/licenses/MIT
  */
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ShaderLoader.h"
 #include "VulkanApplication.h"

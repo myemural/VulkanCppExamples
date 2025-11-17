@@ -6,10 +6,7 @@
 
 #include "ApplicationDescriptorSets.h"
 
-#include <thread>
-
 #include "AppCommonConfig.h"
-#include "ShaderLoader.h"
 #include "VulkanInstance.h"
 
 namespace examples::fundamentals::descriptor_sets::base

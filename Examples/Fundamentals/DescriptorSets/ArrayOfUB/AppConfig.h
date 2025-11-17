@@ -10,8 +10,6 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::descriptor_sets::array_of_ub
 {
 namespace AppConstants

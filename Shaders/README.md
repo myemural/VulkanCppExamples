@@ -105,6 +105,7 @@ In this section you can find which instance currently supports which shader type
 | [Using Multiple Pipelines and Pipeline Derivatives](/Examples/Fundamentals/PipelinesAndPasses/MultiplePipelines) | :white_check_mark: | :white_check_mark: |
 | [Object Outlining with Stencil Testing](/Examples/Fundamentals/PipelinesAndPasses/BasicStencilTesting)           | :white_check_mark: | :white_check_mark: |
 | [Using Multiple Subpasses and Input Attachments](/Examples/Fundamentals/PipelinesAndPasses/MultipleSubpasses)    | :white_check_mark: | :white_check_mark: |
+| [Using Multiple Render Passes](/Examples/Fundamentals/PipelinesAndPasses/MultipleRenderPasses)                   | :white_check_mark: | :white_check_mark: |
 | [Rendering Scene to a Texture](/Examples/Fundamentals/PipelinesAndPasses/OffscreenRendering)                     | :white_check_mark: | :white_check_mark: |
 
 **Swap Chains and Viewports**

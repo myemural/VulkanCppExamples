@@ -8,6 +8,7 @@
 
 #include <array>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "ShaderLoader.h"

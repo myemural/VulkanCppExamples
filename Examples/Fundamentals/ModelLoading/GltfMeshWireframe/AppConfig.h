@@ -10,8 +10,6 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
 {
 namespace AppConstants

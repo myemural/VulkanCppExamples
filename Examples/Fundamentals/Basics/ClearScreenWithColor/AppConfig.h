@@ -10,8 +10,6 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::basics::clear_screen_with_color
 {
 namespace AppConstants

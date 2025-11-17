@@ -11,6 +11,7 @@
 
 #include <glm/vec3.hpp>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ShaderLoader.h"
 #include "VulkanApplication.h"

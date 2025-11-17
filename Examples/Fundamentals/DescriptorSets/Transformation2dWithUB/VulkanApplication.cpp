@@ -10,6 +10,7 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "ShaderLoader.h"

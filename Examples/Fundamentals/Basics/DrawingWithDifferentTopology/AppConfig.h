@@ -10,8 +10,6 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::basics::drawing_with_different_topology
 {
 namespace AppConstants

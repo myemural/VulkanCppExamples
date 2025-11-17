@@ -10,8 +10,6 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::basics::drawing_single_color_triangle
 {
 namespace AppConstants

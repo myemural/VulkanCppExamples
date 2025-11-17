@@ -10,8 +10,6 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::descriptor_sets::changing_color_with_ub
 {
 namespace AppConstants

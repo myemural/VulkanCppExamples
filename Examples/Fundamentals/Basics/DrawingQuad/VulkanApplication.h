@@ -1,6 +1,6 @@
 /**
  * @file    VulkanApplication.h
- * @brief   This file contains VulkanApplication and VulkanApplicationSettings implementations.
+ * @brief   This file contains VulkanApplication class declaration.
  * @author  Mustafa Yemural (myemural)
  * @date    21.08.2025
  *

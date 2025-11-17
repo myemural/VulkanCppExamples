@@ -10,8 +10,6 @@
  */
 #pragma once
 
-#include "AppCommonConfig.h"
-
 namespace examples::fundamentals::images_and_samplers::simple_blending
 {
 namespace AppConstants

@@ -6,8 +6,6 @@
 
 #include "ApplicationImagesAndSamplers.h"
 
-#include <thread>
-
 #include "AppCommonConfig.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanImage.h"
@@ -233,8 +231,8 @@ void ApplicationImagesAndSamplers::UpdateDescriptorSet(const DescriptorUpdateInf
 }
 
 void ApplicationImagesAndSamplers::ChangeImageLayout(const std::shared_ptr<VulkanImage>& image,
-                                                     VkImageLayout oldLayout,
-                                                     VkImageLayout newLayout) const
+                                                     const VkImageLayout oldLayout,
+                                                     const VkImageLayout newLayout) const
 {
     const auto cmdBufferChangeLayout = cmdPool_->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
 

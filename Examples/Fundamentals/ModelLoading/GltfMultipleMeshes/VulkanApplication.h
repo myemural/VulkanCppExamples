@@ -1,6 +1,6 @@
 /**
  * @file    VulkanApplication.h
- * @brief   This file contains VulkanApplication implementation.
+ * @brief   This file contains VulkanApplication class declaration.
  * @author  Mustafa Yemural (myemural)
  * @date    15.10.2025
  *
@@ -13,7 +13,6 @@
 
 #include <memory>
 
-#include "ApplicationData.h"
 #include "ApplicationModelLoading.h"
 #include "ModelLoader.h"
 #include "PerspectiveCamera.h"

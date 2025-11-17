@@ -8,6 +8,7 @@
 
 #include <array>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "VulkanHelpers.h"
 #include "VulkanImage.h"

@@ -9,6 +9,7 @@
 #include <array>
 #include <cstring>
 
+#include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "VulkanHelpers.h"

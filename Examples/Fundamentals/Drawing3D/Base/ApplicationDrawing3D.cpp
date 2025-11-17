@@ -6,10 +6,7 @@
 
 #include "ApplicationDrawing3D.h"
 
-#include <thread>
-
 #include "AppCommonConfig.h"
-#include "ShaderLoader.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanInstance.h"
 
