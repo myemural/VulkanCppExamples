@@ -63,6 +63,25 @@ void VulkanBuffer::BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& d
     }
 }
 
+VkBufferMemoryBarrier VulkanBuffer::CreateBufferMemoryBarrier(const VkAccessFlags& srcAccessMask,
+                                                              const VkAccessFlags& dstAccessMask,
+                                                              const VkDeviceSize offset,
+                                                              const VkDeviceSize size) const
+{
+    VkBufferMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+    barrier.pNext = nullptr;
+    barrier.srcAccessMask = srcAccessMask;
+    barrier.dstAccessMask = dstAccessMask;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED; /// TODO: Currently we are not using multiple queues
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.buffer = handle_;
+    barrier.offset = offset;
+    barrier.size = size;
+
+    return barrier;
+}
+
 VulkanBufferBuilder::VulkanBufferBuilder() : createInfo_{GetDefaultBufferCreateInfo()} {}
 
 VulkanBufferBuilder& VulkanBufferBuilder::SetCreateFlags(const VkBufferCreateFlags& createFlags)

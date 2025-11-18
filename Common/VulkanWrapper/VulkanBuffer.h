@@ -32,7 +32,13 @@ public:
 
     [[nodiscard]] COMMON_API VkMemoryRequirements GetBufferMemoryRequirements() const;
 
-    COMMON_API void BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory, VkDeviceSize memoryOffset) const;
+    COMMON_API void BindBufferMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory,
+                                     VkDeviceSize memoryOffset) const;
+
+    [[nodiscard]] COMMON_API VkBufferMemoryBarrier CreateBufferMemoryBarrier(const VkAccessFlags& srcAccessMask,
+                                                                             const VkAccessFlags& dstAccessMask,
+                                                                             VkDeviceSize offset = 0,
+                                                                             VkDeviceSize size = VK_WHOLE_SIZE) const;
 };
 
 class COMMON_API VulkanBufferBuilder

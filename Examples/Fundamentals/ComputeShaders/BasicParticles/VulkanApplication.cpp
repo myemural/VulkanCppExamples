@@ -501,18 +501,15 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->Dispatch(groupCountX, 1, 1);
     }
 
-    VkBufferMemoryBarrier barrier{};
-    barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-    barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    barrier.buffer = resources_->GetBuffer(GetParamStr(AppConstants::ParticleStorageBuffer))->GetHandle();
-    barrier.size = VK_WHOLE_SIZE;
-
-    vkCmdPipelineBarrier(currentCmdBuffer->GetHandle(), VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                         VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, 0, 0, nullptr, 1, &barrier, 0, nullptr);
-
     // Render phase
     {
+        // Before start render pass, put memory barrier for particle storage buffer
+        const auto particleStorageBuffer = resources_->GetBuffer(GetParamStr(AppConstants::ParticleStorageBuffer));
+        const auto barrier =
+                particleStorageBuffer->CreateBufferMemoryBarrier(VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT);
+        currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, {},
+                                          {barrier});
+
         currentCmdBuffer->BeginRenderPass(
                 [&](auto& beginInfo) {
                     beginInfo.renderPass = renderPass_->GetHandle();
