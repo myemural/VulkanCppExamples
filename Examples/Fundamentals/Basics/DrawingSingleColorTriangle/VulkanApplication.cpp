@@ -51,7 +51,6 @@ bool VulkanApplication::Init()
 void VulkanApplication::DrawFrame()
 {
     inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
-    inFlightFences_[currentIndex_]->ResetFence();
 
     uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
 
@@ -59,6 +58,7 @@ void VulkanApplication::DrawFrame()
         swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
     }
 
+    inFlightFences_[currentIndex_]->ResetFence();
     swapImagesFences_[imageIndex] = inFlightFences_[currentIndex_];
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},

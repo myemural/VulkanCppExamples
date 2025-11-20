@@ -41,6 +41,8 @@ VulkanCommandBuffer::BeginCommandBuffer(const std::function<void(VkCommandBuffer
 {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.pNext = nullptr;
+    beginInfo.flags = 0;
     if (beginInfoCallback) {
         beginInfoCallback(beginInfo);
     }
