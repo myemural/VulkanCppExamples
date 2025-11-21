@@ -115,3 +115,7 @@ The topics covered by this subsection:
 - Writing more complex compute shaders
 - Creating basic GPU-generated particles with compute shaders
 - Generating and using storage buffers
+- 
+## [Queries and Performance](/Examples/Fundamentals/QueriesAndPerformance)
+
+TBD

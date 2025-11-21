@@ -38,6 +38,7 @@ class VulkanImageViewBuilder;
 class VulkanPhysicalDevice;
 class VulkanPipeline;
 class VulkanPipelineLayout;
+class VulkanQueryPool;
 class VulkanQueue;
 class VulkanRenderPass;
 class VulkanRenderPassBuilder;
@@ -56,6 +57,12 @@ public:
     COMMON_API VulkanDevice(std::shared_ptr<VulkanPhysicalDevice> physicalDevice, VkDevice device);
 
     COMMON_API ~VulkanDevice() override;
+
+    COMMON_API std::shared_ptr<VulkanQueryPool>
+    CreateQueryPool(const VkQueryType& queryType,
+                    std::uint32_t queryCount,
+                    const VkQueryPoolCreateFlags& createFlags = 0,
+                    const VkQueryPipelineStatisticFlags& pipelineStatisticFlags = 0);
 
     COMMON_API std::shared_ptr<VulkanQueue> CreateQueue(std::uint32_t queueFamilyIndex, std::uint32_t queueIndex);
 

@@ -128,11 +128,13 @@ Every example has its own directory and CMake target. You can build what you wan
   - [MSAA Basics](/Examples/Fundamentals/Multisampling/MsaaBasics)
   - [Sample Shading](/Examples/Fundamentals/Multisampling/SampleShading)
   - [Explicit Resolving](/Examples/Fundamentals/Multisampling/ExplicitResolving)
-- **[ComputeShaders](/Examples/Fundamentals/ComputeShaders)**
+- **[Compute Shaders](/Examples/Fundamentals/ComputeShaders)**
   - [Fullscreen Moving Gradient Generator](/Examples/Fundamentals/ComputeShaders/FullscreenGradient)
   - [Checkerboard Texture Generator](/Examples/Fundamentals/ComputeShaders/CheckerboardGenerator)
   - [Mandelbrot Fractal Rendering](/Examples/Fundamentals/ComputeShaders/MandelbrotFractal)
   - [Basic GPU-Generated Particle Effect](/Examples/Fundamentals/ComputeShaders/BasicParticles)
+- **[Queries and Performance](/Examples/Fundamentals/QueriesAndPerformance)**
+  - [Visibility Check with Occlusion Queries](/Examples/Fundamentals/QueriesAndPerformance/OcclusionQuery)
 
 ## Environment Support
 

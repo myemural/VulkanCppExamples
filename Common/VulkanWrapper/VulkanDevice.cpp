@@ -20,6 +20,7 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
+#include "VulkanQueryPool.h"
 #include "VulkanQueue.h"
 #include "VulkanRenderPass.h"
 #include "VulkanSampler.h"
@@ -67,6 +68,31 @@ VulkanDevice::~VulkanDevice()
     if (handle_ != VK_NULL_HANDLE) {
         vkDestroyDevice(handle_, nullptr);
     }
+}
+
+std::shared_ptr<VulkanQueryPool>
+VulkanDevice::CreateQueryPool(const VkQueryType& queryType,
+                              const std::uint32_t queryCount,
+                              const VkQueryPoolCreateFlags& createFlags,
+                              const VkQueryPipelineStatisticFlags& pipelineStatisticFlags)
+{
+    auto device = shared_from_this();
+
+    VkQueryPoolCreateInfo queryPoolCreateInfo{};
+    queryPoolCreateInfo.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+    queryPoolCreateInfo.pNext = nullptr;
+    queryPoolCreateInfo.flags = createFlags;
+    queryPoolCreateInfo.queryType = queryType;
+    queryPoolCreateInfo.queryCount = queryCount;
+    queryPoolCreateInfo.pipelineStatistics = pipelineStatisticFlags;
+
+    VkQueryPool queryPool = VK_NULL_HANDLE;
+    if (vkCreateQueryPool(device->GetHandle(), &queryPoolCreateInfo, nullptr, &queryPool) != VK_SUCCESS) {
+        std::cout << "Failed to create query pool!" << std::endl;
+        return nullptr;
+    }
+
+    return std::make_shared<VulkanQueryPool>(device, queryPool);
 }
 
 std::shared_ptr<VulkanQueue> VulkanDevice::CreateQueue(const std::uint32_t queueFamilyIndex,

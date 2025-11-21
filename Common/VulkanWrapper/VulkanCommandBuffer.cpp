@@ -15,6 +15,7 @@
 #include "VulkanImage.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
+#include "VulkanQueryPool.h"
 
 namespace common::vulkan_wrapper
 {
@@ -224,5 +225,24 @@ void
 VulkanCommandBuffer::Dispatch(const uint32_t groupCountX, const uint32_t groupCountY, const uint32_t groupCountZ) const
 {
     vkCmdDispatch(handle_, groupCountX, groupCountY, groupCountZ);
+}
+
+void VulkanCommandBuffer::ResetQueryPool(const std::shared_ptr<VulkanQueryPool>& queryPool,
+                                         const uint32_t firstQuery,
+                                         const uint32_t queryCount) const
+{
+    vkCmdResetQueryPool(handle_, queryPool->GetHandle(), firstQuery, queryCount);
+}
+
+void VulkanCommandBuffer::BeginQuery(const std::shared_ptr<VulkanQueryPool>& queryPool,
+                                     const uint32_t query,
+                                     const VkQueryControlFlags& flags) const
+{
+    vkCmdBeginQuery(handle_, queryPool->GetHandle(), query, flags);
+}
+
+void VulkanCommandBuffer::EndQuery(const std::shared_ptr<VulkanQueryPool>& queryPool, uint32_t query) const
+{
+    vkCmdEndQuery(handle_, queryPool->GetHandle(), query);
 }
 } // namespace common::vulkan_wrapper

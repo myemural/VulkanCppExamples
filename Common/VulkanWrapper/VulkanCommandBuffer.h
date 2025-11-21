@@ -26,6 +26,7 @@ class VulkanCommandPool;
 class VulkanDescriptorSet;
 class VulkanPipeline;
 class VulkanPipelineLayout;
+class VulkanQueryPool;
 
 class VulkanCommandBuffer final : public VulkanObject<VulkanCommandPool, VkCommandBuffer>
 {
@@ -116,5 +117,14 @@ public:
                                  const std::vector<VkImageResolve>& regions) const;
 
     COMMON_API void Dispatch(uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) const;
+
+    COMMON_API void
+    ResetQueryPool(const std::shared_ptr<VulkanQueryPool>& queryPool, uint32_t firstQuery, uint32_t queryCount) const;
+
+    COMMON_API void BeginQuery(const std::shared_ptr<VulkanQueryPool>& queryPool,
+                               uint32_t query,
+                               const VkQueryControlFlags& flags = 0) const;
+
+    COMMON_API void EndQuery(const std::shared_ptr<VulkanQueryPool>& queryPool, uint32_t query) const;
 };
 } // namespace common::vulkan_wrapper
