@@ -126,5 +126,9 @@ public:
                                const VkQueryControlFlags& flags = 0) const;
 
     COMMON_API void EndQuery(const std::shared_ptr<VulkanQueryPool>& queryPool, uint32_t query) const;
+
+    COMMON_API void WriteTimestamp(const VkPipelineStageFlagBits& pipelineStage,
+                                   const std::shared_ptr<VulkanQueryPool>& queryPool,
+                                   uint32_t query) const;
 };
 } // namespace common::vulkan_wrapper

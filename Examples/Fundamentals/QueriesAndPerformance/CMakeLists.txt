@@ -4,3 +4,5 @@ add_subdirectory(Base)
 include_directories(Base)
 
 add_subdirectory(OcclusionQuery)
+add_subdirectory(TimestampQuery)
+add_subdirectory(PipelineStatisticsQuery)

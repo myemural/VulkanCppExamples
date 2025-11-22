@@ -245,4 +245,11 @@ void VulkanCommandBuffer::EndQuery(const std::shared_ptr<VulkanQueryPool>& query
 {
     vkCmdEndQuery(handle_, queryPool->GetHandle(), query);
 }
+
+void VulkanCommandBuffer::WriteTimestamp(const VkPipelineStageFlagBits& pipelineStage,
+                                         const std::shared_ptr<VulkanQueryPool>& queryPool,
+                                         const uint32_t query) const
+{
+    vkCmdWriteTimestamp(handle_, pipelineStage, queryPool->GetHandle(), query);
+}
 } // namespace common::vulkan_wrapper

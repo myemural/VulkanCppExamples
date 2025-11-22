@@ -135,6 +135,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Basic GPU-Generated Particle Effect](/Examples/Fundamentals/ComputeShaders/BasicParticles)
 - **[Queries and Performance](/Examples/Fundamentals/QueriesAndPerformance)**
   - [Visibility Check with Occlusion Queries](/Examples/Fundamentals/QueriesAndPerformance/OcclusionQuery)
+  - [Measuring The GPU Time with Timestamp Queries](/Examples/Fundamentals/QueriesAndPerformance/TimestampQuery)
+  - [Measuring Pipeline Statistics](/Examples/Fundamentals/QueriesAndPerformance/PipelineStatisticsQuery)
 
 ## Environment Support
 

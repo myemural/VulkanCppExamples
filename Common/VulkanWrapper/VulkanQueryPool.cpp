@@ -35,6 +35,7 @@ VulkanQueryPool::~VulkanQueryPool()
 {
     if (handle_ != VK_NULL_HANDLE) {
         if (const auto device = GetParent()) {
+            vkDeviceWaitIdle(device->GetHandle());
             vkDestroyQueryPool(device->GetHandle(), handle_, nullptr);
             handle_ = VK_NULL_HANDLE;
         }

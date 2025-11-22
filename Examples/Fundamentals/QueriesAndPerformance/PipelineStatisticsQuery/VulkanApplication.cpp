@@ -11,6 +11,7 @@
 #include <chrono>
 
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
@@ -20,7 +21,7 @@
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::fundamentals::queries_and_performance::occlusion_query
+namespace examples::fundamentals::queries_and_performance::pipeline_statistics_query
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -141,24 +142,17 @@ void VulkanApplication::CreateResources()
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
     crateTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::CrateTexturePath));
-    marbleTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::MarbleTexturePath));
 
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
     const std::uint32_t cubeVertexBufferSize = cubeVertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t cubeIndexBufferSize = cubeIndices.size() * sizeof(cubeIndices[0]);
-    const std::uint32_t sphereVertexBufferSize = sphereVertices.size() * sizeof(VertexPos3Uv2);
-    const uint32_t sphereIndexBufferSize = sphereIndices.size() * sizeof(sphereIndices[0]);
 
     resourceCreateInfo.Buffers = {
         {GetParamStr(AppConstants::CubeVertexBuffer), cubeVertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::CubeIndexBuffer), cubeIndexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::SphereVertexBuffer), sphereVertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::SphereIndexBuffer), sphereIndexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
@@ -176,8 +170,6 @@ void VulkanApplication::CreateResources()
                                                    .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
                                                                  VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
                                       .DescriptorSets = {{.Name = GetParamStr(AppConstants::CubeDescSet),
-                                                          .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)},
-                                                         {.Name = GetParamStr(AppConstants::SphereDescSet),
                                                           .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
 
     resourceCreateInfo.Images = {
@@ -186,12 +178,6 @@ void VulkanApplication::CreateResources()
                                 .Format = VK_FORMAT_R8G8B8A8_SRGB,
                                 .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
                                 .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CrateImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MarbleImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {marbleTextureHandler_.Width, marbleTextureHandler_.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MarbleImageView),
                                                               .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
             .Name = GetParamStr(AppConstants::DepthImage),
@@ -220,13 +206,8 @@ void VulkanApplication::InitResources() const
                           cubeVertices.size() * sizeof(VertexPos3Uv2));
     resources_->SetBuffer(GetParamStr(AppConstants::CubeIndexBuffer), cubeIndices.data(),
                           cubeIndices.size() * sizeof(cubeIndices[0]));
-    resources_->SetBuffer(GetParamStr(AppConstants::SphereVertexBuffer), sphereVertices.data(),
-                          sphereVertices.size() * sizeof(VertexPos3Uv2));
-    resources_->SetBuffer(GetParamStr(AppConstants::SphereIndexBuffer), sphereIndices.data(),
-                          sphereIndices.size() * sizeof(sphereIndices[0]));
 
     resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage), crateTextureHandler_);
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MarbleImage), marbleTextureHandler_);
 
     UpdateDescriptorSets();
 }
@@ -306,7 +287,7 @@ void VulkanApplication::CreatePipeline()
     const auto uvAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Uv, bindingIndex);
     const std::array attributeDescriptions{posAttribDescription, uvAttribDescription};
 
-    pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
+    pipeline1_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
             shaderStageCreateInfo.module =
@@ -340,7 +321,127 @@ void VulkanApplication::CreatePipeline()
         });
     });
 
-    if (!pipeline_) {
+    if (!pipeline1_) {
+        throw std::runtime_error("Failed to create graphics pipeline!");
+    }
+
+    pipeline2_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+            shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+        });
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+            shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+        });
+        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
+            vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
+            vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
+            vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
+            vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+        });
+        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
+            viewportStateCreateInfo.viewportCount = 1;
+            viewportStateCreateInfo.pViewports = &viewport;
+            viewportStateCreateInfo.scissorCount = 1;
+            viewportStateCreateInfo.pScissors = &scissor;
+        });
+        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
+            blendStateCreateInfo.attachmentCount = 1;
+            blendStateCreateInfo.pAttachments = &colorBlendAttachment;
+        });
+        builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
+            depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
+            depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
+            depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+        });
+    });
+
+    if (!pipeline2_) {
+        throw std::runtime_error("Failed to create graphics pipeline!");
+    }
+
+    pipeline3_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+            shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+        });
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+            shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+        });
+        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
+            vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
+            vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
+            vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
+            vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+        });
+        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
+            viewportStateCreateInfo.viewportCount = 1;
+            viewportStateCreateInfo.pViewports = &viewport;
+            viewportStateCreateInfo.scissorCount = 1;
+            viewportStateCreateInfo.pScissors = &scissor;
+        });
+        builder.SetRasterizationState([&](auto& rasterizationStateCreateInfo) {
+            rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_LINE;
+        });
+        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
+            blendStateCreateInfo.attachmentCount = 1;
+            blendStateCreateInfo.pAttachments = &colorBlendAttachment;
+        });
+        builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
+            depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
+            depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
+            depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+        });
+    });
+
+    if (!pipeline3_) {
+        throw std::runtime_error("Failed to create graphics pipeline!");
+    }
+
+    pipeline4_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+            shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+        });
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+            shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+        });
+        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
+            vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
+            vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
+            vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
+            vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+        });
+        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
+            viewportStateCreateInfo.viewportCount = 1;
+            viewportStateCreateInfo.pViewports = &viewport;
+            viewportStateCreateInfo.scissorCount = 1;
+            viewportStateCreateInfo.pScissors = &scissor;
+        });
+        builder.SetRasterizationState([&](auto& rasterizationStateCreateInfo) {
+            rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_LINE;
+        });
+        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
+            blendStateCreateInfo.attachmentCount = 1;
+            blendStateCreateInfo.pAttachments = &colorBlendAttachment;
+        });
+        builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
+            depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
+            depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
+            depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+        });
+    });
+
+    if (!pipeline4_) {
         throw std::runtime_error("Failed to create graphics pipeline!");
     }
 }
@@ -354,27 +455,13 @@ void VulkanApplication::UpdateDescriptorSets() const
                     ->GetHandle(),
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    std::vector<VkDescriptorImageInfo> sphereImageSamplerInfos;
-    sphereImageSamplerInfos.emplace_back(
-            resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-            resources_->GetImageView(GetParamStr(AppConstants::MarbleImage), GetParamStr(AppConstants::MarbleImageView))
-                    ->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
     ImageWriteRequest samplerUpdateRequestCube;
     samplerUpdateRequestCube.DescriptorSetName = GetParamStr(AppConstants::CubeDescSet);
     samplerUpdateRequestCube.BindingIndex = 0;
     samplerUpdateRequestCube.Images = cubeImageSamplerInfos;
     samplerUpdateRequestCube.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    ImageWriteRequest samplerUpdateRequestSphere;
-    samplerUpdateRequestSphere.DescriptorSetName = GetParamStr(AppConstants::SphereDescSet);
-    samplerUpdateRequestSphere.BindingIndex = 0;
-    samplerUpdateRequestSphere.Images = sphereImageSamplerInfos;
-    samplerUpdateRequestSphere.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .ImageWriteRequests = {samplerUpdateRequestCube, samplerUpdateRequestSphere}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequestCube}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -400,7 +487,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
-    currentCmdBuffer->ResetQueryPool(occlusionQueryPool_, 0, 1);
+    currentCmdBuffer->ResetQueryPool(pipelineStatQueryPool_, 0, 4);
 
     currentCmdBuffer->BeginRenderPass(
             [&](auto& beginInfo) {
@@ -412,31 +499,67 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 beginInfo.pClearValues = clearValues.data();
             },
             VK_SUBPASS_CONTENTS_INLINE);
-    currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
-    // Draw cube
     const std::vector cubeDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::CubeDescSet))};
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
     const std::vector cubeVertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::CubeVertexBuffer))};
     currentCmdBuffer->BindVertexBuffers(cubeVertexBuffers, 0, 1, {0});
     currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::CubeIndexBuffer)));
-    currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &cubeMvp);
-    currentCmdBuffer->DrawIndexed(cubeIndices.size(), 1, 0, 0, 0);
 
-    // Occlusion query
+    int totalDrawnCubes = 0;
+
+    // Pipeline statistics query for pipeline 1 (3 cubes with fill)
     {
-        currentCmdBuffer->BeginQuery(occlusionQueryPool_, 0);
+        currentCmdBuffer->BeginQuery(pipelineStatQueryPool_, 0);
+        currentCmdBuffer->BindPipeline(pipeline1_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        for (auto i = 0; i < NUM_CUBES_PIPELINE_1; ++i) {
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
+                                            &cubeMvp_[i]);
+            currentCmdBuffer->DrawIndexed(cubeIndices.size(), 1, 0, 0, 0);
+        }
+        currentCmdBuffer->EndQuery(pipelineStatQueryPool_, 0);
+    }
 
-        // Draw Sphere
-        const std::vector sphereDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::SphereDescSet))};
-        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, sphereDescSets);
-        const std::vector sphereVertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::SphereVertexBuffer))};
-        currentCmdBuffer->BindVertexBuffers(sphereVertexBuffers, 0, 1, {0});
-        currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::SphereIndexBuffer)));
-        currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &sphereMvp);
-        currentCmdBuffer->DrawIndexed(sphereIndices.size(), 1, 0, 0, 0);
+    totalDrawnCubes += NUM_CUBES_PIPELINE_1;
 
-        currentCmdBuffer->EndQuery(occlusionQueryPool_, 0);
+    // Pipeline statistics query for pipeline 2 (7 cubes with fill)
+    {
+        currentCmdBuffer->BeginQuery(pipelineStatQueryPool_, 1);
+        currentCmdBuffer->BindPipeline(pipeline2_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        for (auto i = totalDrawnCubes; i < totalDrawnCubes + NUM_CUBES_PIPELINE_2; ++i) {
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
+                                            &cubeMvp_[i]);
+            currentCmdBuffer->DrawIndexed(cubeIndices.size(), 1, 0, 0, 0);
+        }
+        currentCmdBuffer->EndQuery(pipelineStatQueryPool_, 1);
+    }
+
+    totalDrawnCubes += NUM_CUBES_PIPELINE_2;
+
+    // Pipeline statistics query for pipeline 3 (4 cubes with wireframe)
+    {
+        currentCmdBuffer->BeginQuery(pipelineStatQueryPool_, 2);
+        currentCmdBuffer->BindPipeline(pipeline3_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        for (auto i = totalDrawnCubes; i < totalDrawnCubes + NUM_CUBES_PIPELINE_3; ++i) {
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
+                                            &cubeMvp_[i]);
+            currentCmdBuffer->DrawIndexed(cubeIndices.size(), 1, 0, 0, 0);
+        }
+        currentCmdBuffer->EndQuery(pipelineStatQueryPool_, 2);
+    }
+
+    totalDrawnCubes += NUM_CUBES_PIPELINE_3;
+
+    // Pipeline statistics query for pipeline 4 (6 cubes with wireframe)
+    {
+        currentCmdBuffer->BeginQuery(pipelineStatQueryPool_, 3);
+        currentCmdBuffer->BindPipeline(pipeline4_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        for (auto i = totalDrawnCubes; i < totalDrawnCubes + NUM_CUBES_PIPELINE_4; ++i) {
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
+                                            &cubeMvp_[i]);
+            currentCmdBuffer->DrawIndexed(cubeIndices.size(), 1, 0, 0, 0);
+        }
+        currentCmdBuffer->EndQuery(pipelineStatQueryPool_, 3);
     }
 
     currentCmdBuffer->EndRenderPass();
@@ -447,23 +570,36 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::CreateQueryPools()
 {
-    occlusionQueryPool_ = device_->CreateQueryPool(VK_QUERY_TYPE_OCCLUSION, 1);
+    pipelineStatQueryPool_ = device_->CreateQueryPool(VK_QUERY_TYPE_PIPELINE_STATISTICS, 4, 0,
+                                                   VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT |
+                                                           VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT |
+                                                           VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT |
+                                                           VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT);
 
-    if (!occlusionQueryPool_) {
-        throw std::runtime_error("Failed to create query pool for occlusion!");
+    if (!pipelineStatQueryPool_) {
+        throw std::runtime_error("Failed to create query pool for pipeline statistics!");
     }
 }
 
 void VulkanApplication::PrintQueryResults()
 {
     // For slower output
-    if (++frameCount_ == 250UL) {
-        uint64_t visibleFragments = 0;
-        occlusionQueryPool_->GetQueryPoolResults(0, 1, sizeof(uint64_t), &visibleFragments, 0,
+    if (++frameCount_ == 300UL) {
+        std::array<PipelineStats, 4> stats{};
+        pipelineStatQueryPool_->GetQueryPoolResults(0, 4, sizeof(stats), stats.data(), sizeof(PipelineStats),
                                                  VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT);
 
-        std::cout << "Sphere visibility: " << (visibleFragments > 0 ? "true" : "false") << std::endl;
-        std::cout << "Number of visible fragments: " << visibleFragments << std::endl;
+        int i = 1;
+        std::cout << "##################### PIPELINE STATISTICS #####################" << std::endl;
+        for (const auto& stat : stats) {
+            std::cout << "----------------- Pipeline " << i++ << " -------------------" << std::endl;
+            std::cout << "Input Assembly Vertices: " << stat.inputAssemblyVertices << std::endl;
+            std::cout << "Input Assembly Primitives: " << stat.inputAssemblyPrimitives << std::endl;
+            std::cout << "Vertex Shader Invocations: " << stat.vertexShaderInvocations << std::endl;
+            std::cout << "Fragment Shader Invocations: " << stat.fragmentShaderInvocations << std::endl;
+            std::cout << "-------------------------------------------------------------" << std::endl;
+        }
+        std::cout << "###############################################################" << std::endl;
 
         frameCount_ = 0;
     }
@@ -471,12 +607,15 @@ void VulkanApplication::PrintQueryResults()
 
 void VulkanApplication::CalculateAndSetMvp()
 {
-    constexpr auto model = glm::mat4(1.0f);
-    const glm::mat4 view = camera_->GetViewMatrix();
-    const glm::mat4 proj = camera_->GetProjectionMatrix();
+    for (size_t i = 0; i < NUM_CUBES; i++) {
+        auto model = glm::mat4(1.0f);
+        model = glm::translate(model, modelPositions[i]);
 
-    cubeMvp.mvpMatrix = proj * view * model;
-    sphereMvp.mvpMatrix = proj * view * model;
+        const glm::mat4 view = camera_->GetViewMatrix();
+        const glm::mat4 proj = camera_->GetProjectionMatrix();
+
+        cubeMvp_[i].mvpMatrix = proj * view * model;
+    }
 }
 
 void VulkanApplication::ProcessInput() const
@@ -495,4 +634,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::fundamentals::queries_and_performance::occlusion_query
+} // namespace examples::fundamentals::queries_and_performance::pipeline_statistics_query
