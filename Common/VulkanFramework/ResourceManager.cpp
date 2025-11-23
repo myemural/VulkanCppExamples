@@ -117,6 +117,24 @@ void ResourceManager::SetBuffer(const std::string& name, const void* data, const
     buffers_[name]->FlushData(data, dataSize);
     buffers_[name]->UnmapMemory();
 }
+
+void ResourceManager::SetBufferAlignedWithoutUnmap(const std::string& name,
+                                                   const void* data,
+                                                   const std::size_t dataUnitSize,
+                                                   const std::size_t dataCount,
+                                                   const std::size_t alignedSize)
+{
+    std::vector<uint8_t> temp(alignedSize * dataCount, 0);
+
+    for (size_t i = 0; i < dataCount; ++i) {
+        std::memcpy(temp.data() + i * alignedSize, reinterpret_cast<const uint8_t*>(data) + i * dataUnitSize,
+                    dataUnitSize);
+    }
+
+    buffers_[name]->MapMemory();
+    buffers_[name]->FlushData(temp.data(), temp.size());
+}
+
 void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                                           const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                           const std::string& imageName,

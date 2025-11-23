@@ -12,11 +12,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <random>
 
-#include <glm/vec4.hpp>
+#include <glm/glm.hpp>
 #include <vulkan/vulkan_core.h>
-
-#include "Vertex.h"
 
 namespace common::vulkan_framework
 {
@@ -146,5 +145,54 @@ inline VkRect2D GetAnimatedScissorRect(const float time, const float viewportWid
     rect.extent.height = static_cast<std::uint32_t>(scissorHeight);
 
     return rect;
+}
+
+/**
+ * @brief Generates random position for certain amount of objects within specific scene bounds and min distance.
+ * @param count Number of objects.
+ * @param minBounds Minimum bounds of the scene.
+ * @param maxBounds Maximum bounds of the scene.
+ * @param minDistance Minimum distance between objects.
+ * @return Random positions for the objects.
+ */
+inline std::vector<glm::vec3> GenerateRandomPositions(const size_t count,
+                                                      const glm::vec3 minBounds,
+                                                      const glm::vec3 maxBounds,
+                                                      const float minDistance = 1.5f)
+{
+    std::vector<glm::vec3> positions;
+    positions.reserve(count);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::uniform_real_distribution distX(minBounds.x, maxBounds.x);
+    std::uniform_real_distribution distY(minBounds.y, maxBounds.y);
+    std::uniform_real_distribution distZ(minBounds.z, maxBounds.z);
+
+    for (size_t i = 0; i < count; ++i) {
+        glm::vec3 pos;
+        bool valid;
+        // To avoid infinite loops we should add attempt count and max number of attempts
+        constexpr int maxNumberOfAttempts = 1000;
+        int currentAttemptCount = 0;
+        do {
+            pos = glm::vec3(distX(gen), distY(gen), distZ(gen));
+            valid = true;
+            for (const auto& existingPos: positions) {
+                if (glm::distance(pos, existingPos) < minDistance) {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (++currentAttemptCount > maxNumberOfAttempts) {
+                break;
+            }
+        } while (!valid);
+        positions.push_back(pos);
+    }
+
+    return positions;
 }
 } // namespace common::vulkan_framework

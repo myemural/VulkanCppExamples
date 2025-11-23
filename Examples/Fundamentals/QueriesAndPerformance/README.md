@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `TimestampQuery`
 3. [Measuring Pipeline Statistics](/Examples/Fundamentals/QueriesAndPerformance/PipelineStatisticsQuery)
    - `PipelineStatisticsQuery`
+4. [Using Dynamic Uniform Buffers](/Examples/Fundamentals/QueriesAndPerformance/DynamicUniformBuffer)
+   - `DynamicUniformBuffer`
 
 ## Architecture of the Subsection
 

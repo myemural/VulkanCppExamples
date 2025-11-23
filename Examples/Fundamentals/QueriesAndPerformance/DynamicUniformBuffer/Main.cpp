@@ -1,9 +1,9 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, 20 cubes in four different groups are drawn on the screen using four different pipelines.
- *          Then, using the pipeline statistics query, information about these 4 pipelines is printed to the console.
+ * @brief   In this example, many cubes are drawn on the screen in random positions and their positions are set using a
+ *          dynamic uniform buffer.
  * @author  Mustafa Yemural (myemural)
- * @date    22.11.2025
+ * @date    23.11.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::fundamentals::queries_and_performance::pipeline_statistics_query;
+using namespace examples::fundamentals::queries_and_performance::dynamic_uniform_buffer;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -37,6 +37,7 @@ inline ParameterSchema CreateParameterSchema()
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexBuffer, "cubeVertexBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeIndexBuffer, "cubeIndexBuffer");
+    schema.RegisterImmutableParam<std::string>(AppConstants::DynamicUniformBuffer, "dynamicUniformBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
     schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");

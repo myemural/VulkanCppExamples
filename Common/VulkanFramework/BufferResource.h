@@ -69,7 +69,7 @@ public:
     /**
      * @brief Unmaps memory region.
      */
-    void UnmapMemory() const;
+    void UnmapMemory();
 
     /**
      * @return Returns VulkanBuffer object that held from this class.

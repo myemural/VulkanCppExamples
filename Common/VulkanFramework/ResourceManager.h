@@ -142,6 +142,20 @@ public:
     void SetBuffer(const std::string& name, const void* data, std::uint64_t dataSize);
 
     /**
+     * @brief Sets a buffer resource with aligned sized raw data without unmap.
+     * @param name Name of the buffer resource.
+     * @param data Data to be copied to buffer.
+     * @param dataUnitSize Individual size of the data.
+     * @param dataCount Count of the whole data.
+     * @param alignedSize aligned size of the data.
+     */
+    void SetBufferAlignedWithoutUnmap(const std::string& name,
+                                      const void* data,
+                                      std::size_t dataUnitSize,
+                                      std::size_t dataCount,
+                                      std::size_t alignedSize);
+
+    /**
      * @brief Sets an image resource with texture data.
      * @param cmdPool Command pool that the command buffer will be created.
      * @param queue Queue that the command buffer will be sent.

@@ -68,7 +68,9 @@ void BufferResource::AllocateBufferMemory()
 
 void BufferResource::MapMemory(const VkDeviceSize mapSize, const VkDeviceSize mapOffset)
 {
-    mappedData_ = deviceMemory_->MapMemory(mapSize, mapOffset);
+    if (!mappedData_) {
+        mappedData_ = deviceMemory_->MapMemory(mapSize, mapOffset);
+    }
 }
 
 void BufferResource::FlushData(const void* data,
@@ -80,5 +82,9 @@ void BufferResource::FlushData(const void* data,
     deviceMemory_->FlushMappedMemoryRanges(mappedMemoryRanges);
 }
 
-void BufferResource::UnmapMemory() const { deviceMemory_->UnmapMemory(); }
+void BufferResource::UnmapMemory()
+{
+    deviceMemory_->UnmapMemory();
+    mappedData_ = nullptr;
+}
 } // namespace common::vulkan_framework

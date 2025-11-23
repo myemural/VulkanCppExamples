@@ -34,7 +34,6 @@ namespace AppConstants
     constexpr auto CubeDescSet = "AppConstants.CubeDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
-    constexpr auto MarbleTexturePath = "AppConstants.MarbleTexturePath";
 } // namespace AppConstants
 
 namespace AppSettings

@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps key names for user-provided config key names.
  * @author  Mustafa Yemural (myemural)
- * @date    22.11.2025
+ * @date    23.11.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::fundamentals::queries_and_performance::pipeline_statistics_query
+namespace examples::fundamentals::queries_and_performance::dynamic_uniform_buffer
 {
 namespace AppConstants
 {
@@ -26,6 +26,7 @@ namespace AppConstants
     // Resources
     constexpr auto CubeVertexBuffer = "AppConstants.CubeVertexBuffer";
     constexpr auto CubeIndexBuffer = "AppConstants.CubeIndexBuffer";
+    constexpr auto DynamicUniformBuffer = "AppConstants.DynamicUniformBuffer";
     constexpr auto CrateImage = "AppConstants.CrateImage";
     constexpr auto CrateImageView = "AppConstants.CrateImageView";
     constexpr auto DepthImage = "AppConstants.DepthImage";
@@ -42,4 +43,4 @@ namespace AppSettings
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
 } // namespace AppSettings
-} // namespace examples::fundamentals::queries_and_performance::pipeline_statistics_query
+} // namespace examples::fundamentals::queries_and_performance::dynamic_uniform_buffer
