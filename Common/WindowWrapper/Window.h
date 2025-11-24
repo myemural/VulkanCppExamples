@@ -10,7 +10,6 @@
  */
 #pragma once
 
-#include <cstdint>
 #include <functional>
 #include <string>
 #include <vector>
@@ -39,10 +38,10 @@ public:
      * @param windowWidth Width of the window.
      * @param windowHeight Height of the window.
      * @param isResizable Specifies window is resizable or not.
-     * @param sampleCount Multisampling sample count.
+     * @param sampleCount Multisampling sample count. (Has no effect in Vulkan)
      * @return
      */
-    bool Init(std::uint32_t windowWidth, std::uint32_t windowHeight, bool isResizable, std::uint32_t sampleCount);
+    bool Init(std::uint32_t windowWidth, std::uint32_t windowHeight, bool isResizable, std::uint32_t sampleCount = 1);
 
     /**
      * @return Returns GLFW handler of the window.

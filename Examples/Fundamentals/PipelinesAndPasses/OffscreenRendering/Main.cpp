@@ -97,7 +97,7 @@ int main()
     // Create a window
     const auto window = std::make_shared<Window>(params.Get<std::string>(WindowParams::Title));
     if (!window->Init(params.Get<std::uint32_t>(WindowParams::Width), params.Get<std::uint32_t>(WindowParams::Height),
-                      params.Get<bool>(WindowParams::Resizable), params.Get<unsigned int>(WindowParams::SampleCount))) {
+                      params.Get<bool>(WindowParams::Resizable))) {
         std::cerr << "Failed to initialize window." << std::endl;
         return -1;
     }

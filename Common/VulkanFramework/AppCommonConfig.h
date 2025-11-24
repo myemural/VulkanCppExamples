@@ -27,7 +27,6 @@ namespace WindowParams
     constexpr auto Height = "Window.Height";
     constexpr auto Title = "Window.Title";
     constexpr auto Resizable = "Window.Resizable";
-    constexpr auto SampleCount = "Window.SampleCount";
 } // namespace WindowParams
 
 namespace VulkanParams
@@ -47,7 +46,6 @@ inline void SetCommonParamSchema(utility::ParameterSchema& schema)
     schema.RegisterParam<std::uint32_t>(WindowParams::Height, 600);
     schema.RegisterParam<std::string>(WindowParams::Title);
     schema.RegisterParam<bool>(WindowParams::Resizable, false);
-    schema.RegisterParam<unsigned int>(WindowParams::SampleCount, 1);
 
     schema.RegisterParam<std::string>(VulkanParams::ApplicationName);
     schema.RegisterParam<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_0);

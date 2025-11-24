@@ -59,7 +59,6 @@ Every example has its own directory and CMake target. You can build what you wan
 | Window.Height      | std::uint32_t | WindowParams::Height      | Initial height of the window (in pixel) | 600           |
 | Window.Title       | std::string   | WindowParams::Title       | Title of the window                     |               |
 | Window.Resizable   | bool          | WindowParams::Resizable   | Specifies window is resizable or not    | false         |
-| Window.SampleCount | unsigned int  | WindowParams::SampleCount | Sample count of the window              | 1             |
 
 **Vulkan Parameters**
 
