@@ -138,8 +138,14 @@ public:
      * @param name Name of the buffer resource.
      * @param data Data to be copied to buffer.
      * @param dataSize Size of the data to be copied to buffer.
+     * @param memoryOffset Memory start offset.
+     * @param needUnmap Whether unmap is needed or not.
      */
-    void SetBuffer(const std::string& name, const void* data, std::uint64_t dataSize);
+    void SetBuffer(const std::string& name,
+                   const void* data,
+                   std::uint64_t dataSize,
+                   std::uint64_t memoryOffset = 0,
+                   bool needUnmap = true);
 
     /**
      * @brief Sets a buffer resource with aligned sized raw data without unmap.

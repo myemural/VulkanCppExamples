@@ -59,10 +59,12 @@ public:
      * @brief Flushes data to the mapped memory area.
      * @param data The data that will be flushed to the mapped area.
      * @param dataSize Flushing data size.
+     * @param memoryOffset Memory start offset.
      * @param mappedMemoryRanges (size, offset) pair of the mapped memory ranges.
      */
     void FlushData(const void* data,
                    std::uint64_t dataSize,
+                   std::uint64_t memoryOffset = 0,
                    const std::vector<std::pair<VkDeviceSize, VkDeviceSize>>& mappedMemoryRanges = {
                        {VK_WHOLE_SIZE, 0}}) const;
 

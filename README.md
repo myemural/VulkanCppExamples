@@ -137,6 +137,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Measuring The GPU Time with Timestamp Queries](/Examples/Fundamentals/QueriesAndPerformance/TimestampQuery)
   - [Measuring Pipeline Statistics](/Examples/Fundamentals/QueriesAndPerformance/PipelineStatisticsQuery)
   - [Using Dynamic Uniform Buffers](/Examples/Fundamentals/QueriesAndPerformance/DynamicUniformBuffer)
+  - [Buffer Suballocation](/Examples/Fundamentals/QueriesAndPerformance/BufferSuballocation)
 
 ## Environment Support
 

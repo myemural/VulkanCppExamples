@@ -75,9 +75,10 @@ void BufferResource::MapMemory(const VkDeviceSize mapSize, const VkDeviceSize ma
 
 void BufferResource::FlushData(const void* data,
                                const std::uint64_t dataSize,
+                               const std::uint64_t memoryOffset,
                                const std::vector<std::pair<VkDeviceSize, VkDeviceSize>>& mappedMemoryRanges) const
 {
-    std::memcpy(mappedData_, data, dataSize);
+    std::memcpy(static_cast<uint8_t*>(mappedData_) + memoryOffset, data, dataSize);
 
     deviceMemory_->FlushMappedMemoryRanges(mappedMemoryRanges);
 }

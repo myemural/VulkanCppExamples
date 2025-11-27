@@ -111,11 +111,18 @@ std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> ResourceManager::GetDescrip
     return descriptorRegistry_->GetDescriptorSet(setName);
 }
 
-void ResourceManager::SetBuffer(const std::string& name, const void* data, const std::uint64_t dataSize)
+void ResourceManager::SetBuffer(const std::string& name,
+                                const void* data,
+                                const std::uint64_t dataSize,
+                                const std::uint64_t memoryOffset,
+                                const bool needUnmap)
 {
     buffers_[name]->MapMemory();
-    buffers_[name]->FlushData(data, dataSize);
-    buffers_[name]->UnmapMemory();
+    buffers_[name]->FlushData(data, dataSize, memoryOffset);
+
+    if (needUnmap) {
+        buffers_[name]->UnmapMemory();
+    }
 }
 
 void ResourceManager::SetBufferAlignedWithoutUnmap(const std::string& name,

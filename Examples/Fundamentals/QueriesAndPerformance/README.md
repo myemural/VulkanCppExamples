@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `PipelineStatisticsQuery`
 4. [Using Dynamic Uniform Buffers](/Examples/Fundamentals/QueriesAndPerformance/DynamicUniformBuffer)
    - `DynamicUniformBuffer`
+5. [Buffer Suballocation](/Examples/Fundamentals/QueriesAndPerformance/BufferSuballocation)
+   - `BufferSuballocation`
 
 ## Architecture of the Subsection
 
