@@ -73,6 +73,7 @@ void ApplicationQueriesAndPerformance::CreateDefaultLogicalDevice()
     deviceFeatures.fillModeNonSolid = VK_TRUE;
     deviceFeatures.wideLines = VK_TRUE;
     deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
+    deviceFeatures.multiDrawIndirect = VK_TRUE;
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
         builder.AddLayer("VK_LAYER_KHRONOS_validation")

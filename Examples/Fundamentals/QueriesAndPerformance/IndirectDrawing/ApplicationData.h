@@ -2,7 +2,7 @@
  * @file    ApplicationData.h
  * @brief   This header file keeps user-provided application data (vertices, indices etc.).
  * @author  Mustafa Yemural (myemural)
- * @date    27.11.2025
+ * @date    28.11.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -18,7 +18,7 @@
 #include "Vertex.h"
 #include "VulkanHelpers.h"
 
-namespace examples::fundamentals::queries_and_performance::buffer_suballocation
+namespace examples::fundamentals::queries_and_performance::indirect_drawing
 {
 #define MAX_NUM_OBJECTS 600
 #define PER_OBJECT_COUNT 150
@@ -50,7 +50,7 @@ inline const std::vector<uint16_t> coneIndices = common::utility::CreateConeIndi
 // Index Data for Cylinder
 inline const std::vector<uint16_t> cylinderIndices = common::utility::CreateCylinderIndices(32, 16);
 
-struct ObjectUbo
+struct ObjectSbo
 {
     glm::mat4 mvpMatrix;
 };
@@ -75,4 +75,4 @@ struct PrimitiveData
 inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
         MAX_NUM_OBJECTS, glm::vec3(-15.0f, -12.0f, -15.0f), glm::vec3(15.0f, 12.0f, -2.0f), 1.5f);
 
-} // namespace examples::fundamentals::queries_and_performance::buffer_suballocation
+} // namespace examples::fundamentals::queries_and_performance::indirect_drawing

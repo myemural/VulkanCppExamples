@@ -130,5 +130,15 @@ public:
     COMMON_API void WriteTimestamp(const VkPipelineStageFlagBits& pipelineStage,
                                    const std::shared_ptr<VulkanQueryPool>& queryPool,
                                    uint32_t query) const;
+
+    COMMON_API void DrawIndirect(const std::shared_ptr<VulkanBuffer>& buffer,
+                                 VkDeviceSize offset,
+                                 std::uint32_t drawCount,
+                                 std::uint32_t stride) const;
+
+    COMMON_API void DrawIndexedIndirect(const std::shared_ptr<VulkanBuffer>& buffer,
+                                        VkDeviceSize offset,
+                                        std::uint32_t drawCount,
+                                        std::uint32_t stride) const;
 };
 } // namespace common::vulkan_wrapper

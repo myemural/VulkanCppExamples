@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `DynamicUniformBuffer`
 5. [Buffer Suballocation](/Examples/Fundamentals/QueriesAndPerformance/BufferSuballocation)
    - `BufferSuballocation`
+6. [Reduce CPU Bottleneck with Indirect Drawing](/Examples/Fundamentals/QueriesAndPerformance/IndirectDrawing)
+   - `IndirectDrawing`
 
 ## Architecture of the Subsection
 

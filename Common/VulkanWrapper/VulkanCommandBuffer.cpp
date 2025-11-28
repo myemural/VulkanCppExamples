@@ -252,4 +252,20 @@ void VulkanCommandBuffer::WriteTimestamp(const VkPipelineStageFlagBits& pipeline
 {
     vkCmdWriteTimestamp(handle_, pipelineStage, queryPool->GetHandle(), query);
 }
+
+void VulkanCommandBuffer::DrawIndirect(const std::shared_ptr<VulkanBuffer>& buffer,
+                                       const VkDeviceSize offset,
+                                       const std::uint32_t drawCount,
+                                       const std::uint32_t stride) const
+{
+    vkCmdDrawIndirect(handle_, buffer->GetHandle(), offset, drawCount, stride);
+}
+
+void VulkanCommandBuffer::DrawIndexedIndirect(const std::shared_ptr<VulkanBuffer>& buffer,
+                                              const VkDeviceSize offset,
+                                              const std::uint32_t drawCount,
+                                              const std::uint32_t stride) const
+{
+    vkCmdDrawIndexedIndirect(handle_, buffer->GetHandle(), offset, drawCount, stride);
+}
 } // namespace common::vulkan_wrapper

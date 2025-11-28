@@ -23,7 +23,7 @@
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::fundamentals::queries_and_performance::buffer_suballocation
+namespace examples::fundamentals::queries_and_performance::indirect_drawing
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -165,6 +165,29 @@ void VulkanApplication::PrepareBufferInfos()
 
     // Store total size of buffer
     totalBufferSize_ = totalVertexBufferSize + iOffset;
+
+    // Fill indirect commands data
+    indirectCommands_.resize(MAX_NUM_OBJECTS);
+
+    uint32_t globalInstance = 0;
+    for (uint32_t primitiveIndex = 0; primitiveIndex < primitivesData_.size(); primitiveIndex++) {
+        const auto& primitive = primitivesData_[primitiveIndex];
+        const auto& allocationInfo = bufferAllocInfos_[primitiveIndex];
+
+        const uint32_t firstIndex = allocationInfo.indexOffset / sizeof(std::uint16_t);
+        const int32_t vertexOffset = allocationInfo.vertexOffset / sizeof(VertexPos3Uv2);
+
+        for (uint32_t i = 0; i < primitive.drawCount; ++i) {
+            VkDrawIndexedIndirectCommand cmd{};
+            cmd.indexCount = allocationInfo.indexCount;
+            cmd.instanceCount = 1;
+            cmd.firstIndex = firstIndex;
+            cmd.vertexOffset = vertexOffset;
+            cmd.firstInstance = globalInstance++;
+
+            indirectCommands_.push_back(cmd);
+        }
+    }
 }
 
 void VulkanApplication::CreateResources()
@@ -181,20 +204,25 @@ void VulkanApplication::CreateResources()
 
     PrepareBufferInfos();
 
-    // Find GPU uniform buffer offset alignment
+    // Find GPU storage buffer offset alignment
     const auto props = physicalDevice_->GetProperties();
-    const auto minUboAlignment = props.limits.minUniformBufferOffsetAlignment;
-    uboAlignedSize_ = (sizeof(ObjectUbo) + minUboAlignment - 1) & ~(minUboAlignment - 1);
+    const auto minSboAlignment = props.limits.minStorageBufferOffsetAlignment;
+    sboAlignedSize_ = (sizeof(ObjectSbo) + minSboAlignment - 1) & ~(minSboAlignment - 1);
 
-    // Calculate UBO size
-    const std::uint32_t uboSize = uboAlignedSize_ * MAX_NUM_OBJECTS;
+    // Calculate SBO size
+    const std::uint32_t sboSize = sboAlignedSize_ * MAX_NUM_OBJECTS;
 
-    resourceCreateInfo.Buffers = {{GetParamStr(AppConstants::MainVertexIndexBuffer), totalBufferSize_,
-                                   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-                                  {GetParamStr(AppConstants::DynamicUniformBuffer), uboSize,
-                                   VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
+    // Calculate indirect buffer size
+    const std::uint32_t indirectCmdBufferSize = indirectCommands_.size() * sizeof(indirectCommands_[0]);
+
+    resourceCreateInfo.Buffers = {
+        {GetParamStr(AppConstants::MainVertexIndexBuffer), totalBufferSize_,
+         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+        {GetParamStr(AppConstants::ShaderStorageBuffer), sboSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+        {GetParamStr(AppConstants::IndirectCommandsBuffer), indirectCmdBufferSize, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
+         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
     resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
@@ -207,10 +235,9 @@ void VulkanApplication::CreateResources()
     // Fill descriptor set create infos
     resourceCreateInfo.Descriptors = {
         .MaxSets = 2,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1}, {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
+        .PoolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1}, {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
         .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT,
-                                   nullptr},
+                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}}},
         .DescriptorSets = {{.Name = GetParamStr(AppConstants::CubeDescSet),
@@ -257,6 +284,10 @@ void VulkanApplication::InitResources() const
         resources_->SetBuffer(GetParamStr(AppConstants::MainVertexIndexBuffer), primitivesData_[i].indices.data(),
                               bufferAllocInfos_[i].indexSize, bufferAllocInfos_[i].indexOffset, false);
     }
+
+    // Set indirect command buffer data
+    resources_->SetBuffer(GetParamStr(AppConstants::IndirectCommandsBuffer), indirectCommands_.data(),
+                          indirectCommands_.size() * sizeof(indirectCommands_[0]));
 
     resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage), crateTextureHandler_);
 
@@ -374,9 +405,9 @@ void VulkanApplication::CreatePipeline()
 
 void VulkanApplication::UpdateDescriptorSets() const
 {
-    std::vector<VkDescriptorBufferInfo> uboBufferInfos;
-    uboBufferInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::DynamicUniformBuffer))->GetHandle(), 0,
-                                uboAlignedSize_);
+    std::vector<VkDescriptorBufferInfo> storageBufferInfos;
+    storageBufferInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::ShaderStorageBuffer))->GetHandle(),
+                                    0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorImageInfo> cubeImageSamplerInfos;
     cubeImageSamplerInfos.emplace_back(
@@ -388,8 +419,8 @@ void VulkanApplication::UpdateDescriptorSets() const
     BufferWriteRequest objectUboRequest;
     objectUboRequest.DescriptorSetName = GetParamStr(AppConstants::CubeDescSet);
     objectUboRequest.BindingIndex = 0;
-    objectUboRequest.Buffers = uboBufferInfos;
-    objectUboRequest.Type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+    objectUboRequest.Buffers = storageBufferInfos;
+    objectUboRequest.Type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     ImageWriteRequest samplerUpdateRequestCube;
     samplerUpdateRequestCube.DescriptorSetName = GetParamStr(AppConstants::CubeDescSet);
@@ -438,25 +469,13 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
     const std::vector cubeDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::CubeDescSet))};
-    unsigned int currentDrawCount = 0U;
-    for (auto i = 0U; i < bufferAllocInfos_.size(); ++i) {
-        for (auto j = 0U; j < primitivesData_[i].drawCount; ++j) {
-            const auto currentMvpIndex = currentDrawCount + j;
-            uint32_t dynamicOffset = currentMvpIndex * uboAlignedSize_;
-
-            const std::vector cubeVertexBuffers{
-                resources_->GetBuffer(GetParamStr(AppConstants::MainVertexIndexBuffer))};
-            currentCmdBuffer->BindVertexBuffers(cubeVertexBuffers, 0, 1, {bufferAllocInfos_[i].vertexOffset});
-            currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::MainVertexIndexBuffer)),
-                                              bufferAllocInfos_[i].indexOffset);
-
-            currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets,
-                                                 {dynamicOffset});
-            currentCmdBuffer->DrawIndexed(bufferAllocInfos_[i].indexCount, 1, 0, 0, 0);
-        }
-
-        currentDrawCount += primitivesData_[i].drawCount;
-    }
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
+    const std::vector cubeVertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::MainVertexIndexBuffer))};
+    currentCmdBuffer->BindVertexBuffers(cubeVertexBuffers, 0, 1, {0});
+    currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::MainVertexIndexBuffer)));
+    currentCmdBuffer->DrawIndexedIndirect(resources_->GetBuffer(GetParamStr(AppConstants::IndirectCommandsBuffer)), 0,
+                                          static_cast<uint32_t>(indirectCommands_.size()),
+                                          sizeof(VkDrawIndexedIndirectCommand));
 
     currentCmdBuffer->EndRenderPass();
     if (!currentCmdBuffer->EndCommandBuffer()) {
@@ -478,11 +497,11 @@ void VulkanApplication::CalculateAndSetMvp()
         const glm::mat4 view = camera_->GetViewMatrix();
         const glm::mat4 proj = camera_->GetProjectionMatrix();
 
-        objectUbo_[i].mvpMatrix = proj * view * model;
+        objectSbo_[i].mvpMatrix = proj * view * model;
     }
 
-    resources_->SetBufferAlignedWithoutUnmap(GetParamStr(AppConstants::DynamicUniformBuffer), objectUbo_,
-                                             sizeof(ObjectUbo), MAX_NUM_OBJECTS, uboAlignedSize_);
+    resources_->SetBufferAlignedWithoutUnmap(GetParamStr(AppConstants::ShaderStorageBuffer), objectSbo_,
+                                             sizeof(ObjectSbo), MAX_NUM_OBJECTS, sboAlignedSize_);
 }
 
 void VulkanApplication::ProcessInput() const
@@ -501,4 +520,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::fundamentals::queries_and_performance::buffer_suballocation
+} // namespace examples::fundamentals::queries_and_performance::indirect_drawing
