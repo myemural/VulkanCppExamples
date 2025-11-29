@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <fstream>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -19,10 +20,11 @@
 #include "ScopedTimer.h"
 #include "TimeUtils.h"
 #include "VulkanHelpers.h"
+#include "VulkanPipelineCache.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::fundamentals::queries_and_performance::buffer_suballocation
+namespace examples::fundamentals::queries_and_performance::pipeline_caches
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -54,6 +56,7 @@ bool VulkanApplication::Init()
         InitResources();
 
         CreateRenderPass();
+        CreateOrGetPipelineCache();
         CreatePipeline();
         CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
                                                            GetParamStr(AppConstants::DepthImageView)));
@@ -68,8 +71,6 @@ bool VulkanApplication::Init()
 
 void VulkanApplication::DrawFrame()
 {
-    PROFILE_FUNCTION_EVERY(1000);
-
     inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
 
     uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
@@ -100,6 +101,18 @@ void VulkanApplication::PreUpdate()
 
     // Process continuous inputs
     ProcessInput();
+}
+
+void VulkanApplication::Cleanup() noexcept
+{
+    ApplicationQueriesAndPerformance::Cleanup();
+
+    // Save pipeline cache when quit from application
+    const auto cacheData = pipelineCache_->GetPipelineCacheData();
+    if (!cacheData.empty()) {
+        std::ofstream file(GetParamStr(AppConstants::PipelineCacheFilePath), std::ios::binary);
+        file.write(reinterpret_cast<const char*>(cacheData.data()), cacheData.size() * sizeof(std::uint8_t));
+    }
 }
 
 void VulkanApplication::InitInputSystem()
@@ -302,8 +315,29 @@ void VulkanApplication::CreateRenderPass()
     }
 }
 
+void VulkanApplication::CreateOrGetPipelineCache()
+{
+    std::ifstream file(GetParamStr(AppConstants::PipelineCacheFilePath), std::ios::binary | std::ios::ate);
+    std::vector<uint8_t> cacheData;
+    if (file.good()) {
+        if (const size_t fileSize = file.tellg(); fileSize > 0) {
+            cacheData.resize(fileSize);
+            file.seekg(0);
+            file.read(reinterpret_cast<char*>(cacheData.data()), fileSize);
+            std::cout << "Pipeline cache loaded!" << std::endl;
+        }
+    }
+
+    pipelineCache_ = device_->CreatePipelineCache(cacheData.size(), cacheData.empty() ? nullptr : cacheData.data());
+    if (!pipelineCache_) {
+        throw std::runtime_error("Failed to create pipeline cache!");
+    }
+}
+
 void VulkanApplication::CreatePipeline()
 {
+    PROFILE_FUNCTION();
+
     pipelineLayout_ = device_->CreatePipelineLayout(
             {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))});
 
@@ -332,39 +366,42 @@ void VulkanApplication::CreatePipeline()
     const auto uvAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Uv, bindingIndex);
     const std::array attributeDescriptions{posAttribDescription, uvAttribDescription};
 
-    pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
-            shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
-        });
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
-            shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
-        });
-        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
-            vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
-            vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
-            vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
-            vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-        });
-        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
-            viewportStateCreateInfo.viewportCount = 1;
-            viewportStateCreateInfo.pViewports = &viewport;
-            viewportStateCreateInfo.scissorCount = 1;
-            viewportStateCreateInfo.pScissors = &scissor;
-        });
-        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
-            blendStateCreateInfo.attachmentCount = 1;
-            blendStateCreateInfo.pAttachments = &colorBlendAttachment;
-        });
-        builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
-            depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
-            depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
-            depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
-        });
-    });
+    pipeline_ = device_->CreateGraphicsPipeline(
+            pipelineLayout_, renderPass_,
+            [&](auto& builder) {
+                builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+                    shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+                    shaderStageCreateInfo.module =
+                            resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+                });
+                builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+                    shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+                    shaderStageCreateInfo.module =
+                            resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+                });
+                builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
+                    vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
+                    vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescription;
+                    vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
+                    vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+                });
+                builder.SetViewportState([&](auto& viewportStateCreateInfo) {
+                    viewportStateCreateInfo.viewportCount = 1;
+                    viewportStateCreateInfo.pViewports = &viewport;
+                    viewportStateCreateInfo.scissorCount = 1;
+                    viewportStateCreateInfo.pScissors = &scissor;
+                });
+                builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
+                    blendStateCreateInfo.attachmentCount = 1;
+                    blendStateCreateInfo.pAttachments = &colorBlendAttachment;
+                });
+                builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
+                    depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
+                    depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
+                    depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+                });
+            },
+            pipelineCache_);
 
     if (!pipeline_) {
         throw std::runtime_error("Failed to create graphics pipeline!");
@@ -500,4 +537,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::fundamentals::queries_and_performance::buffer_suballocation
+} // namespace examples::fundamentals::queries_and_performance::pipeline_caches

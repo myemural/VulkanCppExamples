@@ -7,6 +7,7 @@
 #include "VulkanPipeline.h"
 
 #include "VulkanDevice.h"
+#include "VulkanPipelineCache.h"
 #include "VulkanPipelineLayout.h"
 #include "VulkanRenderPass.h"
 
@@ -315,7 +316,8 @@ VulkanGraphicsPipelineBuilder::SetBasePipeline(const std::shared_ptr<VulkanPipel
 std::shared_ptr<VulkanPipeline>
 VulkanGraphicsPipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
                                      const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
-                                     const std::shared_ptr<VulkanRenderPass>& renderPass)
+                                     const std::shared_ptr<VulkanRenderPass>& renderPass,
+                                     const std::shared_ptr<VulkanPipelineCache>& pipelineCache)
 {
     if (shaderStages_.empty()) {
         std::cerr << "Please set at least 1 shader stage for pipeline!" << std::endl;
@@ -336,8 +338,10 @@ VulkanGraphicsPipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
     createInfo_.layout = pipelineLayout->GetHandle();
     createInfo_.renderPass = renderPass->GetHandle();
 
+    VkPipelineCache cache = pipelineCache ? pipelineCache->GetHandle() : VK_NULL_HANDLE;
+
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
-    if (vkCreateGraphicsPipelines(device->GetHandle(), VK_NULL_HANDLE, 1, &createInfo_, nullptr, &graphicsPipeline) !=
+    if (vkCreateGraphicsPipelines(device->GetHandle(), cache, 1, &createInfo_, nullptr, &graphicsPipeline) !=
         VK_SUCCESS) {
         std::cerr << "Failed to create graphics pipeline!" << std::endl;
         return nullptr;
@@ -377,13 +381,16 @@ VulkanComputePipelineBuilder::SetBasePipeline(const std::shared_ptr<VulkanPipeli
 
 std::shared_ptr<VulkanPipeline>
 VulkanComputePipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
-                                    const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout)
+                                    const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
+                                    const std::shared_ptr<VulkanPipelineCache>& pipelineCache)
 {
     createInfo_.stage = shaderStage_;
     createInfo_.layout = pipelineLayout->GetHandle();
 
+    VkPipelineCache cache = pipelineCache ? pipelineCache->GetHandle() : VK_NULL_HANDLE;
+
     VkPipeline computePipeline = VK_NULL_HANDLE;
-    if (vkCreateComputePipelines(device->GetHandle(), VK_NULL_HANDLE, 1, &createInfo_, nullptr, &computePipeline) !=
+    if (vkCreateComputePipelines(device->GetHandle(), cache, 1, &createInfo_, nullptr, &computePipeline) !=
         VK_SUCCESS) {
         std::cerr << "Failed to create compute pipeline!" << std::endl;
         return nullptr;

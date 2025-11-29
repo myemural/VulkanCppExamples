@@ -37,6 +37,7 @@ class VulkanImageView;
 class VulkanImageViewBuilder;
 class VulkanPhysicalDevice;
 class VulkanPipeline;
+class VulkanPipelineCache;
 class VulkanPipelineLayout;
 class VulkanQueryPool;
 class VulkanQueue;
@@ -110,11 +111,16 @@ public:
     COMMON_API std::shared_ptr<VulkanPipeline>
     CreateGraphicsPipeline(const std::shared_ptr<VulkanPipelineLayout>& layout,
                            const std::shared_ptr<VulkanRenderPass>& renderPass,
-                           const std::function<void(VulkanGraphicsPipelineBuilder&)>& builderFunc);
+                           const std::function<void(VulkanGraphicsPipelineBuilder&)>& builderFunc,
+                           const std::shared_ptr<VulkanPipelineCache>& pipelineCache = nullptr);
 
     COMMON_API std::shared_ptr<VulkanPipeline>
     CreateComputePipeline(const std::shared_ptr<VulkanPipelineLayout>& layout,
-                          const std::function<void(VulkanComputePipelineBuilder&)>& builderFunc);
+                          const std::function<void(VulkanComputePipelineBuilder&)>& builderFunc,
+                          const std::shared_ptr<VulkanPipelineCache>& pipelineCache = nullptr);
+
+    COMMON_API std::shared_ptr<VulkanPipelineCache> CreatePipelineCache(
+            size_t initialDataSize, const void* initialData, const VkPipelineCacheCreateFlags& createFlags = 0);
 
     COMMON_API std::shared_ptr<VulkanBuffer> CreateBuffer(const std::function<void(VulkanBufferBuilder&)>& builderFunc);
 

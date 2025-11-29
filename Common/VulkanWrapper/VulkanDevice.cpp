@@ -19,6 +19,7 @@
 #include "VulkanImageView.h"
 #include "VulkanPhysicalDevice.h"
 #include "VulkanPipeline.h"
+#include "VulkanPipelineCache.h"
 #include "VulkanPipelineLayout.h"
 #include "VulkanQueryPool.h"
 #include "VulkanQueue.h"
@@ -319,26 +320,50 @@ VulkanDevice::CreatePipelineLayout(const std::vector<std::shared_ptr<VulkanDescr
 std::shared_ptr<VulkanPipeline>
 VulkanDevice::CreateGraphicsPipeline(const std::shared_ptr<VulkanPipelineLayout>& layout,
                                      const std::shared_ptr<VulkanRenderPass>& renderPass,
-                                     const std::function<void(VulkanGraphicsPipelineBuilder&)>& builderFunc)
+                                     const std::function<void(VulkanGraphicsPipelineBuilder&)>& builderFunc,
+                                     const std::shared_ptr<VulkanPipelineCache>& pipelineCache)
 {
     const auto device = shared_from_this();
 
     VulkanGraphicsPipelineBuilder graphicsPipelineBuilder;
     builderFunc(graphicsPipelineBuilder);
 
-    return graphicsPipelineBuilder.Build(device, layout, renderPass);
+    return graphicsPipelineBuilder.Build(device, layout, renderPass, pipelineCache);
 }
 
 std::shared_ptr<VulkanPipeline>
 VulkanDevice::CreateComputePipeline(const std::shared_ptr<VulkanPipelineLayout>& layout,
-                                    const std::function<void(VulkanComputePipelineBuilder&)>& builderFunc)
+                                    const std::function<void(VulkanComputePipelineBuilder&)>& builderFunc,
+                                    const std::shared_ptr<VulkanPipelineCache>& pipelineCache)
 {
     const auto device = shared_from_this();
 
     VulkanComputePipelineBuilder computePipelineBuilder;
     builderFunc(computePipelineBuilder);
 
-    return computePipelineBuilder.Build(device, layout);
+    return computePipelineBuilder.Build(device, layout, pipelineCache);
+}
+
+std::shared_ptr<VulkanPipelineCache> VulkanDevice::CreatePipelineCache(const size_t initialDataSize,
+                                                                       const void* initialData,
+                                                                       const VkPipelineCacheCreateFlags& createFlags)
+{
+    auto device = shared_from_this();
+
+    VkPipelineCacheCreateInfo pipelineCacheCreateInfo{};
+    pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+    pipelineCacheCreateInfo.pNext = nullptr;
+    pipelineCacheCreateInfo.flags = createFlags;
+    pipelineCacheCreateInfo.initialDataSize = initialDataSize;
+    pipelineCacheCreateInfo.pInitialData = initialData;
+
+    VkPipelineCache pipelineCache = VK_NULL_HANDLE;
+    if (vkCreatePipelineCache(device->GetHandle(), &pipelineCacheCreateInfo, nullptr, &pipelineCache) != VK_SUCCESS) {
+        std::cout << "Failed to create pipeline cache!" << std::endl;
+        return nullptr;
+    }
+
+    return std::make_shared<VulkanPipelineCache>(device, pipelineCache);
 }
 
 std::shared_ptr<VulkanBuffer> VulkanDevice::CreateBuffer(const std::function<void(VulkanBufferBuilder&)>& builderFunc)

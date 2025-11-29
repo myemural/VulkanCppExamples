@@ -19,7 +19,6 @@
 #include "ScopedTimer.h"
 #include "TimeUtils.h"
 #include "VulkanHelpers.h"
-#include "VulkanQueryPool.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
 

@@ -17,7 +17,6 @@
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "VulkanHelpers.h"
-#include "VulkanQueryPool.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
 

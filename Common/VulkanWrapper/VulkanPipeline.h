@@ -22,6 +22,7 @@
 namespace common::vulkan_wrapper
 {
 class VulkanDevice;
+class VulkanPipelineCache;
 class VulkanPipelineLayout;
 class VulkanRenderPass;
 
@@ -77,7 +78,8 @@ public:
 
     std::shared_ptr<VulkanPipeline> Build(std::shared_ptr<VulkanDevice> device,
                                           const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
-                                          const std::shared_ptr<VulkanRenderPass>& renderPass);
+                                          const std::shared_ptr<VulkanRenderPass>& renderPass,
+                                          const std::shared_ptr<VulkanPipelineCache>& pipelineCache = nullptr);
 
 private:
     VkGraphicsPipelineCreateInfo createInfo_;
@@ -107,7 +109,8 @@ public:
                                                    std::int32_t basePipelineIndex);
 
     std::shared_ptr<VulkanPipeline> Build(std::shared_ptr<VulkanDevice> device,
-                                          const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout);
+                                          const std::shared_ptr<VulkanPipelineLayout>& pipelineLayout,
+                                          const std::shared_ptr<VulkanPipelineCache>& pipelineCache = nullptr);
 
 private:
     VkComputePipelineCreateInfo createInfo_;

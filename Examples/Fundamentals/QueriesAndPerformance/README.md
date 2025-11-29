@@ -20,6 +20,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `IndirectDrawing`
 7. [Specialization Constants](/Examples/Fundamentals/QueriesAndPerformance/SpecializationConstants)
    - `SpecializationConstants`
+8. [Pipeline Caches](/Examples/Fundamentals/QueriesAndPerformance/PipelineCaches)
+   - `PipelineCaches`
 
 ## Architecture of the Subsection
 
