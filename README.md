@@ -139,6 +139,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Using Dynamic Uniform Buffers](/Examples/Fundamentals/QueriesAndPerformance/DynamicUniformBuffer)
   - [Buffer Suballocation](/Examples/Fundamentals/QueriesAndPerformance/BufferSuballocation)
   - [Reduce CPU Bottleneck with Indirect Drawing](/Examples/Fundamentals/QueriesAndPerformance/IndirectDrawing)
+  - [Specialization Constants](/Examples/Fundamentals/QueriesAndPerformance/SpecializationConstants)
 
 ## Environment Support
 

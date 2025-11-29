@@ -18,6 +18,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `BufferSuballocation`
 6. [Reduce CPU Bottleneck with Indirect Drawing](/Examples/Fundamentals/QueriesAndPerformance/IndirectDrawing)
    - `IndirectDrawing`
+7. [Specialization Constants](/Examples/Fundamentals/QueriesAndPerformance/SpecializationConstants)
+   - `SpecializationConstants`
 
 ## Architecture of the Subsection
 

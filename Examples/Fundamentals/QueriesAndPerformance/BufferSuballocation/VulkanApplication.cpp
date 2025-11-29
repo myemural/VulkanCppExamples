@@ -157,7 +157,7 @@ void VulkanApplication::PrepareBufferInfos()
     VkDeviceSize iOffset = 0;
     for (size_t i = 0; i < primitivesData_.size(); i++) {
         bufferAllocInfos_[i].indexOffset = totalVertexBufferSize + iOffset;
-        bufferAllocInfos_[i].indexSize = primitivesData_[i].indices.size() * sizeof(uint32_t);
+        bufferAllocInfos_[i].indexSize = primitivesData_[i].indices.size() * sizeof(std::uint16_t);
         bufferAllocInfos_[i].indexCount = primitivesData_[i].indices.size();
 
         iOffset += bufferAllocInfos_[i].indexSize;
