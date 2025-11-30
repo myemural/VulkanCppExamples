@@ -6,6 +6,8 @@
 
 #include "ResourceManager.h"
 
+#include <cstring>
+
 namespace common::vulkan_framework
 {
 ResourceManager::ResourceManager(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice>& physicalDevice,

@@ -1,6 +1,6 @@
 # Vulkan C++ Examples
 
-This repo aims to include implementations of many Vulkan examples that built with C++20 standard, from simple to advanced. First examples based on the basic features of Vulkan, then real-time rendering topics such as light, shadow, PBR and post-processing will be added.
+This repo aims to implement many Vulkan examples that built with C++20 standard, from simple to advanced. First examples based on the basic features of Vulkan, then real-time rendering topics such as light, shadow, PBR and post-processing will be added.
 
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -21,10 +21,10 @@ This repo aims to include implementations of many Vulkan examples that built wit
 
 Before start, you should download and install the latest LunarG Vulkan SDK from here (*1.4.328.1* version has been tested): https://vulkan.lunarg.com/sdk/home
 
-To compile and test the examples, the *MSVC 19.40+* compiler and *CMake 3.31+* are recommended. All third party libraries are added with using [Git Submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules). Therefore, you do not need to worry about installing them separately. Here is a list of 3rd party libraries (repos) that are dependent on:
-- GLFW
-- glm (OpenGL Mathematics)
-- tinygltf
+To compile and test the examples, *CMake 3.31+* is recommended. All third party libraries are added with using [Git Submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules). Therefore, you do not need to worry about installing them separately. Here is a list of 3rd party libraries (repos):
+- [GLFW](https://github.com/glfw/glfw)
+- [glm (OpenGL Mathematics)](https://github.com/g-truc/glm)
+- [tinygltf](https://github.com/syoyo/tinygltf)
 
 **NOTE:** Normally, the *stb_image* library is also used for texture loading. However, this library is already integrated with the *tinygltf* library.
 
