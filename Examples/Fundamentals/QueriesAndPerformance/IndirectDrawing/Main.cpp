@@ -1,7 +1,7 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, 400 primitives of 4 different types are drawn on the screen with a single indirect drawing
- *          command to reduce CPU draw call bottleneck.
+ * @brief   In this example, many primitives of 4 different types are drawn on the screen with a single indirect
+ *          drawing command to reduce CPU draw call bottleneck.
  * @author  Mustafa Yemural (myemural)
  * @date    28.11.2025
  *

@@ -118,4 +118,22 @@ The topics covered by this subsection:
 - 
 ## [Queries and Performance](/Examples/Fundamentals/QueriesAndPerformance)
 
-TBD
+- Using occlusion queries in Vulkan
+- Checking visibility of an object via occlusion queries
+- Using timestamp queries in Vulkan
+- Measuring the GPU time of the commands
+- Using pipeline statistics query in Vulkan
+- Measuring input assembly vertices and primitives count of a pipeline
+- Measuring shader invocation counts of a pipeline
+- Using dynamic uniform buffers in Vulkan
+- Using dynamic offsets to get information about drawn object from uniform buffer
+- Using buffer suballocation technique in Vulkan
+- Using one big buffer for different vertex and index data
+- Using indirect drawing technique in Vulkan
+- Learning basic GPU-driven drawing
+- Using indexed indirect drawing
+- Using specialization constants in Vulkan and shaders
+- Creating pipelines with giving values to specialization constants
+- Using pipeline caches in Vulkan
+- Saving pipeline to a cache file
+- Loading pipelines from a cache if the cache is available

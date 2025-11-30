@@ -1,6 +1,6 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, 40 objects are drawn to the screen using buffer suballocation, each with four different
+ * @brief   In this example, many objects are drawn to the screen using buffer suballocation, each with four different
  *          vertex and four different index data. A single buffer is used to hold the vertex and index data.
  * @author  Mustafa Yemural (myemural)
  * @date    27.11.2025
