@@ -27,20 +27,20 @@ namespace common::utility
  * @return Vertices for sphere.
  */
 template<typename VertexType>
-std::vector<VertexType> CreateSphereVertices(float radius, uint32_t sectorCount, uint32_t stackCount);
+std::vector<VertexType> CreateSphereVertices(float radius, std::uint32_t sectorCount, std::uint32_t stackCount);
 
 template<>
 inline std::vector<VertexPos3Uv2>
-CreateSphereVertices(const float radius, const uint32_t sectorCount, const uint32_t stackCount)
+CreateSphereVertices(const float radius, const std::uint32_t sectorCount, const std::uint32_t stackCount)
 {
     std::vector<VertexPos3Uv2> vertices;
 
-    for (uint32_t i = 0; i <= stackCount; ++i) {
+    for (auto i = 0U; i <= stackCount; ++i) {
         const auto stackAngle = static_cast<float>(std::numbers::pi / 2.0 - i * std::numbers::pi / stackCount);
         const float xy = radius * cosf(stackAngle);
         const float z = radius * sinf(stackAngle);
 
-        for (uint32_t j = 0; j <= sectorCount; ++j) {
+        for (auto j = 0U; j <= sectorCount; ++j) {
             const auto sectorAngle = static_cast<float>(j * 2 * std::numbers::pi / sectorCount);
 
             const float x = xy * cosf(sectorAngle);
@@ -62,15 +62,15 @@ CreateSphereVertices(const float radius, const uint32_t sectorCount, const uint3
  * @param stackCount Stack count of the sphere.
  * @return Indices of the sphere.
  */
-static std::vector<uint16_t> CreateSphereIndices(const uint32_t sectorCount, const uint32_t stackCount)
+static std::vector<std::uint16_t> CreateSphereIndices(const std::uint32_t sectorCount, const std::uint32_t stackCount)
 {
-    std::vector<uint16_t> indices;
+    std::vector<std::uint16_t> indices;
 
-    for (uint32_t i = 0; i < stackCount; ++i) {
-        uint32_t k1 = i * (sectorCount + 1);
-        uint32_t k2 = k1 + sectorCount + 1;
+    for (auto i = 0U; i < stackCount; ++i) {
+        std::uint32_t k1 = i * (sectorCount + 1);
+        std::uint32_t k2 = k1 + sectorCount + 1;
 
-        for (uint32_t j = 0; j < sectorCount; ++j, ++k1, ++k2) {
+        for (auto j = 0U; j < sectorCount; ++j, ++k1, ++k2) {
             if (i != 0) {
                 indices.push_back(k1);
                 indices.push_back(k2);
@@ -140,7 +140,7 @@ inline std::vector<VertexPos3Uv2> CreateCubeVertices(const float size)
  * @brief Returns indices of a cube.
  * @return Indices of the cube.
  */
-static std::vector<uint16_t> CreateCubeIndices()
+static std::vector<std::uint16_t> CreateCubeIndices()
 {
     return {
         0,  1,  2,  0,  2,  3,  // Front
@@ -196,7 +196,7 @@ inline std::vector<VertexPos3Uv2> CreateQuadVerticesXZ(const float size)
  * @brief Returns indices of a quad.
  * @return Indices of the quad.
  */
-static std::vector<uint16_t> CreateQuadIndices()
+static std::vector<std::uint16_t> CreateQuadIndices()
 {
     return {
         0, 1, 2, // First triangle
@@ -205,22 +205,25 @@ static std::vector<uint16_t> CreateQuadIndices()
 }
 
 template<typename VertexType>
-std::vector<VertexType> CreateConeVertices(float radius, float height, uint32_t sectorCount, uint32_t stackCount);
+std::vector<VertexType>
+CreateConeVertices(float radius, float height, std::uint32_t sectorCount, std::uint32_t stackCount);
 
 template<>
-inline std::vector<VertexPos3Uv2>
-CreateConeVertices(const float radius, const float height, const uint32_t sectorCount, const uint32_t stackCount)
+inline std::vector<VertexPos3Uv2> CreateConeVertices(const float radius,
+                                                     const float height,
+                                                     const std::uint32_t sectorCount,
+                                                     const std::uint32_t stackCount)
 {
     std::vector<VertexPos3Uv2> vertices;
     vertices.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
 
     // Side surface
-    for (uint32_t i = 0; i <= stackCount; ++i) {
+    for (auto i = 0U; i <= stackCount; ++i) {
         const float t = static_cast<float>(i) / static_cast<float>(stackCount); // 0 for base point, 1 for peak point
         const float r = radius * (1.0f - t);                                    // The radius gradually decreases
         const float z = height * t;                                             // The height gradually increases
 
-        for (uint32_t j = 0; j <= sectorCount; ++j) {
+        for (auto j = 0U; j <= sectorCount; ++j) {
             const auto sectorAngle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
 
             const float x = r * cosf(sectorAngle);
@@ -237,7 +240,7 @@ CreateConeVertices(const float radius, const float height, const uint32_t sector
     vertices.push_back({glm::vec3{0, 0, 0}, glm::vec2{0.5f, 0.5f}});
 
     // Base circumference
-    for (uint32_t j = 0; j <= sectorCount; ++j) {
+    for (auto j = 0U; j <= sectorCount; ++j) {
         const float angle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
         const float x = radius * cosf(angle);
         const float y = radius * sinf(angle);
@@ -247,22 +250,22 @@ CreateConeVertices(const float radius, const float height, const uint32_t sector
     return vertices;
 }
 
-inline std::vector<uint16_t> CreateConeIndices(const uint32_t sectorCount, const uint32_t stackCount)
+inline std::vector<std::uint16_t> CreateConeIndices(const std::uint32_t sectorCount, const std::uint32_t stackCount)
 {
-    std::vector<uint16_t> indices;
+    std::vector<std::uint16_t> indices;
 
-    const uint32_t ringVertexCount = sectorCount + 1;
+    const std::uint32_t ringVertexCount = sectorCount + 1;
 
     // Side surface triangles
-    for (uint32_t i = 0; i < stackCount; ++i) {
-        const uint32_t currentRow = i * ringVertexCount;
-        const uint32_t nextRow = (i + 1) * ringVertexCount;
+    for (auto i = 0U; i < stackCount; ++i) {
+        const std::uint32_t currentRow = i * ringVertexCount;
+        const std::uint32_t nextRow = (i + 1) * ringVertexCount;
 
-        for (uint32_t j = 0; j < sectorCount; ++j) {
-            uint16_t i0 = currentRow + j;
-            uint16_t i1 = nextRow + j;
-            uint16_t i2 = nextRow + j + 1;
-            uint16_t i3 = currentRow + j + 1;
+        for (auto j = 0U; j < sectorCount; ++j) {
+            std::uint16_t i0 = currentRow + j;
+            std::uint16_t i1 = nextRow + j;
+            std::uint16_t i2 = nextRow + j + 1;
+            std::uint16_t i3 = currentRow + j + 1;
 
             // Create 1 quad from 2 triangles
             indices.push_back(i0);
@@ -276,13 +279,13 @@ inline std::vector<uint16_t> CreateConeIndices(const uint32_t sectorCount, const
     }
 
     // Base triangles
-    const uint16_t baseCenter = stackCount * ringVertexCount + ringVertexCount;
-    const uint16_t baseStart = baseCenter + 1;
+    const std::uint16_t baseCenter = stackCount * ringVertexCount + ringVertexCount;
+    const std::uint16_t baseStart = baseCenter + 1;
 
-    for (uint32_t j = 0; j < sectorCount; ++j) {
-        uint16_t i0 = baseCenter;
-        uint16_t i1 = baseStart + j;
-        uint16_t i2 = baseStart + j + 1;
+    for (auto j = 0U; j < sectorCount; ++j) {
+        std::uint16_t i0 = baseCenter;
+        std::uint16_t i1 = baseStart + j;
+        std::uint16_t i2 = baseStart + j + 1;
         indices.push_back(i0);
         indices.push_back(i2);
         indices.push_back(i1);
@@ -292,11 +295,14 @@ inline std::vector<uint16_t> CreateConeIndices(const uint32_t sectorCount, const
 }
 
 template<typename VertexType>
-std::vector<VertexType> CreateCylinderVertices(float radius, float height, uint32_t sectorCount, uint32_t stackCount);
+std::vector<VertexType>
+CreateCylinderVertices(float radius, float height, std::uint32_t sectorCount, std::uint32_t stackCount);
 
 template<>
-inline std::vector<VertexPos3Uv2>
-CreateCylinderVertices(const float radius, const float height, const uint32_t sectorCount, const uint32_t stackCount)
+inline std::vector<VertexPos3Uv2> CreateCylinderVertices(const float radius,
+                                                         const float height,
+                                                         const std::uint32_t sectorCount,
+                                                         const std::uint32_t stackCount)
 {
     std::vector<VertexPos3Uv2> vertices;
     vertices.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 1) * 2);
@@ -304,10 +310,10 @@ CreateCylinderVertices(const float radius, const float height, const uint32_t se
     const float halfH = height * 0.5f;
 
     // Side surface (body)
-    for (uint32_t i = 0; i <= stackCount; ++i) {
+    for (auto i = 0U; i <= stackCount; ++i) {
         const float h = halfH - static_cast<float>(i) / static_cast<float>(stackCount) * height; // From top to bottom
 
-        for (uint32_t j = 0; j <= sectorCount; ++j) {
+        for (auto j = 0U; j <= sectorCount; ++j) {
             const float angle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
 
             const float x = radius * cosf(angle);
@@ -322,7 +328,7 @@ CreateCylinderVertices(const float radius, const float height, const uint32_t se
     }
 
     // Top cap rim
-    for (uint32_t j = 0; j <= sectorCount; ++j) {
+    for (auto j = 0U; j <= sectorCount; ++j) {
         const float angle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
 
         const float x = radius * cosf(angle);
@@ -339,7 +345,7 @@ CreateCylinderVertices(const float radius, const float height, const uint32_t se
     vertices.push_back({glm::vec3{0, 0, +halfH}, glm::vec2{0.5f, 0.5f}});
 
     // Bottom cap rim
-    for (uint32_t j = 0; j <= sectorCount; ++j) {
+    for (auto j = 0U; j <= sectorCount; ++j) {
         const float angle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
 
         const float x = radius * cosf(angle);
@@ -358,22 +364,22 @@ CreateCylinderVertices(const float radius, const float height, const uint32_t se
     return vertices;
 }
 
-inline std::vector<uint16_t> CreateCylinderIndices(const uint32_t sectorCount, const uint32_t stackCount)
+inline std::vector<std::uint16_t> CreateCylinderIndices(const std::uint32_t sectorCount, const std::uint32_t stackCount)
 {
-    std::vector<uint16_t> indices;
+    std::vector<std::uint16_t> indices;
 
-    const uint32_t ringVertices = sectorCount + 1;
+    const std::uint32_t ringVertices = sectorCount + 1;
 
     // Body indices
-    for (uint32_t i = 0; i < stackCount; ++i) {
-        const uint16_t k1 = i * ringVertices;
-        const uint16_t k2 = (i + 1) * ringVertices;
+    for (auto i = 0U; i < stackCount; ++i) {
+        const std::uint16_t k1 = i * ringVertices;
+        const std::uint16_t k2 = (i + 1) * ringVertices;
 
-        for (uint32_t j = 0; j < sectorCount; ++j) {
-            uint16_t a = k1 + j;
-            uint16_t b = k2 + j;
-            uint16_t c = k1 + j + 1;
-            uint16_t d = k2 + j + 1;
+        for (auto j = 0U; j < sectorCount; ++j) {
+            std::uint16_t a = k1 + j;
+            std::uint16_t b = k2 + j;
+            std::uint16_t c = k1 + j + 1;
+            std::uint16_t d = k2 + j + 1;
 
             // Create 1 quad from 2 triangles
             indices.push_back(a);
@@ -387,20 +393,20 @@ inline std::vector<uint16_t> CreateCylinderIndices(const uint32_t sectorCount, c
     }
 
     // Top cap indices
-    const uint16_t topCenter = stackCount * ringVertices + ringVertices;
-    const uint16_t topStart = topCenter + 1;
+    const std::uint16_t topCenter = stackCount * ringVertices + ringVertices;
+    const std::uint16_t topStart = topCenter + 1;
 
-    for (uint32_t j = 0; j < sectorCount; ++j) {
+    for (auto j = 0U; j < sectorCount; ++j) {
         indices.push_back(topCenter);
         indices.push_back(topStart + j);
         indices.push_back(topStart + j + 1);
     }
 
     // Bottom cap indices
-    const uint16_t bottomCenter = topStart + (sectorCount + 1);
-    const uint16_t bottomStart = bottomCenter + 1;
+    const std::uint16_t bottomCenter = topStart + (sectorCount + 1);
+    const std::uint16_t bottomStart = bottomCenter + 1;
 
-    for (uint32_t j = 0; j < sectorCount; ++j) {
+    for (auto j = 0U; j < sectorCount; ++j) {
         indices.push_back(bottomCenter);
         indices.push_back(bottomStart + j + 1);
         indices.push_back(bottomStart + j);

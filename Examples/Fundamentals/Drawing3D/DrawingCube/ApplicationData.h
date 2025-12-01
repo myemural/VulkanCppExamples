@@ -62,7 +62,7 @@ inline const std::vector<common::utility::VertexPos3Uv2> vertices {
 
 // Index Data for Cube
 // clang-format off
-inline const std::vector<uint16_t> indices {
+inline const std::vector<std::uint16_t> indices {
     0,  1,  2,  2,  3,  0,  // Front
     4,  5,  6,  6,  7,  4,  // Back
     8,  9,  10, 10, 11, 8,  // Left

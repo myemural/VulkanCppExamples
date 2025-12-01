@@ -27,7 +27,7 @@ std::vector<std::uint8_t> VulkanPipelineCache::GetPipelineCacheData() const
         throw std::runtime_error("Getting size of the pipeline cache is failed!");
     }
 
-    std::vector<uint8_t> cacheData(cacheSize);
+    std::vector<std::uint8_t> cacheData(cacheSize);
     if (vkGetPipelineCacheData(device->GetHandle(), handle_, &cacheSize, cacheData.data()) != VK_SUCCESS) {
         throw std::runtime_error("Getting pipeline cache data is failed!");
     }

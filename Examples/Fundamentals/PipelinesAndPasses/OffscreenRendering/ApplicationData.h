@@ -39,7 +39,7 @@ inline const std::vector<common::utility::VertexPos3Uv2> planeVertices {
 
 // Index Data for Plane (XY)
 // clang-format off
-inline const std::vector<uint16_t> planeIndices {
+inline const std::vector<std::uint16_t> planeIndices {
     0, 1, 2, // First triangle
     2, 3, 0  // Second triangle
 };

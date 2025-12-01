@@ -61,7 +61,7 @@ void VulkanApplication::DrawFrame()
 {
     inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
 
-    uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
+    std::uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
 
     if (swapImagesFences_[imageIndex] != nullptr) {
         swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
@@ -113,7 +113,7 @@ void VulkanApplication::CreateResources()
     std::vector<BufferResourceCreateInfo> bufferCreateInfos;
     const auto& quadMesh = quadModel_->Meshes.at(0);
     const std::uint32_t vertexBufferSize = quadMesh.Vertices.size() * sizeof(VertexPos3);
-    const uint32_t indexBufferSize = quadMesh.Indices.size() * sizeof(std::uint16_t);
+    const std::uint32_t indexBufferSize = quadMesh.Indices.size() * sizeof(std::uint16_t);
 
     bufferCreateInfos.emplace_back(quadMesh.GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -173,7 +173,7 @@ void VulkanApplication::InitResources() const
     const auto& vertexBufferData = quadMesh.GetVerticesAs<VertexPos3>();
     const auto& indexBufferData = quadMesh.Indices;
     const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3);
-    const uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
+    const std::uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
 
     resources_->SetBuffer(quadMesh.GetVertexBufferName(), vertexBufferData.data(), vertexBufferSize);
     resources_->SetBuffer(quadMesh.GetIndexBufferName(), indexBufferData.data(), indexBufferSize);

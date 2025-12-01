@@ -48,7 +48,7 @@ bool VulkanApplication::Init()
         CreateDefaultFramebuffers(images_[GetParamStr(AppConstants::DepthImage)]->GetImageView(
                 GetParamStr(AppConstants::DepthImageView)));
 
-        const uint32_t indexCount = indices.size();
+        const std::uint32_t indexCount = indices.size();
         CreateCommandBuffers();
         RecordPresentCommandBuffers(indexCount);
     } catch (const std::exception& e) {
@@ -63,7 +63,7 @@ void VulkanApplication::DrawFrame()
 {
     inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
 
-    uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
+    std::uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
 
     if (swapImagesFences_[imageIndex] != nullptr) {
         swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
@@ -95,7 +95,7 @@ void VulkanApplication::CreateResources()
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos3Uv2);
-    const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
+    const std::uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
         {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},

@@ -274,7 +274,7 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
 
             if (idxAccessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT) {
                 size_t start = idxBufferView.byteOffset + idxAccessor.byteOffset;
-                size_t length = idxAccessor.count * sizeof(uint16_t);
+                size_t length = idxAccessor.count * sizeof(std::uint16_t);
 
                 gltfMesh.Indices.resize(length);
                 std::memcpy(gltfMesh.Indices.data(), &idxBuffer.data[start], length);
@@ -301,7 +301,7 @@ bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler)
             gltfNodes[i].MeshIndex = gltfModel_.nodes[i].mesh;
         }
         for (const auto child: gltfModel_.nodes[i].children) {
-            gltfNodes[i].ChildIndices.emplace_back(static_cast<uint32_t>(child));
+            gltfNodes[i].ChildIndices.emplace_back(static_cast<std::uint32_t>(child));
         }
         gltfNodes[i].CameraIndex = gltfModel_.nodes[i].camera != -1 ? gltfModel_.nodes[i].camera : UINT32_MAX;
         gltfNodes[i].LocalTransform = GetLocalTransform(gltfModel_.nodes[i]);

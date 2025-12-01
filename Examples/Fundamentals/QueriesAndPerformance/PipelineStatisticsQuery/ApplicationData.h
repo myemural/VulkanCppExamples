@@ -29,7 +29,7 @@ namespace examples::fundamentals::queries_and_performance::pipeline_statistics_q
 inline const std::vector cubeVertices = common::utility::CreateCubeVertices<common::utility::VertexPos3Uv2>(1.0f);
 
 // Index Data for Cube
-inline const std::vector<uint16_t> cubeIndices = common::utility::CreateCubeIndices();
+inline const std::vector<std::uint16_t> cubeIndices = common::utility::CreateCubeIndices();
 
 // MVP Matrices (for Push Constants)
 struct MvpData

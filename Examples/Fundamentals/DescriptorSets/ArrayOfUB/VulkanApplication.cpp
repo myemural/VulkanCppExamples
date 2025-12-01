@@ -86,7 +86,7 @@ void VulkanApplication::DrawFrame()
 void VulkanApplication::CreateResources()
 {
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
-    const std::uint32_t indexBufferSize = indices.size() * sizeof(uint16_t);
+    const std::uint32_t indexBufferSize = indices.size() * sizeof(std::uint16_t);
     constexpr std::uint32_t uniformBufferSize = sizeof(UniformBufferObject);
 
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
@@ -126,7 +126,7 @@ void VulkanApplication::InitResources()
     modelUbObject[3].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f));
 
     SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
-    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(uint16_t));
+    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(std::uint16_t));
     SetBuffer(GetParamStr(AppConstants::TopLeftUB), &modelUbObject[0], sizeof(UniformBufferObject));
     SetBuffer(GetParamStr(AppConstants::TopRightUB), &modelUbObject[1], sizeof(UniformBufferObject));
     SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &modelUbObject[2], sizeof(UniformBufferObject));

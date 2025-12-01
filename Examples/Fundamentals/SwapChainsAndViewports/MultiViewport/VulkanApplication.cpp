@@ -302,9 +302,9 @@ void VulkanApplication::CreatePipeline()
 
     scissorRects_ = {
         VkRect2D{0, 0, halfWidth, halfHeight},                                // Top-left
-        VkRect2D{static_cast<int32_t>(halfWidth), 0, halfWidth, halfHeight},  // Top-right
-        VkRect2D{0, static_cast<int32_t>(halfHeight), halfWidth, halfHeight}, // Bottom-left
-        VkRect2D{static_cast<int32_t>(halfWidth), static_cast<int32_t>(halfHeight), halfWidth,
+        VkRect2D{static_cast<std::int32_t>(halfWidth), 0, halfWidth, halfHeight},  // Top-right
+        VkRect2D{0, static_cast<std::int32_t>(halfHeight), halfWidth, halfHeight}, // Bottom-left
+        VkRect2D{static_cast<std::int32_t>(halfWidth), static_cast<int32_t>(halfHeight), halfWidth,
                  halfHeight}                                                  // Bottom-right
     };
 

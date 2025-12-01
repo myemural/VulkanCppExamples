@@ -67,7 +67,7 @@ void VulkanApplication::DrawFrame()
 {
     inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
 
-    uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
+    std::uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
 
     if (swapImagesFences_[imageIndex] != nullptr) {
         swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
@@ -141,7 +141,7 @@ void VulkanApplication::CreateResources()
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = avocadoModel_->Meshes[0].Vertices.size() * sizeof(VertexPos3Uv2);
-    const uint32_t indexBufferSize = avocadoModel_->Meshes[0].Indices.size() * sizeof(std::uint16_t);
+    const std::uint32_t indexBufferSize = avocadoModel_->Meshes[0].Indices.size() * sizeof(std::uint16_t);
 
     resourceCreateInfo.Buffers = {
         {avocadoModel_->Meshes[0].GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -179,7 +179,7 @@ void VulkanApplication::InitResources() const
     const auto& vertexBufferData = avocadoModel_->Meshes[0].GetVerticesAs<VertexPos3Uv2>();
     const auto& indexBufferData = avocadoModel_->Meshes[0].Indices;
     const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3Uv2);
-    const uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
+    const std::uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
 
     resources_->SetBuffer(avocadoModel_->Meshes[0].GetVertexBufferName(), vertexBufferData.data(), vertexBufferSize);
     resources_->SetBuffer(avocadoModel_->Meshes[0].GetIndexBufferName(), indexBufferData.data(), indexBufferSize);

@@ -29,7 +29,7 @@ public:
 
     COMMON_API ~VulkanFence() override;
 
-    COMMON_API void WaitForFence(bool waitAll, uint64_t timeout) const;
+    COMMON_API void WaitForFence(bool waitAll, std::uint64_t timeout) const;
 
     COMMON_API void ResetFence() const;
 };

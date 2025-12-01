@@ -104,7 +104,7 @@ void VulkanApplication::InitInputSystem() const
 void VulkanApplication::CreateResources()
 {
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
-    const std::uint32_t indexBufferSize = indices.size() * sizeof(uint16_t);
+    const std::uint32_t indexBufferSize = indices.size() * sizeof(std::uint16_t);
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
         {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
@@ -125,7 +125,7 @@ void VulkanApplication::CreateResources()
 void VulkanApplication::InitResources()
 {
     SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
-    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(uint16_t));
+    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(std::uint16_t));
 }
 
 void VulkanApplication::CreatePipeline()

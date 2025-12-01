@@ -83,7 +83,7 @@ void ImageResource::AllocateImageMemory()
 
     const auto memoryReq = image_->GetImageMemoryRequirements();
 
-    const uint32_t memoryTypeIndex = physicalDevicePtr->FindMemoryType(memoryReq.memoryTypeBits, memProps_);
+    const std::uint32_t memoryTypeIndex = physicalDevicePtr->FindMemoryType(memoryReq.memoryTypeBits, memProps_);
 
     deviceMemory_ = devicePtr->AllocateMemory(memoryReq.size, memoryTypeIndex);
 

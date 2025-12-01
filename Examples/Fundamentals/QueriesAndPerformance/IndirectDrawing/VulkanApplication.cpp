@@ -174,7 +174,7 @@ void VulkanApplication::PrepareBufferInfos()
         const auto& allocationInfo = bufferAllocInfos_[primitiveIndex];
 
         const uint32_t firstIndex = allocationInfo.indexOffset / sizeof(std::uint16_t);
-        const auto vertexOffset = static_cast<int32_t>(allocationInfo.vertexOffset / sizeof(VertexPos3Uv2));
+        const auto vertexOffset = static_cast<std::int32_t>(allocationInfo.vertexOffset / sizeof(VertexPos3Uv2));
 
         for (uint32_t i = 0; i < primitive.drawCount; ++i) {
             VkDrawIndexedIndirectCommand cmd{};

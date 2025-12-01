@@ -36,7 +36,7 @@ inline const std::vector<common::utility::VertexPos2Color3> vertices {
 
 // Index Data for Quads (with restart index)
 // clang-format off
-inline const std::vector<uint16_t> indicesWithRestart {
+inline const std::vector<std::uint16_t> indicesWithRestart {
     0,      1, 2, 3, // First strip
     0xFFFF,          // Primitive restart index
     4,      5, 6, 7  // Second strip
@@ -45,7 +45,7 @@ inline const std::vector<uint16_t> indicesWithRestart {
 
 // Index Data for Quads (without restart index)
 // clang-format off
-inline const std::vector<uint16_t> indicesWithoutRestart {
+inline const std::vector<std::uint16_t> indicesWithoutRestart {
     0, 1, 2, 3,
     4, 5, 6, 7
 };

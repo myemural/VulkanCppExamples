@@ -39,16 +39,16 @@ inline const std::vector cylinderVertices =
         common::utility::CreateCylinderVertices<common::utility::VertexPos3Uv2>(0.5f, 1.5f, 32, 16);
 
 // Index Data for Cube
-inline const std::vector<uint16_t> cubeIndices = common::utility::CreateCubeIndices();
+inline const std::vector<std::uint16_t> cubeIndices = common::utility::CreateCubeIndices();
 
 // Index Data for Sphere
-inline const std::vector<uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
+inline const std::vector<std::uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
 
 // Index Data for Cone
-inline const std::vector<uint16_t> coneIndices = common::utility::CreateConeIndices(32, 16);
+inline const std::vector<std::uint16_t> coneIndices = common::utility::CreateConeIndices(32, 16);
 
 // Index Data for Cylinder
-inline const std::vector<uint16_t> cylinderIndices = common::utility::CreateCylinderIndices(32, 16);
+inline const std::vector<std::uint16_t> cylinderIndices = common::utility::CreateCylinderIndices(32, 16);
 
 struct ObjectSbo
 {
@@ -67,7 +67,7 @@ struct BufferAllocInfo
 struct PrimitiveData
 {
     std::vector<common::utility::VertexPos3Uv2> vertices;
-    std::vector<uint16_t> indices;
+    std::vector<std::uint16_t> indices;
     std::uint32_t drawCount;
 };
 

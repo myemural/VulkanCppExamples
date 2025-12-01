@@ -458,8 +458,8 @@ void VulkanApplication::PrintQueryResults()
 {
     // For slower output
     if (++frameCount_ == 250UL) {
-        uint64_t visibleFragments = 0;
-        occlusionQueryPool_->GetQueryPoolResults(0, 1, sizeof(uint64_t), &visibleFragments, 0,
+        std::uint64_t visibleFragments = 0;
+        occlusionQueryPool_->GetQueryPoolResults(0, 1, sizeof(std::uint64_t), &visibleFragments, 0,
                                                  VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT);
 
         std::cout << "Sphere visibility: " << (visibleFragments > 0 ? "true" : "false") << std::endl;

@@ -25,6 +25,6 @@ namespace examples::fundamentals::compute_shaders::fullscreen_gradient
 inline const std::vector quadVertices = common::utility::CreateQuadVerticesXY<common::utility::VertexPos3Uv2>(1.0f);
 
 // Index Data for Quad (XY)
-inline const std::vector<uint16_t> quadIndices = common::utility::CreateQuadIndices();
+inline const std::vector<std::uint16_t> quadIndices = common::utility::CreateQuadIndices();
 
 } // namespace examples::fundamentals::compute_shaders::fullscreen_gradient

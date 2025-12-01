@@ -29,7 +29,7 @@ inline const std::vector<common::utility::VertexPos2Color3> vertices {
 
 // Index Data for Quad
 // clang-format off
-inline const std::vector<uint16_t> indices{
+inline const std::vector<std::uint16_t> indices{
     0, 1, 2, // First triangle of quad
     2, 3, 0  // Second triangle of quad
 };

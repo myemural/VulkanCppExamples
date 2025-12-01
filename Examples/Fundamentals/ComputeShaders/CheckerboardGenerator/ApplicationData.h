@@ -33,10 +33,10 @@ inline const std::vector sphereVertices =
         common::utility::CreateSphereVertices<common::utility::VertexPos3Uv2>(0.5f, 32, 16);
 
 // Index Data for Cube
-inline const std::vector<uint16_t> cubeIndices = common::utility::CreateCubeIndices();
+inline const std::vector<std::uint16_t> cubeIndices = common::utility::CreateCubeIndices();
 
 // Index Data for Sphere
-inline const std::vector<uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
+inline const std::vector<std::uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
 
 struct MvpData
 {

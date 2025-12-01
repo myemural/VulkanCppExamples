@@ -25,13 +25,13 @@ namespace examples::fundamentals::multisampling::explicit_resolving
 inline const std::vector sphereVertices = common::utility::CreateSphereVertices<common::utility::VertexPos3Uv2>(0.5f, 32, 16);
 
 // Index Data for Sphere
-inline const std::vector<uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
+inline const std::vector<std::uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
 
 // Vertex Data for Quad (XY)
 inline const std::vector planeVertices = common::utility::CreateQuadVerticesXY<common::utility::VertexPos3Uv2>(1.0f);
 
 // Index Data for Quad (XY)
-inline const std::vector<uint16_t> planeIndices = common::utility::CreateQuadIndices();
+inline const std::vector<std::uint16_t> planeIndices = common::utility::CreateQuadIndices();
 
 // MVP Matrices (for Push Constants)
 struct MvpData

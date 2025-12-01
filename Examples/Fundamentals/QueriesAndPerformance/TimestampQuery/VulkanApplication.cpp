@@ -577,8 +577,8 @@ void VulkanApplication::PrintQueryResults()
 {
     // For slower output
     if (++frameCount_ == 250UL) {
-        uint64_t timestamps[8];
-        timestampQueryPool_->GetQueryPoolResults(0, 8, sizeof(timestamps), timestamps, sizeof(uint64_t),
+        std::uint64_t timestamps[8];
+        timestampQueryPool_->GetQueryPoolResults(0, 8, sizeof(timestamps), timestamps, sizeof(std::uint64_t),
                                                  VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT);
 
         // Get timestamp period properties from physical device
@@ -586,10 +586,10 @@ void VulkanApplication::PrintQueryResults()
         const float timestampPeriod = deviceProps.limits.timestampPeriod;
 
         // Convert timestamps to the time values (ms)
-        const auto time1 = static_cast<int64_t>(static_cast<double>(timestamps[1] - timestamps[0]) * timestampPeriod);
-        const auto time2 = static_cast<int64_t>(static_cast<double>(timestamps[3] - timestamps[2]) * timestampPeriod);
-        const auto time3 = static_cast<int64_t>(static_cast<double>(timestamps[5] - timestamps[4]) * timestampPeriod);
-        const auto time4 = static_cast<int64_t>(static_cast<double>(timestamps[7] - timestamps[6]) * timestampPeriod);
+        const auto time1 = static_cast<std::int64_t>(static_cast<double>(timestamps[1] - timestamps[0]) * timestampPeriod);
+        const auto time2 = static_cast<std::int64_t>(static_cast<double>(timestamps[3] - timestamps[2]) * timestampPeriod);
+        const auto time3 = static_cast<std::int64_t>(static_cast<double>(timestamps[5] - timestamps[4]) * timestampPeriod);
+        const auto time4 = static_cast<std::int64_t>(static_cast<double>(timestamps[7] - timestamps[6]) * timestampPeriod);
 
         std::cout << "-----------------" << std::endl;
         std::cout << "Pipeline 1: " << std::chrono::nanoseconds(time1) << std::endl;

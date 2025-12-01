@@ -318,7 +318,7 @@ void VulkanApplication::CreateRenderPass()
 void VulkanApplication::CreateOrGetPipelineCache()
 {
     std::ifstream file(GetParamStr(AppConstants::PipelineCacheFilePath), std::ios::binary | std::ios::ate);
-    std::vector<uint8_t> cacheData;
+    std::vector<std::uint8_t> cacheData;
     if (file.good()) {
         if (const size_t fileSize = file.tellg(); fileSize > 0) {
             cacheData.resize(fileSize);

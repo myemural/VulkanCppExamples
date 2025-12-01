@@ -27,7 +27,7 @@ namespace examples::fundamentals::compute_shaders::basic_particles
 const std::vector cubeVertices = common::utility::CreateCubeVertices<common::utility::VertexPos3Uv2>(1.0f);
 
 // Index Data for Quad
-const std::vector<uint16_t> cubeIndices = common::utility::CreateCubeIndices();
+const std::vector<std::uint16_t> cubeIndices = common::utility::CreateCubeIndices();
 
 struct MvpData
 {

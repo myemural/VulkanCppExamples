@@ -116,20 +116,21 @@ public:
                                  const VkImageLayout& dstImageLayout,
                                  const std::vector<VkImageResolve>& regions) const;
 
-    COMMON_API void Dispatch(uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) const;
+    COMMON_API void Dispatch(std::uint32_t groupCountX, std::uint32_t groupCountY, std::uint32_t groupCountZ) const;
 
-    COMMON_API void
-    ResetQueryPool(const std::shared_ptr<VulkanQueryPool>& queryPool, uint32_t firstQuery, uint32_t queryCount) const;
+    COMMON_API void ResetQueryPool(const std::shared_ptr<VulkanQueryPool>& queryPool,
+                                   std::uint32_t firstQuery,
+                                   std::uint32_t queryCount) const;
 
     COMMON_API void BeginQuery(const std::shared_ptr<VulkanQueryPool>& queryPool,
-                               uint32_t query,
+                               std::uint32_t query,
                                const VkQueryControlFlags& flags = 0) const;
 
-    COMMON_API void EndQuery(const std::shared_ptr<VulkanQueryPool>& queryPool, uint32_t query) const;
+    COMMON_API void EndQuery(const std::shared_ptr<VulkanQueryPool>& queryPool, std::uint32_t query) const;
 
     COMMON_API void WriteTimestamp(const VkPipelineStageFlagBits& pipelineStage,
                                    const std::shared_ptr<VulkanQueryPool>& queryPool,
-                                   uint32_t query) const;
+                                   std::uint32_t query) const;
 
     COMMON_API void DrawIndirect(const std::shared_ptr<VulkanBuffer>& buffer,
                                  VkDeviceSize offset,

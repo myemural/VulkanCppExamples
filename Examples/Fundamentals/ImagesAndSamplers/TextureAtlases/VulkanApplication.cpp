@@ -46,7 +46,7 @@ bool VulkanApplication::Init()
         CreatePipeline();
         CreateDefaultFramebuffers();
 
-        const uint32_t indexCount = indices.size();
+        const std::uint32_t indexCount = indices.size();
         CreateCommandBuffers();
         RecordPresentCommandBuffers(indexCount);
     } catch (const std::exception& e) {

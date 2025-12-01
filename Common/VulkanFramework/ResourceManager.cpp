@@ -133,10 +133,10 @@ void ResourceManager::SetBufferAlignedWithoutUnmap(const std::string& name,
                                                    const std::size_t dataCount,
                                                    const std::size_t alignedSize)
 {
-    std::vector<uint8_t> temp(alignedSize * dataCount, 0);
+    std::vector<std::uint8_t> temp(alignedSize * dataCount, 0);
 
     for (size_t i = 0; i < dataCount; ++i) {
-        std::memcpy(temp.data() + i * alignedSize, reinterpret_cast<const uint8_t*>(data) + i * dataUnitSize,
+        std::memcpy(temp.data() + i * alignedSize, reinterpret_cast<const std::uint8_t*>(data) + i * dataUnitSize,
                     dataUnitSize);
     }
 

@@ -32,7 +32,7 @@ inline const std::vector cubeIndices = common::utility::CreateCubeIndices();
 inline const std::vector planeVertices = common::utility::CreateQuadVerticesXZ<common::utility::VertexPos3Uv2>(1.0f);
 
 // Index Data for Quad (XZ)
-inline const std::vector<uint16_t> planeIndices = common::utility::CreateQuadIndices();
+inline const std::vector<std::uint16_t> planeIndices = common::utility::CreateQuadIndices();
 
 // MVP Matrices (for Push Constants)
 struct MvpData

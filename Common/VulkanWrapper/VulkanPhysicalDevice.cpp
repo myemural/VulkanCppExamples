@@ -23,7 +23,7 @@ std::uint32_t VulkanPhysicalDevice::FindMemoryType(std::uint32_t typeFilter,
     VkPhysicalDeviceMemoryProperties memoryProperties{};
     vkGetPhysicalDeviceMemoryProperties(handle_, &memoryProperties);
 
-    for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++) {
+    for (std::uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++) {
         if ((typeFilter & (1 << i)) && (memoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
             return i;
         }
@@ -41,7 +41,7 @@ VkPhysicalDeviceProperties VulkanPhysicalDevice::GetProperties() const
 
 std::vector<VkQueueFamilyProperties> VulkanPhysicalDevice::GetQueueFamilyProperties() const
 {
-    uint32_t queueFamilyCount = 0;
+    std::uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(handle_, &queueFamilyCount, nullptr);
 
     std::vector<VkQueueFamilyProperties> queueFamilyProperties{queueFamilyCount};
@@ -55,7 +55,7 @@ std::uint32_t VulkanPhysicalDevice::GetSurfaceSupportedQueueFamilyIndex(const Vk
     const auto queueFamilyProperties = GetQueueFamilyProperties();
 
     std::vector<std::uint32_t> queueFamilyIndices;
-    for (uint32_t queueFamilyIndex = 0; const auto& familyProperty: queueFamilyProperties) {
+    for (std::uint32_t queueFamilyIndex = 0; const auto& familyProperty: queueFamilyProperties) {
         if (familyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             queueFamilyIndices.emplace_back(queueFamilyIndex);
         }
@@ -87,7 +87,7 @@ std::optional<VkSurfaceCapabilitiesKHR> VulkanPhysicalDevice::GetSurfaceCapabili
 std::optional<VkSurfaceFormatKHR> VulkanPhysicalDevice::GetSurfaceFormat(
         const VkSurfaceKHR& surface, const VkFormat& selectedFormat, const VkColorSpaceKHR& selectedColorSpace) const
 {
-    uint32_t formatCount;
+    std::uint32_t formatCount;
     if (vkGetPhysicalDeviceSurfaceFormatsKHR(handle_, surface, &formatCount, nullptr) != VK_SUCCESS) {
         std::cerr << "Failed to get surface format count!" << std::endl;
         return std::nullopt;
@@ -198,7 +198,7 @@ std::vector<std::shared_ptr<VulkanPhysicalDevice>>
 VulkanPhysicalDeviceSelector::Select(const std::shared_ptr<VulkanInstance>& instance) const
 {
     // Query physical devices
-    uint32_t deviceCount = 0;
+    std::uint32_t deviceCount = 0;
     VkResult result = vkEnumeratePhysicalDevices(instance->GetHandle(), &deviceCount, nullptr);
     if (deviceCount == 0 || result != VK_SUCCESS) {
         std::cerr << "Failed to find Vulkan supported GPUs!" << '\n';
@@ -225,7 +225,7 @@ VulkanPhysicalDeviceSelector::Select(const std::shared_ptr<VulkanInstance>& inst
     // Filter by Queue Types
     if (queueTypeFlags_ != VK_QUEUE_FLAG_BITS_MAX_ENUM) {
         std::erase_if(devices, [&](auto& device) {
-            uint32_t queueFamilyCount = 0;
+            std::uint32_t queueFamilyCount = 0;
             vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 
             std::vector<VkQueueFamilyProperties> queueFamilyProperties{queueFamilyCount};

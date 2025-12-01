@@ -67,7 +67,7 @@ void VulkanApplication::DrawFrame()
 {
     inFlightFences_[currentIndex_]->WaitForFence(true, UINT64_MAX);
 
-    uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
+    std::uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentIndex_], nullptr);
 
     if (swapImagesFences_[imageIndex] != nullptr) {
         swapImagesFences_[imageIndex]->WaitForFence(true, UINT64_MAX);
@@ -147,7 +147,7 @@ void VulkanApplication::CreateResources()
     std::vector<BufferResourceCreateInfo> bufferCreateInfos;
     for (const auto& mesh: lanternModel_->Meshes) {
         const std::uint32_t vertexBufferSize = mesh.Vertices.size() * sizeof(VertexPos3Uv2);
-        const uint32_t indexBufferSize = mesh.Indices.size() * sizeof(std::uint16_t);
+        const std::uint32_t indexBufferSize = mesh.Indices.size() * sizeof(std::uint16_t);
 
         bufferCreateInfos.emplace_back(mesh.GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -207,7 +207,7 @@ void VulkanApplication::InitResources() const
         const auto& vertexBufferData = mesh.GetVerticesAs<VertexPos3Uv2>();
         const auto& indexBufferData = mesh.Indices;
         const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3Uv2);
-        const uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
+        const std::uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
 
         resources_->SetBuffer(mesh.GetVertexBufferName(), vertexBufferData.data(), vertexBufferSize);
         resources_->SetBuffer(mesh.GetIndexBufferName(), indexBufferData.data(), indexBufferSize);
@@ -287,7 +287,7 @@ void VulkanApplication::CreatePipeline()
     colorBlendAttachment.colorWriteMask =
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-    constexpr uint32_t bindingIndex = 0;
+    constexpr std::uint32_t bindingIndex = 0;
     auto bindingDescription = GenerateBindingDescription<VertexPos3Uv2>(bindingIndex);
     const auto posAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Position, bindingIndex);
     const auto uvAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Uv, bindingIndex);

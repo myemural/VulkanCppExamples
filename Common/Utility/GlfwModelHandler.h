@@ -45,7 +45,7 @@ struct COMMON_API GltfMesh
 {
     std::string Name;
     std::vector<GltfPrimitiveAttrib> Vertices;
-    std::vector<uint16_t> Indices;
+    std::vector<std::uint16_t> Indices;
     int MaterialIndex = -1;
 
     template<typename VertexType>

@@ -26,7 +26,7 @@ VulkanFence::~VulkanFence()
 }
 
 /// TODO: This can be moved to device or think again about waiting multiple fences
-void VulkanFence::WaitForFence(const bool waitAll, const uint64_t timeout) const
+void VulkanFence::WaitForFence(const bool waitAll, const std::uint64_t timeout) const
 {
     const auto device = GetParent();
     if (!device || vkWaitForFences(device->GetHandle(), 1, &handle_, waitAll, timeout) != VK_SUCCESS) {

@@ -437,7 +437,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     };
     const std::vector scissors = {
         VkRect2D{0, 0, halfWidth, currentWindowHeight_},                                                    // Left
-        VkRect2D{static_cast<int32_t>(halfWidth), 0, halfWidth, currentWindowHeight_}                       // Right
+        VkRect2D{static_cast<std::int32_t>(halfWidth), 0, halfWidth, currentWindowHeight_}                       // Right
     };
     currentCmdBuffer->SetViewports(0, viewports);
     currentCmdBuffer->SetScissors(0, scissors);

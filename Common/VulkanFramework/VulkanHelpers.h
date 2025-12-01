@@ -138,9 +138,9 @@ inline VkRect2D GetAnimatedScissorRect(const float time, const float viewportWid
     const float centerY = viewportHeight * 0.5f + orbitRadiusY * std::sin(time * speed);
 
     VkRect2D rect{};
-    rect.offset.x = static_cast<int32_t>(std::clamp(centerX - scissorWidth * 0.5f, 0.0f, viewportWidth - scissorWidth));
+    rect.offset.x = static_cast<std::int32_t>(std::clamp(centerX - scissorWidth * 0.5f, 0.0f, viewportWidth - scissorWidth));
     rect.offset.y =
-            static_cast<int32_t>(std::clamp(centerY - scissorHeight * 0.5f, 0.0f, viewportHeight - scissorHeight));
+            static_cast<std::int32_t>(std::clamp(centerY - scissorHeight * 0.5f, 0.0f, viewportHeight - scissorHeight));
     rect.extent.width = static_cast<std::uint32_t>(scissorWidth);
     rect.extent.height = static_cast<std::uint32_t>(scissorHeight);
 

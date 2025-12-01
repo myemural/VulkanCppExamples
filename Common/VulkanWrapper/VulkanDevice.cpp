@@ -273,7 +273,7 @@ std::shared_ptr<VulkanShaderModule> VulkanDevice::CreateShaderModule(const std::
     shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     shaderModuleCreateInfo.pNext = nullptr;
     shaderModuleCreateInfo.flags = 0;
-    shaderModuleCreateInfo.codeSize = moduleCode.size() * sizeof(uint32_t);
+    shaderModuleCreateInfo.codeSize = moduleCode.size() * sizeof(std::uint32_t);
     shaderModuleCreateInfo.pCode = moduleCode.data();
 
     VkShaderModule shaderModule = VK_NULL_HANDLE;
@@ -300,7 +300,7 @@ VulkanDevice::CreatePipelineLayout(const std::vector<std::shared_ptr<VulkanDescr
     createInfo.setLayoutCount = descSetLayouts.size();
 
     std::vector<VkDescriptorSetLayout> vkDescriptorSetLayouts(descSetLayouts.size());
-    for (uint32_t i = 0; i < descSetLayouts.size(); i++) {
+    for (std::uint32_t i = 0; i < descSetLayouts.size(); i++) {
         vkDescriptorSetLayouts[i] = descSetLayouts[i]->GetHandle();
     }
     createInfo.pSetLayouts = vkDescriptorSetLayouts.empty() ? nullptr : vkDescriptorSetLayouts.data();
