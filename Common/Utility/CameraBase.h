@@ -155,7 +155,7 @@ public:
     /**
      * @brief Rotates camera with a delta yaw and a delta pitch angle values.
      * @param yawDelta Delta yaw angle of the rotation.
-     * @param yawDelta Delta pitch angle of the rotation.
+     * @param pitchDelta Delta pitch angle of the rotation.
      */
     void Rotate(float yawDelta, float pitchDelta);
 

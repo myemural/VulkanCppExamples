@@ -22,6 +22,10 @@ class COMMON_API ScopedTimer
 public:
     using clock = std::chrono::steady_clock;
 
+    /**
+     * @param name Name of the timer.
+     * @param printIntervalMs Print time interval in ms. If value is 0, print interval is disabled.
+     */
     explicit ScopedTimer(const std::string& name, long long printIntervalMs = 0);
 
     ~ScopedTimer();

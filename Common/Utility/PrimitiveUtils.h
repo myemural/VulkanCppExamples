@@ -204,6 +204,15 @@ static std::vector<std::uint16_t> CreateQuadIndices()
     };
 }
 
+/**
+ * @brief Calculates and returns vertices of a cone.
+ * @tparam VertexType Structure of a vertex.
+ * @param radius Base radius of the cone.
+ * @param height Height of the cone.
+ * @param sectorCount Sector count of the cone.
+ * @param stackCount Stack count of the cone.
+ * @return Vertices for cone.
+ */
 template<typename VertexType>
 std::vector<VertexType>
 CreateConeVertices(float radius, float height, std::uint32_t sectorCount, std::uint32_t stackCount);
@@ -250,6 +259,12 @@ inline std::vector<VertexPos3Uv2> CreateConeVertices(const float radius,
     return vertices;
 }
 
+/**
+ * @brief Calculates and returns indices of a cone.
+ * @param sectorCount Sector count of the cone.
+ * @param stackCount Stack count of the cone.
+ * @return Indices of the cone.
+ */
 inline std::vector<std::uint16_t> CreateConeIndices(const std::uint32_t sectorCount, const std::uint32_t stackCount)
 {
     std::vector<std::uint16_t> indices;
@@ -294,6 +309,15 @@ inline std::vector<std::uint16_t> CreateConeIndices(const std::uint32_t sectorCo
     return indices;
 }
 
+/**
+ * @brief Calculates and returns vertices of a cylinder.
+ * @tparam VertexType Structure of a vertex.
+ * @param radius Radius of the cylinder.
+ * @param height Height of the cylinder.
+ * @param sectorCount Sector count of the cylinder.
+ * @param stackCount Stack count of the cylinder.
+ * @return Vertices for cylinder.
+ */
 template<typename VertexType>
 std::vector<VertexType>
 CreateCylinderVertices(float radius, float height, std::uint32_t sectorCount, std::uint32_t stackCount);
@@ -364,6 +388,12 @@ inline std::vector<VertexPos3Uv2> CreateCylinderVertices(const float radius,
     return vertices;
 }
 
+/**
+ * @brief Calculates and returns indices of a cylinder.
+ * @param sectorCount Sector count of the cylinder.
+ * @param stackCount Stack count of the cylinder.
+ * @return Indices of the cylinder.
+ */
 inline std::vector<std::uint16_t> CreateCylinderIndices(const std::uint32_t sectorCount, const std::uint32_t stackCount)
 {
     std::vector<std::uint16_t> indices;
