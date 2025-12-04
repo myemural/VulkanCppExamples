@@ -30,8 +30,8 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
     schema.RegisterImmutableParam<std::uint32_t>(AppConstants::VertexCount, 3);
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "triangle.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "triangle.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "hardcoded_position.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "hardcoded_color.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
 

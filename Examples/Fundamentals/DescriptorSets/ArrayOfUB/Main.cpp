@@ -29,8 +29,10 @@ inline ParameterSchema CreateParameterSchema()
     // Register Constants
     schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "array_ub.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "array_ub.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile,
+                                               "position_with_indexed_ubo_model.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile,
+                                               "hardcoded_color_from_index.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
 
