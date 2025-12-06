@@ -29,8 +29,10 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Constants
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "multi_viewport.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "multi_viewport.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile,
+                                               "position_with_mvp_by_viewport.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile,
+                                               "texture_sampler_by_viewport.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
 

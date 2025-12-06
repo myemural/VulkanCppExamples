@@ -31,10 +31,10 @@ inline const std::vector cubeIndices = common::utility::CreateCubeIndices();
 // Vertex Data for Plane (XY)
 // clang-format off
 inline const std::vector<common::utility::VertexPos3Uv2> planeVertices {
-    {glm::vec3{0.0f, 0.2f, 0.0f}, glm::vec2{0.0f, 0.0f}}, // 0
+    {glm::vec3{0.2f, 0.2f, 0.0f}, glm::vec2{0.0f, 0.0f}}, // 0
     {glm::vec3{1.0f, 0.2f, 0.0f}, glm::vec2{1.0f, 0.0f}}, // 1
     {glm::vec3{1.0f, 1.0f, 0.0f}, glm::vec2{1.0f, 1.0f}}, // 2
-    {glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec2{0.0f, 1.0f}}, // 3
+    {glm::vec3{0.2f, 1.0f, 0.0f}, glm::vec2{0.0f, 1.0f}}, // 3
 };
 // clang-format on
 

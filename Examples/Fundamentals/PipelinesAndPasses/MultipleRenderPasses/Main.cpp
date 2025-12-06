@@ -28,10 +28,12 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Constants
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundVertexShaderFile, "background.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundFragmentShaderFile, "background.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexShaderFile, "cube.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeFragmentShaderFile, "cube.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundVertexShaderFile,
+                                               "passthrough_position_uv.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundFragmentShaderFile,
+                                               "texture_sampler_shift_with_time.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexShaderFile, "position_with_mvp.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CubeFragmentShaderFile, "texture_sampler.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundVertexShaderKey, "vertBackground");
     schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundFragmentShaderKey, "fragBackground");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexShaderKey, "vertCube");

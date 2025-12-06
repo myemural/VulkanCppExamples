@@ -29,10 +29,10 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Constants
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "drawing_object.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ObjectFragmentShaderFile, "drawing_object.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "position_with_mvp.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ObjectFragmentShaderFile, "texture_sampler.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthObjectFragmentShaderFile,
-                                               "drawing_depth_object.frag.spv");
+                                               "depth_buffer_sampler.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::ObjectFragmentShaderKey, "fragObject");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthObjectFragmentShaderKey, "fragDepthObject");
