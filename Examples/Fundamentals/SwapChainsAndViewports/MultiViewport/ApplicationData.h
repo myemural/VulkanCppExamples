@@ -16,10 +16,12 @@
 
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
+#include "VulkanHelpers.h"
 
 namespace examples::fundamentals::swap_chains_and_viewports::multi_viewport
 {
 #define NUM_CUBES 10
+#define NUM_VIEWPORTS 4
 
 // Vertex Data for Cube
 inline const std::vector vertices = common::utility::CreateCubeVertices<common::utility::VertexPos3Uv2>(1.0f);
@@ -44,9 +46,6 @@ enum class ViewportIndex : int
 };
 
 // Model position vectors
-inline constexpr glm::vec3 modelPositions[NUM_CUBES] = {glm::vec3(0.0f, 0.0f, 0.0f),  glm::vec3(-2.1f, 0.9f, -0.7f),
-                                                        glm::vec3(0.6f, 2.7f, -1.5f), glm::vec3(-1.9f, -2.5f, 1.1f),
-                                                        glm::vec3(2.5f, -0.4f, 1.6f), glm::vec3(-0.8f, 1.3f, -2.7f),
-                                                        glm::vec3(1.9f, 0.3f, -1.8f), glm::vec3(-2.7f, -1.5f, 2.2f),
-                                                        glm::vec3(0.4f, 1.6f, -0.9f), glm::vec3(-1.4f, -0.7f, 2.6f)};
+inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
+        NUM_CUBES, glm::vec3(-3.0f, -2.5f, -4.0f), glm::vec3(3.0f, 2.5f, -1.0f), 2.0f);
 } // namespace examples::fundamentals::swap_chains_and_viewports::multi_viewport

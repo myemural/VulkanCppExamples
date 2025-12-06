@@ -38,7 +38,7 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateDefaultSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects();
 
         CreateResources();
         InitResources();
@@ -91,13 +91,13 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanApplication::CreateResources()
 {
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
-    constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<glm::vec3>(AppSettings::InitialTriangleColor));
+    constexpr std::uint32_t uniformBufferSize = sizeof(glm::vec3);
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
         {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
@@ -130,14 +130,9 @@ void VulkanApplication::CreateResources()
 void VulkanApplication::InitResources()
 {
     const std::array screenSizes = {static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_)};
-    const auto initialTriangleColor = params_.Get<glm::vec3>(AppSettings::InitialTriangleColor);
 
     SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
     SetBuffer(GetParamStr(AppConstants::ScreenSizeUB), &screenSizes, sizeof(screenSizes));
-    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &initialTriangleColor, sizeof(glm::vec3));
-    SetBuffer(GetParamStr(AppConstants::TopRightUB), &initialTriangleColor, sizeof(glm::vec3));
-    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &initialTriangleColor, sizeof(glm::vec3));
-    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &initialTriangleColor, sizeof(glm::vec3));
 }
 
 void VulkanApplication::CreateDescriptorPool()

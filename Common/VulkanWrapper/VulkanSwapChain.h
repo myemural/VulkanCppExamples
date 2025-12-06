@@ -45,7 +45,7 @@ public:
 
 private:
     std::vector<std::shared_ptr<VulkanImageView>> swapChainImageViews_;
-    VkResult acquireResult_;
+    VkResult acquireResult_ = VK_INCOMPLETE;
 };
 
 class COMMON_API VulkanSwapChainBuilder

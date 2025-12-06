@@ -14,7 +14,6 @@ namespace examples::fundamentals::descriptor_sets::multiple_uniform_buffers
 {
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
@@ -33,6 +32,5 @@ namespace AppConstants
 namespace AppSettings
 {
     constexpr auto ClearColor = "AppSettings.ClearColor";
-    constexpr auto InitialTriangleColor = "AppSettings.InitialTriangleColor";
 } // namespace AppSettings
 } // namespace examples::fundamentals::descriptor_sets::multiple_uniform_buffers

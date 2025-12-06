@@ -41,7 +41,7 @@ public:
      * @param defaultValue Default value of the parameter.
      */
     template<typename ParamType>
-    void RegisterParam(const std::string& name, ParamType defaultValue)
+    void RegisterParam(const std::string& name, const ParamType& defaultValue)
     {
         if (params_.contains(name)) {
             std::cerr << "Parameter has already registered: " << name << std::endl;
@@ -74,7 +74,7 @@ public:
      * @param defaultValue Default value of the parameter.
      */
     template<typename ParamType>
-    void RegisterImmutableParam(const std::string& name, ParamType defaultValue)
+    void RegisterImmutableParam(const std::string& name, const ParamType& defaultValue)
     {
         if (params_.contains(name)) {
             std::cerr << "Parameter has already registered: " << name << std::endl;
@@ -148,7 +148,7 @@ public:
      * @return Value of the parameter in specified type.
      */
     template<typename ParamType>
-    ParamType Get(const std::string& key) const
+    [[nodiscard]] ParamType Get(const std::string& key) const
     {
         if (!schema_.HasParam(key)) {
             throw std::runtime_error("Parameter not registered: " + key);

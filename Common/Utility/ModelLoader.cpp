@@ -316,8 +316,7 @@ bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler)
 
     // Calculate world transforms
     handler->CurrentSceneIndex = gltfModel_.defaultScene > -1 ? gltfModel_.defaultScene : 0;
-    const auto& scene = gltfModel_.scenes[handler->CurrentSceneIndex];
-    for (const auto rootNode: scene.nodes) {
+    for (const auto& scene = gltfModel_.scenes[handler->CurrentSceneIndex]; const auto rootNode: scene.nodes) {
         ComputeWorldTransform(gltfNodes, static_cast<std::uint32_t>(rootNode), glm::mat4(1.0f));
     }
 

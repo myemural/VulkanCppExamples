@@ -39,7 +39,7 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateDefaultSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects();
 
         CreateResources();
         InitResources();
@@ -80,7 +80,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanApplication::CreateResources()
@@ -120,17 +120,19 @@ void VulkanApplication::CreateResources()
 
 void VulkanApplication::InitResources()
 {
-    modelUbObject[0].model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, 0.0f));
-    modelUbObject[1].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, -0.5f, 0.0f));
-    modelUbObject[2].model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.5f, 0.0f));
-    modelUbObject[3].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f));
+    modelUbObject[TOP_LEFT_QUAD_INDEX].model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, -0.5f, 0.0f));
+    modelUbObject[TOP_RIGHT_QUAD_INDEX].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, -0.5f, 0.0f));
+    modelUbObject[BOTTOM_LEFT_QUAD_INDEX].model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.5f, 0.0f));
+    modelUbObject[BOTTOM_RIGHT_QUAD_INDEX].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f));
 
     SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
     SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(std::uint16_t));
-    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &modelUbObject[0], sizeof(UniformBufferObject));
-    SetBuffer(GetParamStr(AppConstants::TopRightUB), &modelUbObject[1], sizeof(UniformBufferObject));
-    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &modelUbObject[2], sizeof(UniformBufferObject));
-    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &modelUbObject[3], sizeof(UniformBufferObject));
+    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &modelUbObject[TOP_LEFT_QUAD_INDEX], sizeof(UniformBufferObject));
+    SetBuffer(GetParamStr(AppConstants::TopRightUB), &modelUbObject[TOP_RIGHT_QUAD_INDEX], sizeof(UniformBufferObject));
+    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &modelUbObject[BOTTOM_LEFT_QUAD_INDEX],
+              sizeof(UniformBufferObject));
+    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &modelUbObject[BOTTOM_RIGHT_QUAD_INDEX],
+              sizeof(UniformBufferObject));
 }
 
 void VulkanApplication::CreateDescriptorPool()
@@ -320,13 +322,14 @@ void VulkanApplication::UpdateUniformBuffers()
     const float scalingFactor = std::sin(currentTime) * 0.5f + 1.0f; // Range: 0.5 - 1.5
 
     UniformBufferObject tempObject{};
-    tempObject.model = glm::rotate(modelUbObject[0].model, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+    tempObject.model = glm::rotate(modelUbObject[TOP_LEFT_QUAD_INDEX].model, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
     SetBuffer(GetParamStr(AppConstants::TopLeftUB), &tempObject, sizeof(UniformBufferObject));
-    tempObject.model = glm::scale(modelUbObject[1].model, glm::vec3(scalingFactor, scalingFactor, 0.0f));
+    tempObject.model =
+            glm::scale(modelUbObject[TOP_RIGHT_QUAD_INDEX].model, glm::vec3(scalingFactor, scalingFactor, 0.0f));
     SetBuffer(GetParamStr(AppConstants::TopRightUB), &tempObject, sizeof(UniformBufferObject));
-    tempObject.model = glm::translate(modelUbObject[2].model, glm::vec3(translation, 0.0f, 0.0f));
+    tempObject.model = glm::translate(modelUbObject[BOTTOM_LEFT_QUAD_INDEX].model, glm::vec3(translation, 0.0f, 0.0f));
     SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &tempObject, sizeof(UniformBufferObject));
-    tempObject.model = glm::translate(modelUbObject[3].model, glm::vec3(0.0f, translation, 0.0f));
+    tempObject.model = glm::translate(modelUbObject[BOTTOM_RIGHT_QUAD_INDEX].model, glm::vec3(0.0f, translation, 0.0f));
     SetBuffer(GetParamStr(AppConstants::BottomRightUB), &tempObject, sizeof(UniformBufferObject));
 }
 } // namespace examples::fundamentals::descriptor_sets::array_of_ub

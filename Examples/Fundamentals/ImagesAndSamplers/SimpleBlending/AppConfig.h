@@ -14,7 +14,6 @@ namespace examples::fundamentals::images_and_samplers::simple_blending
 {
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";

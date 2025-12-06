@@ -15,8 +15,6 @@ namespace examples::fundamentals::drawing_3d::face_culling
 
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
-
     // Shaders
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";

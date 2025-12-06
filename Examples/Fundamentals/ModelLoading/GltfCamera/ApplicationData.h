@@ -10,12 +10,7 @@
  */
 #pragma once
 
-#include <vector>
-
 #include <glm/mat4x4.hpp>
-
-#include "ModelLoader.h"
-#include "Vertex.h"
 
 namespace examples::fundamentals::model_loading::gltf_camera
 {
@@ -26,17 +21,3 @@ struct MvpData
     glm::mat4 mvpMatrix;
 };
 } // namespace examples::fundamentals::model_loading::gltf_camera
-
-namespace common::utility
-{
-template<>
-inline std::vector<VertexPos3> GltfMesh::GetVerticesAs()
-{
-    std::vector<VertexPos3> result;
-    for (const auto& vertex: Vertices) {
-        result.emplace_back(VertexPos3{vertex.Position});
-    }
-
-    return result;
-}
-} // namespace common::utility

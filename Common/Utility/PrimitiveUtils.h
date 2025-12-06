@@ -77,7 +77,7 @@ static std::vector<std::uint16_t> CreateSphereIndices(const std::uint32_t sector
                 indices.push_back(k1 + 1);
             }
 
-            if (i != (stackCount - 1)) {
+            if (i != stackCount - 1) {
                 indices.push_back(k1 + 1);
                 indices.push_back(k2);
                 indices.push_back(k2 + 1);

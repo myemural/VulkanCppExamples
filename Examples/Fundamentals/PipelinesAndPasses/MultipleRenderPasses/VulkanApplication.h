@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include "ApplicationData.h"
@@ -65,7 +66,7 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    MvpData cubeMvpData_[NUM_CUBES] = {glm::mat4(1.0)};
+    std::array<MvpData, NUM_CUBES> cubeMvpData_ = {glm::mat4(1.0)};
     UniformBufferObject timeSpeedUbo_{};
 
     // Texture resource

@@ -14,8 +14,6 @@ namespace examples::fundamentals::queries_and_performance::timestamp_query
 {
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
-
     // Shaders
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";

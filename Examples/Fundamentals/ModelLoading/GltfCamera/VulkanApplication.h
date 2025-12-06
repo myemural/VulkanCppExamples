@@ -13,7 +13,6 @@
 
 #include <memory>
 
-#include "ApplicationData.h"
 #include "ApplicationModelLoading.h"
 #include "ModelLoader.h"
 #include "PerspectiveCamera.h"
@@ -56,7 +55,7 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
 
-    // Models
+    // Model handlers
     std::shared_ptr<common::utility::GltfModelHandler> quadModel_;
 
     // Texture resource

@@ -16,6 +16,7 @@
 
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
+#include "VulkanHelpers.h"
 
 namespace examples::fundamentals::compute_shaders::basic_particles
 {
@@ -48,10 +49,7 @@ struct ParticlePushConstant
 };
 
 // Cube position vectors
-inline constexpr glm::vec3 cubePositions[NUM_CUBES] = {glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.4f, 0.8f, -0.6f),
-                                                       glm::vec3(-2.2f, 1.6f, 0.9f),   glm::vec3(1.3f, -2.5f, 1.4f),
-                                                       glm::vec3(-3.0f, -1.2f, -1.6f), glm::vec3(3.1f, 2.1f, 0.5f),
-                                                       glm::vec3(-3.4f, 2.2f, -0.9f),  glm::vec3(0.9f, -3.4f, -1.3f),
-                                                       glm::vec3(-1.5f, -3.1f, 2.0f),  glm::vec3(3.3f, -0.6f, 2.4f)};
+inline const std::vector<glm::vec3> cubePositions = common::vulkan_framework::GenerateRandomPositions(
+        NUM_CUBES, glm::vec3(-4.0f, -4.0f, -4.0f), glm::vec3(4.0f, 4.0f, -1.0f), 2.0f);
 
 } // namespace examples::fundamentals::compute_shaders::basic_particles

@@ -7,7 +7,6 @@
 #include "VulkanApplication.h"
 
 #include <algorithm>
-#include <array>
 #include <chrono>
 
 #include <glm/ext/matrix_clip_space.hpp>
@@ -48,7 +47,7 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateDefaultSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects();
 
         CreateResources();
         InitResources();
@@ -90,7 +89,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanApplication::PreUpdate()
@@ -480,7 +479,7 @@ void VulkanApplication::CalculateAndSetMvp()
         objectUbo_[i].mvpMatrix = proj * view * model;
     }
 
-    resources_->SetBufferAlignedWithoutUnmap(GetParamStr(AppConstants::DynamicUniformBuffer), objectUbo_,
+    resources_->SetBufferAlignedWithoutUnmap(GetParamStr(AppConstants::DynamicUniformBuffer), objectUbo_.data(),
                                              sizeof(ObjectUbo), MAX_NUM_OBJECTS, uboAlignedSize_);
 }
 

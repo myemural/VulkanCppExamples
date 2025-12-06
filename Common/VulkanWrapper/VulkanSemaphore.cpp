@@ -10,7 +10,7 @@
 
 namespace common::vulkan_wrapper
 {
-VulkanSemaphore::VulkanSemaphore(std::shared_ptr<VulkanDevice> device, VkSemaphore const semaphore)
+VulkanSemaphore::VulkanSemaphore(std::shared_ptr<VulkanDevice> device, VkSemaphore semaphore)
     : VulkanObject(std::move(device), semaphore)
 {
 }

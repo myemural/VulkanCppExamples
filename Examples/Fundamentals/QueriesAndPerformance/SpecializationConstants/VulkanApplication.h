@@ -66,12 +66,12 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    ObjectUbo objectUbo_[MAX_NUM_OBJECTS] = {glm::mat4(1.0)};
+    std::array<ObjectUbo, MAX_NUM_OBJECTS> objectUbo_ = {glm::mat4(1.0)};
     std::uint32_t uboAlignedSize_ = UINT32_MAX;
 
     // Buffer (vertex/index) related data
-    std::array<PrimitiveData, 4> primitivesData_ = {};
-    std::array<BufferAllocInfo, 4> bufferAllocInfos_ = {};
+    std::array<PrimitiveData, PRIMITIVE_TYPE_COUNT> primitivesData_ = {};
+    std::array<BufferAllocInfo, PRIMITIVE_TYPE_COUNT> bufferAllocInfos_ = {};
     std::uint32_t totalBufferSize_ = UINT32_MAX;
 
     // Specialization constants array

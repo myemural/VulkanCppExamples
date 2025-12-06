@@ -7,7 +7,6 @@
 #include "VulkanApplication.h"
 
 #include <algorithm>
-#include <array>
 #include <chrono>
 
 #include <glm/ext/matrix_clip_space.hpp>
@@ -47,7 +46,7 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateDefaultSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects();
 
         CreateResources();
         InitResources();
@@ -91,7 +90,7 @@ void VulkanApplication::DrawFrame()
 
     PrintQueryResults();
 
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanApplication::PreUpdate()
@@ -487,7 +486,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
-    currentCmdBuffer->ResetQueryPool(pipelineStatQueryPool_, 0, 4);
+    currentCmdBuffer->ResetQueryPool(pipelineStatQueryPool_, 0, PIPELINE_COUNT);
 
     currentCmdBuffer->BeginRenderPass(
             [&](auto& beginInfo) {
@@ -570,11 +569,12 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::CreateQueryPools()
 {
-    pipelineStatQueryPool_ = device_->CreateQueryPool(VK_QUERY_TYPE_PIPELINE_STATISTICS, 4, 0,
-                                                   VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT |
-                                                           VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT |
-                                                           VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT |
-                                                           VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT);
+    pipelineStatQueryPool_ =
+            device_->CreateQueryPool(VK_QUERY_TYPE_PIPELINE_STATISTICS, PIPELINE_COUNT, 0,
+                                     VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT |
+                                             VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT |
+                                             VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT |
+                                             VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT);
 
     if (!pipelineStatQueryPool_) {
         throw std::runtime_error("Failed to create query pool for pipeline statistics!");
@@ -585,13 +585,14 @@ void VulkanApplication::PrintQueryResults()
 {
     // For slower output
     if (++frameCount_ == 300UL) {
-        std::array<PipelineStats, 4> stats{};
-        pipelineStatQueryPool_->GetQueryPoolResults(0, 4, sizeof(stats), stats.data(), sizeof(PipelineStats),
-                                                 VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT);
+        std::array<PipelineStats, PIPELINE_COUNT> stats{};
+        pipelineStatQueryPool_->GetQueryPoolResults(0, PIPELINE_COUNT, sizeof(stats), stats.data(),
+                                                    sizeof(PipelineStats),
+                                                    VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT);
 
         int i = 1;
         std::cout << "##################### PIPELINE STATISTICS #####################" << std::endl;
-        for (const auto& stat : stats) {
+        for (const auto& stat: stats) {
             std::cout << "----------------- Pipeline " << i++ << " -------------------" << std::endl;
             std::cout << "Input Assembly Vertices: " << stat.inputAssemblyVertices << std::endl;
             std::cout << "Input Assembly Primitives: " << stat.inputAssemblyPrimitives << std::endl;

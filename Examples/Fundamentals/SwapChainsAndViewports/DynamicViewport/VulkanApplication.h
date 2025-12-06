@@ -71,8 +71,8 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    MvpData mvpDataPerspective_[NUM_CUBES] = {glm::mat4(1.0)};
-    MvpData mvpDataOrtho_[NUM_CUBES] = {glm::mat4(1.0)};
+    std::array<MvpData, NUM_CUBES> mvpDataPerspective_ = {glm::mat4(1.0)};
+    std::array<MvpData, NUM_CUBES> mvpDataOrtho_ = {glm::mat4(1.0)};
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};

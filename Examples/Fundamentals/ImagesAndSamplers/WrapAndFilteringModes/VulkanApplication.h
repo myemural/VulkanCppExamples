@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include "ApplicationData.h"
@@ -59,7 +60,7 @@ private:
     std::uint32_t currentIndex_ = 0;
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
-    PushConstantData pushConstantData_[4] = {};
+    std::array<PushConstantData, NUM_QUADS> pushConstantData_{};
 
     // Texture resource
     common::utility::TextureHandler bricksTextureHandler_{};

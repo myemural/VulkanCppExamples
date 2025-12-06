@@ -40,7 +40,7 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateDefaultSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects();
 
         CreateResources();
         InitResources();
@@ -79,7 +79,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanApplication::CreateResources()
@@ -309,7 +309,7 @@ void VulkanApplication::CreateCommandBuffers()
 void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex)
 {
     std::array<VkClearValue, 1> clearValues{};
-    clearValues[0].color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
+    clearValues[0].color = VkClearColorValue{0.0f, 0.0f, 0.0f, 1.0f};
 
     const auto& currentCmdBuffer = cmdBuffersPresent_[currentImageIndex];
 

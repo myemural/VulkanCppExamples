@@ -14,8 +14,6 @@ namespace examples::fundamentals::pipelines_and_passes::offscreen_rendering
 {
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
-
     // Shaders
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto QuadVertexShaderFile = "AppConstants.QuadVertexShaderFile";

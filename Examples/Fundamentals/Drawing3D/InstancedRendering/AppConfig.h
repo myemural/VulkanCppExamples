@@ -14,8 +14,6 @@ namespace examples::fundamentals::drawing_3d::instanced_rendering
 {
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
-
     // Shaders
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";

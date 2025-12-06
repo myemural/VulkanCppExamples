@@ -56,7 +56,7 @@ protected:
 
     void CreateDefaultCommandPool();
 
-    void CreateDefaultSyncObjects(std::uint32_t swapImageCount, std::uint32_t maxFramesInFlight);
+    void CreateDefaultSyncObjects(std::uint32_t swapImageCount);
 
     void CreateVulkanResources(const common::vulkan_framework::ResourceDescriptor& resourceCreateInfo);
 

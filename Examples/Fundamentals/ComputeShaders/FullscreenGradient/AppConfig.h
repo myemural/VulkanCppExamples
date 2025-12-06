@@ -14,8 +14,6 @@ namespace examples::fundamentals::compute_shaders::fullscreen_gradient
 {
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
-
     // Shaders
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
@@ -34,9 +32,4 @@ namespace AppConstants
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto ComputeDescSetLayout = "AppConstants.ComputeDescSetLayout";
 } // namespace AppConstants
-
-namespace AppSettings
-{
-    constexpr auto ClearColor = "AppSettings.ClearColor";
-} // namespace AppSettings
 } // namespace examples::fundamentals::compute_shaders::fullscreen_gradient

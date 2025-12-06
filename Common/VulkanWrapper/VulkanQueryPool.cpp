@@ -10,16 +10,16 @@
 
 namespace common::vulkan_wrapper
 {
-VulkanQueryPool::VulkanQueryPool(std::shared_ptr<VulkanDevice> device, VkQueryPool const queryPool)
+VulkanQueryPool::VulkanQueryPool(std::shared_ptr<VulkanDevice> device, VkQueryPool queryPool)
     : VulkanObject(std::move(device), queryPool)
 {
 }
 
-void VulkanQueryPool::GetQueryPoolResults(std::uint32_t firstQuery,
-                                          std::uint32_t queryCount,
-                                          size_t dataSize,
+void VulkanQueryPool::GetQueryPoolResults(const std::uint32_t firstQuery,
+                                          const std::uint32_t queryCount,
+                                          const size_t dataSize,
                                           void* data,
-                                          VkDeviceSize stride,
+                                          const VkDeviceSize stride,
                                           const VkQueryResultFlags& flags) const
 {
     if (const auto device = GetParent()) {

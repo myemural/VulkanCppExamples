@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include "ApplicationComputeShaders.h"
@@ -63,8 +64,8 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     std::uint32_t checkerboardTextureSize_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    MvpData mvpDataCubes_[NUM_CUBES] = {glm::mat4(1.0)};
-    MvpData mvpDataSpheres_[NUM_SPHERES] = {glm::mat4(1.0)};
+    std::array<MvpData, NUM_CUBES> mvpDataCubes_ = {glm::mat4(1.0)};
+    std::array<MvpData, NUM_SPHERES> mvpDataSpheres_ = {glm::mat4(1.0)};
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};

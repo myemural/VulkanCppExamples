@@ -7,7 +7,6 @@
 #include "SamplerResource.h"
 
 #include "VulkanCommandBuffer.h"
-#include "VulkanCommandPool.h"
 
 namespace common::vulkan_framework
 {

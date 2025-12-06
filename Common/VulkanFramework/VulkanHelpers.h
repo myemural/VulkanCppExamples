@@ -138,7 +138,8 @@ inline VkRect2D GetAnimatedScissorRect(const float time, const float viewportWid
     const float centerY = viewportHeight * 0.5f + orbitRadiusY * std::sin(time * speed);
 
     VkRect2D rect{};
-    rect.offset.x = static_cast<std::int32_t>(std::clamp(centerX - scissorWidth * 0.5f, 0.0f, viewportWidth - scissorWidth));
+    rect.offset.x =
+            static_cast<std::int32_t>(std::clamp(centerX - scissorWidth * 0.5f, 0.0f, viewportWidth - scissorWidth));
     rect.offset.y =
             static_cast<std::int32_t>(std::clamp(centerY - scissorHeight * 0.5f, 0.0f, viewportHeight - scissorHeight));
     rect.extent.width = static_cast<std::uint32_t>(scissorWidth);
@@ -173,9 +174,8 @@ inline std::vector<glm::vec3> GenerateRandomPositions(const size_t count,
     for (size_t i = 0; i < count; ++i) {
         glm::vec3 pos;
         bool valid;
-        // To avoid infinite loops we should add attempt count and max number of attempts
-        constexpr int maxNumberOfAttempts = 1000;
         int currentAttemptCount = 0;
+
         do {
             pos = glm::vec3(distX(gen), distY(gen), distZ(gen));
             valid = true;
@@ -186,7 +186,8 @@ inline std::vector<glm::vec3> GenerateRandomPositions(const size_t count,
                 }
             }
 
-            if (++currentAttemptCount > maxNumberOfAttempts) {
+            // To avoid infinite loops we should add attempt count and max number of attempts
+            if (constexpr int maxNumberOfAttempts = 1000; ++currentAttemptCount > maxNumberOfAttempts) {
                 break;
             }
         } while (!valid);

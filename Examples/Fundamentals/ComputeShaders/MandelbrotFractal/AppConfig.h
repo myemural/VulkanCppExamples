@@ -14,8 +14,6 @@ namespace examples::fundamentals::compute_shaders::mandelbrot_fractal
 {
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
-
     // Shaders
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
@@ -37,7 +35,6 @@ namespace AppConstants
 
 namespace AppSettings
 {
-    constexpr auto ClearColor = "AppSettings.ClearColor";
     constexpr auto LoopTime = "AppSettings.LoopTime";
     constexpr auto ZoomSpeed = "AppSettings.ZoomSpeed";
 } // namespace AppSettings

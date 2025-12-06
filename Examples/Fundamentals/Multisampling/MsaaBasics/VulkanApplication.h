@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include "ApplicationData.h"
@@ -66,7 +67,7 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
     VkSampleCountFlagBits maxSampleCount_ = VK_SAMPLE_COUNT_2_BIT;
-    MvpData mvpData_[NUM_CUBES] = {glm::mat4(1.0)};
+    std::array<MvpData, NUM_CUBES> mvpData_ = {glm::mat4(1.0)};
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};

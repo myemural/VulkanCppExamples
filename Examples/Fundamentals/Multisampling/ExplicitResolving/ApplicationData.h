@@ -16,13 +16,15 @@
 
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
+#include "VulkanHelpers.h"
 
 namespace examples::fundamentals::multisampling::explicit_resolving
 {
-#define NUM_SPHERE 10
+#define NUM_SPHERES 10
 
 // Vertex Data for Sphere
-inline const std::vector sphereVertices = common::utility::CreateSphereVertices<common::utility::VertexPos3Uv2>(0.5f, 32, 16);
+inline const std::vector sphereVertices =
+        common::utility::CreateSphereVertices<common::utility::VertexPos3Uv2>(0.5f, 32, 16);
 
 // Index Data for Sphere
 inline const std::vector<std::uint16_t> sphereIndices = common::utility::CreateSphereIndices(32, 16);
@@ -40,9 +42,6 @@ struct MvpData
 };
 
 // Model position vectors
-inline constexpr glm::vec3 modelPositions[NUM_SPHERE] = {glm::vec3(0.0f, 0.0f, 0.0f),  glm::vec3(-2.1f, 0.9f, -0.7f),
-                                                         glm::vec3(0.6f, 2.7f, -1.5f), glm::vec3(-1.9f, -2.5f, 1.1f),
-                                                         glm::vec3(2.5f, -0.4f, 1.6f), glm::vec3(-0.8f, 1.3f, -2.7f),
-                                                         glm::vec3(1.9f, 0.3f, -1.8f), glm::vec3(-2.7f, -1.5f, 2.2f),
-                                                         glm::vec3(0.4f, 1.6f, -0.9f), glm::vec3(-1.4f, -0.7f, 2.6f)};
+inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
+        NUM_SPHERES, glm::vec3(-3.0f, -2.5f, -4.0f), glm::vec3(3.0f, 2.5f, -1.0f), 2.0f);
 } // namespace examples::fundamentals::multisampling::explicit_resolving

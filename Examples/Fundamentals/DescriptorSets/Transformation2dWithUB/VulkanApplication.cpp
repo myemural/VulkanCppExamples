@@ -39,7 +39,7 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateDefaultSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects();
 
         CreateResources();
         InitResources();
@@ -74,11 +74,11 @@ void VulkanApplication::DrawFrame()
 
     const auto currentTime = static_cast<float>(GetCurrentTime());
     const float scale = std::sin(currentTime) * 0.5f + 1.0f; // Range: 0.5 - 1.5
-    modelUbObject.model = glm::rotate(glm::mat4(1.0f), currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
-    modelUbObject.model = glm::scale(modelUbObject.model, glm::vec3(scale, scale, 1.0f));
+    glm::mat4 model = glm::rotate(glm::mat4(1.0f), currentTime, glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::scale(model, glm::vec3(scale, scale, 1.0f));
 
     buffers_[GetParamStr(AppConstants::MainUniformBuffer)]->MapMemory();
-    buffers_[GetParamStr(AppConstants::MainUniformBuffer)]->FlushData(&modelUbObject, sizeof(UniformBufferObject));
+    buffers_[GetParamStr(AppConstants::MainUniformBuffer)]->FlushData(&model, sizeof(UniformBufferObject));
     buffers_[GetParamStr(AppConstants::MainUniformBuffer)]->UnmapMemory();
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
@@ -87,7 +87,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanApplication::CreateResources()
@@ -120,9 +120,11 @@ void VulkanApplication::CreateResources()
 
 void VulkanApplication::InitResources()
 {
-    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
-    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(std::uint16_t));
-    SetBuffer(GetParamStr(AppConstants::MainUniformBuffer), &modelUbObject, sizeof(UniformBufferObject));
+    const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
+    const std::uint32_t indexBufferSize = indices.size() * sizeof(std::uint16_t);
+
+    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertexBufferSize);
+    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indexBufferSize);
 }
 
 void VulkanApplication::CreateDescriptorPool()

@@ -37,7 +37,7 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateDefaultSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects();
 
         CreateResources();
         InitResources();
@@ -76,7 +76,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanApplication::CreateResources()
@@ -129,12 +129,6 @@ void VulkanApplication::InitResources()
     SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(indices[0]));
     SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), leafTextureHandler_.Data.data(),
               leafTextureHandler_.Data.size());
-
-    // Fill push constant data for every quad
-    pushConstantData_[TOP_LEFT_QUAD_INDEX] = {.Offset = {-0.5, -0.5}};
-    pushConstantData_[TOP_RIGHT_QUAD_INDEX] = {.Offset = {0.5, -0.5}};
-    pushConstantData_[BOTTOM_LEFT_QUAD_INDEX] = {.Offset = {-0.5, 0.5}};
-    pushConstantData_[BOTTOM_RIGHT_QUAD_INDEX] = {.Offset = {0.5, 0.5}};
 
     UpdateDescriptorSets();
 
@@ -309,7 +303,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t indexCou
         cmdBuffersPresent_[i]->BindIndexBuffer(buffers_[GetParamStr(AppConstants::MainIndexBuffer)]->GetBuffer(), 0,
                                                VK_INDEX_TYPE_UINT16);
 
-        for (auto& data: pushConstantData_) {
+        for (auto& data: pushConstantData) {
             cmdBuffersPresent_[i]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
                                                  sizeof(PushConstantData), &data);
             cmdBuffersPresent_[i]->DrawIndexed(indexCount, 1, 0, 0, 0);

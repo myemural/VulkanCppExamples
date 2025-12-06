@@ -38,7 +38,7 @@ inline VkSwapchainCreateInfoKHR GetDefaultSwapChainCreateInfo()
     return createInfo;
 }
 
-VulkanSwapChain::VulkanSwapChain(std::shared_ptr<VulkanDevice> device, VkSwapchainKHR const swapChain)
+VulkanSwapChain::VulkanSwapChain(std::shared_ptr<VulkanDevice> device, VkSwapchainKHR swapChain)
     : VulkanObject(std::move(device), swapChain)
 {
 }

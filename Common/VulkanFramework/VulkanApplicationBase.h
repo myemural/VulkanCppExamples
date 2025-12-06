@@ -85,6 +85,9 @@ protected:
     utility::ParameterServer params_;
     std::shared_ptr<vulkan_wrapper::VulkanInstance> instance_;
 
+    // Max frames in flight
+    static constexpr std::uint32_t MAX_FRAMES_IN_FLIGHT = 2;
+
 private:
     bool CreateInstance();
 };

@@ -38,7 +38,7 @@ inline VkApplicationInfo GetDefaultApplicationInfo()
     return appInfo;
 }
 
-VulkanInstance::VulkanInstance(VkInstance const instance) : VulkanObject(nullptr, instance) {}
+VulkanInstance::VulkanInstance(VkInstance instance) : VulkanObject(nullptr, instance) {}
 
 VulkanInstance::~VulkanInstance()
 {

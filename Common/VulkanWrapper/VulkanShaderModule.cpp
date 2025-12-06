@@ -10,7 +10,7 @@
 
 namespace common::vulkan_wrapper
 {
-VulkanShaderModule::VulkanShaderModule(std::shared_ptr<VulkanDevice> device, VkShaderModule const shaderModule)
+VulkanShaderModule::VulkanShaderModule(std::shared_ptr<VulkanDevice> device, VkShaderModule shaderModule)
     : VulkanObject(std::move(device), shaderModule)
 {
 }

@@ -49,7 +49,7 @@ public:
     }
 
 
-    HandleType GetHandle() const { return handle_; }
+    [[nodiscard]] HandleType GetHandle() const { return handle_; }
 
     std::shared_ptr<ParentType> GetParent() const
     {

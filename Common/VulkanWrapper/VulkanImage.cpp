@@ -56,7 +56,7 @@ VkMemoryRequirements VulkanImage::GetImageMemoryRequirements() const
 }
 
 void VulkanImage::BindImageMemory(const std::shared_ptr<VulkanDeviceMemory>& deviceMemory,
-                                  VkDeviceSize memoryOffset) const
+                                  const VkDeviceSize memoryOffset) const
 {
     const auto device = GetParent();
     if (!device ||

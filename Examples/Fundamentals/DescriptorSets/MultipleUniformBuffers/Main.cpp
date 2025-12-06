@@ -10,8 +10,6 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include <glm/vec3.hpp>
-
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ShaderLoader.h"
@@ -29,7 +27,6 @@ inline ParameterSchema CreateParameterSchema()
     SetCommonParamSchema(schema);
 
     // Register Constants
-    schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "passthrough_position.vert.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "multiple_ubo_color.frag.spv");
@@ -45,7 +42,6 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
-    schema.RegisterParam<glm::vec3>(AppSettings::InitialTriangleColor);
 
     return schema;
 }
@@ -64,7 +60,6 @@ bool SetParams(ParameterServer& params)
 
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.6f, 0.2f, 1.0f});
-        params.Set(AppSettings::InitialTriangleColor, glm::vec3{0.0f, 0.0f, 0.0f});
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

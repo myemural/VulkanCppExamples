@@ -22,7 +22,6 @@ In this example, a Mandelbrot fractal is drawn on the screen and the zoom is mad
 
 | Parameter / Key        | Type              | Usage in Code           | Description                    | Default Value |
 |------------------------|-------------------|-------------------------|--------------------------------|---------------|
-| AppSettings.ClearColor | VkClearColorValue | AppSettings::ClearColor | Background color of the screen |               |
 | AppSettings.LoopTime   | float             | AppSettings::LoopTime   | Time interval for camera reset |               |
 | AppSettings.ZoomSpeed  | float             | AppSettings::ZoomSpeed  | Zoom speed of the camera       |               |
 

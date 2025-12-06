@@ -67,7 +67,7 @@ protected:
 
     void CreateDefaultCommandPool();
 
-    void CreateDefaultSyncObjects(std::uint32_t maxFramesInFlight);
+    void CreateDefaultSyncObjects();
 
     void CreateBuffers(const std::vector<common::vulkan_framework::BufferResourceCreateInfo>& bufferCreateInfos);
 

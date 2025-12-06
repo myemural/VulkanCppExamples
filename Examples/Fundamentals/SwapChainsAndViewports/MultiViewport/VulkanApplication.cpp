@@ -7,7 +7,6 @@
 #include "VulkanApplication.h"
 
 #include <algorithm>
-#include <array>
 #include <chrono>
 
 #include <glm/ext/matrix_transform.hpp>
@@ -45,7 +44,7 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(swapChainImageViews_.size(), GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects(swapChainImageViews_.size());
 
         CreateResources();
         InitResources();
@@ -84,7 +83,7 @@ void VulkanApplication::DrawFrame()
 
     queue_->Present({swapChain_}, {imageIndex}, {renderFinishedSemaphores_[imageIndex]});
 
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanApplication::PreUpdate()
@@ -301,11 +300,11 @@ void VulkanApplication::CreatePipeline()
     };
 
     scissorRects_ = {
-        VkRect2D{0, 0, halfWidth, halfHeight},                                // Top-left
+        VkRect2D{0, 0, halfWidth, halfHeight},                                     // Top-left
         VkRect2D{static_cast<std::int32_t>(halfWidth), 0, halfWidth, halfHeight},  // Top-right
         VkRect2D{0, static_cast<std::int32_t>(halfHeight), halfWidth, halfHeight}, // Bottom-left
         VkRect2D{static_cast<std::int32_t>(halfWidth), static_cast<int32_t>(halfHeight), halfWidth,
-                 halfHeight}                                                  // Bottom-right
+                 halfHeight}                                                       // Bottom-right
     };
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
@@ -449,7 +448,9 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
     currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)));
 
-    for (const auto& region: regions_) {
+    constexpr std::array regions = {ViewportIndex::TOP_LEFT, ViewportIndex::TOP_RIGHT, ViewportIndex::BOTTOM_LEFT,
+                                    ViewportIndex::BOTTOM_RIGHT};
+    for (const auto& region: regions) {
         const int viewportIndex = static_cast<int>(region);
 
         // Clear viewport with specified color

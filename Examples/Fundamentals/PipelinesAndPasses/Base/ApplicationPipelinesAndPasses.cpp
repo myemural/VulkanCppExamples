@@ -150,7 +150,7 @@ void ApplicationPipelinesAndPasses::CreateDefaultCommandPool()
     }
 }
 
-void ApplicationPipelinesAndPasses::CreateDefaultSyncObjects(const std::uint32_t maxFramesInFlight)
+void ApplicationPipelinesAndPasses::CreateDefaultSyncObjects()
 {
     swapImagesFences_.resize(swapChainImageViews_.size(), nullptr);
 
@@ -158,7 +158,7 @@ void ApplicationPipelinesAndPasses::CreateDefaultSyncObjects(const std::uint32_t
         renderFinishedSemaphores_.emplace_back(device_->CreateSemaphore());
     }
 
-    for (size_t i = 0; i < maxFramesInFlight; ++i) {
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i) {
         imageAvailableSemaphores_.emplace_back(device_->CreateSemaphore());
         inFlightFences_.emplace_back(device_->CreateFence(VK_FENCE_CREATE_SIGNALED_BIT));
     }

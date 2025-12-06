@@ -17,7 +17,7 @@ namespace common::vulkan_wrapper
 {
 VulkanPhysicalDevice::VulkanPhysicalDevice(VkPhysicalDevice physicalDevice) : VulkanObject(nullptr, physicalDevice) {}
 
-std::uint32_t VulkanPhysicalDevice::FindMemoryType(std::uint32_t typeFilter,
+std::uint32_t VulkanPhysicalDevice::FindMemoryType(const std::uint32_t typeFilter,
                                                    const VkMemoryPropertyFlags& properties) const
 {
     VkPhysicalDeviceMemoryProperties memoryProperties{};

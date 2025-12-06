@@ -27,8 +27,6 @@ inline ParameterSchema CreateParameterSchema()
     SetCommonParamSchema(schema);
 
     // Register Constants
-    schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
-
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::HLSL);
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "drawing_cube.vs.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "drawing_cube.ps.spv");

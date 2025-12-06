@@ -14,7 +14,6 @@ namespace examples::fundamentals::basics::drawing_single_color_triangle
 {
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
     constexpr auto VertexCount = "AppConstants.VertexCount";
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";

@@ -61,7 +61,7 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
 
-    // Models
+    // Model handlers
     std::shared_ptr<common::utility::GltfModelHandler> lanternModel_;
 
     // Textures

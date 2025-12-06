@@ -20,10 +20,7 @@ In this example, a full-screen quad is drawn on the screen, and the gradient out
 
 ### Settings
 
-| Parameter / Key              | Type              | Usage in Code                 | Description                    | Default Value |
-|------------------------------|-------------------|-------------------------------|--------------------------------|---------------|
-| AppSettings.ClearColor       | VkClearColorValue | AppSettings::ClearColor       | Background color of the screen |               |
-
+None
 
 ## Learning Objectives
 

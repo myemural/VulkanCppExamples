@@ -59,7 +59,7 @@ protected:
 
     void CreateDefaultCommandPool();
 
-    void CreateDefaultSyncObjects(std::uint32_t maxFramesInFlight);
+    void CreateDefaultSyncObjects();
 
     std::shared_ptr<common::window_wrapper::Window> window_;
     std::shared_ptr<common::vulkan_wrapper::VulkanSurface> surface_;

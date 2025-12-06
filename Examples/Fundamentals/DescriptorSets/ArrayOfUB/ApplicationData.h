@@ -43,5 +43,15 @@ struct UniformBufferObject
     glm::mat4 model;
 };
 
-inline UniformBufferObject modelUbObject[4] = {glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0)};
+// Quad indices
+enum QuadIndex
+{
+    TOP_LEFT_QUAD_INDEX = 0,
+    TOP_RIGHT_QUAD_INDEX,
+    BOTTOM_LEFT_QUAD_INDEX,
+    BOTTOM_RIGHT_QUAD_INDEX,
+    QUAD_COUNT
+};
+
+inline UniformBufferObject modelUbObject[QUAD_COUNT] = {glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0)};
 } // namespace examples::fundamentals::descriptor_sets::array_of_ub

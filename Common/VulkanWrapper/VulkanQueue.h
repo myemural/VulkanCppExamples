@@ -48,6 +48,6 @@ public:
     [[nodiscard]] COMMON_API VkResult GetPresentResult() const;
 
 private:
-    VkResult presentResult_;
+    VkResult presentResult_ = VK_INCOMPLETE;
 };
 } // namespace common::vulkan_wrapper

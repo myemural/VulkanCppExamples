@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include "ApplicationData.h"
@@ -63,7 +64,7 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    ObjectUbo objectUbo_[NUM_CUBES] = {glm::mat4(1.0)};
+    std::array<ObjectUbo, NUM_CUBES> objectUbo_ = {glm::mat4(1.0)};
     std::uint32_t uboAlignedSize_ = UINT32_MAX;
 
     // Texture resource

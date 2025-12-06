@@ -17,6 +17,8 @@
 namespace examples::fundamentals::images_and_samplers::simple_blending
 {
 
+#define NUM_QUADS 4
+
 // Vertex Data for Quad
 // clang-format off
 inline const std::vector<common::utility::VertexPos2Uv2> vertices {
@@ -41,13 +43,14 @@ struct alignas(8) PushConstantData
     glm::vec2 Offset;
 };
 
-// Quad indices
-enum QuadIndex
-{
-    TOP_LEFT_QUAD_INDEX = 0,
-    TOP_RIGHT_QUAD_INDEX,
-    BOTTOM_LEFT_QUAD_INDEX,
-    BOTTOM_RIGHT_QUAD_INDEX,
-    QUAD_COUNT
+// Quad offsets
+// clang-format off
+inline constexpr PushConstantData pushConstantData[NUM_QUADS] = {
+    {.Offset = {-0.5, -0.5}},
+    {.Offset = {0.5, -0.5}},
+    {.Offset = {-0.5, 0.5}},
+    {.Offset = {0.5, 0.5}}
 };
+// clang-format on
+
 } // namespace examples::fundamentals::images_and_samplers::simple_blending

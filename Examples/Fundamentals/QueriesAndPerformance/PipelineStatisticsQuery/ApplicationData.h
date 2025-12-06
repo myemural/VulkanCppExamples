@@ -24,6 +24,7 @@ namespace examples::fundamentals::queries_and_performance::pipeline_statistics_q
 #define NUM_CUBES_PIPELINE_2 7
 #define NUM_CUBES_PIPELINE_3 4
 #define NUM_CUBES_PIPELINE_4 6
+#define PIPELINE_COUNT 4
 
 // Vertex Data for Cube
 inline const std::vector cubeVertices = common::utility::CreateCubeVertices<common::utility::VertexPos3Uv2>(1.0f);

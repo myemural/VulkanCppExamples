@@ -15,7 +15,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "ModelLoader.h"
-#include "Vertex.h"
+#include "VulkanHelpers.h"
 
 namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
 {
@@ -28,27 +28,6 @@ struct MvpData
 };
 
 // Model position vectors
-inline constexpr glm::vec3 modelPositions[NUM_OBJECTS] = {
-    glm::vec3(0.0f, 0.0f, 0.0f),      glm::vec3(-1.05f, 0.45f, -0.35f), glm::vec3(0.3f, 1.35f, -0.75f),
-    glm::vec3(-0.95f, -1.25f, 0.55f), glm::vec3(1.25f, -0.2f, 0.8f),    glm::vec3(-0.4f, 0.65f, -1.35f),
-    glm::vec3(0.95f, 0.15f, -0.9f),   glm::vec3(-1.35f, -0.75f, 1.1f),  glm::vec3(0.2f, 0.8f, -0.45f),
-    glm::vec3(-0.7f, -0.35f, 1.3f)};
+inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
+        NUM_OBJECTS, glm::vec3(-3.0f, -2.0f, -4.0f), glm::vec3(3.0f, 2.0f, -1.0f), 4.0f);
 } // namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
-
-namespace common::utility
-{
-template<>
-inline std::vector<VertexPos3Uv2> GltfMesh::GetVerticesAs()
-{
-    std::vector<VertexPos3Uv2> result;
-    for (const auto& vertex: Vertices) {
-        VertexPos3Uv2 current{};
-        current.Position.data = vertex.Position;
-        current.Uv.data.x = vertex.TexCoords[0].x;
-        current.Uv.data.y = vertex.TexCoords[0].y;
-        result.push_back(current);
-    }
-
-    return result;
-}
-} // namespace common::utility

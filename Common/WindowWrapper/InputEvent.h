@@ -29,7 +29,6 @@ public:
     [[nodiscard]] virtual EventType GetType() const = 0;
 };
 
-// Key Event
 class KeyEvent final : public InputEvent
 {
 public:
@@ -40,7 +39,6 @@ public:
     int Action;
 };
 
-// Mouse Button Event
 class MouseButtonEvent final : public InputEvent
 {
 public:
@@ -51,7 +49,6 @@ public:
     int Action;
 };
 
-// Mouse Move Event
 class MouseMoveEvent final : public InputEvent
 {
 public:
@@ -62,8 +59,7 @@ public:
     double Y;
 };
 
-// Mouse Scroll Event
-class MouseScrollEvent : public InputEvent
+class MouseScrollEvent final : public InputEvent
 {
 public:
     MouseScrollEvent(const double deltaX, const double deltaY) : DeltaX(deltaX), DeltaY(deltaY) {}

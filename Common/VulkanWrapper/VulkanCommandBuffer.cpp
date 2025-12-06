@@ -206,7 +206,7 @@ void VulkanCommandBuffer::SetViewports(const std::uint32_t firstViewport,
     vkCmdSetViewport(handle_, firstViewport, viewports.size(), viewports.empty() ? nullptr : viewports.data());
 }
 
-void VulkanCommandBuffer::SetScissors(std::uint32_t firstScissor, const std::vector<VkRect2D>& scissors) const
+void VulkanCommandBuffer::SetScissors(const std::uint32_t firstScissor, const std::vector<VkRect2D>& scissors) const
 {
     vkCmdSetScissor(handle_, firstScissor, scissors.size(), scissors.empty() ? nullptr : scissors.data());
 }
@@ -242,7 +242,7 @@ void VulkanCommandBuffer::BeginQuery(const std::shared_ptr<VulkanQueryPool>& que
     vkCmdBeginQuery(handle_, queryPool->GetHandle(), query, flags);
 }
 
-void VulkanCommandBuffer::EndQuery(const std::shared_ptr<VulkanQueryPool>& queryPool, std::uint32_t query) const
+void VulkanCommandBuffer::EndQuery(const std::shared_ptr<VulkanQueryPool>& queryPool, const std::uint32_t query) const
 {
     vkCmdEndQuery(handle_, queryPool->GetHandle(), query);
 }

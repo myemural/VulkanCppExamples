@@ -66,12 +66,12 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    ObjectSbo objectSbo_[MAX_NUM_OBJECTS] = {glm::mat4(1.0)};
+    std::array<ObjectSbo, MAX_NUM_OBJECTS> objectSbo_ = {glm::mat4(1.0)};
     std::uint32_t sboAlignedSize_ = UINT32_MAX;
 
     // Buffer (vertex/index) related data
-    std::array<PrimitiveData, 4> primitivesData_= {};
-    std::array<BufferAllocInfo, 4> bufferAllocInfos_= {};
+    std::array<PrimitiveData, PRIMITIVE_TYPE_COUNT> primitivesData_ = {};
+    std::array<BufferAllocInfo, PRIMITIVE_TYPE_COUNT> bufferAllocInfos_ = {};
     std::uint32_t totalBufferSize_ = UINT32_MAX;
     std::vector<VkDrawIndexedIndirectCommand> indirectCommands_;
 

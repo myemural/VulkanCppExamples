@@ -70,10 +70,8 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    MvpData mvpData_[NUM_CUBES] = {glm::mat4(1.0)};
-    std::array<VkRect2D, 4> scissorRects_{};
-    std::array<ViewportIndex, 4> regions_ = {ViewportIndex::TOP_LEFT, ViewportIndex::TOP_RIGHT,
-                                             ViewportIndex::BOTTOM_LEFT, ViewportIndex::BOTTOM_RIGHT};
+    std::array<MvpData, NUM_CUBES> mvpData_ = {glm::mat4(1.0)};
+    std::array<VkRect2D, NUM_VIEWPORTS> scissorRects_{};
 
     // Texture resource
     common::utility::TextureHandler crateTextureHandler_{};

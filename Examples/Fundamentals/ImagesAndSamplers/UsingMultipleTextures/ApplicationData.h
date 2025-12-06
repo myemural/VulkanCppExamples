@@ -16,6 +16,7 @@
 
 namespace examples::fundamentals::images_and_samplers::using_multiple_textures
 {
+#define NUM_QUADS 3
 
 // Vertex Data for Quad
 // clang-format off

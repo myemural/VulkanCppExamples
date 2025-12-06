@@ -14,7 +14,6 @@ namespace examples::fundamentals::basics::clear_screen_with_color
 {
 namespace AppConstants
 {
-    constexpr auto MaxFramesInFlight = "AppConstants.MaxFramesInFlight";
 } // namespace AppConstants
 
 namespace AppSettings

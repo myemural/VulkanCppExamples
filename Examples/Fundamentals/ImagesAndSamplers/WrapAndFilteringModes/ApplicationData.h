@@ -16,6 +16,7 @@
 
 namespace examples::fundamentals::images_and_samplers::wrap_and_filtering_modes
 {
+#define NUM_QUADS 4
 
 // Vertex Data for Quad
 // clang-format off

@@ -22,6 +22,7 @@ namespace examples::fundamentals::queries_and_performance::pipeline_caches
 {
 #define MAX_NUM_OBJECTS 200
 #define PER_OBJECT_COUNT 50
+#define PRIMITIVE_TYPE_COUNT 4
 
 // Vertex Data for Cube
 inline const std::vector cubeVertices = common::utility::CreateCubeVertices<common::utility::VertexPos3Uv2>(1.0f);

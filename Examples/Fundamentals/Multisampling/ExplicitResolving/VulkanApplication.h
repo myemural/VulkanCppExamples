@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include "ApplicationData.h"
@@ -61,7 +62,7 @@ private:
 
     void ProcessInput() const;
 
-    void RenderScene(const std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>& cmdBuffer);
+    void RenderScene(const std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>& cmdBuffer) const;
 
     void RenderQuad(const std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>& cmdBuffer) const;
 
@@ -70,7 +71,7 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
     VkSampleCountFlagBits maxSampleCount_ = VK_SAMPLE_COUNT_2_BIT;
-    MvpData mvpData_[NUM_SPHERE] = {glm::mat4(1.0)};
+    std::array<MvpData, NUM_SPHERES> mvpData_ = {glm::mat4(1.0)};
 
     // Texture resource
     common::utility::TextureHandler marbleTextureHandler_{};

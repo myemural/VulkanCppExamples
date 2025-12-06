@@ -63,7 +63,7 @@ protected:
 
     void CreateDefaultCommandPool();
 
-    void CreateDefaultSyncObjects(std::uint32_t maxFramesInFlight);
+    void CreateDefaultSyncObjects();
 
     void CreateVulkanResources(const common::vulkan_framework::ResourceDescriptor& resourceCreateInfo);
 

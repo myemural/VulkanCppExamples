@@ -10,7 +10,7 @@
 
 namespace common::vulkan_wrapper
 {
-VulkanPipelineCache::VulkanPipelineCache(std::shared_ptr<VulkanDevice> device, VkPipelineCache const pipelineCache)
+VulkanPipelineCache::VulkanPipelineCache(std::shared_ptr<VulkanDevice> device, VkPipelineCache pipelineCache)
     : VulkanObject(std::move(device), pipelineCache)
 {
 }

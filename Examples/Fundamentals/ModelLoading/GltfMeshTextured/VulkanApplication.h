@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include "ApplicationData.h"
@@ -63,9 +64,9 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
-    MvpData mvpData_[NUM_OBJECTS] = {glm::mat4(1.0)};
+    std::array<MvpData, NUM_OBJECTS> mvpData_ = {glm::mat4(1.0)};
 
-    // Models
+    // Model handlers
     std::shared_ptr<common::utility::GltfModelHandler> avocadoModel_;
 
     // Textures

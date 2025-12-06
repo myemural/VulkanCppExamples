@@ -43,5 +43,4 @@ struct UniformBufferObject
     glm::mat4 model;
 };
 
-inline UniformBufferObject modelUbObject{glm::mat4(1.0)};
 } // namespace examples::fundamentals::descriptor_sets::transformation2d_with_ub

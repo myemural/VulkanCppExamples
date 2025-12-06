@@ -18,6 +18,7 @@
 
 namespace examples::fundamentals::images_and_samplers::texture_atlases
 {
+#define NUM_QUADS 4
 
 // Vertex Data for Quad
 // clang-format off

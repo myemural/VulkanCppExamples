@@ -59,8 +59,7 @@ private:
     std::uint32_t currentWindowWidth_ = UINT32_MAX;
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
-    // Create infos
-
+    // Descriptor sets
     common::vulkan_framework::DescriptorUpdateInfo descriptorSetUpdateInfo_;
 
     // Texture resource

@@ -7,7 +7,6 @@
 #include "VulkanApplication.h"
 
 #include <algorithm>
-#include <array>
 #include <chrono>
 
 #include <glm/ext/matrix_transform.hpp>
@@ -45,7 +44,7 @@ bool VulkanApplication::Init()
         CreateDefaultQueue();
         CreateSwapChain();
         CreateDefaultCommandPool();
-        CreateDefaultSyncObjects(swapChainImageViews_.size(), GetParamU32(AppConstants::MaxFramesInFlight));
+        CreateDefaultSyncObjects(swapChainImageViews_.size());
 
         CreateResources();
         InitResources();
@@ -98,7 +97,7 @@ void VulkanApplication::DrawFrame()
         return;
     }
 
-    currentIndex_ = (currentIndex_ + 1) % GetParamU32(AppConstants::MaxFramesInFlight);
+    currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void VulkanApplication::PreUpdate()
@@ -521,6 +520,6 @@ void VulkanApplication::RecreateSwapChain()
     CreatePipeline();
     CreateFramebuffers();
     CreateCommandBuffers();
-    CreateDefaultSyncObjects(swapChainImageViews_.size(), GetParamU32(AppConstants::MaxFramesInFlight));
+    CreateDefaultSyncObjects(swapChainImageViews_.size());
 }
 } // namespace examples::fundamentals::swap_chains_and_viewports::swap_chain_recreation

@@ -27,8 +27,6 @@ inline ParameterSchema CreateParameterSchema()
     SetCommonParamSchema(schema);
 
     // Register Constants
-    schema.RegisterImmutableParam<std::uint32_t>(AppConstants::MaxFramesInFlight, 2);
-
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "drawing_quad.vert.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "drawing_quad.frag.spv");
@@ -45,9 +43,6 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::ComputeDescSetLayout, "computeDescSetLayout");
 
-    // Register Customizable Settings
-    schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
-
     return schema;
 }
 
@@ -62,9 +57,6 @@ bool SetParams(ParameterServer& params)
         // Vulkan settings
         params.Set<std::string>(VulkanParams::ApplicationName, params.Get<std::string>(WindowParams::Title));
         params.Set<std::vector<std::string>>(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
-
-        // Project customizable settings
-        params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.3f, 0.3f, 1.0f});
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

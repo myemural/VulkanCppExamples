@@ -16,6 +16,7 @@
 
 #include "CoreDefines.h"
 #include "TextureHandler.h"
+#include "Vertex.h"
 
 namespace common::utility
 {
@@ -110,5 +111,31 @@ struct COMMON_API GltfModelHandler
     std::vector<GltfMaterial> Materials;
     std::vector<TextureHandler> Textures;
 };
+
+template<>
+inline std::vector<VertexPos3> GltfMesh::GetVerticesAs()
+{
+    std::vector<VertexPos3> result;
+    for (const auto& vertex: Vertices) {
+        result.emplace_back(VertexPos3{vertex.Position});
+    }
+
+    return result;
+}
+
+template<>
+inline std::vector<VertexPos3Uv2> GltfMesh::GetVerticesAs()
+{
+    std::vector<VertexPos3Uv2> result;
+    for (const auto& vertex: Vertices) {
+        VertexPos3Uv2 current{};
+        current.Position.data = vertex.Position;
+        current.Uv.data.x = vertex.TexCoords[0].x;
+        current.Uv.data.y = vertex.TexCoords[0].y;
+        result.push_back(current);
+    }
+
+    return result;
+}
 
 } // namespace common::utility

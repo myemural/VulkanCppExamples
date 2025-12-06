@@ -338,7 +338,7 @@ VulkanGraphicsPipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
     createInfo_.layout = pipelineLayout->GetHandle();
     createInfo_.renderPass = renderPass->GetHandle();
 
-    VkPipelineCache cache = pipelineCache ? pipelineCache->GetHandle() : VK_NULL_HANDLE;
+    const VkPipelineCache cache = pipelineCache ? pipelineCache->GetHandle() : VK_NULL_HANDLE;
 
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
     if (vkCreateGraphicsPipelines(device->GetHandle(), cache, 1, &createInfo_, nullptr, &graphicsPipeline) !=
@@ -387,7 +387,7 @@ VulkanComputePipelineBuilder::Build(std::shared_ptr<VulkanDevice> device,
     createInfo_.stage = shaderStage_;
     createInfo_.layout = pipelineLayout->GetHandle();
 
-    VkPipelineCache cache = pipelineCache ? pipelineCache->GetHandle() : VK_NULL_HANDLE;
+    const VkPipelineCache cache = pipelineCache ? pipelineCache->GetHandle() : VK_NULL_HANDLE;
 
     VkPipeline computePipeline = VK_NULL_HANDLE;
     if (vkCreateComputePipelines(device->GetHandle(), cache, 1, &createInfo_, nullptr, &computePipeline) !=
