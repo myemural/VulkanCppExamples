@@ -6,7 +6,7 @@
 
 This examples draws 4 quads to the screen. Then it applies a transparent leaf texture to all of them to test simple alpha blending.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ImagesAndSamplers/SimpleBlending.png?raw=true)
 

@@ -6,7 +6,7 @@
 
 In this example, many cubes are drawn on the screen in random positions and their positions are set using a dynamic uniform buffer.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/QueriesAndPerformance/DynamicUniformBuffer.png?raw=true)
 

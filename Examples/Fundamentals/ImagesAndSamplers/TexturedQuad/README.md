@@ -6,7 +6,7 @@
 
 This example draws a single quad to the screen and applies a texture on it.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ImagesAndSamplers/TexturedQuad.png?raw=true)
 

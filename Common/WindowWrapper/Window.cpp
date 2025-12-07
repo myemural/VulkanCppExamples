@@ -112,7 +112,7 @@ void Window::DisableCursor() const { glfwSetInputMode(window_, GLFW_CURSOR, GLFW
 
 bool Window::CheckWindowCloseFlag() const { return static_cast<bool>(glfwWindowShouldClose(window_)); }
 
-void Window::PollEvents() const { glfwPollEvents(); }
+void Window::PollEvents() { glfwPollEvents(); }
 
 void Window::SwapBuffers() const { glfwSwapBuffers(window_); }
 

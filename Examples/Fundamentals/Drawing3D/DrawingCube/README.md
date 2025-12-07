@@ -6,7 +6,7 @@
 
 This example draws a cube to the screen and rotates it X and Y directions simultaneously to show depth testing, depth image and basic 3D rendering. Also, it shows perspective projection and MVP matrix usage.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Drawing3D/DrawingCube.gif?raw=true)
 

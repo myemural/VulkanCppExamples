@@ -6,7 +6,7 @@
 
 In this example, a glTF quad model rendered on the screen with specified camera node information (perspective or orthographic).
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ModelLoading/GltfCamera.png?raw=true)
 

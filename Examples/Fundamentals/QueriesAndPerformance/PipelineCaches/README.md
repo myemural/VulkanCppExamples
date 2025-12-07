@@ -6,9 +6,15 @@
 
 In this example, the pipeline's cache information is saved to disk when the application exits. Later, if this file is found on disk, the pipeline is created by loading it from this cache.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/QueriesAndPerformance/PipelineCaches.png?raw=true)
+
+**Console Output**
+```bash
+Pipeline cache loaded!
+examples::fundamentals::queries_and_performance::pipeline_caches::VulkanApplication::CreatePipeline: 463 microseconds
+```
 
 ## Controls
 

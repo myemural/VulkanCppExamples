@@ -6,7 +6,7 @@
 
 This example draws a quad to the screen with using index buffer in addition to vertex buffer.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingQuad.png?raw=true)
 

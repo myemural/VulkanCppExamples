@@ -6,7 +6,7 @@
 
 In this example, four fixed viewports are placed on the screen, and each viewport's clear color is set differently. The same scene is then drawn in these viewports, and a viewport-specific color mix is applied to the objects.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/SwapChainsAndViewports/MultiViewport.png?raw=true)
 

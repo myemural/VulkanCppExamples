@@ -6,7 +6,7 @@
 
 This example draws 4 quads to the screen. Then it applies different textures from a texture atlas to each of them.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ImagesAndSamplers/TextureAtlases.png?raw=true)
 

@@ -6,7 +6,7 @@
 
 This example draws 4 different colored triangles to the screen to show how to work with the different vertex attributes.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingMulticolorTriangles.png?raw=true)
 

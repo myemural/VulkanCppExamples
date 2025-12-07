@@ -6,7 +6,7 @@
 
 This example draws 20 rotating cubes on the screen using instanced rendering method.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Drawing3D/InstancedRendering.gif?raw=true)
 

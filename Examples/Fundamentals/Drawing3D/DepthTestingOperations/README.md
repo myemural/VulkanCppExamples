@@ -6,7 +6,7 @@
 
 This examples draws two planes and two cubes to the screen. Then applies depth test, depth write and depth operation related settings which getting from user.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Drawing3D/DepthTestingOperations.gif?raw=true)
 

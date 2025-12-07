@@ -6,9 +6,17 @@
 
 In this example, three different variants of a fragment shader are created using specialization constants, and three separate pipelines are created from these fragment shaders. Then drawing is done on the screen with these pipelines.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/QueriesAndPerformance/SpecializationConstants.png?raw=true)
+
+**Console Output**
+```bash
+examples::fundamentals::queries_and_performance::specialization_constants::VulkanApplication::DrawFrame: 11051 microseconds
+examples::fundamentals::queries_and_performance::specialization_constants::VulkanApplication::DrawFrame: 11898 microseconds
+examples::fundamentals::queries_and_performance::specialization_constants::VulkanApplication::DrawFrame: 11392 microseconds
+...
+```
 
 ## Controls
 

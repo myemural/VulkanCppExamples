@@ -6,7 +6,7 @@
 
 In this example, particles generated with a compute shader on the GPU are thrown from the cubes that drawn on the scene.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ComputeShaders/BasicParticles.png?raw=true)
 

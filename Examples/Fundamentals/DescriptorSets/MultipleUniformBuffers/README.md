@@ -6,7 +6,7 @@
 
 This example draws 4 triangles to the different areas of the screen. Then it applies different Uniform Buffers(UBs) to different areas of the screen.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/MultipleUniformBuffers.gif?raw=true)
 

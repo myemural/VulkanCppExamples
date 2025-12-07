@@ -6,7 +6,7 @@
 
 In this example, MSAA is activated based on the maximum sample number supported by the system, and the color and depth images are handled as multisampled images. Render pass was used for automatic resolving.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Multisampling/MsaaBasics.png?raw=true)
 

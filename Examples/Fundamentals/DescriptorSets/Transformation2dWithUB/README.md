@@ -6,7 +6,7 @@
 
 This example draws a square in the center of the screen. Then rotates it in clockwise, also scaling up and down constantly.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/Transformation2dWithUB.gif?raw=true)
 

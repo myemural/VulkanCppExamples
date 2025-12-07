@@ -6,7 +6,7 @@
 
 In this example, a glTF 3D mesh rendered on the screen as wireframe without any texture.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ModelLoading/GltfMeshWireframe.png?raw=true)
 

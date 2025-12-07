@@ -6,7 +6,7 @@
 
 This example creates a simple window.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Basics/CreatingWindow.png?raw=true)
 

@@ -6,7 +6,7 @@
 
 This example shows hot to draw a single colored triangle to the screen to demonstrate pipeline and simple vertex and fragment shader usages.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingSingleColorTriangle.png?raw=true)
 

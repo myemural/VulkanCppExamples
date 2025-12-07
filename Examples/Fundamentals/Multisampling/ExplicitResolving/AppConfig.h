@@ -18,12 +18,10 @@ namespace AppConstants
     constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto QuadVertexShaderFile = "AppConstants.QuadVertexShaderFile";
     constexpr auto SceneVertexShaderFile = "AppConstants.SceneVertexShaderFile";
-    constexpr auto QuadFragmentShaderFile = "AppConstants.QuadFragmentShaderFile";
-    constexpr auto SceneFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
+    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto QuadVertexShaderKey = "AppConstants.QuadVertexShaderKey";
     constexpr auto SceneVertexShaderKey = "AppConstants.SceneVertexShaderKey";
-    constexpr auto QuadFragmentShaderKey = "AppConstants.QuadFragmentShaderKey";
-    constexpr auto SceneFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
+    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
 
     // Resources
     constexpr auto SphereVertexBuffer = "AppConstants.SphereVertexBuffer";

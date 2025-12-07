@@ -6,7 +6,7 @@
 
 In this example, there is a constantly rotating scissor rectangle on the screen, and the scene is visible only from within this rectangle. The rest of the screen is black.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/SwapChainsAndViewports/ScissorAnimation.png?raw=true)
 

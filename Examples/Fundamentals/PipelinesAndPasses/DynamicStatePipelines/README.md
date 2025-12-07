@@ -6,7 +6,7 @@
 
 In this example, multiple cubes are drawn in the scene. Then blend constant value dynamically updated in the pipeline.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/PipelinesAndPasses/DynamicStatePipelines.png?raw=true)
 

@@ -6,7 +6,7 @@
 
 In this example, outlines are drawn around objects using multiple pipelines and stencil testing.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/PipelinesAndPasses/BasicStencilTesting.png?raw=true)
 

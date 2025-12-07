@@ -6,7 +6,7 @@
 
 In this example, multiple cubes are drawn in the scene. As the camera is moved, the previous frame is not cleared, creating a simple ghosting effect.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/PipelinesAndPasses/LoadStoreOps.png?raw=true)
 

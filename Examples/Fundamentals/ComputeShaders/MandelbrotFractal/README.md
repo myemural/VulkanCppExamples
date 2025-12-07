@@ -6,7 +6,7 @@
 
 In this example, a Mandelbrot fractal is drawn on the screen and the zoom is made towards the region called Seahorse Valley with the speed value taken from the user.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ComputeShaders/MandelbrotFractal.png?raw=true)
 

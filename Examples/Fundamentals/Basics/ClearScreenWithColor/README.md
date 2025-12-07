@@ -6,7 +6,7 @@
 
 This example shows how to create a render pass and framebuffer, along with basic swap chain creation and synchronization in Vulkan, and how to clear the screen with a simple color.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Basics/ClearScreenWithColor.png?raw=true)
 

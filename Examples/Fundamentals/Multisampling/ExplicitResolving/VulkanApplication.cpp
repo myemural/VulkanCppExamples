@@ -166,10 +166,8 @@ void VulkanApplication::CreateResources()
                                                .FileName = GetParamStr(AppConstants::QuadVertexShaderFile)},
                                               {.Name = GetParamStr(AppConstants::SceneVertexShaderKey),
                                                .FileName = GetParamStr(AppConstants::SceneVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::QuadFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::QuadFragmentShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::SceneFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::SceneFragmentShaderFile)}}};
+                                              {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                                               .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.Descriptors = {.MaxSets = 2,
@@ -373,7 +371,7 @@ void VulkanApplication::CreatePipelines()
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
             shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::QuadFragmentShaderKey))->GetHandle();
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -406,7 +404,7 @@ void VulkanApplication::CreatePipelines()
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
             shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::SceneFragmentShaderKey))->GetHandle();
+                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;

@@ -6,7 +6,7 @@
 
 This example draws a blue octagon to the screen with using an additional staging buffer.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Basics/UsingStagingBuffer.png?raw=true)
 

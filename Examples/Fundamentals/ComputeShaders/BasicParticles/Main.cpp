@@ -28,12 +28,11 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Constants
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::HLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "drawing_cube.vs.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "drawing_cube.ps.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleVertexShaderFile, "drawing_particles.vs.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleFragmentShaderFile, "drawing_particles.ps.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleComputeShaderFile,
-                                               "particle_generator.cs.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "position_with_mvp.vs.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "texture_sampler.ps.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleVertexShaderFile, "particle_position.vs.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleFragmentShaderFile, "particle_coloring.ps.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleComputeShaderFile, "particle_generator.cs.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::ParticleVertexShaderKey, "vertParticle");
@@ -51,7 +50,8 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeDescSet, "cubeDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::ParticleDescSetLayout, "particleDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleComputeDescSetLayout, "particleComputeDescSetLayout");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleComputeDescSetLayout,
+                                               "particleComputeDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
 
     // Register Customizable Settings

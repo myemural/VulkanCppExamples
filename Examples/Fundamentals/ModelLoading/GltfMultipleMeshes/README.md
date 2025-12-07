@@ -6,7 +6,7 @@
 
 In this example, a glTF model that contains multiple meshes rendered on the screen with applying node transformations as well.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ModelLoading/GltfMultipleMeshes.png?raw=true)
 

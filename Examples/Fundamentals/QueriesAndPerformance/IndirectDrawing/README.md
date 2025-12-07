@@ -6,9 +6,17 @@
 
 In this example, many primitives of 4 different types are drawn on the screen with a single indirect drawing command to reduce CPU draw call bottleneck.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/QueriesAndPerformance/IndirectDrawing.png?raw=true)
+
+**Console Output**
+```bash
+examples::fundamentals::queries_and_performance::indirect_drawing::VulkanApplication::DrawFrame: 7041 microseconds
+examples::fundamentals::queries_and_performance::indirect_drawing::VulkanApplication::DrawFrame: 7338 microseconds
+examples::fundamentals::queries_and_performance::indirect_drawing::VulkanApplication::DrawFrame: 6689 microseconds
+...
+```
 
 ## Controls
 

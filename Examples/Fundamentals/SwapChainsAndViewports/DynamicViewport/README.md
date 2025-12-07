@@ -6,7 +6,7 @@
 
 In this example, two viewports are placed on the left and right of the screen. The left viewport displays a perspective view of the scene, and the right viewport displays an orthographic view. The viewports are dynamically generated.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/SwapChainsAndViewports/DynamicViewport.png?raw=true)
 

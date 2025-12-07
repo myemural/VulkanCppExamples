@@ -6,7 +6,7 @@
 
 In this example, a glTF 3D mesh rendered on the screen with texture.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ModelLoading/GltfMeshTextured.png?raw=true)
 

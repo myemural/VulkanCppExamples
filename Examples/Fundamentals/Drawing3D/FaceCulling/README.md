@@ -6,7 +6,7 @@
 
 This example draws 10 static cubes on the screen using the user-specified cull mode and front face settings. You can see the differences by moving with the camera.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Drawing3D/FaceCulling.gif?raw=true)
 

@@ -6,7 +6,7 @@
 
 In this example, multiple cubes are drawn in the scene. The first 3 cubes in the scene are drawn with a pipeline that gives red output, the last 3 cubes are drawn with a pipeline that gives blue output, and the remaining cubes are drawn with a pipeline that gives wireframe output. Additionally, the pipeline that gives blue output was created with pipeline derivative.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/PipelinesAndPasses/MultiplePipelines.png?raw=true)
 

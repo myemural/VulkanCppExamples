@@ -6,7 +6,7 @@
 
 This example draws a single quad to the screen, but applies a texture on it with using combined images sampler.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ImagesAndSamplers/CombinedImageSampler.png?raw=true)
 

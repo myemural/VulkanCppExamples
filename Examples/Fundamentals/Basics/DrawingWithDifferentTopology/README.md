@@ -6,7 +6,7 @@
 
 This example draws 2 quads to the screen to demonstrate primitive restart index usage. Also, user can set polygon mode and line width (if line mode has been selected).
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingWithDifferentTopology.png?raw=true)
 

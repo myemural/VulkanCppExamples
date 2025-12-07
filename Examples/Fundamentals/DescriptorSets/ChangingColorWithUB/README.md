@@ -6,7 +6,7 @@
 
 This example draws a single triangle to the screen. Then it tries to change color via a Uniform Buffer(UB).
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/ChangingColorWithUB.png?raw=true)
 

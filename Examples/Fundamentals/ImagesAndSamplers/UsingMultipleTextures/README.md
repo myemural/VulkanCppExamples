@@ -6,7 +6,7 @@
 
 This examples draws 3 textured quads to the screen. Top quads have different textures and bottom quad has multiple textures that mixes of these two textures.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ImagesAndSamplers/UsingMultipleTextures.png?raw=true)
 

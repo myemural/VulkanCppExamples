@@ -6,7 +6,7 @@
 
 This example draws 4 squares to the screen. Then it applies different transformations to each one constantly.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/ArrayOfUB.gif?raw=true)
 

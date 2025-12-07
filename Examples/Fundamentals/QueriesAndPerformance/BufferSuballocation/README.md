@@ -6,9 +6,17 @@
 
 In this example, many objects are drawn to the screen using buffer suballocation, each with four different vertex and four different index data. A single buffer is used to hold the vertex and index data.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/QueriesAndPerformance/BufferSuballocation.png?raw=true)
+
+**Console Output**
+```bash
+examples::fundamentals::queries_and_performance::buffer_suballocation::VulkanApplication::DrawFrame: 12281 microseconds
+examples::fundamentals::queries_and_performance::buffer_suballocation::VulkanApplication::DrawFrame: 12065 microseconds
+examples::fundamentals::queries_and_performance::buffer_suballocation::VulkanApplication::DrawFrame: 11759 microseconds
+...
+```
 
 ## Controls
 

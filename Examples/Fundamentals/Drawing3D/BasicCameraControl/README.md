@@ -6,7 +6,7 @@
 
 This examples draws a cube to the screen and rotates it constantly. But this time also has a camera that controlling with WASD keys and mouse. With this camera you can move around the scene as you wish.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Drawing3D/BasicCameraControl.gif?raw=true)
 

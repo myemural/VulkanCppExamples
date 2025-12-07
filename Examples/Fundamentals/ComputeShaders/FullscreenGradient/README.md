@@ -6,7 +6,7 @@
 
 In this example, a full-screen quad is drawn on the screen, and the gradient output from the compute shader is placed on it. This gradient moves over time.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ComputeShaders/FullscreenGradient.png?raw=true)
 

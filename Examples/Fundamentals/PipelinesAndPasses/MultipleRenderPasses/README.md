@@ -6,7 +6,7 @@
 
 In this example, a plane with a cloud texture moving into the background is drawn with one render pass. Then, a second render pass draws the cubes using a perspective view.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/PipelinesAndPasses/MultipleRenderPasses.png?raw=true)
 

@@ -6,7 +6,7 @@
 
 In this example, cubes were drawn on the screen using the sample shader. The first sample was colored red, and the others were textured. Furthermore, using the sample shader eliminated the texture aliasing problem.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Multisampling/SampleShading.png?raw=true)
 

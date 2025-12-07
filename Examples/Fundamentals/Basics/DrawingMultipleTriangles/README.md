@@ -6,7 +6,7 @@
 
 This example draws 4 identical triangles to the screen to show how to draw something to the screen with using vertex buffer.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Basics/DrawingMultipleTriangles.png?raw=true)
 

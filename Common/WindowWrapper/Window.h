@@ -90,7 +90,7 @@ public:
     /**
      * @brief Used to polling call of the input events.
      */
-    void PollEvents() const;
+    static void PollEvents();
 
     /**
      * @brief Used for swapping buffers of the window.

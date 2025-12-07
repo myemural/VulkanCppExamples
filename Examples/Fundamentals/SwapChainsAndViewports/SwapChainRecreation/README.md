@@ -6,7 +6,7 @@
 
 In this example, cubes are drawn on the screen and navigated using the camera. If the window size is changed, the swap chain object is recreated and the drawing is reapplied according to the new window size.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/SwapChainsAndViewports/SwapChainRecreation.png?raw=true)
 

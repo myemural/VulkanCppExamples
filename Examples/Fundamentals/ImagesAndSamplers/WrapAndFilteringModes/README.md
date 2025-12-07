@@ -6,7 +6,7 @@
 
 This example draws 4 quads to the screen. Then it applies them different samplers that have different wrap and filtering modes.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ImagesAndSamplers/WrapAndFilteringModes.png?raw=true)
 

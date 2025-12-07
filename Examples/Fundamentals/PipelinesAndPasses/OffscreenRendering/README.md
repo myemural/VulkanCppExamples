@@ -6,7 +6,7 @@
 
 In this example, a quad is placed on the right side of the screen and the rendered scene is drawn as a texture on this quad with offscreen rendering.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/PipelinesAndPasses/OffscreenRendering.png?raw=true)
 

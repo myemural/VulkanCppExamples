@@ -28,14 +28,12 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Constants
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadVertexShaderFile, "quad.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneVertexShaderFile, "scene.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadFragmentShaderFile, "quad.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneFragmentShaderFile, "scene.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::QuadVertexShaderFile, "passthrough_position_uv.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::SceneVertexShaderFile, "position_with_mvp.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "texture_sampler.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::QuadVertexShaderKey, "vertQuad");
     schema.RegisterImmutableParam<std::string>(AppConstants::SceneVertexShaderKey, "vertScene");
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadFragmentShaderKey, "fragQuad");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneFragmentShaderKey, "fragScene");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::SphereVertexBuffer, "sphereVertexBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::SphereIndexBuffer, "sphereIndexBuffer");

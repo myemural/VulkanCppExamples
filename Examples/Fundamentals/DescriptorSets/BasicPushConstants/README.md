@@ -6,7 +6,7 @@
 
 This example demonstrate the basic push constants usage with changing color of the square with keyboard inputs 1, 2, 3.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/BasicPushConstants.png?raw=true)
 

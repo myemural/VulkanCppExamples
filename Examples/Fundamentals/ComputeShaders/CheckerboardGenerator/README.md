@@ -6,7 +6,7 @@
 
 In this example, a checkerboard texture is first generated with a compute shader and then applied to the spheres in the scene. The user can also specify the size and tile size of the texture to be generated.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/ComputeShaders/CheckerboardGenerator.png?raw=true)
 

@@ -6,7 +6,7 @@
 
 In this example, a full screen quad was drawn on the screen and MSAA was implemented by doing manual (explicit) resolving on it.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/Multisampling/ExplicitResolving.png?raw=true)
 

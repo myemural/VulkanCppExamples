@@ -46,8 +46,14 @@ protected:
      */
     virtual void DrawFrame() = 0;
 
+    /**
+     * @brief Contains the codes which executes every step of the render loop before DrawFrame.
+     */
     virtual void PreUpdate() = 0;
 
+    /**
+     * @brief Contains the codes which executes every step of the render loop after DrawFrame.
+     */
     virtual void PostUpdate() = 0;
 
     /**

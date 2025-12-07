@@ -6,9 +6,20 @@
 
 In this example, a cube is drawn with a sphere inside it. The occlusion query periodically checks whether fragments of the sphere are visible.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/QueriesAndPerformance/OcclusionQuery.png?raw=true)
+
+**Console Output**
+```bash
+Sphere visibility: false
+Number of visible fragments: 0
+Sphere visibility: false
+Number of visible fragments: 0
+Sphere visibility: true
+Number of visible fragments: 125188
+...
+```
 
 ## Controls
 

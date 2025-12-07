@@ -6,9 +6,26 @@
 
 In this example, 20 cubes in four different groups are drawn on the screen using four different pipelines. The first two pipelines are drawn in fill polygon mode, while the last two are drawn as wireframes. Finally, the runtimes of these pipelines are measured using timestamp queries.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/QueriesAndPerformance/TimestampQuery.png?raw=true)
+
+**Console Output**
+```bash
+-----------------
+Pipeline 1: 23177ns
+Pipeline 2: 12760ns
+Pipeline 3: 8020ns
+Pipeline 4: 9895ns
+-----------------
+-----------------
+Pipeline 1: 5156ns
+Pipeline 2: 5052ns
+Pipeline 3: 4635ns
+Pipeline 4: 9635ns
+-----------------
+...
+```
 
 ## Controls
 

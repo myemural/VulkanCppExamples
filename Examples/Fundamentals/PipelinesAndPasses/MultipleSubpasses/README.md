@@ -6,7 +6,7 @@
 
 In this example, three cubes rotating at different speeds are drawn on the screen, and the depth buffer data for these three cubes is drawn visually on the fourth cube that drawn on the right side of the screen. Input attachment and multiple subpasses are used for this purpose.
 
-## Screenshots / Recordings
+## Output
 
 ![](/Docs/ExampleMedia/Fundamentals/PipelinesAndPasses/MultipleSubpasses.png?raw=true)
 

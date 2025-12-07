@@ -64,6 +64,10 @@ struct COMMON_API DescriptorUpdateInfo
 class COMMON_API DescriptorUpdater
 {
 public:
+    /**
+     * @param device Refers VulkanDevice object.
+     * @param registry Descriptor registry object that will be updated.
+     */
     DescriptorUpdater(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device, DescriptorRegistry& registry);
 
     /**
