@@ -4,7 +4,7 @@
 
 ## Description
 
-In this example, cubes are drawn on the screen and navigated using the camera. If the window size is changed, the swap chain object is recreated and the drawing is reapplied according to the new window size.
+In this example, some cubes are drawn on the screen. If the window size is changed, the swap chain object is recreated and the drawing is reapplied according to the new window size.
 
 ## Output
 
@@ -14,8 +14,6 @@ In this example, cubes are drawn on the screen and navigated using the camera. I
 
 | Input   | Action                      |
 |---------|-----------------------------|
-| W/A/S/D | Move the camera             |
-| Mouse   | Look around with the camera |
 | Esc     | Close the window            |
 
 ## Application Parameters
@@ -25,8 +23,6 @@ In this example, cubes are drawn on the screen and navigated using the camera. I
 | Parameter / Key              | Type              | Usage in Code                 | Description                    | Default Value |
 |------------------------------|-------------------|-------------------------------|--------------------------------|---------------|
 | AppSettings.ClearColor       | VkClearColorValue | AppSettings::ClearColor       | Background color of the screen |               |
-| AppSettings.MouseSensitivity | float             | AppSettings::MouseSensitivity | Mouse sensitivity value        |               |
-| AppSettings.CameraSpeed      | float             | AppSettings::CameraSpeed      | Speed of the camera            |               |
 
 
 ## Learning Objectives

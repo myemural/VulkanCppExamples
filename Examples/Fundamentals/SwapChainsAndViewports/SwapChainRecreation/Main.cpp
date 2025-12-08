@@ -1,7 +1,7 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, cubes are drawn on the screen and navigated using the camera. If the window size is
- *          changed, the swap chain object is recreated and the drawing is reapplied according to the new window size.
+ * @brief   In this example, some cubes are drawn on the screen. If the window size is changed, the swap chain object
+ *          is recreated and the drawing is reapplied according to the new window size.
  * @author  Mustafa Yemural (myemural)
  * @date    4.10.2025
  *
@@ -45,8 +45,6 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
-    schema.RegisterParam<float>(AppSettings::MouseSensitivity);
-    schema.RegisterParam<float>(AppSettings::CameraSpeed);
 
     return schema;
 }
@@ -66,8 +64,6 @@ bool SetParams(ParameterServer& params)
 
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.3f, 0.3f, 1.0f});
-        params.Set(AppSettings::MouseSensitivity, 3.0f);
-        params.Set(AppSettings::CameraSpeed, 3.0f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

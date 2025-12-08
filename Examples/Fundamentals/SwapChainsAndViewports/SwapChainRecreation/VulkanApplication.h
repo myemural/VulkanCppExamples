@@ -39,11 +39,7 @@ protected:
 
     void DrawFrame() override;
 
-    void PreUpdate() override;
-
 private:
-    void InitInputSystem();
-
     void CreateResources();
 
     void InitResources() const;
@@ -63,8 +59,6 @@ private:
     void RecordPresentCommandBuffers(std::uint32_t currentImageIndex);
 
     void CalculateAndSetMvp();
-
-    void ProcessInput() const;
 
     void RecreateSwapChain();
 
@@ -90,11 +84,6 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
-
-    // Mouse related values
-    bool firstMouseTriggered_ = true;
-    float lastX_ = 0.0f;
-    float lastY_ = 0.0f;
 
     // Camera
     std::unique_ptr<common::utility::PerspectiveCamera> camera_;

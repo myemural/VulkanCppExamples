@@ -36,7 +36,5 @@ namespace AppConstants
 namespace AppSettings
 {
     constexpr auto ClearColor = "AppSettings.ClearColor";
-    constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
-    constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
 } // namespace AppSettings
 } // namespace examples::fundamentals::swap_chains_and_viewports::swap_chain_recreation

@@ -34,9 +34,7 @@ bool VulkanApplication::Init()
         currentWindowHeight_ = GetParamU32(WindowParams::Height);
 
         float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
-
-        InitInputSystem();
+        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.5f), aspectRatio);
 
         CreateDefaultSurface();
         SelectDefaultPhysicalDevice();
@@ -98,43 +96,6 @@ void VulkanApplication::DrawFrame()
     }
 
     currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
-}
-
-void VulkanApplication::PreUpdate()
-{
-    // Poll events
-    ApplicationSwapChainsAndViewports::PreUpdate();
-
-    // Process continuous inputs
-    ProcessInput();
-}
-
-void VulkanApplication::InitInputSystem()
-{
-    lastX_ = static_cast<float>(currentWindowWidth_) / 2.0f;
-    lastY_ = static_cast<float>(currentWindowHeight_) / 2.0f;
-
-    window_->OnMouseMove([&](const MouseMoveEvent& event) {
-        const auto xPos = static_cast<float>(event.X);
-        const auto yPos = static_cast<float>(event.Y);
-
-        if (firstMouseTriggered_) {
-            lastX_ = xPos;
-            lastY_ = yPos;
-            firstMouseTriggered_ = false;
-        }
-
-        float xOffset = xPos - lastX_;
-        float yOffset = lastY_ - yPos;
-        lastX_ = xPos;
-        lastY_ = yPos;
-
-        const float sensitivity = GetParamFloat(AppSettings::MouseSensitivity) * static_cast<float>(deltaTime_);
-        xOffset *= sensitivity;
-        yOffset *= sensitivity;
-
-        camera_->Rotate(xOffset, yOffset);
-    });
 }
 
 void VulkanApplication::CreateResources()
@@ -457,23 +418,6 @@ void VulkanApplication::CalculateAndSetMvp()
 
         // Calculate MVP matrix
         mvpData_[i].mvpMatrix = proj * view * model;
-    }
-}
-
-void VulkanApplication::ProcessInput() const
-{
-    const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
-    if (window_->IsKeyPressed(GLFW_KEY_W)) {
-        camera_->Move(camera_->GetFrontVector() * cameraSpeed);
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_S)) {
-        camera_->Move(-camera_->GetFrontVector() * cameraSpeed);
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_A)) {
-        camera_->Move(-camera_->GetRightVector() * cameraSpeed);
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_D)) {
-        camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
 
