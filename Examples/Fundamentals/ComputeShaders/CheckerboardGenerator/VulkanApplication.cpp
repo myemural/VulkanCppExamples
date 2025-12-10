@@ -37,7 +37,7 @@ bool VulkanApplication::Init()
         checkerboardTextureSize_ = GetParamU32(AppSettings::CheckerboardTextureSize);
 
         float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 4.0f), aspectRatio);
+        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 8.0f), aspectRatio);
 
         InitInputSystem();
 
