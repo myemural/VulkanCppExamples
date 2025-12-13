@@ -142,6 +142,11 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Specialization Constants](/Examples/Fundamentals/QueriesAndPerformance/SpecializationConstants)
   - [Pipeline Caches](/Examples/Fundamentals/QueriesAndPerformance/PipelineCaches)
 
+### [Real-Time Lighting](/Examples/RealTimeLighting)
+
+- **[Basic Lighting](/Examples/RealTimeLighting/BasicLighting)**
+  - [Diffuse Lighting in Flat Shading](/Examples/RealTimeLighting/BasicLighting/DiffuseLightingFlat)
+
 ## Environment Support
 
 Currently only tested on Windows. Other operating systems will be added.
