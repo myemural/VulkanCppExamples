@@ -11,8 +11,7 @@
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inNormal;
 
-layout(location = 0) out vec3 fragPos;
-layout(location = 1) flat out vec3 fragNormal;
+layout(location = 0) out vec3 vertexColor;
 
 struct MeshData {
     mat4 model;
@@ -22,6 +21,12 @@ struct MeshData {
 layout(std430, binding = 0) readonly buffer MeshDataBuffer {
     MeshData meshes[];
 };
+
+layout(set = 0, binding = 1) uniform LightUBO
+{
+    vec3 lightPosition;
+    vec3 lightColor;
+} light;
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
@@ -33,10 +38,19 @@ void main()
 {
     mat4 model = meshes[pc.objectId].model;
 
-    fragPos = vec3(model * vec4(inPosition, 1.0));
+    // World-space position
+    vec3 worldPos = vec3(model * vec4(inPosition, 1.0));
 
-    // Inverse transform is needed for non-uniform scales
-    fragNormal = normalize(transpose(inverse(mat3(model))) * inNormal);
+    // World-space normal
+    vec3 worldNormal = normalize(transpose(inverse(mat3(model))) * inNormal);
 
-    gl_Position = pc.proj * pc.view * vec4(fragPos, 1.0);
+    // Normalizing light direction
+    vec3 normalizedLightDir = normalize(light.lightPosition - worldPos);
+
+    // Lambert diffuse
+    float diff = max(dot(worldNormal, normalizedLightDir), 0.0);
+    vec3 diffuse = diff * light.lightColor * meshes[pc.objectId].objectColor.rgb;
+    vertexColor = diffuse;
+
+    gl_Position = pc.proj * pc.view * vec4(worldPos, 1.0);
 }

@@ -8,11 +8,9 @@
 // Licensed under the MIT License.
 // ------------------------------------------------------------------------
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec3 inNormal;
+layout(location = 0) out vec4 outColor;
 
-layout(location = 0) out vec3 fragPos;
-layout(location = 1) flat out vec3 fragNormal;
+layout(location = 0) in vec3 vertexColor;
 
 struct MeshData {
     mat4 model;
@@ -31,12 +29,5 @@ layout(push_constant) uniform MeshPushConstants {
 
 void main()
 {
-    mat4 model = meshes[pc.objectId].model;
-
-    fragPos = vec3(model * vec4(inPosition, 1.0));
-
-    // Inverse transform is needed for non-uniform scales
-    fragNormal = normalize(transpose(inverse(mat3(model))) * inNormal);
-
-    gl_Position = pc.proj * pc.view * vec4(fragPos, 1.0);
+    outColor = vec4(vertexColor, 1.0);
 }

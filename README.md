@@ -146,6 +146,9 @@ Every example has its own directory and CMake target. You can build what you wan
 
 - **[Basic Lighting](/Examples/RealTimeLighting/BasicLighting)**
   - [Diffuse Lighting in Flat Shading](/Examples/RealTimeLighting/BasicLighting/DiffuseLightingFlat)
+  - [Diffuse Lighting in Gouraud Shading](/Examples/RealTimeLighting/BasicLighting/DiffuseLightingGouraud)
+  - [Diffuse Lighting in Phong Shading](/Examples/RealTimeLighting/BasicLighting/DiffuseLightingPhong)
+  - [Specular Lighting in Phong Shading](/Examples/RealTimeLighting/BasicLighting/SpecularLightingPhong)
 
 ## Environment Support
 

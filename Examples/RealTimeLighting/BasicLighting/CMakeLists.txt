@@ -4,3 +4,6 @@ add_subdirectory(Base)
 include_directories(Base)
 
 add_subdirectory(DiffuseLightingFlat)
+add_subdirectory(DiffuseLightingGouraud)
+add_subdirectory(DiffuseLightingPhong)
+add_subdirectory(SpecularLightingPhong)

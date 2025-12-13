@@ -36,7 +36,7 @@ void main()
     fragPos = vec3(model * vec4(inPosition, 1.0));
 
     // Inverse transform is needed for non-uniform scales
-    fragNormal = normalize(transpose(inverse(mat3(model))) * inNormal);
+    fragNormal = transpose(inverse(mat3(model))) * inNormal;
 
     gl_Position = pc.proj * pc.view * vec4(fragPos, 1.0);
 }
