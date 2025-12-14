@@ -17,14 +17,12 @@
 namespace examples::real_time_lighting::basic_lighting::specular_lighting_phong
 {
 
-struct LightUbo
+struct alignas(16) LightUbo
 {
-    alignas(16) glm::vec3 lightPosition;
-    float _pad0;
-    alignas(16) glm::vec3 lightColor;
-    float ambientStrength;
-    float specularStrength;
-    float shininess;
+    glm::vec4 lightPosition;  // xyz = Light Position
+    glm::vec4 lightColor;     // xyz = Light Color
+    glm::vec4 ambientParams;  // x = Ambient Strength
+    glm::vec4 specularParams; // x = Specular Strength, y = Shininess
 };
 
 } // namespace examples::real_time_lighting::basic_lighting::specular_lighting_phong

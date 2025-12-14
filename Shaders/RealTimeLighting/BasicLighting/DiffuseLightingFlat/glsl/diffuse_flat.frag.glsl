@@ -18,14 +18,14 @@ struct MeshData {
     vec4 objectColor;
 };
 
-layout(std430, binding = 0) readonly buffer MeshDataBuffer {
+layout(std430, set = 0, binding = 0) readonly buffer MeshDataBuffer {
     MeshData meshes[];
 };
 
-layout(set = 0, binding = 1) uniform LightUBO
+layout(std140, set = 0, binding = 1) uniform LightUBO
 {
-    vec3 lightPosition;
-    vec3 lightColor;
+    vec4 lightPosition; // xyz = Light Position
+    vec4 lightColor;    // rgb = Light Color
 } light;
 
 layout(push_constant) uniform MeshPushConstants {
@@ -37,11 +37,11 @@ layout(push_constant) uniform MeshPushConstants {
 void main()
 {
     // Normalizing light direction
-    vec3 normalizedLightDir = normalize(light.lightPosition - fragPos);
+    vec3 normalizedLightDir = normalize(light.lightPosition.xyz - fragPos);
 
     // Lambert diffuse
     float diff = max(dot(fragNormal, normalizedLightDir), 0.0);
-    vec3 diffuse = diff * light.lightColor * meshes[pc.objectId].objectColor.rgb;
+    vec3 diffuse = diff * light.lightColor.rgb * meshes[pc.objectId].objectColor.rgb;
 
     outColor = vec4(diffuse, 1.0);
 }

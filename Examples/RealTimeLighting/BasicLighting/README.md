@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `DiffuseLightingPhong`
 4. [Specular Lighting in Phong Shading](/Examples/RealTimeLighting/BasicLighting/SpecularLightingPhong)
    - `SpecularLightingPhong`
+5. [Blinn-Phong Shading](/Examples/RealTimeLighting/BasicLighting/BlinnPhong)
+   - `BlinnPhong`
 
 ## Architecture of the Subsection
 

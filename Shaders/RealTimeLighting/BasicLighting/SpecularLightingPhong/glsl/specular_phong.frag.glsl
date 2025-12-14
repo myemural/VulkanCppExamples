@@ -22,13 +22,12 @@ layout(std430, binding = 0) readonly buffer MeshDataBuffer {
     MeshData meshes[];
 };
 
-layout(set = 0, binding = 1) uniform LightUBO
+layout(std140, set = 0, binding = 1) uniform LightUBO
 {
-    vec3 lightPosition;
-    vec3 lightColor;
-    float ambientStrength;
-    float specularStrength;
-    float shininess;
+    vec4 lightPosition;  // xyz = Light Position
+    vec4 lightColor;     // rgb = Light Color
+    vec4 ambientParams;  // x = Ambient Strength
+    vec4 specularParams; // x = Specular Strength, y = Shininess
 } light;
 
 layout(push_constant) uniform MeshPushConstants {
@@ -43,7 +42,7 @@ void main()
     vec3 normalizedNormal = normalize(fragNormal);
 
     // Normalizing light direction
-    vec3 normalizedLightDir = normalize(light.lightPosition - fragPos);
+    vec3 normalizedLightDir = normalize(light.lightPosition.xyz - fragPos);
 
     // Normalizing view direction (camera position)
     mat4 inverseView = inverse(pc.view);
@@ -51,16 +50,16 @@ void main()
     vec3 normalizedView = normalize(viewPos - fragPos);
 
     // Ambient calculation
-    vec3 ambient = light.ambientStrength * light.lightColor * meshes[pc.objectId].objectColor.rgb;
+    vec3 ambient = light.ambientParams.x * light.lightColor.rgb * meshes[pc.objectId].objectColor.rgb;
 
     // Diffuse (Lambert) calculation
     float diff = max(dot(normalizedNormal, normalizedLightDir), 0.0);
-    vec3 diffuse = diff * light.lightColor * meshes[pc.objectId].objectColor.rgb;
+    vec3 diffuse = diff * light.lightColor.rgb * meshes[pc.objectId].objectColor.rgb;
 
     // Specular calculation
     vec3 reflectDir = reflect(-normalizedLightDir, normalizedNormal);
-    float spec = pow(max(dot(normalizedView, reflectDir), 0.0), light.shininess);
-    vec3 specular = light.specularStrength * spec * light.lightColor;
+    float spec = pow(max(dot(normalizedView, reflectDir), 0.0), light.specularParams.y);
+    vec3 specular = light.specularParams.x * spec * light.lightColor.rgb;
 
     // Final color
     vec3 finalColor = ambient + diffuse + specular;

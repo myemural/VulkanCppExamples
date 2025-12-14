@@ -461,11 +461,11 @@ void VulkanApplication::UpdateSceneTransforms() const
     scene_->MoveObject(GetParamStr(AppConstants::LightObject), glm::vec3(x, 2.0f, z));
 
     LightUbo lightUbo{};
-    lightUbo.lightPosition = scene_->GetMesh(GetParamStr(AppConstants::LightObject)).transform.translation;
-    lightUbo.lightColor = params_.Get<glm::vec3>(AppSettings::LightColor);
-    lightUbo.ambientStrength = params_.Get<float>(AppSettings::AmbientStrength);
-    lightUbo.specularStrength = params_.Get<float>(AppSettings::SpecularStrength);
-    lightUbo.shininess = params_.Get<float>(AppSettings::Shininess);
+    lightUbo.lightPosition = glm::vec4(scene_->GetMesh(GetParamStr(AppConstants::LightObject)).transform.translation, 1.0f);
+    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.ambientParams.x = GetParamFloat(AppSettings::AmbientStrength);
+    lightUbo.specularParams.x = GetParamFloat(AppSettings::SpecularStrength);
+    lightUbo.specularParams.y = GetParamFloat(AppSettings::Shininess);
     resources_->SetBuffer(GetParamStr(AppConstants::LightUniformBuffer), &lightUbo, sizeof(lightUbo));
 }
 

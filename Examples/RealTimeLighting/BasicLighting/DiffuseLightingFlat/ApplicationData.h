@@ -17,12 +17,10 @@
 namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_flat
 {
 
-struct LightUbo
+struct alignas(16) LightUbo
 {
-    alignas(16) glm::vec3 lightPosition;
-    float pad0;
-    alignas(16) glm::vec3 lightColor;
-    float pad1;
+    glm::vec4 lightPosition; // xyz = Light Position
+    glm::vec4 lightColor;    // xyz = Light Color
 };
 
 } // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_flat

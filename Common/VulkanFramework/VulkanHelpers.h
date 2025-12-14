@@ -196,4 +196,23 @@ inline std::vector<glm::vec3> GenerateRandomPositions(const size_t count,
 
     return positions;
 }
+
+/**
+ * @brief Generates and returns random color value between min and max values. Alpha is not included.
+ * @param minValue Minimum value per color component. Default is 0.
+ * @param maxValue Maximum value for color component. Default is 1.
+ * @return Returns random color value.
+ */
+inline glm::vec3 GenerateRandomColor(const float minValue = 0.0f, const float maxValue = 1.0f)
+{
+    std::mt19937 generator{ std::random_device{}() };
+    std::uniform_real_distribution distribution(minValue, maxValue);
+
+    return glm::vec3{
+        distribution(generator),
+        distribution(generator),
+        distribution(generator)
+    };
+}
+
 } // namespace common::vulkan_framework
