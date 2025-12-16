@@ -59,9 +59,6 @@ private:
 
     void ProcessInput() const;
 
-    // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
-
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> scenePipeline_;

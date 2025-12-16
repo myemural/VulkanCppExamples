@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `DirectionalLight`
 2. [Point Light](/Examples/RealTimeLighting/LightSources/PointLight)
    - `PointLight`
+3. [Spotlight](/Examples/RealTimeLighting/LightSources/Spotlight)
+   - `Spotlight`
 
 ## Architecture of the Subsection
 

@@ -9,11 +9,27 @@
 // ------------------------------------------------------------------------
 
 layout(location = 0) out vec4 outColor;
-layout(location = 0) in vec2 fragUV;
 
-layout(set = 0, binding = 0) uniform sampler2D uCombinedSampler;
+layout(location = 0) in vec3 fragPos;
+layout(location = 1) flat in vec3 fragNormal;
+
+struct MeshData {
+    mat4 model;
+    vec4 objectColor;
+};
+
+layout(std430, binding = 0) readonly buffer MeshDataBuffer {
+    MeshData meshes[];
+};
+
+layout(push_constant) uniform MeshPushConstants {
+    mat4 view;
+    mat4 proj;
+    uint objectId;
+} pc;
 
 void main()
 {
-    outColor = texture(uCombinedSampler, fragUV);
+    // Hardcoded white color for light objects
+    outColor = vec4(1.0, 1.0, 1.0, 1.0);
 }

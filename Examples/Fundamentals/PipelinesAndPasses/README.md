@@ -6,19 +6,17 @@ This subsection contains examples which related to pipeline, render pass and sub
 
 The examples in this subsection, listed from easy to complex, are as follows:
 
-1. [Simple Ghosting Effect](/Examples/Fundamentals/PipelinesAndPasses/LoadStoreOps)
-   - `LoadStoreOps`
-2. [Changing Blending Factor with Dynamic State](/Examples/Fundamentals/PipelinesAndPasses/DynamicStatePipelines)
+1. [Changing Blending Factor with Dynamic State](/Examples/Fundamentals/PipelinesAndPasses/DynamicStatePipelines)
    - `DynamicStatePipelines`
-3. [Using Multiple Pipelines and Pipeline Derivatives](/Examples/Fundamentals/PipelinesAndPasses/MultiplePipelines)
+2. [Using Multiple Pipelines and Pipeline Derivatives](/Examples/Fundamentals/PipelinesAndPasses/MultiplePipelines)
    - `MultiplePipelines`
-4. [Object Outlining with Stencil Testing](/Examples/Fundamentals/PipelinesAndPasses/BasicStencilTesting)
+3. [Object Outlining with Stencil Testing](/Examples/Fundamentals/PipelinesAndPasses/BasicStencilTesting)
    - `BasicStencilTesting`
-5. [Using Multiple Subpasses and Input Attachments](/Examples/Fundamentals/PipelinesAndPasses/MultipleSubpasses)
+4. [Using Multiple Subpasses and Input Attachments](/Examples/Fundamentals/PipelinesAndPasses/MultipleSubpasses)
    - `MultipleSubpasses`
-6. [Using Multiple Render Passes](/Examples/Fundamentals/PipelinesAndPasses/MultipleRenderPasses)
+5. [Using Multiple Render Passes](/Examples/Fundamentals/PipelinesAndPasses/MultipleRenderPasses)
    - `MultipleRenderPasses`
-7. [Rendering Scene to a Texture](/Examples/Fundamentals/PipelinesAndPasses/OffscreenRendering)
+6. [Rendering Scene to a Texture](/Examples/Fundamentals/PipelinesAndPasses/OffscreenRendering)
    - `OffscreenRendering`
 
 ## Architecture of the Subsection

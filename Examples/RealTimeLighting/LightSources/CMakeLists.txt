@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(DirectionalLight)
 add_subdirectory(PointLight)
+add_subdirectory(Spotlight)

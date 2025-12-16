@@ -1,6 +1,6 @@
-set(CURRENT_TARGET_NAME LoadStoreOps)
-set(CURRENT_EXAMPLE_NAME "Simple Ghosting Effect")
-set(CURRENT_LIB_NAMES Common PipelinesAndPassesBase)
+set(CURRENT_TARGET_NAME Spotlight)
+set(CURRENT_EXAMPLE_NAME "Spotlight")
+set(CURRENT_LIB_NAMES Common LightSourcesBase)
 
 include(BuildTarget)
 include(CompileShaders)

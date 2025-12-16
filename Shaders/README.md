@@ -100,7 +100,6 @@ In this section you can find which instance currently supports which shader type
 
 | Example                                                                                                          | GLSL Support       | HLSL Support       |
 |------------------------------------------------------------------------------------------------------------------|--------------------|--------------------|
-| [Simple Ghosting Effect](/Examples/Fundamentals/PipelinesAndPasses/LoadStoreOps)                                 | :white_check_mark: | :white_check_mark: |
 | [Changing Blending Factor with Dynamic State](/Examples/Fundamentals/PipelinesAndPasses/DynamicStatePipelines)   | :white_check_mark: | :white_check_mark: |
 | [Using Multiple Pipelines and Pipeline Derivatives](/Examples/Fundamentals/PipelinesAndPasses/MultiplePipelines) | :white_check_mark: | :white_check_mark: |
 | [Object Outlining with Stencil Testing](/Examples/Fundamentals/PipelinesAndPasses/BasicStencilTesting)           | :white_check_mark: | :white_check_mark: |

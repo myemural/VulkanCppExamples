@@ -1,9 +1,9 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, multiple cubes are drawn in the scene. As the camera is moved, the previous frame is not
- *          cleared, creating a simple ghosting effect.
+ * @brief   In this example, objects of different colors are drawn on the scene, and lighting is provided by two
+ *          spotlights with hard-cutoff.
  * @author  Mustafa Yemural (myemural)
- * @date    23.09.2025
+ * @date    16.12.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::fundamentals::pipelines_and_passes::load_store_ops;
+using namespace examples::real_time_lighting::light_sources::spotlight;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -28,25 +28,40 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Constants
     schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "position_with_mvp.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "texture_sampler.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "blinn_phong_spotlight.vert.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderFile,
+                                               "blinn_phong_spotlight.frag.spv");
+    schema.RegisterImmutableParam<std::string>(AppConstants::LightObjectsFragmentShaderFile,
+                                               "hardcoded_color_for_lights.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
+    schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderKey, "fragScene");
+    schema.RegisterImmutableParam<std::string>(AppConstants::LightObjectsFragmentShaderKey, "fragLight");
 
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexBuffer, "mainVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainIndexBuffer, "mainIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
+    schema.RegisterImmutableParam<std::string>(AppConstants::LightUniformBuffer, "lightUniformBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
+    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
+
+    schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");
+    schema.RegisterImmutableParam<std::string>(AppConstants::SphereObject, "sphere");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConeObject, "cone");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CylinderObject, "cylinder");
+    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneObject, "plane");
+    schema.RegisterImmutableParam<std::string>(AppConstants::LightObject1, "light1");
+    schema.RegisterImmutableParam<std::string>(AppConstants::LightObject2, "light2");
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);
     schema.RegisterParam<float>(AppSettings::CameraSpeed);
+    schema.RegisterParam<glm::vec3>(AppSettings::LightDirection);
+    schema.RegisterParam<glm::vec3>(AppSettings::LightColor);
+    schema.RegisterParam<float>(AppSettings::AmbientStrength);
+    schema.RegisterParam<float>(AppSettings::SpecularStrength);
+    schema.RegisterParam<float>(AppSettings::Shininess);
+    schema.RegisterParam<float>(AppSettings::CutoffAngle);
 
     return schema;
 }
@@ -55,8 +70,8 @@ bool SetParams(ParameterServer& params)
 {
     try {
         // Initial window settings
-        params.Set<std::uint32_t>(WindowParams::Width, 800);
-        params.Set<std::uint32_t>(WindowParams::Height, 600);
+        params.Set<std::uint32_t>(WindowParams::Width, 1280);
+        params.Set<std::uint32_t>(WindowParams::Height, 720);
         params.Set(WindowParams::Title, std::string(EXAMPLE_APPLICATION_NAME));
 
         // Vulkan settings
@@ -64,9 +79,15 @@ bool SetParams(ParameterServer& params)
         params.Set<std::vector<std::string>>(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
 
         // Project customizable settings
-        params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.3f, 0.3f, 1.0f});
+        params.Set(AppSettings::ClearColor, VkClearColorValue{0.175f, 0.175f, 0.175f, 1.0f});
         params.Set(AppSettings::MouseSensitivity, 3.0f);
         params.Set(AppSettings::CameraSpeed, 3.0f);
+        params.Set(AppSettings::LightDirection, glm::vec3(0.0f, -1.0f, 0.0f));
+        params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
+        params.Set(AppSettings::AmbientStrength, 0.01f);
+        params.Set(AppSettings::SpecularStrength, 0.5f);
+        params.Set(AppSettings::Shininess, 128.0f);
+        params.Set(AppSettings::CutoffAngle, 30.0f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
