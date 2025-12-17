@@ -153,6 +153,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Directional Light](/Examples/RealTimeLighting/LightSources/DirectionalLight)
   - [Point Light](/Examples/RealTimeLighting/LightSources/PointLight)
   - [Spotlight](/Examples/RealTimeLighting/LightSources/Spotlight)
+  - [Flashlight with Soft-Cutoff](/Examples/RealTimeLighting/LightSources/Flashlight)
 
 ## Environment Support
 
