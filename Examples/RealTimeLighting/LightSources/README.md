@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `Spotlight`
 4. [Flashlight with Soft-Cutoff](/Examples/RealTimeLighting/LightSources/Flashlight)
    - `Flashlight`
+5. [Using Multiple Light Sources](/Examples/RealTimeLighting/LightSources/MultipleLightSources)
+   - `MultipleLightSources`
 
 ## Architecture of the Subsection
 
