@@ -4,8 +4,28 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 
 ## [Basic Lighting](/Examples/RealTimeLighting/BasicLighting)
 
-TBD
+- Implementing diffuse lighting in flat shading model
+- Sending light data to the shaders
+- Calculating Lambert diffuse reflection in the shaders
+- Implementing diffuse lighting in gouraud shading model
+- Doing light calculations in vertex shaders
+- Implementing ambient lighting in phong shading model
+- Implementing diffuse lighting in phong shading model
+- Implementing specular lighting in phong shading model
+- Implementing ambient, diffuse and specular lighting in blinn-phong shading model
 
 ## [Light Sources](/Examples/RealTimeLighting/LightSources)
 
-TBD
+- Implementing directional light behavior in the shaders
+- Integrating blinn-phong shading model into the directional lights
+- Implementing point light behavior in the shaders
+- Integrating blinn-phong shading model into the point lights
+- Implementing attenuation calculation to the shaders for distance-based lighting
+- Implementing spotlight behavior in the shaders
+- Integrating blinn-phong shading model into the spotlights
+- Implementing hard-cutoff (hard edges) spotlight behavior with only one cutoff angle
+- Implementing multiple lights behavior with the same type
+- Implementing camera-based spotlight (flashlight) behavior
+- Implementing soft-cutoff (soft edges) spotlight behavior with two cutoff angles
+- Implementing various and numerous light sources behavior in the shaders
+- Sending multiple light data and count via storage buffers and specialization constants
