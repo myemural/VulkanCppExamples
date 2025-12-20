@@ -28,9 +28,6 @@ struct alignas(16) LightData
     glm::vec4 lightDirection;   // xyz = Light Direction (normalized, unused for point lights)
     glm::vec4 lightColor;       // rgb = Light Color, a = Light Intensity
 
-    glm::vec4 ambientParams;    // x = Ambient Strength
-    glm::vec4 specularParams;   // x = Specular Strength, y = Shininess
-
     glm::vec4 lightTypeParams;  // x = Light Type (0: Directional, 1: Point: 2: Spot)
     glm::vec4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
     glm::vec4 spotlightParams;  // x = cos(innerCutoffAngle), y = cos(outerCutoffAngle)

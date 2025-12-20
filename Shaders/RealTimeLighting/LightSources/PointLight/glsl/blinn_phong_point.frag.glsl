@@ -15,7 +15,12 @@ layout(location = 1) in vec3 fragNormal;
 
 struct MeshData {
     mat4 model;
-    vec4 objectColor;
+    vec4 diffuseColor;
+    vec4 specularColor;
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+    float opacity;
 };
 
 layout(std430, binding = 0) readonly buffer MeshDataBuffer {
@@ -26,8 +31,6 @@ layout(std140, set = 0, binding = 1) uniform LightUBO
 {
     vec4 lightPosition;    // xyz = Light Position
     vec4 lightColor;       // rgb = Light Color
-    vec4 ambientParams;    // x = Ambient Strength
-    vec4 specularParams;   // x = Specular Strength, y = Shininess
     vec4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
 } light;
 
@@ -39,6 +42,9 @@ layout(push_constant) uniform MeshPushConstants {
 
 void main()
 {
+    // Get mesh info
+    const MeshData meshInfo = meshes[pc.objectId];
+
     // Normalizing normal
     vec3 normalizedNormal = normalize(fragNormal);
 
@@ -51,16 +57,16 @@ void main()
     vec3 normalizedView = normalize(viewPos - fragPos);
 
     // Ambient calculation
-    vec3 ambient = light.ambientParams.x * light.lightColor.rgb * meshes[pc.objectId].objectColor.rgb;
+    vec3 ambient = meshInfo.ambientStrength * meshInfo.diffuseColor.rgb;
 
     // Diffuse (Lambert) calculation
     float diff = max(dot(normalizedNormal, normalizedLightDir), 0.0);
-    vec3 diffuse = diff * light.lightColor.rgb * meshes[pc.objectId].objectColor.rgb;
+    vec3 diffuse = diff * light.lightColor.rgb * meshInfo.diffuseColor.rgb;
 
     // Specular calculation
     vec3 halfDir = normalize(normalizedLightDir + normalizedView);
-    float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), light.specularParams.y);
-    vec3 specular = light.specularParams.x * spec * light.lightColor.rgb;
+    float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), meshInfo.shininess);
+    vec3 specular = meshInfo.specularStrength * spec * light.lightColor.rgb * meshInfo.specularColor.rgb;
 
     // Attenuation calculation
     float distance = length(light.lightPosition.xyz - fragPos);
@@ -73,5 +79,5 @@ void main()
 
     // Final color
     vec3 finalColor = ambient + diffuse + specular;
-    outColor = vec4(finalColor, 1.0);
+    outColor = vec4(finalColor, meshInfo.opacity);
 }

@@ -149,22 +149,28 @@ void VulkanApplication::BuildScene()
     scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
+    // Create materials
+    PhongMaterial material;
+    material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    material.shininess = GetParamFloat(AppSettings::Shininess);
+
     // Add scene objects
     for (auto i = 0; i < 4; ++i) {
         const std::string rowStr = std::to_string(i);
         const auto zShift = -static_cast<float>(i * 2 - 1) + 2.0f;
         scene_->AddCube(GetParamStr(AppConstants::CubeObject) + rowStr, glm::vec3{-2.0f, -1.0f, zShift});
-        scene_->SetObjectColor(GetParamStr(AppConstants::CubeObject) + rowStr,
-                               glm::vec4(GenerateRandomColor(0.5f), 1.0f));
+        material.diffuseColor = GenerateRandomColor(0.2f);
+        scene_->SetObjectMaterial(GetParamStr(AppConstants::CubeObject) + rowStr, material);
         scene_->AddSphere(GetParamStr(AppConstants::SphereObject) + rowStr, glm::vec3{-0.5f, -1.0f, zShift});
-        scene_->SetObjectColor(GetParamStr(AppConstants::SphereObject) + rowStr,
-                               glm::vec4(GenerateRandomColor(0.5f), 1.0f));
+        material.diffuseColor = GenerateRandomColor(0.2f);
+        scene_->SetObjectMaterial(GetParamStr(AppConstants::SphereObject) + rowStr, material);
         scene_->AddCone(GetParamStr(AppConstants::ConeObject) + rowStr, glm::vec3{1.0f, -1.0f, zShift});
-        scene_->SetObjectColor(GetParamStr(AppConstants::ConeObject) + rowStr,
-                               glm::vec4(GenerateRandomColor(0.5f), 1.0f));
+        material.diffuseColor = GenerateRandomColor(0.2f);
+        scene_->SetObjectMaterial(GetParamStr(AppConstants::ConeObject) + rowStr, material);
         scene_->AddCylinder(GetParamStr(AppConstants::CylinderObject) + rowStr, glm::vec3{2.5f, -1.0f, zShift});
-        scene_->SetObjectColor(GetParamStr(AppConstants::CylinderObject) + rowStr,
-                               glm::vec4(GenerateRandomColor(0.5f), 1.0f));
+        material.diffuseColor = GenerateRandomColor(0.2f);
+        scene_->SetObjectMaterial(GetParamStr(AppConstants::CylinderObject) + rowStr, material);
     }
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObject), glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f),
                      glm::vec3{4.0f});
@@ -483,9 +489,6 @@ void VulkanApplication::UpdateSceneTransforms() const
     lightBuffer.lights[0].lightDirection = glm::vec4(glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f)), 1.0f);
     lightBuffer.lights[0].lightColor =
             glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 0.2f); // 0.2 light intensity
-    lightBuffer.lights[0].ambientParams.x = GetParamFloat(AppSettings::AmbientStrength);
-    lightBuffer.lights[0].specularParams.x = GetParamFloat(AppSettings::SpecularStrength);
-    lightBuffer.lights[0].specularParams.y = GetParamFloat(AppSettings::Shininess);
 
     // Spotlight
     lightBuffer.lights[1].lightTypeParams.x = static_cast<float>(LIGHT_TYPE_SPOT);
@@ -493,8 +496,6 @@ void VulkanApplication::UpdateSceneTransforms() const
             glm::vec4(scene_->GetMesh(GetParamStr(AppConstants::SpotlightObject)).transform.translation, 1.0f);
     lightBuffer.lights[1].lightDirection = glm::vec4(glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f)), 1.0f);
     lightBuffer.lights[1].lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    lightBuffer.lights[1].specularParams.x = GetParamFloat(AppSettings::SpecularStrength);
-    lightBuffer.lights[1].specularParams.y = GetParamFloat(AppSettings::Shininess);
     lightBuffer.lights[1].spotlightParams.x = std::cosf(glm::radians(GetParamFloat(AppSettings::InnerCutoffAngle)));
     lightBuffer.lights[1].spotlightParams.y = std::cosf(glm::radians(GetParamFloat(AppSettings::OuterCutoffAngle)));
 
@@ -503,8 +504,6 @@ void VulkanApplication::UpdateSceneTransforms() const
     lightBuffer.lights[2].lightPosition =
             glm::vec4(scene_->GetMesh(GetParamStr(AppConstants::PointLightObject1)).transform.translation, 1.0f);
     lightBuffer.lights[2].lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    lightBuffer.lights[2].specularParams.x = GetParamFloat(AppSettings::SpecularStrength);
-    lightBuffer.lights[2].specularParams.y = GetParamFloat(AppSettings::Shininess);
     lightBuffer.lights[2].pointLightParams.x = GetParamFloat(AppSettings::ConstantFactor);
     lightBuffer.lights[2].pointLightParams.y = GetParamFloat(AppSettings::LinearFactor);
     lightBuffer.lights[2].pointLightParams.z = GetParamFloat(AppSettings::QuadraticFactor);
@@ -514,8 +513,6 @@ void VulkanApplication::UpdateSceneTransforms() const
     lightBuffer.lights[3].lightPosition =
             glm::vec4(scene_->GetMesh(GetParamStr(AppConstants::PointLightObject2)).transform.translation, 1.0f);
     lightBuffer.lights[3].lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    lightBuffer.lights[3].specularParams.x = GetParamFloat(AppSettings::SpecularStrength);
-    lightBuffer.lights[3].specularParams.y = GetParamFloat(AppSettings::Shininess);
     lightBuffer.lights[3].pointLightParams.x = GetParamFloat(AppSettings::ConstantFactor);
     lightBuffer.lights[3].pointLightParams.y = GetParamFloat(AppSettings::LinearFactor);
     lightBuffer.lights[3].pointLightParams.z = GetParamFloat(AppSettings::QuadraticFactor);

@@ -16,7 +16,12 @@ layout(location = 1) out vec3 fragNormal;
 
 struct MeshData {
     mat4 model;
-    vec4 objectColor;
+    vec4 diffuseColor;
+    vec4 specularColor;
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+    float opacity;
 };
 
 layout(std430, binding = 0) readonly buffer MeshDataBuffer {

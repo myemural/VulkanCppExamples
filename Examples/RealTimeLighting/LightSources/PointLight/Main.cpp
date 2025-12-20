@@ -83,7 +83,7 @@ bool SetParams(ParameterServer& params)
         params.Set(AppSettings::MouseSensitivity, 3.0f);
         params.Set(AppSettings::CameraSpeed, 3.0f);
         params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
-        params.Set(AppSettings::AmbientStrength, 0.01f);
+        params.Set(AppSettings::AmbientStrength, 0.1f);
         params.Set(AppSettings::SpecularStrength, 0.5f);
         params.Set(AppSettings::Shininess, 128.0f);
         params.Set(AppSettings::ConstantFactor, 1.0f);

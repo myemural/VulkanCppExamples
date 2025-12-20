@@ -21,8 +21,6 @@ struct alignas(16) LightUbo
 {
     glm::vec4 lightDirection; // xyz = Light Direction
     glm::vec4 lightColor;     // xyz = Light Color
-    glm::vec4 ambientParams;  // x = Ambient Strength
-    glm::vec4 specularParams; // x = Specular Strength, y = Shininess
 };
 
 } // namespace examples::real_time_lighting::light_sources::directional_light

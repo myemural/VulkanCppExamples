@@ -148,16 +148,22 @@ void VulkanApplication::BuildScene()
     scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 0.0f, 6.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
+    // Create materials
+    PhongMaterial material;
+
     // Add scene objects
     scene_->AddCube(GetParamStr(AppConstants::CubeObject), glm::vec3{-2.0f, 0.0f, 0.0f});
     scene_->AddSphere(GetParamStr(AppConstants::SphereObject), glm::vec3{-0.5f, 0.0f, 0.0f});
-    scene_->SetObjectColor(GetParamStr(AppConstants::SphereObject), glm::vec4(0.0f, 1.0f, 0.0, 1.0f));
+    material.diffuseColor = glm::vec3{0.0f, 1.0f, 0.0f};
+    scene_->SetObjectMaterial(GetParamStr(AppConstants::SphereObject), material);
     scene_->AddCone(GetParamStr(AppConstants::ConeObject), glm::vec3{1.0f, 0.0f, 0.0f});
-    scene_->SetObjectColor(GetParamStr(AppConstants::ConeObject), glm::vec4(0.0f, 0.0f, 1.0, 1.0f));
+    material.diffuseColor = glm::vec3{0.0f, 0.0f, 1.0f};
+    scene_->SetObjectMaterial(GetParamStr(AppConstants::ConeObject), material);
     scene_->AddCylinder(GetParamStr(AppConstants::CylinderObject), glm::vec3{2.5f, 0.0f, 0.0f});
-    scene_->SetObjectColor(GetParamStr(AppConstants::CylinderObject), glm::vec4(1.0f, 0.0f, 0.0, 1.0f));
+    material.diffuseColor = glm::vec3{1.0f, 0.0f, 0.0f};
+    scene_->SetObjectMaterial(GetParamStr(AppConstants::CylinderObject), material);
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObject), glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f),
-                     glm::vec3{4.0f});
+                     glm::vec4{4.0f});
 
     // Add light objects
     scene_->AddSphere(GetParamStr(AppConstants::LightObject), glm::vec3{0.0f}, glm::vec3{0.0f}, glm::vec3{0.3f});

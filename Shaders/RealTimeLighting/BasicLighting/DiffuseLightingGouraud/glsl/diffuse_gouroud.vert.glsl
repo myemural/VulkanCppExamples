@@ -15,7 +15,12 @@ layout(location = 0) out vec3 vertexColor;
 
 struct MeshData {
     mat4 model;
-    vec4 objectColor;
+    vec4 diffuseColor;
+    vec4 specularColor;
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+    float opacity;
 };
 
 layout(std430, binding = 0) readonly buffer MeshDataBuffer {
@@ -36,21 +41,22 @@ layout(push_constant) uniform MeshPushConstants {
 
 void main()
 {
-    mat4 model = meshes[pc.objectId].model;
+    // Get mesh info
+    const MeshData meshInfo = meshes[pc.objectId];
 
     // World-space position
-    vec3 worldPos = vec3(model * vec4(inPosition, 1.0));
+    vec3 worldPos = vec3(meshInfo.model * vec4(inPosition, 1.0));
 
     // World-space normal
-    vec3 worldNormal = normalize(transpose(inverse(mat3(model))) * inNormal);
+    vec3 worldNormal = normalize(transpose(inverse(mat3(meshInfo.model))) * inNormal);
 
     // Normalizing light direction
     vec3 normalizedLightDir = normalize(light.lightPosition.xyz - worldPos);
 
     // Lambert diffuse
     float diff = max(dot(worldNormal, normalizedLightDir), 0.0);
-    vec3 diffuse = diff * light.lightColor.rgb * meshes[pc.objectId].objectColor.rgb;
+    vec3 diffuse = diff * light.lightColor.rgb * meshInfo.diffuseColor.rgb;
     vertexColor = diffuse;
 
-    gl_Position = pc.proj * pc.view * vec4(worldPos, 1.0);
+    gl_Position = pc.proj * pc.view * vec4(worldPos, meshInfo.opacity);
 }

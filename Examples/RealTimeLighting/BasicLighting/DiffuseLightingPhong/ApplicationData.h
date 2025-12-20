@@ -21,7 +21,6 @@ struct alignas(16) LightUbo
 {
     glm::vec4 lightPosition;  // xyz = Light Position
     glm::vec4 lightColor;     // xyz = Light Color
-    glm::vec4 ambientParams;  // x = Ambient Strength
 };
 
 } // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_phong

@@ -18,9 +18,17 @@
 namespace common::vulkan_framework
 {
 
+enum class MaterialSystem
+{
+    PHONG,
+    PHONG_TEXTURED,
+    PBR
+};
+
 struct COMMON_API SceneConfig
 {
     std::vector<std::pair<AttributeType, AccessorType>> AttributeLayout;
+    MaterialSystem MaterialSystem = MaterialSystem::PHONG;
 };
 
 class COMMON_API SceneManager
@@ -66,7 +74,14 @@ public:
     void ScaleObject(const std::string& objectName, const glm::vec3& newScale);
 
     // Change material
-    void SetObjectColor(const std::string& objectName, const glm::vec4& color);
+    template<typename MaterialType>
+    void SetObjectMaterial(const std::string& objectName, const MaterialType& material)
+    {
+        auto& meshInfo = meshes_[objectName];
+        std::get<MaterialType>(meshInfo.material) = material;
+
+        UpdateMeshDataGpu(meshInfo);
+    }
 
     // Cameras
     void AddPerspectiveCamera(const std::string& cameraName,

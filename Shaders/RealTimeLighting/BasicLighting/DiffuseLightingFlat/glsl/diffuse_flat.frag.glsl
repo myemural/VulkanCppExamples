@@ -15,7 +15,12 @@ layout(location = 1) flat in vec3 fragNormal;
 
 struct MeshData {
     mat4 model;
-    vec4 objectColor;
+    vec4 diffuseColor;
+    vec4 specularColor;
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+    float opacity;
 };
 
 layout(std430, set = 0, binding = 0) readonly buffer MeshDataBuffer {
@@ -36,12 +41,15 @@ layout(push_constant) uniform MeshPushConstants {
 
 void main()
 {
+    // Get mesh info
+    const MeshData meshInfo = meshes[pc.objectId];
+
     // Normalizing light direction
     vec3 normalizedLightDir = normalize(light.lightPosition.xyz - fragPos);
 
     // Lambert diffuse
     float diff = max(dot(fragNormal, normalizedLightDir), 0.0);
-    vec3 diffuse = diff * light.lightColor.rgb * meshes[pc.objectId].objectColor.rgb;
+    vec3 diffuse = diff * light.lightColor.rgb * meshInfo.diffuseColor.rgb;
 
-    outColor = vec4(diffuse, 1.0);
+    outColor = vec4(diffuse, meshInfo.opacity);
 }

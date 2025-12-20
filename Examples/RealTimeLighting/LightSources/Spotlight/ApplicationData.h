@@ -23,8 +23,6 @@ struct alignas(16) LightUbo
     glm::vec4 lightPosition;    // xyz = Light Position
     glm::vec4 lightDirection;   // xyz = Light Direction (normalized)
     glm::vec4 lightColor;       // xyz = Light Color
-    glm::vec4 ambientParams;    // x = Ambient Strength
-    glm::vec4 specularParams;   // x = Specular Strength, y = Shininess
     glm::vec4 spotlightParams;  // x = cos(cutoffAngle)
 };
 

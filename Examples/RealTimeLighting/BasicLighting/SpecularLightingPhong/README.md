@@ -22,15 +22,15 @@ In this example, objects of various colors are drawn on the screen, and a rotati
 
 ### Settings
 
-| Parameter / Key              | Type              | Usage in Code                 | Description                    | Default Value |
-|------------------------------|-------------------|-------------------------------|--------------------------------|---------------|
-| AppSettings.ClearColor       | VkClearColorValue | AppSettings::ClearColor       | Background color of the screen |               |
-| AppSettings.MouseSensitivity | float             | AppSettings::MouseSensitivity | Mouse sensitivity value        |               |
-| AppSettings.CameraSpeed      | float             | AppSettings::CameraSpeed      | Speed of the camera            |               |
-| AppSettings.LightColor       | glm:vec3          | AppSettings::LightColor       | Color of the light (RGB)       |               |
-| AppSettings.AmbientStrength  | float             | AppSettings::AmbientStrength  | Ambient strength of the light  |               |
-| AppSettings.SpecularStrength | float             | AppSettings::SpecularStrength | Specular strength factor       |               |
-| AppSettings.Shininess        | float             | AppSettings::Shininess        | Shininess exponent             |               |
+| Parameter / Key              | Type              | Usage in Code                 | Description                      | Default Value |
+|------------------------------|-------------------|-------------------------------|----------------------------------|---------------|
+| AppSettings.ClearColor       | VkClearColorValue | AppSettings::ClearColor       | Background color of the screen   |               |
+| AppSettings.MouseSensitivity | float             | AppSettings::MouseSensitivity | Mouse sensitivity value          |               |
+| AppSettings.CameraSpeed      | float             | AppSettings::CameraSpeed      | Speed of the camera              |               |
+| AppSettings.LightColor       | glm:vec3          | AppSettings::LightColor       | Color of the light (RGB)         |               |
+| AppSettings.AmbientStrength  | float             | AppSettings::AmbientStrength  | Ambient strength of the material |               |
+| AppSettings.SpecularStrength | float             | AppSettings::SpecularStrength | Specular strength factor         |               |
+| AppSettings.Shininess        | float             | AppSettings::Shininess        | Shininess exponent               |               |
 
 
 ## Learning Objectives

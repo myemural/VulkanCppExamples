@@ -20,7 +20,12 @@ layout(location = 1) in vec3 fragNormal;
 
 struct MeshData {
     mat4 model;
-    vec4 objectColor;
+    vec4 diffuseColor;
+    vec4 specularColor;
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+    float opacity;
 };
 
 layout(constant_id = 0) const uint LIGHT_COUNT = 0;
@@ -34,9 +39,6 @@ struct LightData
     vec4 lightPosition;    // xyz = Light Position (unused for directional lights)
     vec4 lightDirection;   // xyz = Light Direction (normalized, unused for point lights)
     vec4 lightColor;       // rgb = Light Color, a = Light Intensity
-
-    vec4 ambientParams;    // x = Ambient Strength
-    vec4 specularParams;   // x = Specular Strength, y = Shininess
 
     vec4 lightTypeParams;  // x = Light Type (0: Directional, 1: Point: 2: Spot)
     vec4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
@@ -56,6 +58,9 @@ layout(push_constant) uniform MeshPushConstants {
 
 vec3 calculateLight(LightData light, vec3 normalizedNormal, vec3 fragmentPosition, vec3 normalizedView)
 {
+    // Get mesh info
+    const MeshData meshInfo = meshes[pc.objectId];
+
     // Get light type
     int type = int(light.lightTypeParams.x);
 
@@ -93,12 +98,12 @@ vec3 calculateLight(LightData light, vec3 normalizedNormal, vec3 fragmentPositio
 
     // Diffuse (Lambert) calculation
     float diff = max(dot(normalizedNormal, normalizedLightDir), 0.0);
-    vec3 diffuse = diff * light.lightColor.rgb * meshes[pc.objectId].objectColor.rgb;
+    vec3 diffuse = diff * light.lightColor.rgb * meshInfo.diffuseColor.rgb;
 
     // Specular calculation
     vec3 halfDir = normalize(normalizedLightDir + normalizedView);
-    float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), light.specularParams.y);
-    vec3 specular = light.specularParams.x * spec * light.lightColor.rgb;
+    float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), meshInfo.shininess);
+    vec3 specular = meshInfo.specularStrength * spec * light.lightColor.rgb * meshInfo.specularColor.rgb;
 
     // Final color
     vec3 finalColor = attenuation * light.lightColor.a * (diffuse + specular);
@@ -115,18 +120,14 @@ void main()
     vec3 viewPos = vec3(inverseView[3]);
     vec3 normalizedView = normalize(viewPos - fragPos);
 
-
-
     vec3 resultColor = vec3(0.0);
     for (uint i = 0; i < LIGHT_COUNT; i++) {
         resultColor += calculateLight(lights[i], normalizedNormal, fragPos, normalizedView);
     }
 
-    // Ambient calculation (just care about first light's ambient params)
-    if (LIGHT_COUNT > 0) {
-        vec3 ambient = lights[0].ambientParams.x * meshes[pc.objectId].objectColor.rgb;
-        resultColor += ambient;
-    }
+    // Ambient calculation
+    vec3 ambient = meshes[pc.objectId].ambientStrength * meshes[pc.objectId].diffuseColor.rgb;
+    resultColor += ambient;
 
-    outColor = vec4(resultColor, 1.0);
+    outColor = vec4(resultColor, meshes[pc.objectId].opacity);
 }

@@ -10,6 +10,7 @@
  */
 #pragma once
 #include <cstdint>
+#include <variant>
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
@@ -48,7 +49,12 @@ enum class PrimitiveType
 struct COMMON_API MeshDataGpu
 {
     glm::mat4 model;
-    glm::vec4 objectColor;
+    glm::vec4 diffuseColor;
+    glm::vec4 specularColor;
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+    float opacity;
 };
 
 struct COMMON_API MeshPushConstantsGpu
@@ -57,6 +63,25 @@ struct COMMON_API MeshPushConstantsGpu
     glm::mat4 projection;
     std::uint32_t objectId;
 };
+
+struct COMMON_API PhongMaterial
+{
+    // Base colors
+    glm::vec3 diffuseColor = glm::vec3(1.0f);  // RGB: albedo
+    glm::vec3 specularColor = glm::vec3(1.0f); // RGB: specular reflectance color
+
+    // Ambient params
+    float ambientStrength = 0.1f; // Ambient strength factor
+
+    // Specular params
+    float shininess = 32.0f;       // Phong exponent
+    float specularStrength = 1.0f; // Specular intensity
+
+    // Optional tweaks
+    float opacity = 1.0f; // For alpha blending
+};
+
+using MaterialVariant = std::variant<PhongMaterial>;
 
 struct COMMON_API MeshInfo
 {
@@ -86,21 +111,30 @@ struct COMMON_API MeshInfo
         }
     };
 
-    struct MaterialInfo
-    {
-        glm::vec4 color = glm::vec4(1.0f);
-    };
-
     GeometryInfo geometry;
     TransformInfo transform;
-    MaterialInfo material;
+    MaterialVariant material;
     std::uint32_t objectId = UINT32_MAX;
 
     [[nodiscard]] MeshDataGpu GenerateMeshDataGpu() const
     {
         MeshDataGpu meshData{};
         meshData.model = transform.GetModelMatrix();
-        meshData.objectColor = material.color;
+        std::visit(
+                [&](auto&& mat) {
+                    using T = std::decay_t<decltype(mat)>;
+
+                    if constexpr (std::is_same_v<T, PhongMaterial>) {
+                        // Phong material
+                        meshData.diffuseColor = glm::vec4(mat.diffuseColor, 1.0f);
+                        meshData.specularColor = glm::vec4(mat.specularColor, 1.0f);
+                        meshData.ambientStrength = mat.ambientStrength;
+                        meshData.shininess = mat.shininess;
+                        meshData.specularStrength = mat.specularStrength;
+                        meshData.opacity = mat.opacity;
+                    }
+                },
+                material);
         return meshData;
     }
 

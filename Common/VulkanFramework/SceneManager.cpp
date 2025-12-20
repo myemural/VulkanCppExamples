@@ -74,6 +74,12 @@ void SceneManager::AddCube(const std::string& objectName,
 
     meshInfo.geometry = primitiveGeometries_[PrimitiveType::CUBE];
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
+
+    /// TODO: Will be increased
+    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+        meshInfo.material = PhongMaterial{};
+    }
+
     meshInfo.objectId = currentObjectId_++;
 
     UpdateMeshDataGpu(meshInfo);
@@ -94,6 +100,12 @@ void SceneManager::AddSphere(const std::string& objectName,
 
     meshInfo.geometry = primitiveGeometries_[PrimitiveType::SPHERE];
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
+
+    /// TODO: Will be increased
+    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+        meshInfo.material = PhongMaterial{};
+    }
+
     meshInfo.objectId = currentObjectId_++;
 
     UpdateMeshDataGpu(meshInfo);
@@ -114,6 +126,12 @@ void SceneManager::AddCone(const std::string& objectName,
 
     meshInfo.geometry = primitiveGeometries_[PrimitiveType::CONE];
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
+
+    /// TODO: Will be increased
+    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+        meshInfo.material = PhongMaterial{};
+    }
+
     meshInfo.objectId = currentObjectId_++;
 
     UpdateMeshDataGpu(meshInfo);
@@ -134,6 +152,12 @@ void SceneManager::AddCylinder(const std::string& objectName,
 
     meshInfo.geometry = primitiveGeometries_[PrimitiveType::CYLINDER];
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
+
+    /// TODO: Will be increased
+    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+        meshInfo.material = PhongMaterial{};
+    }
+
     meshInfo.objectId = currentObjectId_++;
 
     UpdateMeshDataGpu(meshInfo);
@@ -154,6 +178,12 @@ void SceneManager::AddPlane(const std::string& objectName,
 
     meshInfo.geometry = primitiveGeometries_[PrimitiveType::PLANE];
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
+
+    /// TODO: Will be increased
+    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+        meshInfo.material = PhongMaterial{};
+    }
+
     meshInfo.objectId = currentObjectId_++;
 
     UpdateMeshDataGpu(meshInfo);
@@ -177,14 +207,6 @@ void SceneManager::ScaleObject(const std::string& objectName, const glm::vec3& n
 {
     meshes_[objectName].transform.scale = newScale;
     UpdateMeshDataGpu(meshes_[objectName]);
-}
-
-void SceneManager::SetObjectColor(const std::string& objectName, const glm::vec4& color)
-{
-    auto& meshInfo = meshes_[objectName];
-    meshInfo.material.color = color;
-
-    UpdateMeshDataGpu(meshInfo);
 }
 
 void SceneManager::AddPerspectiveCamera(
