@@ -78,6 +78,8 @@ void SceneManager::AddCube(const std::string& objectName,
     /// TODO: Will be increased
     if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
+    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+        meshInfo.material = PhongTexturedMaterial{};
     }
 
     meshInfo.objectId = currentObjectId_++;
@@ -104,6 +106,8 @@ void SceneManager::AddSphere(const std::string& objectName,
     /// TODO: Will be increased
     if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
+    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+        meshInfo.material = PhongTexturedMaterial{};
     }
 
     meshInfo.objectId = currentObjectId_++;
@@ -130,6 +134,8 @@ void SceneManager::AddCone(const std::string& objectName,
     /// TODO: Will be increased
     if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
+    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+        meshInfo.material = PhongTexturedMaterial{};
     }
 
     meshInfo.objectId = currentObjectId_++;
@@ -156,6 +162,8 @@ void SceneManager::AddCylinder(const std::string& objectName,
     /// TODO: Will be increased
     if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
+    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+        meshInfo.material = PhongTexturedMaterial{};
     }
 
     meshInfo.objectId = currentObjectId_++;
@@ -182,6 +190,8 @@ void SceneManager::AddPlane(const std::string& objectName,
     /// TODO: Will be increased
     if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
+    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+        meshInfo.material = PhongTexturedMaterial{};
     }
 
     meshInfo.objectId = currentObjectId_++;
@@ -207,6 +217,40 @@ void SceneManager::ScaleObject(const std::string& objectName, const glm::vec3& n
 {
     meshes_[objectName].transform.scale = newScale;
     UpdateMeshDataGpu(meshes_[objectName]);
+}
+
+void SceneManager::RegisterTexture(const std::string& textureName,
+                                   const std::shared_ptr<vulkan_wrapper::VulkanSampler>& sampler,
+                                   const std::shared_ptr<vulkan_wrapper::VulkanImageView>& imageView)
+{
+    TextureRegistry registry{};
+    registry.textureId = currentTextureId_++;
+    registry.sampler = sampler;
+    registry.imageView = imageView;
+
+    textureRegistries_[textureName] = registry;
+}
+
+TextureId SceneManager::GetTextureId(const std::string& textureName)
+{
+    return textureRegistries_[textureName].textureId;
+}
+
+std::uint32_t SceneManager::GetRegisteredTextureCount() const { return textureRegistries_.size(); }
+
+std::vector<VkDescriptorImageInfo> SceneManager::GetDescriptorImageInfos() const
+{
+    std::vector<VkDescriptorImageInfo> descriptorImageInfos;
+    descriptorImageInfos.resize(textureRegistries_.size());
+
+    for (const auto& textureRegistry : textureRegistries_) {
+        const auto [textureId, sampler, imageView] = textureRegistry.second;
+        descriptorImageInfos[textureId].sampler = sampler->GetHandle();
+        descriptorImageInfos[textureId].imageView = imageView->GetHandle();
+        descriptorImageInfos[textureId].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    }
+
+    return descriptorImageInfos;
 }
 
 void SceneManager::AddPerspectiveCamera(
@@ -253,9 +297,15 @@ std::shared_ptr<vulkan_wrapper::VulkanBuffer> SceneManager::GetStorageBuffer() c
 
 void SceneManager::UpdateMeshDataGpu(const MeshInfo& meshInfo) const
 {
-    const MeshDataGpu meshData = meshInfo.GenerateMeshDataGpu();
-    const auto offset = meshInfo.objectId * sizeof(meshData);
-    resourceManager_.SetBuffer(kStorageBufferName, &meshData, sizeof(meshData), offset, false);
+    const auto meshData = meshInfo.GenerateMeshDataGpu();
+
+    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+        const auto offset = meshInfo.objectId * sizeof(MeshDataPhongGpu);
+        resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongGpu>(meshData), sizeof(MeshDataPhongGpu), offset, false);
+    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+        const auto offset = meshInfo.objectId * sizeof(MeshDataPhongTexturedGpu);
+        resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongTexturedGpu>(meshData), sizeof(MeshDataPhongTexturedGpu), offset, false);
+    }
 }
 
 void SceneManager::CreateCubeGeometry()

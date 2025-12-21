@@ -155,6 +155,9 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Spotlight](/Examples/RealTimeLighting/LightSources/Spotlight)
   - [Flashlight with Soft-Cutoff](/Examples/RealTimeLighting/LightSources/Flashlight)
   - [Using Multiple Light Sources](/Examples/RealTimeLighting/LightSources/MultipleLightSources)
+- **[Textured Materials](/Examples/RealTimeLighting/TexturedMaterials)**
+  - [Diffuse Mapping](/Examples/RealTimeLighting/TexturedMaterials/DiffuseMapping)
+  - [Specular Mapping](/Examples/RealTimeLighting/TexturedMaterials/SpecularMapping)
 
 ## Environment Support
 

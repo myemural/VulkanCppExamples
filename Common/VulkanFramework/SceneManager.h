@@ -25,6 +25,13 @@ enum class MaterialSystem
     PBR
 };
 
+struct TextureRegistry
+{
+    int32_t textureId;
+    std::shared_ptr<vulkan_wrapper::VulkanSampler> sampler;
+    std::shared_ptr<vulkan_wrapper::VulkanImageView> imageView;
+};
+
 struct COMMON_API SceneConfig
 {
     std::vector<std::pair<AttributeType, AccessorType>> AttributeLayout;
@@ -82,6 +89,16 @@ public:
 
         UpdateMeshDataGpu(meshInfo);
     }
+
+    void RegisterTexture(const std::string& textureName,
+                         const std::shared_ptr<vulkan_wrapper::VulkanSampler>& sampler,
+                         const std::shared_ptr<vulkan_wrapper::VulkanImageView>& imageView);
+
+    TextureId GetTextureId(const std::string& textureName);
+
+    [[nodiscard]] std::uint32_t GetRegisteredTextureCount() const;
+
+    [[nodiscard]] std::vector<VkDescriptorImageInfo> GetDescriptorImageInfos() const;
 
     // Cameras
     void AddPerspectiveCamera(const std::string& cameraName,
@@ -142,6 +159,9 @@ private:
     bool isConeBufferCreated_ = false;
     bool isCylinderBufferCreated_ = false;
     bool isPlaneBufferCreated_ = false;
+
+    std::unordered_map<std::string, TextureRegistry> textureRegistries_;
+    std::int32_t currentTextureId_ = 0;
 };
 
 } // namespace common::vulkan_framework

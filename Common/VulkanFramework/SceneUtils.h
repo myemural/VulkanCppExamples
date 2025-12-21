@@ -46,7 +46,9 @@ enum class PrimitiveType
     PLANE
 };
 
-struct COMMON_API MeshDataGpu
+using TextureId = std::int32_t;
+
+struct COMMON_API MeshDataPhongGpu
 {
     glm::mat4 model;
     glm::vec4 diffuseColor;
@@ -55,6 +57,24 @@ struct COMMON_API MeshDataGpu
     float shininess;
     float specularStrength;
     float opacity;
+};
+
+struct COMMON_API MeshDataPhongTexturedGpu
+{
+    glm::mat4 model;
+    glm::vec4 diffuseColor;
+    glm::vec4 specularColor;
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+    float opacity;
+    TextureId diffuseMap;
+    TextureId specularMap;
+    TextureId normalMap;
+    TextureId emissiveMap;
+    TextureId shininessMap;
+    TextureId opacityMap;
+    float _pad[2];
 };
 
 struct COMMON_API MeshPushConstantsGpu
@@ -81,7 +101,32 @@ struct COMMON_API PhongMaterial
     float opacity = 1.0f; // For alpha blending
 };
 
-using MaterialVariant = std::variant<PhongMaterial>;
+struct COMMON_API PhongTexturedMaterial
+{
+    // Base colors
+    glm::vec3 diffuseColor = glm::vec3(1.0f);  // RGB: albedo
+    glm::vec3 specularColor = glm::vec3(1.0f); // RGB: specular reflectance color
+
+    // Ambient params
+    float ambientStrength = 0.1f; // Ambient strength factor
+
+    // Specular params
+    float shininess = 32.0f;       // Phong exponent
+    float specularStrength = 1.0f; // Specular intensity
+
+    // Optional tweaks
+    float opacity = 1.0f; // For alpha blending
+
+    // Textures
+    TextureId diffuseMap = -1; // Diffuse map texture
+    TextureId specularMap = -1; // Specular map texture
+    TextureId normalMap = -1; // Normal map texture
+    TextureId emissiveMap = -1; // Emissive map texture
+    TextureId shininessMap = -1; // Shininess map (reverse of the roughness map) texture
+    TextureId opacityMap = -1; // Opacity (alpha) map texture
+};
+
+using MaterialVariant = std::variant<PhongMaterial, PhongTexturedMaterial>;
 
 struct COMMON_API MeshInfo
 {
@@ -116,26 +161,46 @@ struct COMMON_API MeshInfo
     MaterialVariant material;
     std::uint32_t objectId = UINT32_MAX;
 
-    [[nodiscard]] MeshDataGpu GenerateMeshDataGpu() const
+    [[nodiscard]] std::variant<MeshDataPhongGpu, MeshDataPhongTexturedGpu> GenerateMeshDataGpu() const
     {
-        MeshDataGpu meshData{};
-        meshData.model = transform.GetModelMatrix();
+        std::variant<MeshDataPhongGpu, MeshDataPhongTexturedGpu> result;
+
         std::visit(
                 [&](auto&& mat) {
                     using T = std::decay_t<decltype(mat)>;
 
                     if constexpr (std::is_same_v<T, PhongMaterial>) {
                         // Phong material
+                        MeshDataPhongGpu meshData{};
+                        meshData.model = transform.GetModelMatrix();
                         meshData.diffuseColor = glm::vec4(mat.diffuseColor, 1.0f);
                         meshData.specularColor = glm::vec4(mat.specularColor, 1.0f);
                         meshData.ambientStrength = mat.ambientStrength;
                         meshData.shininess = mat.shininess;
                         meshData.specularStrength = mat.specularStrength;
                         meshData.opacity = mat.opacity;
+                        result = meshData;
+                    } else if (std::is_same_v<T, PhongTexturedMaterial>) {
+                        // Phong material with textures
+                        MeshDataPhongTexturedGpu meshData{};
+                        meshData.model = transform.GetModelMatrix();
+                        meshData.diffuseColor = glm::vec4(mat.diffuseColor, 1.0f);
+                        meshData.specularColor = glm::vec4(mat.specularColor, 1.0f);
+                        meshData.ambientStrength = mat.ambientStrength;
+                        meshData.shininess = mat.shininess;
+                        meshData.specularStrength = mat.specularStrength;
+                        meshData.opacity = mat.opacity;
+                        meshData.diffuseMap = mat.diffuseMap;
+                        meshData.specularMap = mat.specularMap;
+                        meshData.normalMap = mat.normalMap;
+                        meshData.emissiveMap = mat.emissiveMap;
+                        meshData.shininessMap = mat.shininessMap;
+                        meshData.opacityMap = mat.opacityMap;
+                        result = meshData;
                     }
                 },
                 material);
-        return meshData;
+        return result;
     }
 
     [[nodiscard]] MeshPushConstantsGpu GenerateMeshPushConstantsGpu(const glm::mat4& viewMatrix,

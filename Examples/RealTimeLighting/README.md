@@ -29,3 +29,7 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 - Implementing soft-cutoff (soft edges) spotlight behavior with two cutoff angles
 - Implementing various and numerous light sources behavior in the shaders
 - Sending multiple light data and count via storage buffers and specialization constants
+
+## [Textured Materials](/Examples/RealTimeLighting/TexturedMaterials)
+
+TBD
