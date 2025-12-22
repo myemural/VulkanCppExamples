@@ -2,7 +2,7 @@
  * @file    VulkanApplication.h
  * @brief   This file contains VulkanApplication class declaration.
  * @author  Mustafa Yemural (myemural)
- * @date    21.12.2025
+ * @date    22.12.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -21,7 +21,7 @@
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 
-namespace examples::real_time_lighting::textured_materials::specular_mapping
+namespace examples::real_time_lighting::textured_materials::emissive_materials
 {
 class VulkanApplication final : public base::ApplicationTexturedMaterials
 {
@@ -77,4 +77,4 @@ private:
     // Scene manager
     std::unique_ptr<common::vulkan_framework::SceneManager> scene_;
 };
-} // namespace examples::real_time_lighting::textured_materials::specular_mapping
+} // namespace examples::real_time_lighting::textured_materials::emissive_materials

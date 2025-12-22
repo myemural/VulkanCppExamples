@@ -1,9 +1,9 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, specular map texture is used instead of specular color in the lighting calculations for
- *          textured objects drawn on the screen.
+ * @brief   In this example, diffuse and emissive maps are used to draw objects with materials that have their own
+ *          lighting, independent of the light source.
  * @author  Mustafa Yemural (myemural)
- * @date    21.12.2025
+ * @date    22.12.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::real_time_lighting::textured_materials::specular_mapping;
+using namespace examples::real_time_lighting::textured_materials::emissive_materials;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -43,14 +43,14 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalTexturePath, "Textures/Metal_Mesh_001_COLOR.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalImage, "metalImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalImageView, "metalImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalTexture, "metalTexture");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalSpecTexturePath, "Textures/Metal_Mesh_001_SPEC.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalSpecImage, "metalSpecImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalSpecImageView, "metalSpecImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalSpecTexture, "metalSpecTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingTexturePath, "Textures/Ceiling_Gypsum_001_Base_Color.jpg");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingImage, "ceilingImage");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingImageView, "ceilingImageView");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingTexture, "ceilingTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveTexturePath, "Textures/Ceiling_Gypsum_001_emissive.jpg");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveImage, "ceilingEmissiveImage");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveImageView, "ceilingEmissiveImageView");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveTexture, "ceilingEmissiveTexture");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");
@@ -96,10 +96,10 @@ bool SetParams(ParameterServer& params)
         params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
         params.Set(AppSettings::AmbientStrength, 0.05f);
         params.Set(AppSettings::SpecularStrength, 0.7f);
-        params.Set(AppSettings::Shininess, 32.0f);
+        params.Set(AppSettings::Shininess, 128.0f);
         params.Set(AppSettings::ConstantFactor, 1.0f);
-        params.Set(AppSettings::LinearFactor, 0.3f);
-        params.Set(AppSettings::QuadraticFactor, 0.44f);
+        params.Set(AppSettings::LinearFactor, 0.7f);
+        params.Set(AppSettings::QuadraticFactor, 1.8f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

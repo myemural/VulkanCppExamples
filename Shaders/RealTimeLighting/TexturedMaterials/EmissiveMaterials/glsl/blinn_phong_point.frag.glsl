@@ -38,8 +38,9 @@ layout(std430, binding = 0) readonly buffer MeshDataBuffer {
 
 layout(std140, set = 0, binding = 1) uniform LightUBO
 {
-    vec4 lightDirection; // xyz = Light Direction
-    vec4 lightColor;     // rgb = Light Color
+    vec4 lightPosition;    // xyz = Light Position
+    vec4 lightColor;       // rgb = Light Color
+    vec4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
 } light;
 
 layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[TEXTURE_COUNT];
@@ -61,17 +62,11 @@ void main()
         diffuseColor = diffuseTextureColor.rgb;
     }
 
-    vec3 specularColor = meshInfo.specularColor.rgb;
-    if (meshInfo.specularMap != -1) {
-        vec4 specularTextureColor = texture(uCombinedSamplers[meshInfo.specularMap], fragUv);
-        specularColor = specularTextureColor.rgb;
-    }
-
     // Normalizing normal
     vec3 normalizedNormal = normalize(fragNormal);
 
     // Normalizing light direction
-    vec3 normalizedLightDir = normalize(-light.lightDirection.xyz);
+    vec3 normalizedLightDir = normalize(light.lightPosition.xyz - fragPos);
 
     // Normalizing view direction (camera position)
     mat4 inverseView = inverse(pc.view);
@@ -88,9 +83,23 @@ void main()
     // Specular calculation
     vec3 halfDir = normalize(normalizedLightDir + normalizedView);
     float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), meshInfo.shininess);
-    vec3 specular = meshInfo.specularStrength * spec * light.lightColor.rgb * specularColor;
+    vec3 specular = meshInfo.specularStrength * spec * light.lightColor.rgb * meshInfo.specularColor.rgb;
+
+    // Attenuation calculation
+    float distance = length(light.lightPosition.xyz - fragPos);
+    float attenuation = 1.0 / (light.pointLightParams.x + light.pointLightParams.y * distance + light.pointLightParams.z * (distance * distance));
+
+    // Apply attenuation to all components
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    vec3 emissiveColor = vec3(0.0);
+    if (meshInfo.emissiveMap != -1) {
+        emissiveColor = texture(uCombinedSamplers[meshInfo.emissiveMap], fragUv).rgb;
+    }
 
     // Final color
-    vec3 finalColor = ambient + diffuse + specular;
+    vec3 finalColor = ambient + diffuse + specular + emissiveColor;
     outColor = vec4(finalColor, meshInfo.opacity);
 }

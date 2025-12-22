@@ -2,7 +2,7 @@
  * @file    ApplicationData.h
  * @brief   This header file keeps user-provided application data (vertices, indices etc.).
  * @author  Mustafa Yemural (myemural)
- * @date    21.12.2025
+ * @date    22.12.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -14,7 +14,7 @@
 
 #include "Vertex.h"
 
-namespace examples::real_time_lighting::textured_materials::specular_mapping
+namespace examples::real_time_lighting::textured_materials::emissive_materials
 {
 
 struct alignas(16) LightUbo
@@ -24,4 +24,4 @@ struct alignas(16) LightUbo
     glm::vec4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
 };
 
-} // namespace examples::real_time_lighting::textured_materials::specular_mapping
+} // namespace examples::real_time_lighting::textured_materials::emissive_materials

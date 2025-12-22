@@ -16,7 +16,6 @@
 #include "ApplicationLightSoruces.h"
 #include "PerspectiveCamera.h"
 #include "SceneManager.h"
-#include "TextureLoader.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"

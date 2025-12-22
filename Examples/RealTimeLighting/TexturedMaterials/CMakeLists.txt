@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(DiffuseMapping)
 add_subdirectory(SpecularMapping)
+add_subdirectory(EmissiveMaterials)

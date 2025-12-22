@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps key names for user-provided config key names.
  * @author  Mustafa Yemural (myemural)
- * @date    21.12.2025
+ * @date    22.12.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::real_time_lighting::textured_materials::specular_mapping
+namespace examples::real_time_lighting::textured_materials::emissive_materials
 {
 namespace AppConstants
 {
@@ -30,14 +30,14 @@ namespace AppConstants
     constexpr auto MainSampler = "AppConstants.MainSampler";
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto MetalTexturePath = "AppConstants.MetalTexturePath";
-    constexpr auto MetalImage = "AppConstants.MetalImage";
-    constexpr auto MetalImageView = "AppConstants.MetalImageView";
-    constexpr auto MetalTexture = "AppConstants.MetalTexture";
-    constexpr auto MetalSpecTexturePath = "AppConstants.MetalSpecTexturePath";
-    constexpr auto MetalSpecImage = "AppConstants.MetalSpecImage";
-    constexpr auto MetalSpecImageView = "AppConstants.MetalSpecImageView";
-    constexpr auto MetalSpecTexture = "AppConstants.MetalSpecTexture";
+    constexpr auto CeilingTexturePath = "AppConstants.CeilingTexturePath";
+    constexpr auto CeilingImage = "AppConstants.CeilingImage";
+    constexpr auto CeilingImageView = "AppConstants.CeilingImageView";
+    constexpr auto CeilingTexture = "AppConstants.CeilingTexture";
+    constexpr auto CeilingEmissiveTexturePath = "AppConstants.CeilingEmissiveTexturePath";
+    constexpr auto CeilingEmissiveImage = "AppConstants.CeilingEmissiveImage";
+    constexpr auto CeilingEmissiveImageView = "AppConstants.CeilingEmissiveImageView";
+    constexpr auto CeilingEmissiveTexture = "AppConstants.CeilingEmissiveTexture";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";
@@ -63,4 +63,4 @@ namespace AppSettings
     constexpr auto LinearFactor = "AppSettings.LinearFactor";
     constexpr auto QuadraticFactor = "AppSettings.QuadraticFactor";
 } // namespace AppSettings
-} // namespace examples::real_time_lighting::textured_materials::specular_mapping
+} // namespace examples::real_time_lighting::textured_materials::emissive_materials

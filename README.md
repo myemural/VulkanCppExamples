@@ -158,6 +158,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Textured Materials](/Examples/RealTimeLighting/TexturedMaterials)**
   - [Diffuse Mapping](/Examples/RealTimeLighting/TexturedMaterials/DiffuseMapping)
   - [Specular Mapping](/Examples/RealTimeLighting/TexturedMaterials/SpecularMapping)
+  - [Emissive Materials](/Examples/RealTimeLighting/TexturedMaterials/EmissiveMaterials)
 
 ## Environment Support
 

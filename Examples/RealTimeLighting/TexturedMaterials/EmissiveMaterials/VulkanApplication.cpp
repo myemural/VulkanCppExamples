@@ -19,7 +19,7 @@
 #include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_lighting::textured_materials::specular_mapping
+namespace examples::real_time_lighting::textured_materials::emissive_materials
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -93,8 +93,9 @@ void VulkanApplication::CreateInitialResources() const
 {
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    const auto metalTextureHandler = textureLoader.Load(GetParamStr(AppConstants::MetalTexturePath));
-    const auto metalSpecTextureHandler = textureLoader.Load(GetParamStr(AppConstants::MetalSpecTexturePath));
+    const auto ceilingTextureHandler = textureLoader.Load(GetParamStr(AppConstants::CeilingTexturePath));
+    const auto ceilingEmissiveTextureHandler =
+            textureLoader.Load(GetParamStr(AppConstants::CeilingEmissiveTexturePath));
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -114,18 +115,19 @@ void VulkanApplication::CreateInitialResources() const
                                                .FileName = GetParamStr(AppConstants::LightObjectsFragmentShaderFile)}}};
 
     resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MetalImage),
+        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CeilingImage),
                                 .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                 .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {metalTextureHandler.Width, metalTextureHandler.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MetalImageView),
+                                .Dimensions = {ceilingTextureHandler.Width, ceilingTextureHandler.Height, 1},
+                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CeilingImageView),
                                                               .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MetalSpecImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {metalSpecTextureHandler.Width, metalSpecTextureHandler.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MetalSpecImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        ImageResourceCreateInfo{
+            .Name = GetParamStr(AppConstants::CeilingEmissiveImage),
+            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .Format = VK_FORMAT_R8G8B8A8_SRGB,
+            .Dimensions = {ceilingEmissiveTextureHandler.Width, ceilingEmissiveTextureHandler.Height, 1},
+            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CeilingEmissiveImageView),
+                                          .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
             .Name = GetParamStr(AppConstants::DepthImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -147,9 +149,9 @@ void VulkanApplication::CreateInitialResources() const
     CreateVulkanResources(resourceCreateInfo);
 
     // Set image resources
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MetalImage), metalTextureHandler);
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MetalSpecImage),
-                                    metalSpecTextureHandler);
+    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CeilingImage), ceilingTextureHandler);
+    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CeilingEmissiveImage),
+                                    ceilingEmissiveTextureHandler);
 }
 
 void VulkanApplication::BuildScene()
@@ -168,21 +170,22 @@ void VulkanApplication::BuildScene()
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
     // Add texture registries
-    scene_->RegisterTexture(
-            GetParamStr(AppConstants::MetalTexture), resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-            resources_->GetImageView(GetParamStr(AppConstants::MetalImage), GetParamStr(AppConstants::MetalImageView)));
-    scene_->RegisterTexture(GetParamStr(AppConstants::MetalSpecTexture),
+    scene_->RegisterTexture(GetParamStr(AppConstants::CeilingTexture),
                             resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::MetalSpecImage),
-                                                     GetParamStr(AppConstants::MetalSpecImageView)));
+                            resources_->GetImageView(GetParamStr(AppConstants::CeilingImage),
+                                                     GetParamStr(AppConstants::CeilingImageView)));
+    scene_->RegisterTexture(GetParamStr(AppConstants::CeilingEmissiveTexture),
+                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
+                            resources_->GetImageView(GetParamStr(AppConstants::CeilingEmissiveImage),
+                                                     GetParamStr(AppConstants::CeilingEmissiveImageView)));
 
     // Create materials
     PhongTexturedMaterial material;
     material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     material.shininess = GetParamFloat(AppSettings::Shininess);
-    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::MetalTexture));
-    material.specularMap = scene_->GetTextureId(GetParamStr(AppConstants::MetalSpecTexture));
+    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::CeilingTexture));
+    material.emissiveMap = scene_->GetTextureId(GetParamStr(AppConstants::CeilingEmissiveTexture));
 
     // Add scene objects
     for (auto i = 0; i < 3; ++i) {
@@ -200,6 +203,7 @@ void VulkanApplication::BuildScene()
 
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObject), glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f),
                      glm::vec3{4.0f});
+    scene_->SetObjectMaterial(GetParamStr(AppConstants::PlaneObject), material);
 
     // Add light objects
     scene_->AddSphere(GetParamStr(AppConstants::LightObject), glm::vec3{0.0f}, glm::vec3{0.0f}, glm::vec3{0.3f});
@@ -550,4 +554,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_lighting::textured_materials::specular_mapping
+} // namespace examples::real_time_lighting::textured_materials::emissive_materials

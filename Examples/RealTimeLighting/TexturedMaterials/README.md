@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `DiffuseMapping`
 2. [Specular Mapping](/Examples/RealTimeLighting/TexturedMaterials/SpecularMapping)
    - `SpecularMapping`
+3. [Emissive Materials](/Examples/RealTimeLighting/TexturedMaterials/EmissiveMaterials)
+   - `EmissiveMaterials`
 
 ## Architecture of the Subsection
 
