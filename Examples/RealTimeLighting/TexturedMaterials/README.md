@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `SpecularMapping`
 3. [Emissive Materials](/Examples/RealTimeLighting/TexturedMaterials/EmissiveMaterials)
    - `EmissiveMaterials`
+4. [Shininess & Inverse Roughness Mapping](/Examples/RealTimeLighting/TexturedMaterials/ShininessMapping)
+   - `ShininessMapping`
 
 ## Architecture of the Subsection
 
