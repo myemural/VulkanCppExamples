@@ -1,9 +1,9 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, diffuse and emissive maps are used to draw objects with materials that have their own
- *          lighting, independent of the light source.
+ * @brief   In this example, diffuse and alpha (opacity) mapping is applied to the objects drawn on the scene. Any
+ *          blending problems should be ignored for now.
  * @author  Mustafa Yemural (myemural)
- * @date    22.12.2025
+ * @date    26.12.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::real_time_lighting::textured_materials::emissive_materials;
+using namespace examples::real_time_lighting::textured_materials::alpha_mapping;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -43,14 +43,14 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingTexturePath, "Textures/Ceiling_Gypsum_001_Base_Color.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingImage, "ceilingImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingImageView, "ceilingImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingTexture, "ceilingTexture");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveTexturePath, "Textures/Ceiling_Gypsum_001_emissive.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveImage, "ceilingEmissiveImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveImageView, "ceilingEmissiveImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveTexture, "ceilingEmissiveTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteTexturePath, "Textures/Concrete_Blocks_016_basecolor.png");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteImage, "concreteImage");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteImageView, "concreteImageView");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteTexture, "concreteTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteOpacityTexturePath, "Textures/Concrete_Blocks_016_opacity.png");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteOpacityImage, "concreteOpacityImage");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteOpacityImageView, "concreteOpacityImageView");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteOpacityTexture, "concreteOpacityTexture");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");
@@ -70,7 +70,6 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterParam<glm::vec3>(AppSettings::LightColor);
     schema.RegisterParam<float>(AppSettings::AmbientStrength);
     schema.RegisterParam<float>(AppSettings::SpecularStrength);
-    schema.RegisterParam<float>(AppSettings::Shininess);
     schema.RegisterParam<float>(AppSettings::ConstantFactor);
     schema.RegisterParam<float>(AppSettings::LinearFactor);
     schema.RegisterParam<float>(AppSettings::QuadraticFactor);
@@ -98,10 +97,9 @@ bool SetParams(ParameterServer& params)
         params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
         params.Set(AppSettings::AmbientStrength, 0.05f);
         params.Set(AppSettings::SpecularStrength, 0.7f);
-        params.Set(AppSettings::Shininess, 128.0f);
         params.Set(AppSettings::ConstantFactor, 1.0f);
-        params.Set(AppSettings::LinearFactor, 0.7f);
-        params.Set(AppSettings::QuadraticFactor, 1.8f);
+        params.Set(AppSettings::LinearFactor, 0.22f);
+        params.Set(AppSettings::QuadraticFactor, 0.20f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

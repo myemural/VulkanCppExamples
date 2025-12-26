@@ -15,21 +15,22 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "TextureLoader.h"
 #include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_lighting::basic_lighting::blinn_phong
+namespace examples::real_time_lighting::textured_materials::alpha_mapping
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
-VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationBasicLighting(std::move(params)) {}
+VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationTexturedMaterials(std::move(params)) {}
 
 bool VulkanApplication::Init()
 {
-    if (!ApplicationBasicLighting::Init()) {
+    if (!ApplicationTexturedMaterials::Init()) {
         std::cerr << "Application pre-init failed!" << '\n';
         return false;
     }
@@ -37,7 +38,7 @@ bool VulkanApplication::Init()
     try {
         CreateInitialResources();
         BuildScene();
-        UpdateDescriptorSets();
+        CreateAndUpdateDescriptorSets();
 
         InitInputSystem();
 
@@ -82,7 +83,7 @@ void VulkanApplication::DrawFrame()
 void VulkanApplication::PreUpdate()
 {
     // Poll events
-    ApplicationBasicLighting::PreUpdate();
+    ApplicationTexturedMaterials::PreUpdate();
 
     // Process continuous inputs
     ProcessInput();
@@ -90,6 +91,12 @@ void VulkanApplication::PreUpdate()
 
 void VulkanApplication::CreateInitialResources() const
 {
+    // Pre-load textures
+    const TextureLoader textureLoader{ASSETS_DIR};
+    const auto concreteTextureHandler = textureLoader.Load(GetParamStr(AppConstants::ConcreteTexturePath));
+    const auto concreteOpacityTextureHandler =
+            textureLoader.Load(GetParamStr(AppConstants::ConcreteOpacityTexturePath));
+
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
@@ -107,80 +114,128 @@ void VulkanApplication::CreateInitialResources() const
                                               {.Name = GetParamStr(AppConstants::LightObjectsFragmentShaderKey),
                                                .FileName = GetParamStr(AppConstants::LightObjectsFragmentShaderFile)}}};
 
-    // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {
-        .MaxSets = 2,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1}, {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}},
-        .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
-                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-        .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSet),
-                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+    resourceCreateInfo.Images = {
+        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::ConcreteImage),
+                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .Dimensions = {concreteTextureHandler.Width, concreteTextureHandler.Height, 1},
+                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::ConcreteImageView),
+                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        ImageResourceCreateInfo{
+            .Name = GetParamStr(AppConstants::ConcreteOpacityImage),
+            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .Format = VK_FORMAT_R8G8B8A8_SRGB,
+            .Dimensions = {concreteOpacityTextureHandler.Width, concreteOpacityTextureHandler.Height, 1},
+            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::ConcreteOpacityImageView),
+                                          .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        ImageResourceCreateInfo{
+            .Name = GetParamStr(AppConstants::DepthImage),
+            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .Format = depthImageFormat_,
+            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
+                                          .Format = depthImageFormat_,
+                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                               .baseMipLevel = 0,
+                                                               .levelCount = 1,
+                                                               .baseArrayLayer = 0,
+                                                               .layerCount = 1}}}}};
 
-    resourceCreateInfo.Images = {ImageResourceCreateInfo{
-        .Name = GetParamStr(AppConstants::DepthImage),
-        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        .Format = depthImageFormat_,
-        .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-        .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                      .Format = depthImageFormat_,
-                                      .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                           .baseMipLevel = 0,
-                                                           .levelCount = 1,
-                                                           .baseArrayLayer = 0,
-                                                           .layerCount = 1}}}}};
+    resourceCreateInfo.Samplers = {
+        {.Name = GetParamStr(AppConstants::MainSampler),
+         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
+
+    // Set image resources
+    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::ConcreteImage), concreteTextureHandler);
+    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::ConcreteOpacityImage),
+                                    concreteOpacityTextureHandler);
 }
 
 void VulkanApplication::BuildScene()
 {
     SceneConfig sceneConfig;
     sceneConfig.AttributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
+    sceneConfig.AttributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.AttributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
+    sceneConfig.MaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
     scene_ = std::make_unique<SceneManager>(*resources_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 0.0f, 6.0f), aspectRatio);
+    scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
+    // Add texture registries
+    scene_->RegisterTexture(GetParamStr(AppConstants::ConcreteTexture),
+                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
+                            resources_->GetImageView(GetParamStr(AppConstants::ConcreteImage),
+                                                     GetParamStr(AppConstants::ConcreteImageView)));
+    scene_->RegisterTexture(GetParamStr(AppConstants::ConcreteOpacityTexture),
+                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
+                            resources_->GetImageView(GetParamStr(AppConstants::ConcreteOpacityImage),
+                                                     GetParamStr(AppConstants::ConcreteOpacityImageView)));
+
     // Create materials
-    PhongMaterial material;
+    PhongTexturedMaterial material;
     material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    material.shininess = GetParamFloat(AppSettings::Shininess);
+    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::ConcreteTexture));
+    material.opacityMap = scene_->GetTextureId(GetParamStr(AppConstants::ConcreteOpacityTexture));
 
     // Add scene objects
-    scene_->AddCube(GetParamStr(AppConstants::CubeObject), glm::vec3{-2.0f, 0.0f, 0.0f});
-    scene_->AddSphere(GetParamStr(AppConstants::SphereObject), glm::vec3{-0.5f, 0.0f, 0.0f});
-    material.diffuseColor = glm::vec3{0.0f, 1.0f, 0.0f};
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::SphereObject), material);
-    scene_->AddCone(GetParamStr(AppConstants::ConeObject), glm::vec3{1.0f, 0.0f, 0.0f});
-    material.diffuseColor = glm::vec3{0.0f, 0.0f, 1.0f};
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::ConeObject), material);
-    scene_->AddCylinder(GetParamStr(AppConstants::CylinderObject), glm::vec3{2.5f, 0.0f, 0.0f});
-    material.diffuseColor = glm::vec3{1.0f, 0.0f, 0.0f};
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::CylinderObject), material);
+    for (auto i = 0; i < 3; ++i) {
+        const std::string rowStr = std::to_string(i);
+        const auto zShift = static_cast<float>(i * 2 - 1);
+        scene_->AddCube(GetParamStr(AppConstants::CubeObject) + rowStr, glm::vec3{-2.0f, -1.0f, zShift});
+        scene_->SetObjectMaterial(GetParamStr(AppConstants::CubeObject) + rowStr, material);
+        scene_->AddSphere(GetParamStr(AppConstants::SphereObject) + rowStr, glm::vec3{-0.5f, -1.0f, zShift});
+        scene_->SetObjectMaterial(GetParamStr(AppConstants::SphereObject) + rowStr, material);
+        scene_->AddCone(GetParamStr(AppConstants::ConeObject) + rowStr, glm::vec3{1.0f, -1.0f, zShift});
+        scene_->SetObjectMaterial(GetParamStr(AppConstants::ConeObject) + rowStr, material);
+        scene_->AddCylinder(GetParamStr(AppConstants::CylinderObject) + rowStr, glm::vec3{2.5f, -1.0f, zShift});
+        scene_->SetObjectMaterial(GetParamStr(AppConstants::CylinderObject) + rowStr, material);
+    }
+
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObject), glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f),
-                     glm::vec4{4.0f});
+                     glm::vec3{4.0f});
 
     // Add light objects
     scene_->AddSphere(GetParamStr(AppConstants::LightObject), glm::vec3{0.0f}, glm::vec3{0.0f}, glm::vec3{0.3f});
     scene_->AddToGroup(GetParamStr(AppConstants::LightGroup), {GetParamStr(AppConstants::LightObject)});
 }
 
-void VulkanApplication::UpdateDescriptorSets() const
+void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
+    // Create descriptor sets
+    const auto combinedImageSamplerCount = scene_->GetRegisteredTextureCount();
+    const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
+        .MaxSets = 2 + combinedImageSamplerCount,
+        .PoolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
+                      {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
+                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount}},
+        .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
+                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
+                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
+                                   VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
+        .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSet),
+                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+
+    resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
+
     std::vector<VkDescriptorBufferInfo> storageBufferInfos;
     storageBufferInfos.emplace_back(scene_->GetStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
                                VK_WHOLE_SIZE);
+
+    auto descriptorImageInfos = scene_->GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageBufferRequest;
     objectStorageBufferRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
@@ -194,8 +249,15 @@ void VulkanApplication::UpdateDescriptorSets() const
     lightUboRequest.Buffers = lightUboInfos;
     lightUboRequest.Type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
+    ImageWriteRequest textureUpdateRequest;
+    textureUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    textureUpdateRequest.BindingIndex = 2;
+    textureUpdateRequest.Images = descriptorImageInfos;
+    textureUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .BufferWriteRequests = {objectStorageBufferRequest, lightUboRequest}};
+        .BufferWriteRequests = {objectStorageBufferRequest, lightUboRequest},
+        .ImageWriteRequests = {textureUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -289,11 +351,11 @@ void VulkanApplication::CreatePipelines()
     VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment;
-    colorBlendAttachment.blendEnable = VK_FALSE;
-    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
+    colorBlendAttachment.blendEnable = VK_TRUE;
+    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
     colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
     colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
     colorBlendAttachment.colorWriteMask =
@@ -301,6 +363,19 @@ void VulkanApplication::CreatePipelines()
 
     const auto bindings = scene_->GetBindingDescriptions();
     const auto attributes = scene_->GetAttributeDescriptions();
+
+    VkSpecializationMapEntry entry{};
+    entry.constantID = 0;
+    entry.offset = 0;
+    entry.size = sizeof(uint32_t);
+
+    const std::uint32_t lightCount = scene_->GetRegisteredTextureCount();
+
+    VkSpecializationInfo specInfo{};
+    specInfo.mapEntryCount = 1;
+    specInfo.pMapEntries = &entry;
+    specInfo.dataSize = sizeof(uint32_t);
+    specInfo.pData = &lightCount;
 
     scenePipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -312,6 +387,7 @@ void VulkanApplication::CreatePipelines()
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
             shaderStageCreateInfo.module =
                     resources_->GetShaderModule(GetParamStr(AppConstants::SceneObjectsFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.pSpecializationInfo = &specInfo;
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -416,10 +492,12 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
 
     // Draw only scene objects
-    currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
     for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
+        // For light objects, apply light object shader
         if (scene_->IsInGroup(meshName, GetParamStr(AppConstants::LightGroup))) {
-            continue;
+            currentCmdBuffer->BindPipeline(lightPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        } else {
+            currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         }
 
         const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
@@ -434,22 +512,6 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
     }
 
-    // Draw only light objects
-    {
-        currentCmdBuffer->BindPipeline(lightPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        const auto lightMeshInfo = scene_->GetMesh(GetParamStr(AppConstants::LightObject));
-        const auto [vertexOffsets, indexOffset, indexCount] = lightMeshInfo.geometry;
-
-        currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-        currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-        const auto meshPushConstants =
-                lightMeshInfo.GenerateMeshPushConstantsGpu(scene_->GetViewMatrix(), scene_->GetProjectionMatrix());
-        currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(meshPushConstants), &meshPushConstants);
-        currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
-    }
-
     currentCmdBuffer->EndRenderPass();
     if (!currentCmdBuffer->EndCommandBuffer()) {
         throw std::runtime_error("Failed to end recording command buffer!");
@@ -459,20 +521,19 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     const auto currentTime = static_cast<float>(GetCurrentTime());
-    scene_->RotateObject(GetParamStr(AppConstants::CubeObject), glm::vec3(0.0f, 5.0f * currentTime, 0.0f));
-    scene_->RotateObject(GetParamStr(AppConstants::SphereObject), glm::vec3(0.0f, 5.0f * currentTime, 0.0f));
-    scene_->RotateObject(GetParamStr(AppConstants::ConeObject), glm::vec3(5.0f * currentTime, 0.0f, 0.0f));
-    scene_->RotateObject(GetParamStr(AppConstants::CylinderObject), glm::vec3(5.0f * currentTime, 0.0f, 0.0f));
-
     const float angularSpeed = 0.5f * currentTime;
-    constexpr float radius = 3.0f;
+    constexpr float radius = 2.0f;
     const float x = radius * cos(angularSpeed);
     const float z = radius * sin(angularSpeed);
-    scene_->MoveObject(GetParamStr(AppConstants::LightObject), glm::vec3(x, 2.0f, z));
+    scene_->MoveObject(GetParamStr(AppConstants::LightObject), glm::vec3(x, 0.8f, z));
 
     LightUbo lightUbo{};
-    lightUbo.lightPosition = glm::vec4(scene_->GetMesh(GetParamStr(AppConstants::LightObject)).transform.translation, 1.0f);
+    lightUbo.lightPosition =
+            glm::vec4(scene_->GetMesh(GetParamStr(AppConstants::LightObject)).transform.translation, 1.0f);
     lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.pointLightParams.x = GetParamFloat(AppSettings::ConstantFactor);
+    lightUbo.pointLightParams.y = GetParamFloat(AppSettings::LinearFactor);
+    lightUbo.pointLightParams.z = GetParamFloat(AppSettings::QuadraticFactor);
     resources_->SetBuffer(GetParamStr(AppConstants::LightUniformBuffer), &lightUbo, sizeof(lightUbo));
 }
 
@@ -492,4 +553,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_lighting::basic_lighting::blinn_phong
+} // namespace examples::real_time_lighting::textured_materials::alpha_mapping

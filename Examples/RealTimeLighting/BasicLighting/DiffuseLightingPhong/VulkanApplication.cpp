@@ -168,6 +168,7 @@ void VulkanApplication::BuildScene()
 
     // Add light objects
     scene_->AddSphere(GetParamStr(AppConstants::LightObject), glm::vec3{0.0f}, glm::vec3{0.0f}, glm::vec3{0.3f});
+    scene_->AddToGroup(GetParamStr(AppConstants::LightGroup), {GetParamStr(AppConstants::LightObject)});
 }
 
 void VulkanApplication::UpdateDescriptorSets() const
@@ -415,7 +416,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Draw only scene objects
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
     for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-        if (meshName == GetParamStr(AppConstants::LightObject)) {
+        if (scene_->IsInGroup(meshName, GetParamStr(AppConstants::LightGroup))) {
             continue;
         }
 

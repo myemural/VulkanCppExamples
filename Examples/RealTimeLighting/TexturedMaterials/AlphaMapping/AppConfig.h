@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps key names for user-provided config key names.
  * @author  Mustafa Yemural (myemural)
- * @date    13.12.2025
+ * @date    26.12.2025
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_phong
+namespace examples::real_time_lighting::textured_materials::alpha_mapping
 {
 namespace AppConstants
 {
@@ -27,8 +27,17 @@ namespace AppConstants
     constexpr auto LightUniformBuffer = "AppConstants.LightUniformBuffer";
     constexpr auto DepthImage = "AppConstants.DepthImage";
     constexpr auto DepthImageView = "AppConstants.DepthImageView";
+    constexpr auto MainSampler = "AppConstants.MainSampler";
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
+    constexpr auto ConcreteTexturePath = "AppConstants.ConcreteTexturePath";
+    constexpr auto ConcreteImage = "AppConstants.ConcreteImage";
+    constexpr auto ConcreteImageView = "AppConstants.ConcreteImageView";
+    constexpr auto ConcreteTexture = "AppConstants.ConcreteTexture";
+    constexpr auto ConcreteOpacityTexturePath = "AppConstants.ConcreteOpacityTexturePath";
+    constexpr auto ConcreteOpacityImage = "AppConstants.ConcreteOpacityImage";
+    constexpr auto ConcreteOpacityImageView = "AppConstants.ConcreteOpacityImageView";
+    constexpr auto ConcreteOpacityTexture = "AppConstants.ConcreteOpacityTexture";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";
@@ -48,7 +57,12 @@ namespace AppSettings
     constexpr auto ClearColor = "AppSettings.ClearColor";
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
+    constexpr auto LightDirection = "AppSettings.LightDirection";
     constexpr auto LightColor = "AppSettings.LightColor";
     constexpr auto AmbientStrength = "AppSettings.AmbientStrength";
+    constexpr auto SpecularStrength = "AppSettings.SpecularStrength";
+    constexpr auto ConstantFactor = "AppSettings.ConstantFactor";
+    constexpr auto LinearFactor = "AppSettings.LinearFactor";
+    constexpr auto QuadraticFactor = "AppSettings.QuadraticFactor";
 } // namespace AppSettings
-} // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_phong
+} // namespace examples::real_time_lighting::textured_materials::alpha_mapping

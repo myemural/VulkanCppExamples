@@ -39,6 +39,9 @@ namespace AppConstants
     constexpr auto PlaneObject = "AppConstants.PlaneObject";
     constexpr auto LightObject1 = "AppConstants.LightObject1";
     constexpr auto LightObject2 = "AppConstants.LightObject2";
+
+    // Groups
+    constexpr auto LightGroup = "AppConstants.LightGroup";
 } // namespace AppConstants
 
 namespace AppSettings

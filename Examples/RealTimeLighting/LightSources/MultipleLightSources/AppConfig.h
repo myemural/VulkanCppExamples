@@ -40,6 +40,9 @@ namespace AppConstants
     constexpr auto SpotlightObject = "AppConstants.SpotlightObject";
     constexpr auto PointLightObject1 = "AppConstants.PointLightObject1";
     constexpr auto PointLightObject2 = "AppConstants.PointLightObject2";
+
+    // Groups
+    constexpr auto LightGroup = "AppConstants.LightGroup";
 } // namespace AppConstants
 
 namespace AppSettings

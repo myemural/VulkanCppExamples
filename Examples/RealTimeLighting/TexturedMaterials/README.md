@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `EmissiveMaterials`
 4. [Shininess & Inverse Roughness Mapping](/Examples/RealTimeLighting/TexturedMaterials/ShininessMapping)
    - `ShininessMapping`
+5. [Alpha & Opacity Mapping](/Examples/RealTimeLighting/TexturedMaterials/AlphaMapping)
+   - `AlphaMapping`
 
 ## Architecture of the Subsection
 

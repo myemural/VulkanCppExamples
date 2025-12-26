@@ -55,6 +55,8 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::PointLightObject1, "pointLight1");
     schema.RegisterImmutableParam<std::string>(AppConstants::PointLightObject2, "pointLight2");
 
+    schema.RegisterImmutableParam<std::string>(AppConstants::LightGroup, "lights");
+
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);

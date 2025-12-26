@@ -160,6 +160,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Specular Mapping](/Examples/RealTimeLighting/TexturedMaterials/SpecularMapping)
   - [Emissive Materials](/Examples/RealTimeLighting/TexturedMaterials/EmissiveMaterials)
   - [Shininess & Inverse Roughness Mapping](/Examples/RealTimeLighting/TexturedMaterials/ShininessMapping)
+  - [Alpha & Opacity Mapping](/Examples/RealTimeLighting/TexturedMaterials/AlphaMapping)
 
 ## Environment Support
 

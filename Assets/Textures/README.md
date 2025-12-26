@@ -5,6 +5,8 @@ This directory contains several texture files that taken from different free sou
 - bricks.jpg ([Weathered Brick Texture, stockcake.com](https://stockcake.com/i/weathered-brick-texture_1756192_1254333))
 - Ceiling_Gypsum_001_Base_Color.jpg ([Ceiling Gypsum 001a, 3dtextures.me](https://3dtextures.me/2019/01/30/ceiling-gypsum-001a/))
 - Ceiling_Gypsum_001_emissive.jpg ([Ceiling Gypsum 001a, 3dtextures.me](https://3dtextures.me/2019/01/30/ceiling-gypsum-001a/))
+- Concrete_Blocks_016_basecolor.png ([Concrete Blocks 016, 3dtextures.me](https://3dtextures.me/2025/11/04/concrete-blocks-016/))
+- Concrete_Blocks_016_opacity.png ([Concrete Blocks 016, 3dtextures.me](https://3dtextures.me/2025/11/04/concrete-blocks-016/))
 - crate1_diffuse.png ([opengameart.org](https://opengameart.org/node/8765))
 - leaf.png ([Leaves Texture Png, pngkey.com](https://www.pngkey.com/maxpic/u2q8e6y3u2y3q8r5/))
 - marble.jpg ([Marble texture background, freepik.com](https://www.freepik.com/free-photo/marble-texture-background_2023812.htm#fromView=keyword&page=1&position=0&uuid=4d0a24ca-36b4-4f93-9c5d-31a5974ca90c&query=White+marble+texture+seamless+pattern))

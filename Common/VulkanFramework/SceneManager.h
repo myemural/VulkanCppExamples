@@ -75,6 +75,11 @@ public:
                   const glm::vec3& initialRotation = glm::vec3{0.0f},
                   const glm::vec3& initialScale = glm::vec3{1.0f});
 
+    // Group logic
+    void AddToGroup(const std::string& groupName, const std::initializer_list<std::string>& objectNames);
+
+    bool IsInGroup(const std::string& objectName, const std::string& groupName);
+
     // Change transform
     void MoveObject(const std::string& objectName, const glm::vec3& newPosition);
     void RotateObject(const std::string& objectName, const glm::vec3& newRotation);
@@ -151,6 +156,8 @@ private:
 
     std::unordered_map<std::string, std::shared_ptr<utility::CameraBase>> cameras_;
     std::string activeCameraName_;
+
+    std::unordered_map<std::string, std::vector<std::string>> groups_;
 
     // Preloading primitive buffers
     std::unordered_map<PrimitiveType, MeshInfo::GeometryInfo> primitiveGeometries_;

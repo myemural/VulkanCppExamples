@@ -47,6 +47,9 @@ namespace AppConstants
     constexpr auto CylinderObject = "AppConstants.CylinderObject";
     constexpr auto PlaneObject = "AppConstants.PlaneObject";
     constexpr auto LightObject = "AppConstants.LightObject";
+
+    // Groups
+    constexpr auto LightGroup = "AppConstants.LightGroup";
 } // namespace AppConstants
 
 namespace AppSettings

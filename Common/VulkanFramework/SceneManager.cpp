@@ -201,6 +201,26 @@ void SceneManager::AddPlane(const std::string& objectName,
     meshes_[objectName] = meshInfo;
 }
 
+void SceneManager::AddToGroup(const std::string& groupName, const std::initializer_list<std::string>& objectNames)
+{
+    for (const auto& objectName: objectNames) {
+        groups_[groupName].emplace_back(objectName);
+    }
+}
+
+bool SceneManager::IsInGroup(const std::string& objectName, const std::string& groupName)
+{
+    if (!groups_.contains(groupName)) {
+        return false;
+    }
+
+    const auto result = std::ranges::find_if(groups_[groupName], [&objectName](const std::string& objectInGroup) {
+        return objectName == objectInGroup;
+    });
+
+    return result != groups_[groupName].end();
+}
+
 void SceneManager::MoveObject(const std::string& objectName, const glm::vec3& newPosition)
 {
     meshes_[objectName].transform.translation = newPosition;
@@ -243,7 +263,7 @@ std::vector<VkDescriptorImageInfo> SceneManager::GetDescriptorImageInfos() const
     std::vector<VkDescriptorImageInfo> descriptorImageInfos;
     descriptorImageInfos.resize(textureRegistries_.size());
 
-    for (const auto& textureRegistry : textureRegistries_) {
+    for (const auto& textureRegistry: textureRegistries_) {
         const auto [textureId, sampler, imageView] = textureRegistry.second;
         descriptorImageInfos[textureId].sampler = sampler->GetHandle();
         descriptorImageInfos[textureId].imageView = imageView->GetHandle();
@@ -301,10 +321,12 @@ void SceneManager::UpdateMeshDataGpu(const MeshInfo& meshInfo) const
 
     if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
         const auto offset = meshInfo.objectId * sizeof(MeshDataPhongGpu);
-        resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongGpu>(meshData), sizeof(MeshDataPhongGpu), offset, false);
+        resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongGpu>(meshData), sizeof(MeshDataPhongGpu),
+                                   offset, false);
     } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         const auto offset = meshInfo.objectId * sizeof(MeshDataPhongTexturedGpu);
-        resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongTexturedGpu>(meshData), sizeof(MeshDataPhongTexturedGpu), offset, false);
+        resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongTexturedGpu>(meshData),
+                                   sizeof(MeshDataPhongTexturedGpu), offset, false);
     }
 }
 
