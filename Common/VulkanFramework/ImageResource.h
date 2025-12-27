@@ -71,11 +71,13 @@ public:
      * @param queue Queue that the command buffer will be sent.
      * @param oldLayout Old image layout.
      * @param newLayout New image layout.
+     * @param subresourceRanges Subresource ranges for the image.
      */
     void ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                            const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                            const VkImageLayout& oldLayout,
-                           const VkImageLayout& newLayout) const;
+                           const VkImageLayout& newLayout,
+                           const std::optional<VkImageSubresourceRange>& subresourceRanges = std::nullopt) const;
 
     /**
      * @brief Copies data from staging buffer to the image on device.

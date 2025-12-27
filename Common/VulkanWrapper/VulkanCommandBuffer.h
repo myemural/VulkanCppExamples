@@ -141,5 +141,12 @@ public:
                                         VkDeviceSize offset,
                                         std::uint32_t drawCount,
                                         std::uint32_t stride) const;
+
+    COMMON_API void BlitImage(const std::shared_ptr<VulkanImage>& srcImage,
+                              const VkImageLayout& srcImageLayout,
+                              const std::shared_ptr<VulkanImage>& dstImage,
+                              const VkImageLayout& dstImageLayout,
+                              const std::vector<VkImageBlit>& imageBlits,
+                              const VkFilter& filter = VK_FILTER_LINEAR) const;
 };
 } // namespace common::vulkan_wrapper

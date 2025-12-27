@@ -269,4 +269,15 @@ void VulkanCommandBuffer::DrawIndexedIndirect(const std::shared_ptr<VulkanBuffer
 {
     vkCmdDrawIndexedIndirect(handle_, buffer->GetHandle(), offset, drawCount, stride);
 }
+
+void VulkanCommandBuffer::BlitImage(const std::shared_ptr<VulkanImage>& srcImage,
+                                    const VkImageLayout& srcImageLayout,
+                                    const std::shared_ptr<VulkanImage>& dstImage,
+                                    const VkImageLayout& dstImageLayout,
+                                    const std::vector<VkImageBlit>& imageBlits,
+                                    const VkFilter& filter) const
+{
+    vkCmdBlitImage(handle_, srcImage->GetHandle(), srcImageLayout, dstImage->GetHandle(), dstImageLayout,
+                   imageBlits.size(), imageBlits.empty() ? nullptr : imageBlits.data(), filter);
+}
 } // namespace common::vulkan_wrapper

@@ -97,7 +97,8 @@ void ImageResource::AllocateImageMemory()
 void ImageResource::ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                                       const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                       const VkImageLayout& oldLayout,
-                                      const VkImageLayout& newLayout) const
+                                      const VkImageLayout& newLayout,
+                                      const std::optional<VkImageSubresourceRange>& subresourceRanges) const
 {
     const auto cmdBufferChangeLayout = cmdPool->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
 
@@ -131,7 +132,7 @@ void ImageResource::ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::Vulk
     }
 
     const auto imageMemoryBarrier =
-            image_->CreateImageMemoryBarrier(srcAccessMask, dstAccessMask, oldLayout, newLayout);
+            image_->CreateImageMemoryBarrier(srcAccessMask, dstAccessMask, oldLayout, newLayout, subresourceRanges);
 
     cmdBufferChangeLayout->PipelineBarrier(srcStage, dstStage, {imageMemoryBarrier});
 

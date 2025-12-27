@@ -33,3 +33,7 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 ## [Textured Materials](/Examples/RealTimeLighting/TexturedMaterials)
 
 TBD
+
+## [Texture Sampling and Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering)
+
+TBD

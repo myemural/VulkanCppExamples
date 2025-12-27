@@ -8,6 +8,10 @@
 
 #include <cstring>
 
+#include "VulkanCommandBuffer.h"
+#include "VulkanCommandPool.h"
+#include "VulkanQueue.h"
+
 namespace common::vulkan_framework
 {
 ResourceManager::ResourceManager(const std::shared_ptr<vulkan_wrapper::VulkanPhysicalDevice>& physicalDevice,
@@ -147,10 +151,12 @@ void ResourceManager::SetBufferAlignedWithoutUnmap(const std::string& name,
 void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                                           const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                           const std::string& imageName,
-                                          const utility::TextureHandler& textureHandler)
+                                          const utility::TextureHandler& textureHandler,
+                                          const std::uint32_t mipLevels)
 {
     images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_UNDEFINED,
-                                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+                                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                          VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, 0, 1});
 
     const BufferResourceCreateInfo stagingBufferCreateInfo{
         imageName + "_tempStagingBuffer", static_cast<std::uint32_t>(textureHandler.Data.size()),
@@ -177,6 +183,89 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
                                            copyRegion);
     images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+}
+
+void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
+                                      const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                                      const std::string& imageName,
+                                      const utility::TextureHandler& textureHandler,
+                                      const std::uint32_t mipLevels) const
+{
+    const auto cmdBufferMipmap = cmdPool->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
+
+    if (!cmdBufferMipmap) {
+        throw std::runtime_error("Failed to create command buffer for generate mipmaps!");
+    }
+
+    if (!cmdBufferMipmap->BeginCommandBuffer(
+                [](auto& beginInfo) { beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT; })) {
+        throw std::runtime_error("Failed to begin recording command buffer!");
+    }
+
+    const auto image = GetImage(imageName);
+
+    VkImageSubresourceRange subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    auto barrier = image->CreateImageMemoryBarrier(VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT,
+                                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceRange);
+
+    auto mipWidth = static_cast<int32_t>(textureHandler.Width);
+    auto mipHeight = static_cast<int32_t>(textureHandler.Height);
+
+    for (uint32_t i = 1; i < mipLevels; ++i) {
+        barrier.subresourceRange.baseMipLevel = i - 1;
+        barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        if (i == 1) {
+            barrier.oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; // For first level only
+        } else {
+            barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        }
+
+        cmdBufferMipmap->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {barrier});
+
+        VkImageBlit blit{};
+        blit.srcOffsets[0] = {0, 0, 0};
+        blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
+        blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        blit.srcSubresource.mipLevel = i - 1;
+        blit.srcSubresource.baseArrayLayer = 0;
+        blit.srcSubresource.layerCount = 1;
+        blit.dstOffsets[0] = {0, 0, 0};
+        blit.dstOffsets[1] = {mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1};
+        blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        blit.dstSubresource.mipLevel = i;
+        blit.dstSubresource.baseArrayLayer = 0;
+        blit.dstSubresource.layerCount = 1;
+        cmdBufferMipmap->BlitImage(image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image,
+                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, {blit});
+
+        barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+        cmdBufferMipmap->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                                         {barrier});
+
+        mipWidth = mipWidth > 1 ? mipWidth / 2 : 1;
+        mipHeight = mipHeight > 1 ? mipHeight / 2 : 1;
+    }
+
+    barrier.subresourceRange.baseMipLevel = mipLevels - 1;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    cmdBufferMipmap->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, {barrier});
+
+
+    if (!cmdBufferMipmap->EndCommandBuffer()) {
+        throw std::runtime_error("Failed to end recording command buffer!");
+    }
+
+    queue->Submit({cmdBufferMipmap});
+    queue->WaitIdle();
 }
 void ResourceManager::DeleteBuffer(const std::string& bufferName) { buffers_.erase(bufferName); }
 

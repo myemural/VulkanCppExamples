@@ -73,7 +73,8 @@ VulkanImage::CreateImageMemoryBarrier(const VkAccessFlags& srcAccessMask,
                                       const std::optional<VkImageSubresourceRange>& subresourceRange) const
 {
     VkImageMemoryBarrier barrier;
-    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER, barrier.pNext = nullptr;
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.pNext = nullptr;
     barrier.srcAccessMask = srcAccessMask;
     barrier.dstAccessMask = dstAccessMask;
     barrier.oldLayout = oldLayout;

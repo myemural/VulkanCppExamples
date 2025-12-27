@@ -205,14 +205,46 @@ inline std::vector<glm::vec3> GenerateRandomPositions(const size_t count,
  */
 inline glm::vec3 GenerateRandomColor(const float minValue = 0.0f, const float maxValue = 1.0f)
 {
-    std::mt19937 generator{ std::random_device{}() };
+    std::mt19937 generator{std::random_device{}()};
     std::uniform_real_distribution distribution(minValue, maxValue);
 
-    return glm::vec3{
-        distribution(generator),
-        distribution(generator),
-        distribution(generator)
-    };
+    return glm::vec3{distribution(generator), distribution(generator), distribution(generator)};
+}
+
+/**
+ * @brief A concept type that encompasses both integers and floating-point numbers.
+ */
+template<typename T>
+concept Numeric = std::integral<T> || std::floating_point<T>;
+
+/**
+ * @brief Generates and returns random color value between min and max values. Alpha is not included.
+ * @param minValue Minimum value. Default is 0.
+ * @param maxValue Maximum value for color component. Default is 1.
+ * @return Returns random color value.
+ */
+template<Numeric T>
+T GenerateRandomValue(const T minValue, const T maxValue)
+{
+    std::mt19937 generator{std::random_device{}()};
+    if constexpr (std::integral<T>) {
+        std::uniform_int_distribution<T> distribution(minValue, maxValue);
+        return distribution(generator());
+    } else {
+        std::uniform_real_distribution<T> distribution(minValue, maxValue);
+        return distribution(generator());
+    }
+}
+
+/**
+ * @brief Calculates mip level count to the texture image width and height.
+ * @param textureWidth Width of the texture image.
+ * @param textureHeight Height of the texture image.
+ * @return Returns mip level count.
+ */
+inline std::uint32_t GetMipLevelCount(const std::uint32_t textureWidth, const std::uint32_t textureHeight)
+{
+    return static_cast<uint32_t>(std::floor(std::log2(std::max(textureWidth, textureHeight)))) + 1;
 }
 
 } // namespace common::vulkan_framework
