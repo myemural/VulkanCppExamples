@@ -88,19 +88,21 @@ void main()
 
     // Shininess calculation
     float shininess = meshInfo.shininess;
+    float energyComp = 1.0; // Fake energy compensation for better visualization of shininess mapping
     if (meshInfo.shininessMap != -1) {
-        float minShine = 1.0;
-        float maxShine = 128.0;
+        float minShine = 8.0;
+        float maxShine = 1024.0;
 
         float roughness = texture(uCombinedSamplers[meshInfo.shininessMap], fragUv).r;
         float perceptualRoughness = roughness * roughness;
-        shininess = mix(maxShine, minShine, roughness);
+        shininess = mix(maxShine, minShine, perceptualRoughness);
+        energyComp = mix(1.0, 0.1, perceptualRoughness);
     }
 
     // Specular calculation
     vec3 halfDir = normalize(normalizedLightDir + normalizedView);
-    float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), shininess);
-    vec3 specular = meshInfo.specularStrength * spec * light.lightColor.rgb * specularColor;
+    float spec = min(pow(max(dot(normalizedNormal, halfDir), 0.0), shininess), 1.0);
+    vec3 specular = meshInfo.specularStrength * energyComp * spec * light.lightColor.rgb * specularColor;
 
     // Attenuation calculation
     float distance = length(light.lightPosition.xyz - fragPos);

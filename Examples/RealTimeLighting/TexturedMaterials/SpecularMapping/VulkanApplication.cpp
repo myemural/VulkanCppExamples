@@ -122,10 +122,10 @@ void VulkanApplication::CreateInitialResources() const
                                                               .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MetalSpecImage),
                                 .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .Format = VK_FORMAT_R8G8B8A8_UNORM,
                                 .Dimensions = {metalSpecTextureHandler.Width, metalSpecTextureHandler.Height, 1},
                                 .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MetalSpecImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+                                                              .Format = VK_FORMAT_R8G8B8A8_UNORM}}},
         ImageResourceCreateInfo{
             .Name = GetParamStr(AppConstants::DepthImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,

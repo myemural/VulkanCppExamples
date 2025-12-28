@@ -124,10 +124,10 @@ void VulkanApplication::CreateInitialResources() const
         ImageResourceCreateInfo{
             .Name = GetParamStr(AppConstants::ConcreteOpacityImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_SRGB,
+            .Format = VK_FORMAT_R8G8B8A8_UNORM,
             .Dimensions = {concreteOpacityTextureHandler.Width, concreteOpacityTextureHandler.Height, 1},
             .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::ConcreteOpacityImageView),
-                                          .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+                                          .Format = VK_FORMAT_R8G8B8A8_UNORM}}},
         ImageResourceCreateInfo{
             .Name = GetParamStr(AppConstants::DepthImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
