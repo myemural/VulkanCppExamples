@@ -20,6 +20,7 @@ layout(location = 1) in vec3 fragNormal;
 
 struct MeshData {
     mat4 model;
+    mat4 normalMatrix;
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
@@ -53,6 +54,7 @@ layout(std430, set = 0, binding = 1) readonly buffer LightBuffer
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    vec4 cameraPosition;
     uint objectId;
 } pc;
 
@@ -116,9 +118,7 @@ void main()
     vec3 normalizedNormal = normalize(fragNormal);
 
     // Normalizing view direction (camera position)
-    mat4 inverseView = inverse(pc.view);
-    vec3 viewPos = vec3(inverseView[3]);
-    vec3 normalizedView = normalize(viewPos - fragPos);
+    vec3 normalizedView = normalize(pc.cameraPosition.xyz - fragPos);
 
     vec3 resultColor = vec3(0.0);
     for (uint i = 0; i < LIGHT_COUNT; i++) {

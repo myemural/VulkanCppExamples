@@ -14,6 +14,7 @@ layout(location = 0) in vec3 vertexColor;
 
 struct MeshData {
     mat4 model;
+    mat4 normalMatrix;
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
@@ -29,6 +30,7 @@ layout(std430, binding = 0) readonly buffer MeshDataBuffer {
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    vec4 cameraPosition;
     uint objectId;
 } pc;
 

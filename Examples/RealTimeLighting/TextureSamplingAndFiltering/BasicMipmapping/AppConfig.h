@@ -28,10 +28,10 @@ namespace AppConstants
     constexpr auto MainSampler = "AppConstants.MainSampler";
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto MetalTexturePath = "AppConstants.MetalTexturePath";
-    constexpr auto MetalImage = "AppConstants.MetalImage";
-    constexpr auto MetalImageView = "AppConstants.MetalImageView";
-    constexpr auto MetalTexture = "AppConstants.MetalTexture";
+    constexpr auto WoodFloorTexturePath = "AppConstants.WoodFloorTexturePath";
+    constexpr auto WoodFloorImage = "AppConstants.WoodFloorImage";
+    constexpr auto WoodFloorImageView = "AppConstants.WoodFloorImageView";
+    constexpr auto WoodFloorTexture = "AppConstants.WoodFloorTexture";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";

@@ -4,3 +4,5 @@ add_subdirectory(Base)
 include_directories(Base)
 
 add_subdirectory(BasicMipmapping)
+add_subdirectory(ManualMipmapping)
+add_subdirectory(AnisotropicFiltering)

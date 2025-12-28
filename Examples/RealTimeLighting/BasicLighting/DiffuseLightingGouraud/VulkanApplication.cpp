@@ -424,8 +424,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const auto meshPushConstants =
-                meshInfo.GenerateMeshPushConstantsGpu(scene_->GetViewMatrix(), scene_->GetProjectionMatrix());
+        const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
+                scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                         sizeof(meshPushConstants), &meshPushConstants);
         currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
@@ -440,8 +440,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const auto meshPushConstants =
-                lightMeshInfo.GenerateMeshPushConstantsGpu(scene_->GetViewMatrix(), scene_->GetProjectionMatrix());
+        const auto meshPushConstants = lightMeshInfo.GenerateMeshPushConstantsGpu(
+                scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                         sizeof(meshPushConstants), &meshPushConstants);
         currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
@@ -468,7 +468,8 @@ void VulkanApplication::UpdateSceneTransforms() const
     scene_->MoveObject(GetParamStr(AppConstants::LightObject), glm::vec3(x, 2.0f, z));
 
     LightUbo lightUbo{};
-    lightUbo.lightPosition = glm::vec4(scene_->GetMesh(GetParamStr(AppConstants::LightObject)).transform.translation, 1.0f);
+    lightUbo.lightPosition =
+            glm::vec4(scene_->GetMesh(GetParamStr(AppConstants::LightObject)).transform.translation, 1.0f);
     lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
     resources_->SetBuffer(GetParamStr(AppConstants::LightUniformBuffer), &lightUbo, sizeof(lightUbo));
 }

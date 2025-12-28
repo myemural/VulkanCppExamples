@@ -424,8 +424,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const auto meshPushConstants =
-                meshInfo.GenerateMeshPushConstantsGpu(scene_->GetViewMatrix(), scene_->GetProjectionMatrix());
+        const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
+                scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                         sizeof(meshPushConstants), &meshPushConstants);
         currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
@@ -440,8 +440,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const auto meshPushConstants =
-                lightMeshInfo.GenerateMeshPushConstantsGpu(scene_->GetViewMatrix(), scene_->GetProjectionMatrix());
+        const auto meshPushConstants = lightMeshInfo.GenerateMeshPushConstantsGpu(
+                scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                         sizeof(meshPushConstants), &meshPushConstants);
         currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);

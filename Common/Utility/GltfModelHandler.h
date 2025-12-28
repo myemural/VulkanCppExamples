@@ -1,5 +1,5 @@
 /**
- * @file    GlfwModelHandler.h
+ * @file    GltfModelHandler.h
  * @brief   Contains implementation of the handler type for glTF models and its helper types.
  * @author  Mustafa Yemural (myemural)
  * @date    12.10.2025

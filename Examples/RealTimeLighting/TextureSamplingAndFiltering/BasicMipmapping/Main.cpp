@@ -40,10 +40,11 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalTexturePath, "Textures/Wood_Floor_015_basecolor.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalImage, "metalImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalImageView, "metalImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalTexture, "metalTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::WoodFloorTexturePath,
+                                               "Textures/Wood_Floor_015_basecolor.png");
+    schema.RegisterImmutableParam<std::string>(AppConstants::WoodFloorImage, "woodFloorImage");
+    schema.RegisterImmutableParam<std::string>(AppConstants::WoodFloorImageView, "woodFloorImageView");
+    schema.RegisterImmutableParam<std::string>(AppConstants::WoodFloorTexture, "woodFloorTexture");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");

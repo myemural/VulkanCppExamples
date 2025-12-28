@@ -15,6 +15,7 @@ layout(location = 1) in vec3 fragNormal;
 
 struct MeshData {
     mat4 model;
+    mat4 normalMatrix;
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
@@ -36,6 +37,7 @@ layout(std140, set = 0, binding = 1) uniform LightUBO
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    vec4 cameraPosition;
     uint objectId;
 } pc;
 
@@ -51,9 +53,7 @@ void main()
     vec3 normalizedLightDir = normalize(light.lightPosition.xyz - fragPos);
 
     // Normalizing view direction (camera position)
-    mat4 inverseView = inverse(pc.view);
-    vec3 viewPos = vec3(inverseView[3]);
-    vec3 normalizedView = normalize(viewPos - fragPos);
+    vec3 normalizedView = normalize(pc.cameraPosition.xyz - fragPos);
 
     // Ambient calculation
     vec3 ambient = meshInfo.ambientStrength * meshInfo.diffuseColor.rgb;

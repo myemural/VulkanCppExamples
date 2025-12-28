@@ -96,8 +96,8 @@ void VulkanApplication::CreateInitialResources()
 {
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    const auto metalTextureHandler = textureLoader.Load(GetParamStr(AppConstants::MetalTexturePath));
-    mipLevelCount_ = GetMipLevelCount(metalTextureHandler.Width, metalTextureHandler.Height);
+    const auto woodTextureHandler = textureLoader.Load(GetParamStr(AppConstants::WoodFloorTexturePath));
+    mipLevelCount_ = GetMipLevelCount(woodTextureHandler.Width, woodTextureHandler.Height);
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -116,14 +116,14 @@ void VulkanApplication::CreateInitialResources()
 
     resourceCreateInfo.Images = {
         ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::MetalImage),
+            .Name = GetParamStr(AppConstants::WoodFloorImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .Format = VK_FORMAT_R8G8B8A8_SRGB,
-            .Dimensions = {metalTextureHandler.Width, metalTextureHandler.Height, 1},
+            .Dimensions = {woodTextureHandler.Width, woodTextureHandler.Height, 1},
             .MipLevels = mipLevelCount_,
             .UsageFlags =
                     VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MetalImageView),
+            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::WoodFloorImageView),
                                           .Format = VK_FORMAT_R8G8B8A8_SRGB,
                                           .SubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevelCount_, 0, 1}}}},
         ImageResourceCreateInfo{
@@ -151,9 +151,9 @@ void VulkanApplication::CreateInitialResources()
     CreateVulkanResources(resourceCreateInfo);
 
     // Set image resources
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MetalImage), metalTextureHandler,
+    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::WoodFloorImage), woodTextureHandler,
                                     mipLevelCount_);
-    resources_->GenerateMipmaps(cmdPool_, queue_, GetParamStr(AppConstants::MetalImage), metalTextureHandler,
+    resources_->GenerateMipmaps(cmdPool_, queue_, GetParamStr(AppConstants::WoodFloorImage), woodTextureHandler,
                                 mipLevelCount_);
 }
 
@@ -173,16 +173,17 @@ void VulkanApplication::BuildScene()
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
     // Add texture registries
-    scene_->RegisterTexture(
-            GetParamStr(AppConstants::MetalTexture), resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-            resources_->GetImageView(GetParamStr(AppConstants::MetalImage), GetParamStr(AppConstants::MetalImageView)));
+    scene_->RegisterTexture(GetParamStr(AppConstants::WoodFloorTexture),
+                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
+                            resources_->GetImageView(GetParamStr(AppConstants::WoodFloorImage),
+                                                     GetParamStr(AppConstants::WoodFloorImageView)));
 
     // Create materials
     PhongTexturedMaterial material;
     material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     material.shininess = GetParamFloat(AppSettings::Shininess);
-    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::MetalTexture));
+    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::WoodFloorTexture));
 
     // Add scene objects
     for (auto i = 0; i < modelPositions.size(); ++i) {
@@ -449,8 +450,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const auto meshPushConstants =
-                meshInfo.GenerateMeshPushConstantsGpu(scene_->GetViewMatrix(), scene_->GetProjectionMatrix());
+        const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
+                scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                         sizeof(meshPushConstants), &meshPushConstants);
         currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);

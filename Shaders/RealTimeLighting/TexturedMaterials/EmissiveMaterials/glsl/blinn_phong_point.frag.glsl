@@ -18,6 +18,7 @@ layout(constant_id = 0) const uint TEXTURE_COUNT = 1;
 
 struct MeshData {
     mat4 model;
+    mat4 normalMatrix;
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
@@ -48,6 +49,7 @@ layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[TEXTURE_COUNT];
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    vec4 cameraPosition;
     uint objectId;
 } pc;
 
@@ -69,9 +71,7 @@ void main()
     vec3 normalizedLightDir = normalize(light.lightPosition.xyz - fragPos);
 
     // Normalizing view direction (camera position)
-    mat4 inverseView = inverse(pc.view);
-    vec3 viewPos = vec3(inverseView[3]);
-    vec3 normalizedView = normalize(viewPos - fragPos);
+    vec3 normalizedView = normalize(pc.cameraPosition.xyz - fragPos);
 
     // Ambient calculation
     vec3 ambient = meshInfo.ambientStrength * diffuseColor;

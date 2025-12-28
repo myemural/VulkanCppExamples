@@ -15,7 +15,13 @@ layout(location = 1) flat in vec3 fragNormal;
 
 struct MeshData {
     mat4 model;
-    vec4 objectColor;
+    mat4 normalMatrix;
+    vec4 diffuseColor;
+    vec4 specularColor;
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+    float opacity;
 };
 
 layout(std430, binding = 0) readonly buffer MeshDataBuffer {
@@ -31,6 +37,7 @@ layout(set = 0, binding = 1) uniform LightUBO
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    vec4 cameraPosition;
     uint objectId;
 } pc;
 

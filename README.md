@@ -163,6 +163,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Alpha & Opacity Mapping](/Examples/RealTimeLighting/TexturedMaterials/AlphaMapping)
 - **[Texture Sampling and Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering)**
   - [Basic Mipmapping and Trilinear Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering/BasicMipmapping)
+  - [Manual Mipmap LOD Control](/Examples/RealTimeLighting/TextureSamplingAndFiltering/ManualMipmapping)
+  - [Anisotropic Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering/AnisotropicFiltering)
 
 ## Environment Support
 

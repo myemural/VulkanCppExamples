@@ -16,6 +16,7 @@ layout(location = 1) flat out vec3 fragNormal;
 
 struct MeshData {
     mat4 model;
+    mat4 normalMatrix;
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
@@ -31,6 +32,7 @@ layout(std430, binding = 0) readonly buffer MeshDataBuffer {
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    vec4 cameraPosition;
     uint objectId;
 } pc;
 
@@ -40,8 +42,8 @@ void main()
 
     fragPos = vec3(model * vec4(inPosition, 1.0));
 
-    // Inverse transform is needed for non-uniform scales
-    fragNormal = normalize(transpose(inverse(mat3(model))) * inNormal);
+    mat3 normalMatrix = mat3(meshes[pc.objectId].normalMatrix);
+    fragNormal = normalize(normalMatrix * inNormal);
 
     gl_Position = pc.proj * pc.view * vec4(fragPos, 1.0);
 }

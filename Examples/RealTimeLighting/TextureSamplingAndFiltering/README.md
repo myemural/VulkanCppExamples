@@ -8,6 +8,10 @@ The examples in this subsection, listed from easy to complex, are as follows:
 
 1. [Basic Mipmapping and Trilinear Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering/BasicMipmapping)
    - `BasicMipmapping`
+2. [Manual Mipmap LOD Control](/Examples/RealTimeLighting/TextureSamplingAndFiltering/ManualMipmapping)
+   - `ManualMipmapping`
+3. [Anisotropic Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering/AnisotropicFiltering)
+   - `AnisotropicFiltering`
 
 ## Architecture of the Subsection
 

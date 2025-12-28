@@ -15,7 +15,7 @@
 #include "tiny_gltf.h"
 
 #include "CoreDefines.h"
-#include "GlfwModelHandler.h"
+#include "GltfModelHandler.h"
 
 namespace common::utility
 {
