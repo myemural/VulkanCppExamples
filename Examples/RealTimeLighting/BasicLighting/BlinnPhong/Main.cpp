@@ -28,7 +28,7 @@ inline ParameterSchema CreateParameterSchema()
     SetCommonParamSchema(schema);
 
     // Register Constants
-    schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
+
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "specular_blinn_phong.vert.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderFile,
                                                "specular_blinn_phong.frag.spv");

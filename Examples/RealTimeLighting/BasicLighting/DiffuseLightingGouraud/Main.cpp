@@ -27,7 +27,7 @@ inline ParameterSchema CreateParameterSchema()
     SetCommonParamSchema(schema);
 
     // Register Constants
-    schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
+
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "diffuse_gouroud.vert.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderFile,
                                                "diffuse_gouroud.frag.spv");

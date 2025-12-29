@@ -15,7 +15,7 @@ namespace examples::fundamentals::compute_shaders::checkerboard_generator
 namespace AppConstants
 {
     // Shaders
-    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
+
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto CheckerboardComputeShaderFile = "AppConstants.CheckerboardComputeShaderFile";

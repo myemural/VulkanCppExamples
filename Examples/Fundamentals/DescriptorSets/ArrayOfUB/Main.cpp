@@ -27,7 +27,7 @@ inline ParameterSchema CreateParameterSchema()
     SetCommonParamSchema(schema);
 
     // Register Constants
-    schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
+
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile,
                                                "position_with_indexed_ubo_model.vert.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile,

@@ -15,7 +15,6 @@ namespace examples::fundamentals::compute_shaders::basic_particles
 namespace AppConstants
 {
     // Shaders
-    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto ParticleVertexShaderFile = "AppConstants.ParticleVertexShaderFile";

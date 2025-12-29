@@ -27,7 +27,7 @@ inline ParameterSchema CreateParameterSchema()
     SetCommonParamSchema(schema);
 
     // Register Constants
-    schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
+
     schema.RegisterImmutableParam<std::string>(AppConstants::QuadVertexShaderFile, "passthrough_position_uv.vert.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::SceneVertexShaderFile, "position_with_mvp.vert.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "texture_sampler.frag.spv");

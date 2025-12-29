@@ -30,9 +30,9 @@ class COMMON_API ShaderLoader
 public:
     /**
      * @param rootPath Root path.
-     * @param shaderBaseType Specifies which shading language (GLSL, HLSL etc.) the .spv file was converted from.
+     * @param shaderType Specifies which shading language (GLSL, HLSL, SLANG etc.) the .spv file was converted from.
      */
-    ShaderLoader(const std::string& rootPath, const ShaderBaseType& shaderBaseType);
+    ShaderLoader(const std::string& rootPath, std::string shaderType);
 
     ~ShaderLoader() = default;
 
@@ -47,6 +47,6 @@ private:
     [[nodiscard]] std::string GenerateBasePath(const std::string& rootPath) const;
 
     std::string basePath_;
-    ShaderBaseType shaderType_;
+    std::string shaderType_;
 };
 } // namespace common::utility

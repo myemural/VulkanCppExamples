@@ -15,7 +15,7 @@ namespace examples::fundamentals::pipelines_and_passes::multiple_subpasses
 namespace AppConstants
 {
     // Shaders
-    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
+
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto ObjectFragmentShaderFile = "AppConstants.ObjectFragmentShaderFile";
     constexpr auto DepthObjectFragmentShaderFile = "AppConstants.DepthObjectFragmentShaderFile";

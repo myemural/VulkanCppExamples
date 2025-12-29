@@ -14,7 +14,7 @@ namespace examples::fundamentals::images_and_samplers::using_multiple_textures
 {
 namespace AppConstants
 {
-    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
+
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

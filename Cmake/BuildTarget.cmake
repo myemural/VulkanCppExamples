@@ -5,6 +5,7 @@ macro(build_target TARGET_NAME LIB_NAMES EXAMPLE_NAME)
     target_link_libraries(${TARGET_NAME} PUBLIC ${LIB_NAMES})
     target_compile_definitions(${TARGET_NAME} PRIVATE
             EXAMPLE_APPLICATION_NAME="${CATEGORY_NAME} - ${SUBCATEGORY_NAME} - ${EXAMPLE_NAME}"
+            SHADER_TYPE="${SHADER_TYPE}"
             SHADERS_DIR="${CMAKE_SOURCE_DIR}/Shaders/${CATEGORY_NAME}/${SUBCATEGORY_NAME}/${TARGET_NAME}/"
             ASSETS_DIR="${CMAKE_SOURCE_DIR}/Assets/")
 

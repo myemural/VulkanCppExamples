@@ -167,7 +167,7 @@ void VulkanApplication::FillStagingBuffer(const void* data, const std::uint64_t 
 
 void VulkanApplication::CreateShaderModules()
 {
-    const ShaderLoader shaderLoader{SHADERS_DIR, params_.Get<ShaderBaseType>(AppConstants::BaseShaderType)};
+    const ShaderLoader shaderLoader{SHADERS_DIR, SHADER_TYPE};
     // Vertex Shader
     const auto vertexShaderCode = shaderLoader.LoadSpirV(GetParamStr(AppConstants::MainVertexShaderFile));
     const auto vertexShaderModule = device_->CreateShaderModule(vertexShaderCode);

@@ -15,7 +15,7 @@ namespace examples::real_time_lighting::basic_lighting::blinn_phong
 namespace AppConstants
 {
     // Shaders
-    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
+
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
     constexpr auto LightObjectsFragmentShaderFile = "AppConstants.LightFragmentShaderFile";

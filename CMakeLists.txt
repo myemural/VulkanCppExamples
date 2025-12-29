@@ -9,6 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/$<CONFIG>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/$<CONFIG>")
 
 option(ENABLE_EXAMPLE_TESTS "Enable running example tests" ON)
+set(SHADER_TYPE GLSL) # Accepted Values: GLSL, HLSL, SLANG
 
 # Compiler options
 if (MSVC)

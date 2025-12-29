@@ -15,7 +15,7 @@ namespace examples::real_time_lighting::textured_materials::emissive_materials
 namespace AppConstants
 {
     // Shaders
-    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
+
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
     constexpr auto LightObjectsFragmentShaderFile = "AppConstants.LightFragmentShaderFile";

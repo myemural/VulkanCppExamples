@@ -15,7 +15,7 @@ namespace examples::fundamentals::multisampling::explicit_resolving
 namespace AppConstants
 {
     // Shaders
-    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
+
     constexpr auto QuadVertexShaderFile = "AppConstants.QuadVertexShaderFile";
     constexpr auto SceneVertexShaderFile = "AppConstants.SceneVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";

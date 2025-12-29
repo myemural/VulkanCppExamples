@@ -8,6 +8,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <utility>
 
 namespace common::utility
 {
@@ -15,10 +16,10 @@ namespace
 {
     constexpr auto kGlslSpirvOutPath = "glsl/spirv/";
     constexpr auto kHlslSpirvOutPath = "hlsl/spirv/";
+    constexpr auto kSlangSpirvOutPath = "slang/spirv/";
 } // namespace
 
-ShaderLoader::ShaderLoader(const std::string& rootPath, const ShaderBaseType& shaderBaseType)
-    : shaderType_{shaderBaseType}
+ShaderLoader::ShaderLoader(const std::string& rootPath, std::string shaderType) : shaderType_{std::move(shaderType)}
 {
     basePath_ = GenerateBasePath(rootPath);
 }
@@ -59,19 +60,14 @@ std::vector<std::uint32_t> ShaderLoader::LoadSpirV(const std::string& fileName) 
 
 std::string ShaderLoader::GenerateBasePath(const std::string& rootPath) const
 {
-    std::string intermediatePath;
-
-    switch (shaderType_) {
-        case ShaderBaseType::GLSL:
-            intermediatePath = kGlslSpirvOutPath;
-            break;
-        case ShaderBaseType::HLSL:
-            intermediatePath = kHlslSpirvOutPath;
-            break;
-        default:
-            throw std::runtime_error("Shader type is a wrong value!");
+    if (shaderType_ == "GLSL") {
+        return rootPath + kGlslSpirvOutPath;
+    } else if (shaderType_ == "HLSL") {
+        return rootPath + kHlslSpirvOutPath;
+    } else if (shaderType_ == "SLANG") {
+        return rootPath + kSlangSpirvOutPath;
     }
 
-    return rootPath + intermediatePath;
+    throw std::runtime_error("Shader type is wrong!");
 }
 } // namespace common::utility

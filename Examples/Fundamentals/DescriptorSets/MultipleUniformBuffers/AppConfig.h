@@ -14,7 +14,7 @@ namespace examples::fundamentals::descriptor_sets::multiple_uniform_buffers
 {
 namespace AppConstants
 {
-    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
+
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

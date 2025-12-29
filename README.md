@@ -165,6 +165,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Basic Mipmapping and Trilinear Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering/BasicMipmapping)
   - [Manual Mipmap LOD Control](/Examples/RealTimeLighting/TextureSamplingAndFiltering/ManualMipmapping)
   - [Anisotropic Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering/AnisotropicFiltering)
+  - [Gradient-Based LOD Control with Anisotropy](/Examples/RealTimeLighting/TextureSamplingAndFiltering/GradientBasedMipmapping)
 
 ## Environment Support
 

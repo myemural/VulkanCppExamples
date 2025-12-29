@@ -28,7 +28,7 @@ inline ParameterSchema CreateParameterSchema()
 
     // Register Constants
     schema.RegisterImmutableParam<std::uint32_t>(AppConstants::VertexCount, 3);
-    schema.RegisterImmutableParam<ShaderBaseType>(AppConstants::BaseShaderType, ShaderBaseType::GLSL);
+
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "hardcoded_position.vert.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "hardcoded_color.frag.spv");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");

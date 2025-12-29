@@ -150,7 +150,7 @@ void VulkanApplication::CreateResources()
 
     // Fill shader module create infos
     resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
-                                  .ShaderType = params_.Get<ShaderBaseType>(AppConstants::BaseShaderType),
+                                  .ShaderType = SHADER_TYPE,
                                   .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
                                                .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
                                               {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),

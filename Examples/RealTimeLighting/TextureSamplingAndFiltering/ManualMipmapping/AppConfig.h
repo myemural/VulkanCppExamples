@@ -15,7 +15,7 @@ namespace examples::real_time_lighting::texture_sampling_and_filtering::manual_m
 namespace AppConstants
 {
     // Shaders
-    constexpr auto BaseShaderType = "AppConstants.BaseShaderType";
+
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

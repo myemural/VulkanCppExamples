@@ -6,6 +6,8 @@
 
 #include "ShaderResource.h"
 
+#include "ShaderLoader.h"
+
 namespace common::vulkan_framework
 {
 ShaderResource::ShaderResource(const std::shared_ptr<vulkan_wrapper::VulkanDevice>& device) : device_{device} {}
@@ -18,7 +20,7 @@ void ShaderResource::CreateShaders(const ShaderModulesCreateInfo& createInfo)
     }
 
     const std::string basePath = createInfo.BasePath;
-    const utility::ShaderBaseType shaderType = createInfo.ShaderType;
+    const std::string shaderType = createInfo.ShaderType;
 
     for (const auto& [name, fileName]: createInfo.Modules) {
         const utility::ShaderLoader shaderLoader{basePath, shaderType};

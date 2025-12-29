@@ -13,7 +13,6 @@
 #include <string>
 
 #include "CoreDefines.h"
-#include "ShaderLoader.h"
 #include "VulkanDevice.h"
 
 namespace common::vulkan_framework
@@ -27,7 +26,7 @@ struct COMMON_API ShaderModulesCreateInfo
     };
 
     std::string BasePath;
-    utility::ShaderBaseType ShaderType;
+    std::string ShaderType;
     std::vector<Module> Modules;
 };
 
