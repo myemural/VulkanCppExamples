@@ -15,7 +15,6 @@ namespace examples::fundamentals::drawing_3d::instanced_rendering
 namespace AppConstants
 {
     // Shaders
-
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

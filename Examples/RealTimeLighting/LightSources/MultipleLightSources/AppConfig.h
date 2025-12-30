@@ -15,7 +15,6 @@ namespace examples::real_time_lighting::light_sources::multiple_light_sources
 namespace AppConstants
 {
     // Shaders
-
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
     constexpr auto LightObjectsFragmentShaderFile = "AppConstants.LightFragmentShaderFile";

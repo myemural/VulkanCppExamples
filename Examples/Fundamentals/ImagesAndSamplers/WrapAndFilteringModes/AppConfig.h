@@ -14,7 +14,7 @@ namespace examples::fundamentals::images_and_samplers::wrap_and_filtering_modes
 {
 namespace AppConstants
 {
-
+    // Shaders
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

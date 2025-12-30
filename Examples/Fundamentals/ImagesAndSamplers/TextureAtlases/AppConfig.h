@@ -14,7 +14,7 @@ namespace examples::fundamentals::images_and_samplers::texture_atlases
 {
 namespace AppConstants
 {
-
+    // Shaders
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

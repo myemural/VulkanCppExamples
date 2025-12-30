@@ -15,7 +15,6 @@ namespace examples::fundamentals::compute_shaders::fullscreen_gradient
 namespace AppConstants
 {
     // Shaders
-
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto GradientComputeShaderFile = "AppConstants.GradientComputeShaderFile";

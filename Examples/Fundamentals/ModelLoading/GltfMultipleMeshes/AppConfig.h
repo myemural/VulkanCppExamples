@@ -14,7 +14,7 @@ namespace examples::fundamentals::model_loading::gltf_multiple_meshes
 {
 namespace AppConstants
 {
-
+    // Shaders
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

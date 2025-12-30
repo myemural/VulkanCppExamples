@@ -15,7 +15,6 @@ namespace examples::fundamentals::pipelines_and_passes::multiple_pipelines
 namespace AppConstants
 {
     // Shaders
-
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto RedFragmentShaderFile = "AppConstants.RedFragmentShaderFile";
     constexpr auto BlueFragmentShaderFile = "AppConstants.BlueFragmentShaderFile";

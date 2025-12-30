@@ -15,7 +15,6 @@ namespace examples::fundamentals::basics::drawing_single_color_triangle
 namespace AppConstants
 {
     constexpr auto VertexCount = "AppConstants.VertexCount";
-
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

@@ -14,7 +14,6 @@ namespace examples::fundamentals::basics::drawing_with_different_topology
 {
 namespace AppConstants
 {
-
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

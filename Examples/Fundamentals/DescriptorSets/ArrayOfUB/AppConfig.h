@@ -14,7 +14,7 @@ namespace examples::fundamentals::descriptor_sets::array_of_ub
 {
 namespace AppConstants
 {
-
+    // Shaders
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

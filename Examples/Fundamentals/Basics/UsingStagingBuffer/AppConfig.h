@@ -14,7 +14,6 @@ namespace examples::fundamentals::basics::using_staging_buffer
 {
 namespace AppConstants
 {
-
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";

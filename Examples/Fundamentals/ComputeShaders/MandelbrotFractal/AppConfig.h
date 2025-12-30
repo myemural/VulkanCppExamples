@@ -15,7 +15,6 @@ namespace examples::fundamentals::compute_shaders::mandelbrot_fractal
 namespace AppConstants
 {
     // Shaders
-
     constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
     constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
     constexpr auto MandelbrotComputeShaderFile = "AppConstants.MandelbrotComputeShaderFile";

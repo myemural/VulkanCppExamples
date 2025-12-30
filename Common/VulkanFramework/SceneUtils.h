@@ -76,7 +76,8 @@ struct COMMON_API MeshDataPhongTexturedGpu
     TextureId emissiveMap;
     TextureId shininessMap;
     TextureId opacityMap;
-    float _pad[2];
+    TextureId aoMap;
+    TextureId heightMap;
 };
 
 struct COMMON_API MeshPushConstantsGpu
@@ -127,6 +128,8 @@ struct COMMON_API PhongTexturedMaterial
     TextureId emissiveMap = -1; // Emissive map texture
     TextureId shininessMap = -1; // Shininess map (reverse of the roughness map) texture
     TextureId opacityMap = -1; // Opacity (alpha) map texture
+    TextureId aoMap = -1; // Ambient occlusion map texture
+    TextureId heightMap = -1; // Height map texture
 };
 
 using MaterialVariant = std::variant<PhongMaterial, PhongTexturedMaterial>;
@@ -201,6 +204,8 @@ struct COMMON_API MeshInfo
                         meshData.emissiveMap = mat.emissiveMap;
                         meshData.shininessMap = mat.shininessMap;
                         meshData.opacityMap = mat.opacityMap;
+                        meshData.aoMap = mat.aoMap;
+                        meshData.heightMap = mat.heightMap;
                         result = meshData;
                     }
                 },

@@ -19,6 +19,8 @@ This directory contains several texture files that taken from different free sou
 - texture_atlas.jpg ([Texture atlas, reddit.com](https://www.reddit.com/r/blenderhelp/comments/14qkez3/texture_atlas/))
 - wall.jpg ([Concrete wall texture, freepik.com](https://img.freepik.com/free-photo/concrete-wall-texture_1194-6922.jpg?semt=ais_hybrid&w=740&q=80))
 - Wood_Floor_015_basecolor.png ([Wood Floor 015, 3dtextures.me](https://3dtextures.me/2025/10/03/wood-floor-015/))
+- Wood_Roof_Shingles_002_ambientOcclusion.png ([Wood Roof Shingles 002, 3dtextures.me](https://3dtextures.me/2025/12/16/wood-roof-shingles-002/))
+- Wood_Roof_Shingles_002_basecolor.png ([Wood Roof Shingles 002, 3dtextures.me](https://3dtextures.me/2025/12/16/wood-roof-shingles-002/))
 
 The images used may have been resized.
 

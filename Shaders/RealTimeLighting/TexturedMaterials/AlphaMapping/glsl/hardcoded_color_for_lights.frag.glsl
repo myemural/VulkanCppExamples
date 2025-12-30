@@ -29,6 +29,8 @@ struct MeshData {
     int emissiveMap;
     int shininessMap;
     int opacityMap;
+    int aoMap;
+    int heightMap;
 };
 
 layout(std430, binding = 0) readonly buffer MeshDataBuffer {

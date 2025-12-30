@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ShininessMapping`
 5. [Alpha & Opacity Mapping](/Examples/RealTimeLighting/TexturedMaterials/AlphaMapping)
    - `AlphaMapping`
+6. [Ambient Occlusion Mapping](/Examples/RealTimeLighting/TexturedMaterials/BasicAmbientOcclusion)
+   - `BasicAmbientOcclusion`
 
 ## Architecture of the Subsection
 

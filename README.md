@@ -161,6 +161,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Emissive Materials](/Examples/RealTimeLighting/TexturedMaterials/EmissiveMaterials)
   - [Shininess & Inverse Roughness Mapping](/Examples/RealTimeLighting/TexturedMaterials/ShininessMapping)
   - [Alpha & Opacity Mapping](/Examples/RealTimeLighting/TexturedMaterials/AlphaMapping)
+  - [Ambient Occlusion Mapping](/Examples/RealTimeLighting/TexturedMaterials/BasicAmbientOcclusion)
 - **[Texture Sampling and Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering)**
   - [Basic Mipmapping and Trilinear Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering/BasicMipmapping)
   - [Manual Mipmap LOD Control](/Examples/RealTimeLighting/TextureSamplingAndFiltering/ManualMipmapping)

@@ -15,7 +15,6 @@ namespace examples::fundamentals::pipelines_and_passes::offscreen_rendering
 namespace AppConstants
 {
     // Shaders
-
     constexpr auto QuadVertexShaderFile = "AppConstants.QuadVertexShaderFile";
     constexpr auto SceneVertexShaderFile = "AppConstants.SceneVertexShaderFile";
     constexpr auto QuadFragmentShaderFile = "AppConstants.QuadFragmentShaderFile";

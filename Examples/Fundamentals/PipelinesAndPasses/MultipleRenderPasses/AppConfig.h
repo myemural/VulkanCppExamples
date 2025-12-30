@@ -15,7 +15,6 @@ namespace examples::fundamentals::pipelines_and_passes::multiple_render_passes
 namespace AppConstants
 {
     // Shaders
-
     constexpr auto BackgroundVertexShaderFile = "AppConstants.BackgroundVertexShaderFile";
     constexpr auto BackgroundFragmentShaderFile = "AppConstants.BackgroundFragmentShaderFile";
     constexpr auto CubeVertexShaderFile = "AppConstants.CubeVertexShaderFile";
