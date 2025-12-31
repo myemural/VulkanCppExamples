@@ -30,6 +30,14 @@ This example draws 4 quads to the screen. Then it applies them different sampler
 - Creating and applying multiple samplers
 - Using multiple samplers in shaders
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

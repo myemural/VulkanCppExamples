@@ -35,6 +35,14 @@ In this example, objects of various colors are drawn on the screen, and a rotati
 - Implementing diffuse lighting in gouraud shading model
 - Doing light calculations in vertex shaders
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

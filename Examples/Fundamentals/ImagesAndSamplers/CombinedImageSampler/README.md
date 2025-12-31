@@ -30,6 +30,14 @@ This example draws a single quad to the screen, but applies a texture on it with
 - Creating combined image sampler descriptor
 - Using combined image sampler descriptors in shaders
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

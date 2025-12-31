@@ -34,6 +34,14 @@ In this example, a glTF 3D mesh rendered on the screen with texture.
 - Loading glTF mesh with texture
 - Rendering a textured glTF mesh
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

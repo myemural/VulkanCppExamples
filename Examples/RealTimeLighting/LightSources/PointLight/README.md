@@ -42,6 +42,14 @@ In this example, objects of different colors are drawn on the scene, and lightin
 - Integrating blinn-phong shading model into the point lights
 - Implementing attenuation calculation to the shaders for distance-based lighting
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :x:                | Will be implemented. |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

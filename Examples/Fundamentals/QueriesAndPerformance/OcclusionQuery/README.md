@@ -45,6 +45,14 @@ Number of visible fragments: 125188
 - Using occlusion queries in Vulkan
 - Checking visibility of an object via occlusion queries
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

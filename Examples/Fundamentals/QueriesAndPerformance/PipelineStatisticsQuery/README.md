@@ -66,6 +66,14 @@ Fragment Shader Invocations: 10732
 - Measuring input assembly vertices and primitives count of a pipeline
 - Measuring shader invocation counts of a pipeline
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

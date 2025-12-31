@@ -30,6 +30,14 @@ This example draws a square in the center of the screen. Then rotates it in cloc
 - Transforming 2D objects via model matrices
 - Updating model matrices constantly using a uniform buffer
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

@@ -146,7 +146,7 @@ void VulkanApplication::CreateResources()
     // Fill buffer create infos
     std::vector<BufferResourceCreateInfo> bufferCreateInfos;
     for (const auto& mesh: lanternModel_->Meshes) {
-        const std::uint32_t vertexBufferSize = mesh.Vertices.size() * sizeof(VertexPos3Uv2);
+        const std::uint32_t vertexBufferSize = mesh.Attributes.VertexCount * sizeof(VertexPos3Uv2);
         const std::uint32_t indexBufferSize = mesh.Indices.size() * sizeof(std::uint16_t);
 
         bufferCreateInfos.emplace_back(mesh.GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,

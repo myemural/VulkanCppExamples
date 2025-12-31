@@ -35,6 +35,14 @@ In this example, particles generated with a compute shader on the GPU are thrown
 - Creating basic GPU-generated particles with compute shaders
 - Generating and using storage buffers
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

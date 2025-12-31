@@ -35,6 +35,14 @@ In this example, MSAA is activated based on the maximum sample number supported 
 - Getting maximum supported sample count of your window system
 - Implementing basic MSAA
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

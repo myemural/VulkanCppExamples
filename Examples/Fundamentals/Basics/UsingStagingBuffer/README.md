@@ -30,6 +30,14 @@ This example draws a blue octagon to the screen with using an additional staging
 - Demonstrate transferring data to the GPU using a staging buffer
 - Exploring different kind of memory properties
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

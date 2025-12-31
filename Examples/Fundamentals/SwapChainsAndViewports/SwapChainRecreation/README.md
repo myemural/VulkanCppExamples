@@ -30,6 +30,14 @@ In this example, some cubes are drawn on the screen. If the window size is chang
 - Handling window resizing in Vulkan
 - Recreating the swap chain
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

@@ -30,6 +30,14 @@ This example draws 4 squares to the screen. Then it applies different transforma
 - Creating a array of uniform buffers
 - Using array of uniform buffers in shaders
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

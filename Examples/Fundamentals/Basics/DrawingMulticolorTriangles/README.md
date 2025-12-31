@@ -30,6 +30,14 @@ This example draws 4 different colored triangles to the screen to show how to wo
 - Provide multiple vertex attributes to the vertex buffer
 - Using multiple vertex attributes in the shader
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

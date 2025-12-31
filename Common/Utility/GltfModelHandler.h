@@ -23,14 +23,15 @@ namespace common::utility
 
 struct COMMON_API GltfPrimitiveAttrib
 {
-    glm::vec3 Position;
-    glm::vec3 Normal;
-    std::vector<glm::vec2> TexCoords;
-    /// TODO: These values will be added later.
-    // TANGENT
-    // COLOR_n
-    // JOINTS_n
-    // WEIGHTS_n
+    std::uint32_t VertexCount;
+    std::vector<glm::vec3> Positions;
+    std::vector<glm::vec3> Normals;
+    std::vector<glm::vec4> Tangents;
+    std::vector<glm::vec2> TexCoords0;
+    std::vector<glm::vec2> TexCoords1;
+    std::vector<glm::vec4> Colors0;
+    std::vector<glm::vec4> Colors1;
+    /// TODO: Joints and weights will be added later
 };
 
 struct COMMON_API GltfMaterial
@@ -45,7 +46,7 @@ struct COMMON_API GltfMaterial
 struct COMMON_API GltfMesh
 {
     std::string Name;
-    std::vector<GltfPrimitiveAttrib> Vertices;
+    GltfPrimitiveAttrib Attributes;
     std::vector<std::uint16_t> Indices;
     int MaterialIndex = -1;
 
@@ -115,9 +116,12 @@ struct COMMON_API GltfModelHandler
 template<>
 inline std::vector<VertexPos3> GltfMesh::GetVerticesAs()
 {
-    std::vector<VertexPos3> result;
-    for (const auto& vertex: Vertices) {
-        result.emplace_back(VertexPos3{vertex.Position});
+    std::vector<VertexPos3> result{Attributes.Positions.size()};
+
+    for (auto i = 0U; i < Attributes.Positions.size(); ++i) {
+        VertexPos3 current{};
+        current.Position.data = Attributes.Positions[i];
+        result[i] = current;
     }
 
     return result;
@@ -126,13 +130,14 @@ inline std::vector<VertexPos3> GltfMesh::GetVerticesAs()
 template<>
 inline std::vector<VertexPos3Uv2> GltfMesh::GetVerticesAs()
 {
-    std::vector<VertexPos3Uv2> result;
-    for (const auto& vertex: Vertices) {
+    std::vector<VertexPos3Uv2> result{Attributes.Positions.size()};
+
+    for (auto i = 0U; i < Attributes.Positions.size(); ++i) {
         VertexPos3Uv2 current{};
-        current.Position.data = vertex.Position;
-        current.Uv.data.x = vertex.TexCoords[0].x;
-        current.Uv.data.y = vertex.TexCoords[0].y;
-        result.push_back(current);
+        current.Position.data = Attributes.Positions[i];
+        current.Uv.data.x = Attributes.TexCoords0[i].x;
+        current.Uv.data.y = Attributes.TexCoords0[i].y;
+        result[i] = current;
     }
 
     return result;

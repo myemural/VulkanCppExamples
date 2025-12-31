@@ -49,6 +49,14 @@ None
 - Getting physical device information
 - Printing Vulkan capabilities of a device (GPU)
 
+## Shader Status
+
+| Shader Type | Status  | Notes |
+|-------------|---------|-------|
+| GLSL        | No Need |       |
+| HLSL        | No Need |       |
+| Slang       | No Need |       |
+
 ## Theoretical Background
 
 None

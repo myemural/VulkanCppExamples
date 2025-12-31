@@ -35,6 +35,14 @@ In this example, a plane with a cloud texture moving into the background is draw
 - Creating and using multiple render passes
 - Drawing an animated background scene
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

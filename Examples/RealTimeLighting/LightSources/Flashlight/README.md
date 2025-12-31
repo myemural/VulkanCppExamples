@@ -41,6 +41,14 @@ In this example, objects of different colors are drawn on the scene, and lightin
 - Implementing camera-based spotlight (flashlight) behavior
 - Implementing soft-cutoff (soft edges) spotlight behavior with two cutoff angles
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :x:                | Will be implemented. |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

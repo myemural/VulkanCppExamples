@@ -34,6 +34,14 @@ In this example, a glTF model that contains multiple meshes rendered on the scre
 - Rendering a glTF model that have multiple meshes
 - Applying node transformations which defined in the glTF file
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

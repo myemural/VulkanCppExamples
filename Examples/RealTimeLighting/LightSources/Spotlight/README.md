@@ -42,6 +42,14 @@ In this example, objects of different colors are drawn on the scene, and lightin
 - Implementing hard-cutoff (hard edges) spotlight behavior with only one cutoff angle
 - Implementing multiple lights behavior with the same type
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :x:                | Will be implemented. |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

@@ -36,6 +36,14 @@ In this example, a checkerboard texture is first generated with a compute shader
 - Creating a texture from compute shader
 - Placing generated texture to the objects
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

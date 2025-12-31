@@ -112,7 +112,7 @@ void VulkanApplication::CreateResources()
     // Fill buffer create infos
     std::vector<BufferResourceCreateInfo> bufferCreateInfos;
     const auto& quadMesh = quadModel_->Meshes.at(0);
-    const std::uint32_t vertexBufferSize = quadMesh.Vertices.size() * sizeof(VertexPos3);
+    const std::uint32_t vertexBufferSize = quadMesh.Attributes.VertexCount * sizeof(VertexPos3);
     const std::uint32_t indexBufferSize = quadMesh.Indices.size() * sizeof(std::uint16_t);
 
     bufferCreateInfos.emplace_back(quadMesh.GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,

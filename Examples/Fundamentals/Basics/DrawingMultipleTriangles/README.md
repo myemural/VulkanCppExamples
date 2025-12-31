@@ -31,6 +31,14 @@ This example draws 4 identical triangles to the screen to show how to draw somet
 - Binding vertex buffer with command
 - Using vertex buffer in a shader with vertex attributes
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

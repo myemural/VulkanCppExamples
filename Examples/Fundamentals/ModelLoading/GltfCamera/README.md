@@ -30,6 +30,14 @@ In this example, a glTF quad model rendered on the screen with specified camera 
 
 - Applying camera settings which defined in the node of the glTF file
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

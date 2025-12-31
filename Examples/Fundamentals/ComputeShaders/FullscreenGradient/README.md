@@ -28,6 +28,14 @@ None
 - Generating dynamic fullscreen gradient image from compute shader
 - Drawing results of the compute shader to the screen via storage images
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

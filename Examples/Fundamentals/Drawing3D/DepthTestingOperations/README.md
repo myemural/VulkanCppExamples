@@ -37,6 +37,14 @@ This examples draws two planes and two cubes to the screen. Then applies depth t
 - Experiencing the effect of using different kind of depth compare operations in depth testing
 - Experiencing the effect of enabling/disabling depth test and depth write operations in the pipeline
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

@@ -30,6 +30,14 @@ This example draws a quad to the screen with using index buffer in addition to v
 - Creating a index buffer and bind it via command
 - Doing indexed drawing
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

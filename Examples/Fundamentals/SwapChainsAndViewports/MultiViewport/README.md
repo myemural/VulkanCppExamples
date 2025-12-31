@@ -33,6 +33,14 @@ In this example, four fixed viewports are placed on the screen, and each viewpor
 - Rendering to multiple viewport through single pipeline
 - Understanding what should we do on shaders to render multiple viewports
 
+## Shader Status
+
+| Shader Type | Status             | Notes                                                          |
+|-------------|--------------------|----------------------------------------------------------------|
+| GLSL        | :white_check_mark: |                                                                |
+| HLSL        | :x:                | Cannot be implemented because of missing vertex shader feature |
+| Slang       | :x:                | Will be implemented. (Maybe)                                   |
+
 ## Theoretical Background
 
 None

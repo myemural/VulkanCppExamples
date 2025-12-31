@@ -32,6 +32,14 @@ This example draws a single quad to the screen and applies a texture on it.
 - Creating an sampler resource in Vulkan
 - Applying images and samplers via shader
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

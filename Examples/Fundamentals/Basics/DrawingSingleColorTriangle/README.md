@@ -32,6 +32,14 @@ This example shows hot to draw a single colored triangle to the screen to demons
 - Creating a simple graphics pipeline
 - Binding pipeline and drawing to framebuffers using it
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

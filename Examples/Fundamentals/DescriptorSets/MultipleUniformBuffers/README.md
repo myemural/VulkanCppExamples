@@ -30,6 +30,14 @@ This example draws 4 triangles to the different areas of the screen. Then it app
 - Creating multiple descriptor sets that each related to a uniform buffer
 - Using multiple descriptor sets in shaders
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

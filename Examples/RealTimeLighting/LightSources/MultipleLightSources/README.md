@@ -43,6 +43,14 @@ In this example, objects of different colors are drawn on the scene, and lightin
 - Implementing various and numerous light sources behavior in the shaders
 - Sending multiple light data and count via storage buffers and specialization constants
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :x:                | Will be implemented. |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

@@ -41,6 +41,14 @@ examples::fundamentals::queries_and_performance::pipeline_caches::VulkanApplicat
 - Saving pipeline to a cache file
 - Loading pipelines from a cache if the cache is available
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

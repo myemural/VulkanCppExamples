@@ -31,6 +31,14 @@ In this example, three cubes rotating at different speeds are drawn on the scree
 - Using input attachment in shaders
 - Visualizing the depth image of the scene
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

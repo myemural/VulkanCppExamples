@@ -36,6 +36,14 @@ This example shows how to create a render pass and framebuffer, along with basic
 - Creating and managing basic synchronization objects (fence, semaphore)
 - Pushing command buffers to the queue and presenting framebuffer results to the screen
 
+## Shader Status
+
+| Shader Type | Status  | Notes |
+|-------------|---------|-------|
+| GLSL        | No Need |       |
+| HLSL        | No Need |       |
+| Slang       | No Need |       |
+
 ## Theoretical Background
 
 None

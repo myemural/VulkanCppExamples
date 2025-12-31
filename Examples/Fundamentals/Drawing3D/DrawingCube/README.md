@@ -32,6 +32,14 @@ This example draws a cube to the screen and rotates it X and Y directions simult
 - Transforming the cube with updating MVP matrix
 - Simulating the perspective projection
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

@@ -24,6 +24,14 @@ None
 
 - Creating a simple window with using GLFW
 
+## Shader Status
+
+| Shader Type | Status  | Notes |
+|-------------|---------|-------|
+| GLSL        | No Need |       |
+| HLSL        | No Need |       |
+| Slang       | No Need |       |
+
 ## Theoretical Background
 
 None

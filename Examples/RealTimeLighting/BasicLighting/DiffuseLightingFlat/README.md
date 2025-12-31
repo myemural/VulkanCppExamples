@@ -36,6 +36,14 @@ In this example, objects of various colors are drawn on the screen, and a rotati
 - Sending light data to the shaders
 - Calculating Lambert diffuse reflection in the shaders
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

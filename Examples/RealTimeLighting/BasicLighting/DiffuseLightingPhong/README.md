@@ -36,6 +36,14 @@ In this example, objects of various colors are drawn on the screen, and a rotati
 - Implementing ambient lighting in phong shading model
 - Implementing diffuse lighting in phong shading model
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

@@ -34,6 +34,14 @@ In this example, a quad is placed on the right side of the screen and the render
 - Implementing offscreen rendering using multiple pipelines and render passes
 - Rendering a mini camera view on the screen
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

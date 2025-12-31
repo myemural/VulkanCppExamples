@@ -34,6 +34,14 @@ In this example, a glTF 3D mesh rendered on the screen as wireframe without any 
 - Loading glTF binary model from disk
 - Rendering a glTF mesh as single colored wireframe view
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

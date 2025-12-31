@@ -34,6 +34,14 @@ In this example, cubes were drawn on the screen using the sample shader. The fir
 - Enabling sample shading
 - Writing fragment shaders based on samples
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

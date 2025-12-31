@@ -51,6 +51,14 @@ Pipeline 4: 9635ns
 - Using timestamp queries in Vulkan
 - Measuring the GPU time of the commands
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

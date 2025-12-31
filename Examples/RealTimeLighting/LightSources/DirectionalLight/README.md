@@ -39,6 +39,14 @@ In this example, objects of different colors are drawn on the scene, and lightin
 - Implementing directional light behavior in the shaders
 - Integrating blinn-phong shading model into the directional lights
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :x:                | Will be implemented. |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

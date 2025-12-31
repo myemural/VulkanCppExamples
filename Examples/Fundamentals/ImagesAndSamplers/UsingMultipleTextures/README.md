@@ -31,6 +31,14 @@ This examples draws 3 textured quads to the screen. Top quads have different tex
 - Using multiple textures in shaders
 - Mixing multiple textures in shaders
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

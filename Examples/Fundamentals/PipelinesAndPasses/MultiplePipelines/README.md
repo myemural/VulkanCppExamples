@@ -35,6 +35,14 @@ In this example, multiple cubes are drawn in the scene. The first 3 cubes in the
 - Understanding pipeline derivatives
 - Creating derived pipeline
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

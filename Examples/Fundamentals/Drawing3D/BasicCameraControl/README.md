@@ -35,6 +35,14 @@ This examples draws a cube to the screen and rotates it constantly. But this tim
 - Creating a virtual camera with changing the MVP matrix
 - Basic input system implementation
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

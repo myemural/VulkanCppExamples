@@ -34,6 +34,14 @@ This example draws 20 rotating cubes on the screen using instanced rendering met
 
 - Using instanced rendering method to draw multiple same objects
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

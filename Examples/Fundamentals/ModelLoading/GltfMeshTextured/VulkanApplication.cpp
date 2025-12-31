@@ -144,7 +144,7 @@ void VulkanApplication::CreateResources()
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    const std::uint32_t vertexBufferSize = avocadoModel_->Meshes[0].Vertices.size() * sizeof(VertexPos3Uv2);
+    const std::uint32_t vertexBufferSize = avocadoModel_->Meshes[0].Attributes.VertexCount * sizeof(VertexPos3Uv2);
     const uint32_t indexBufferSize = avocadoModel_->Meshes[0].Indices.size() * sizeof(std::uint16_t);
 
     resourceCreateInfo.Buffers = {

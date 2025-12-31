@@ -209,63 +209,57 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
             gltfMesh.Name = handler->Name + "_" + meshName;
 
             // Vertex Positions
-            std::vector<float> posData;
+            std::vector<glm::vec3> posData;
             if (primitive.attributes.contains("POSITION")) {
                 const auto& posAccessor = gltfModel_.accessors[primitive.attributes.at("POSITION")];
                 const auto& posBufferView = gltfModel_.bufferViews[posAccessor.bufferView];
                 const auto& posBuffer = gltfModel_.buffers[posBufferView.buffer];
 
                 size_t start = posBufferView.byteOffset + posAccessor.byteOffset;
-                size_t length = posAccessor.count * tinygltf::GetNumComponentsInType(posAccessor.type);
+                size_t length = posAccessor.count;
 
                 posData.resize(length);
-                std::memcpy(posData.data(), &posBuffer.data[start], length * sizeof(float));
+                std::memcpy(posData.data(), &posBuffer.data[start], length * sizeof(glm::vec3));
             } else {
                 std::cerr << "GLTF primitive should contain POSITION attribute!" << std::endl;
                 return false;
             }
 
             // Vertex Normals
-            std::vector<float> normData;
+            std::vector<glm::vec3> normData;
             if (primitive.attributes.contains("NORMAL")) {
                 const auto& normAccessor = gltfModel_.accessors[primitive.attributes.at("NORMAL")];
                 const auto& normBufferView = gltfModel_.bufferViews[normAccessor.bufferView];
                 const auto& normBuffer = gltfModel_.buffers[normBufferView.buffer];
 
                 size_t start = normBufferView.byteOffset + normAccessor.byteOffset;
-                size_t length = normAccessor.count * tinygltf::GetNumComponentsInType(normAccessor.type);
+                size_t length = normAccessor.count;
 
                 normData.resize(length);
-                std::memcpy(normData.data(), &normBuffer.data[start], length * sizeof(float));
+                std::memcpy(normData.data(), &normBuffer.data[start], length * sizeof(glm::vec3));
             }
 
             // Vertex TexCoords (only TEXCOORD_0 for now)
-            std::vector<float> texData;
+            std::vector<glm::vec2> texData;
             if (primitive.attributes.contains("TEXCOORD_0")) {
                 const auto& texAccessor = gltfModel_.accessors[primitive.attributes.at("TEXCOORD_0")];
                 const auto& texBufferView = gltfModel_.bufferViews[texAccessor.bufferView];
                 const auto& texBuffer = gltfModel_.buffers[texBufferView.buffer];
 
                 size_t start = texBufferView.byteOffset + texAccessor.byteOffset;
-                size_t length = texAccessor.count * tinygltf::GetNumComponentsInType(texAccessor.type);
+                size_t length = texAccessor.count;
 
                 texData.resize(length);
-                std::memcpy(texData.data(), &texBuffer.data[start], length * sizeof(float));
+                std::memcpy(texData.data(), &texBuffer.data[start], length * sizeof(glm::vec2));
             }
 
             // Process vertices
-            const auto& posAccessor = gltfModel_.accessors[primitive.attributes.at("POSITION")];
-            for (size_t i = 0; i < posAccessor.count; ++i) {
-                GltfPrimitiveAttrib attribute;
-                attribute.Position = glm::vec3(posData[i * 3 + 0], posData[i * 3 + 1], posData[i * 3 + 2]);
-                if (!normData.empty()) {
-                    attribute.Normal = glm::vec3(normData[i * 3 + 0], normData[i * 3 + 1], normData[i * 3 + 2]);
-                }
-                if (!texData.empty()) {
-                    attribute.TexCoords.emplace_back(texData[i * 2 + 0], texData[i * 2 + 1]);
-                }
-                gltfMesh.Vertices.push_back(attribute);
-            }
+            GltfPrimitiveAttrib attribute;
+            attribute.VertexCount = posData.size();
+            attribute.Positions = std::move(posData);
+            attribute.Normals = std::move(normData);
+            attribute.TexCoords0 = std::move(texData);
+            gltfMesh.Attributes = std::move(attribute);
 
             // Indices
             const auto& idxAccessor = gltfModel_.accessors[primitive.indices];

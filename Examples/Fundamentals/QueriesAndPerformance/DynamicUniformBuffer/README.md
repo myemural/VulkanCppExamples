@@ -34,6 +34,14 @@ In this example, many cubes are drawn on the screen in random positions and thei
 - Using dynamic uniform buffers in Vulkan
 - Using dynamic offsets to get information about drawn object from uniform buffer
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

@@ -34,6 +34,14 @@ This example demonstrate the basic push constants usage with changing color of t
 - Updating push constants constantly
 - Getting value of the push constants from shaders
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

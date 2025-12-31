@@ -42,6 +42,14 @@ examples::fundamentals::queries_and_performance::specialization_constants::Vulka
 - Using specialization constants in Vulkan and shaders
 - Creating pipelines with giving values to specialization constants
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

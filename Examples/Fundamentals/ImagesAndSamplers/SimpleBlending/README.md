@@ -30,6 +30,14 @@ This examples draws 4 quads to the screen. Then it applies a transparent leaf te
 - Loading and using transparent textures
 - Simple blending operations in Vulkan
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

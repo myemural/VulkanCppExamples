@@ -34,6 +34,14 @@ In this example, a full screen quad was drawn on the screen and MSAA was impleme
 - Explicit resolving of multisampled images
 - Draw explicitly resolved scene to the screen
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

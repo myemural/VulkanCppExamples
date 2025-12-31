@@ -35,6 +35,14 @@ In this example, multiple cubes are drawn in the scene. Then blend constant valu
 - Updating pipeline dynamic states via command buffer
 - Changing blend constants state dynamically
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

@@ -30,6 +30,14 @@ In this example, there is a constantly rotating scissor rectangle on the screen,
 - Setting scissor dynamically in pipeline
 - Animating view on the screen with scissor
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

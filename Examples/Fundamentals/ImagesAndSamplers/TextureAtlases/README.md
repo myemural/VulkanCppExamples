@@ -30,6 +30,14 @@ This example draws 4 quads to the screen. Then it applies different textures fro
 - Using texture atlases in Vulkan (loading one image for multiple textures)
 - Managing texture coordinates
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

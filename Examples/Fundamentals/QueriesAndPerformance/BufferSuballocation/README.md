@@ -42,6 +42,14 @@ examples::fundamentals::queries_and_performance::buffer_suballocation::VulkanApp
 - Using buffer suballocation technique in Vulkan
 - Using one big buffer for different vertex and index data
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

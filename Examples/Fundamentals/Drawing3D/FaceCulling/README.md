@@ -36,6 +36,14 @@ This example draws 10 static cubes on the screen using the user-specified cull m
 - Understanding different cull mode settings
 - Understanding different front face settings
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

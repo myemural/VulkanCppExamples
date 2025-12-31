@@ -35,6 +35,14 @@ This example draws 2 quads to the screen to demonstrate primitive restart index 
 - Understanding the use of primitive restart index
 - Adjusting line width in line drawing mode
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

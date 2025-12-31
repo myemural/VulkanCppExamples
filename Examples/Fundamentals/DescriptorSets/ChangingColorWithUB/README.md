@@ -34,6 +34,14 @@ This example draws a single triangle to the screen. Then it tries to change colo
 - Update descriptor sets
 - Get descriptor sets from shaders and use them
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

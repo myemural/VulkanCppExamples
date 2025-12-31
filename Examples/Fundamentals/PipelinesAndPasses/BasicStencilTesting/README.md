@@ -36,6 +36,14 @@ In this example, outlines are drawn around objects using multiple pipelines and 
 - Understanding stencil testing operations
 - Implementing object outline using stencil testing
 
+## Shader Status
+
+| Shader Type | Status             | Notes                |
+|-------------|--------------------|----------------------|
+| GLSL        | :white_check_mark: |                      |
+| HLSL        | :white_check_mark: |                      |
+| Slang       | :x:                | Will be implemented. |
+
 ## Theoretical Background
 
 None

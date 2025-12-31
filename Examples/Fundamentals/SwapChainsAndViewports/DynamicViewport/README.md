@@ -34,6 +34,14 @@ In this example, two viewports are placed on the left and right of the screen. T
 - Setting viewports dynamically
 - Rendering scene with orthographic projection
 
+## Shader Status
+
+| Shader Type | Status             | Notes                                                          |
+|-------------|--------------------|----------------------------------------------------------------|
+| GLSL        | :white_check_mark: |                                                                |
+| HLSL        | :x:                | Cannot be implemented because of missing vertex shader feature |
+| Slang       | :x:                | Will be implemented. (Maybe)                                   |
+
 ## Theoretical Background
 
 None
