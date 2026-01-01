@@ -32,7 +32,18 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 
 ## [Textured Materials](/Examples/RealTimeLighting/TexturedMaterials)
 
-TBD
+- Applying diffuse texture to objects via shaders
+- Including diffuse texture to the lighting calculations (for blinn-phong)
+- Applying specular texture to objects via shaders
+- Including specular texture to the lighting calculations (for blinn-phong)
+- Applying emissive texture to objects via shaders
+- Including emissive texture to the lighting calculations (for blinn-phong)
+- Applying shininess or roughness texture to objects via shaders
+- Including shininess or roughness texture to the lighting calculations (for blinn-phong)
+- Applying alpha texture to objects via shaders for getting alpha values of the fragments
+- Including alpha texture to the lighting calculations (for blinn-phong)
+- Applying ambient occlusion texture to objects via shaders
+- Symbolically including ambient occlusion texture to the lighting calculations (for blinn-phong)
 
 ## [Texture Sampling and Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering)
 

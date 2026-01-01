@@ -59,7 +59,7 @@ vec3 calculateLight(LightUBO light, vec3 normalizedNormal, vec3 fragmentPosition
     vec3 normalizedLightDir = normalize(light.lightPosition.xyz - fragmentPosition);
 
     // Normalizing view direction (camera position)
-    vec3 normalizedView = normalize(pc.cameraPosition.xyz - fragPos);
+    vec3 normalizedView = normalize(pc.cameraPosition.xyz - fragmentPosition);
 
     // Ambient calculation
     vec3 ambient = meshInfo.ambientStrength * meshInfo.diffuseColor.rgb;
