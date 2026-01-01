@@ -32,11 +32,11 @@ This example draws a quad to the screen with using index buffer in addition to v
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type | Status             | Notes |
+|-------------|--------------------|-------|
+| GLSL        | :white_check_mark: |       |
+| HLSL        | :white_check_mark: |       |
+| Slang       | :white_check_mark: |       |
 
 ## Theoretical Background
 

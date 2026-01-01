@@ -141,6 +141,8 @@ class COMMON_API VulkanDeviceBuilder
 public:
     VulkanDeviceBuilder();
 
+    VulkanDeviceBuilder& AddExtendingStructure(const void* extendingStructure);
+
     VulkanDeviceBuilder& AddQueueInfo(const std::function<void(VkDeviceQueueCreateInfo&)>& setterFunc);
 
     VulkanDeviceBuilder& AddLayer(const std::string& layerName);

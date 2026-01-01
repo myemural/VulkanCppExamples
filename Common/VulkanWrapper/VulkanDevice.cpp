@@ -423,6 +423,12 @@ void VulkanDevice::WaitIdle() const
 
 VulkanDeviceBuilder::VulkanDeviceBuilder() : createInfo(GetDefaultDeviceCreateInfo()) {}
 
+VulkanDeviceBuilder& VulkanDeviceBuilder::AddExtendingStructure(const void* extendingStructure)
+{
+    createInfo.pNext = extendingStructure;
+    return *this;
+}
+
 VulkanDeviceBuilder& VulkanDeviceBuilder::AddQueueInfo(const std::function<void(VkDeviceQueueCreateInfo&)>& setterFunc)
 {
     VkDeviceQueueCreateInfo queueCreateInfo = GetDefaultQueueCreateInfo();

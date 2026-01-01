@@ -94,6 +94,50 @@ function(compile_shaders_for_target TARGET_NAME)
         endforeach()
     endif ()
 
+    # Compile Slang Shaders
+    set(SLANG_SHADERS_DIR "${SHADER_BASE_DIR}/slang")
+    if(IS_DIRECTORY "${SLANG_SHADERS_DIR}")
+        file(GLOB SLANG_SHADERS ${SLANG_SHADERS_DIR}/*.slang)
+        set(SLANG_SPIRV_OUTPUT_DIR "${SLANG_SHADERS_DIR}/spirv")
+        file(MAKE_DIRECTORY "${SLANG_SPIRV_OUTPUT_DIR}")
+
+        foreach(SHADER ${SLANG_SHADERS})
+            get_filename_component(FILE_NAME ${SHADER} NAME)
+            string(REPLACE ".slang" "" FILE_BASE ${FILE_NAME})
+
+            # Stage detection: vert=vertex, frag=fragment, comp=compute, etc.
+            if(FILE_NAME MATCHES "\\.vert\\.")
+                set(STAGE vertex)
+            elseif(FILE_NAME MATCHES "\\.frag\\.")
+                set(STAGE fragment)
+            elseif(FILE_NAME MATCHES "\\.comp\\.")
+                set(STAGE compute)
+            elseif(FILE_NAME MATCHES "\\.geom\\.")
+                set(STAGE geometry)
+            elseif(FILE_NAME MATCHES "\\.tesc\\.")
+                set(STAGE hull)
+            elseif(FILE_NAME MATCHES "\\.tese\\.")
+                set(STAGE domain)
+            else()
+                message(FATAL_ERROR "Slang shader stage not recognized: ${FILE_NAME}")
+            endif()
+
+            set(SLANG_SPIRV_SHADER_PATH "${SLANG_SPIRV_OUTPUT_DIR}/${FILE_BASE}.spv")
+
+            ### NOTE: For now use SPIR-V 1.3 version
+            add_custom_command(
+                    OUTPUT "${SLANG_SPIRV_SHADER_PATH}"
+                    COMMAND ${CMAKE_COMMAND} -E echo "Started compiling Slang shader for ${FILE_NAME}"
+                    COMMAND slangc "${SHADER}" -entry main -stage ${STAGE} -target spirv -profile spirv_1_3 -o "${SLANG_SPIRV_SHADER_PATH}"
+                    COMMAND ${CMAKE_COMMAND} -E echo "Compilation finished for ${FILE_NAME} -> ${SLANG_SPIRV_SHADER_PATH}"
+                    DEPENDS "${SHADER}"
+                    COMMENT "Compiling Slang shader ${FILE_NAME}"
+                    VERBATIM
+            )
+            list(APPEND ALL_SHADER_OUTPUTS "${SLANG_SPIRV_SHADER_PATH}")
+        endforeach()
+    endif()
+
     # Add custom target and shader dependency
     if(ALL_SHADER_OUTPUTS)
         add_custom_target(${TARGET_NAME}_shaders DEPENDS ${ALL_SHADER_OUTPUTS})
