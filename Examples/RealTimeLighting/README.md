@@ -47,4 +47,12 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 
 ## [Texture Sampling and Filtering](/Examples/RealTimeLighting/TextureSamplingAndFiltering)
 
-TBD
+- Creating images and image views with mipmapping support in Vulkan
+- Generating mipmaps for images in GPU memory (with `vkCmdBlitImage`)
+- Understanding automatic mipmap level selection mechanism when sampling images in shaders
+- Understanding manual mipmap level selection mechanism when sampling images in shaders
+- Changing current mipmap level via keyboard input
+- Enabling anisotropic filtering for samplers in Vulkan
+- Setting max anisotropy level that supported your GPU
+- Implementing gradient-based manual mipmap level control in shaders
+- Setting different color for objects that have different mipmap levels (for debugging)
