@@ -24,6 +24,8 @@ std::vector<glm::vec2> CreateCubeUVs();
 
 std::vector<glm::vec3> CreateCubeNormals();
 
+std::vector<glm::vec3> CreateCubeTangents();
+
 std::vector<std::uint16_t> CreateCubeIndices();
 
 // For spheres
@@ -32,6 +34,8 @@ std::vector<glm::vec3> CreateSpherePositions(float size, int stackCount, int sec
 std::vector<glm::vec2> CreateSphereUVs(int stackCount, int sectorCount);
 
 std::vector<glm::vec3> CreateSphereNormals(int stackCount, int sectorCount);
+
+std::vector<glm::vec3> CreateSphereTangents(int stackCount, int sectorCount);
 
 std::vector<std::uint16_t> CreateSphereIndices(int stackCount, int sectorCount);
 
@@ -59,6 +63,8 @@ std::vector<glm::vec3> CreatePlanePositions(float size);
 std::vector<glm::vec2> CreatePlaneUVs();
 
 std::vector<glm::vec3> CreatePlaneNormals();
+
+std::vector<glm::vec3> CreatePlaneTangents();
 
 std::vector<std::uint16_t> CreatePlaneIndices();
 

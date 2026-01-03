@@ -355,6 +355,12 @@ void SceneManager::CreateCubeGeometry()
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
+        } else if (attributeType == AttributeType::TANGENT) {
+            const auto vertexTangents = CreateCubeTangents();
+            const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
+            globalBufferPos_ += vertexTangentsSize;
+
+            resourceManager_.SetBuffer(kMainBufferName, vertexTangents.data(), vertexTangentsSize, offset, false);
         }
 
         geometry.vertexOffsets.push_back(offset);
@@ -396,6 +402,12 @@ void SceneManager::CreateSphereGeometry()
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
+        } else if (attributeType == AttributeType::TANGENT) {
+            const auto vertexTangents = CreateSphereTangents(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
+            globalBufferPos_ += vertexTangentsSize;
+
+            resourceManager_.SetBuffer(kMainBufferName, vertexTangents.data(), vertexTangentsSize, offset, false);
         }
 
         geometry.vertexOffsets.push_back(offset);
@@ -519,6 +531,12 @@ void SceneManager::CreatePlaneGeometry()
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
+        } else if (attributeType == AttributeType::TANGENT) {
+            const auto vertexTangents = CreatePlaneTangents();
+            const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
+            globalBufferPos_ += vertexTangentsSize;
+
+            resourceManager_.SetBuffer(kMainBufferName, vertexTangents.data(), vertexTangentsSize, offset, false);
         }
 
         geometry.vertexOffsets.push_back(offset);

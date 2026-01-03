@@ -122,6 +122,42 @@ std::vector<glm::vec3> CreateCubeNormals()
     };
 }
 
+std::vector<glm::vec3> CreateCubeTangents()
+{
+    return {
+        // Front (+Z)
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+        // Back (-Z)
+        {-1, 0, 0},
+        {-1, 0, 0},
+        {-1, 0, 0},
+        {-1, 0, 0},
+        // Left (-X)
+        {0, 0, 1},
+        {0, 0, 1},
+        {0, 0, 1},
+        {0, 0, 1},
+        // Right (+X)
+        {0, 0, -1},
+        {0, 0, -1},
+        {0, 0, -1},
+        {0, 0, -1},
+        // Top (+Y)
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+        // Bottom (-Y)
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+        {1, 0, 0},
+    };
+}
+
 std::vector<std::uint16_t> CreateCubeIndices()
 {
     return {
@@ -198,6 +234,29 @@ std::vector<glm::vec3> CreateSphereNormals(const int stackCount, const int secto
     }
 
     return normals;
+}
+
+std::vector<glm::vec3> CreateSphereTangents(const int stackCount, const int sectorCount)
+{
+    std::vector<glm::vec3> tangents;
+    tangents.reserve((stackCount + 1) * (sectorCount + 1));
+
+    constexpr float pi = std::numbers::pi_v<float>;
+
+    for (int i = 0; i <= stackCount; ++i) {
+        const float stackAngle = pi * 0.5f - static_cast<float>(i) * (pi / static_cast<float>(stackCount));
+        const float xy = std::cosf(stackAngle);
+
+        for (int j = 0; j <= sectorCount; ++j) {
+            const float sectorAngle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
+
+            glm::vec3 tangent(-xy * std::sinf(sectorAngle), xy * std::cosf(sectorAngle), 0.0f);
+
+            tangents.emplace_back(glm::normalize(tangent));
+        }
+    }
+
+    return tangents;
 }
 
 std::vector<std::uint16_t> CreateSphereIndices(const int stackCount, const int sectorCount)
@@ -543,6 +602,16 @@ std::vector<glm::vec3> CreatePlaneNormals()
     normals.emplace_back(0.0f, 1.0f, 0.0f);
 
     return normals;
+}
+
+std::vector<glm::vec3> CreatePlaneTangents()
+{
+    return {
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f},
+    };
 }
 
 std::vector<std::uint16_t> CreatePlaneIndices() { return {0, 1, 2, 2, 3, 0}; }

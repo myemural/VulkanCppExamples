@@ -56,3 +56,7 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 - Setting max anisotropy level that supported your GPU
 - Implementing gradient-based manual mipmap level control in shaders
 - Setting different color for objects that have different mipmap levels (for debugging)
+
+## [Surface Detailing](/Examples/RealTimeLighting/SurfaceDetailing)
+
+TBD

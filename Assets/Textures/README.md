@@ -21,6 +21,9 @@ This directory contains several texture files that taken from different free sou
 - Wood_Floor_015_basecolor.png ([Wood Floor 015, 3dtextures.me](https://3dtextures.me/2025/10/03/wood-floor-015/))
 - Wood_Roof_Shingles_002_ambientOcclusion.png ([Wood Roof Shingles 002, 3dtextures.me](https://3dtextures.me/2025/12/16/wood-roof-shingles-002/))
 - Wood_Roof_Shingles_002_basecolor.png ([Wood Roof Shingles 002, 3dtextures.me](https://3dtextures.me/2025/12/16/wood-roof-shingles-002/))
+- Wall_Stone_034_basecolor.png ([Wall Stone 034, 3dtextures.me](https://3dtextures.me/2025/12/05/wall-stone-034/))
+- Wall_Stone_034_height.png ([Wall Stone 034, 3dtextures.me](https://3dtextures.me/2025/12/05/wall-stone-034/))
+- Wall_Stone_034_normal.png ([Wall Stone 034, 3dtextures.me](https://3dtextures.me/2025/12/05/wall-stone-034/))
 
 The images used may have been resized.
 
