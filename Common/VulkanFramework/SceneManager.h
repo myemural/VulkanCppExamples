@@ -35,7 +35,7 @@ struct TextureRegistry
 struct COMMON_API SceneConfig
 {
     std::vector<std::pair<AttributeType, AccessorType>> AttributeLayout;
-    MaterialSystem MaterialSystem = MaterialSystem::PHONG;
+    MaterialSystem CurrentMaterialSystem = MaterialSystem::PHONG;
 };
 
 class COMMON_API SceneManager

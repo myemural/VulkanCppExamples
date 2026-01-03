@@ -96,7 +96,7 @@ function(compile_shaders_for_target TARGET_NAME)
 
     # Compile Slang Shaders
     set(SLANG_SHADERS_DIR "${SHADER_BASE_DIR}/slang")
-    if(IS_DIRECTORY "${SLANG_SHADERS_DIR}")
+    if(IS_DIRECTORY "${SLANG_SHADERS_DIR}" AND DEFINED ENV{VULKAN_SDK})
         file(GLOB SLANG_SHADERS ${SLANG_SHADERS_DIR}/*.slang)
         set(SLANG_SPIRV_OUTPUT_DIR "${SLANG_SHADERS_DIR}/spirv")
         file(MAKE_DIRECTORY "${SLANG_SPIRV_OUTPUT_DIR}")
@@ -128,7 +128,7 @@ function(compile_shaders_for_target TARGET_NAME)
             add_custom_command(
                     OUTPUT "${SLANG_SPIRV_SHADER_PATH}"
                     COMMAND ${CMAKE_COMMAND} -E echo "Started compiling Slang shader for ${FILE_NAME}"
-                    COMMAND slangc "${SHADER}" -entry main -stage ${STAGE} -target spirv -profile spirv_1_3 -o "${SLANG_SPIRV_SHADER_PATH}"
+                    COMMAND "$ENV{VULKAN_SDK}/bin/slangc" "${SHADER}" -entry main -stage ${STAGE} -target spirv -profile spirv_1_3 -o "${SLANG_SPIRV_SHADER_PATH}"
                     COMMAND ${CMAKE_COMMAND} -E echo "Compilation finished for ${FILE_NAME} -> ${SLANG_SPIRV_SHADER_PATH}"
                     DEPENDS "${SHADER}"
                     COMMENT "Compiling Slang shader ${FILE_NAME}"

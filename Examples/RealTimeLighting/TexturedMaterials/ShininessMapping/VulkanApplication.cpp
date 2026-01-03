@@ -166,7 +166,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.AttributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
     sceneConfig.AttributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.AttributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
-    sceneConfig.MaterialSystem = MaterialSystem::PHONG_TEXTURED;
+    sceneConfig.CurrentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
     scene_ = std::make_unique<SceneManager>(*resources_, sceneConfig);
 

@@ -76,9 +76,9 @@ void SceneManager::AddCube(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -104,9 +104,9 @@ void SceneManager::AddSphere(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -132,9 +132,9 @@ void SceneManager::AddCone(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -160,9 +160,9 @@ void SceneManager::AddCylinder(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -188,9 +188,9 @@ void SceneManager::AddPlane(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -319,11 +319,11 @@ void SceneManager::UpdateMeshDataGpu(const MeshInfo& meshInfo) const
 {
     const auto meshData = meshInfo.GenerateMeshDataGpu();
 
-    if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
         const auto offset = meshInfo.objectId * sizeof(MeshDataPhongGpu);
         resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongGpu>(meshData), sizeof(MeshDataPhongGpu),
                                    offset, false);
-    } else if (sceneConfig_.MaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         const auto offset = meshInfo.objectId * sizeof(MeshDataPhongTexturedGpu);
         resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongTexturedGpu>(meshData),
                                    sizeof(MeshDataPhongTexturedGpu), offset, false);
