@@ -449,6 +449,12 @@ void SceneManager::CreateConeGeometry()
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
+        } else if (attributeType == AttributeType::TANGENT) {
+            const auto vertexTangents = CreateConeTangents(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
+            globalBufferPos_ += vertexTangentsSize;
+
+            resourceManager_.SetBuffer(kMainBufferName, vertexTangents.data(), vertexTangentsSize, offset, false);
         }
 
         geometry.vertexOffsets.push_back(offset);
@@ -490,6 +496,12 @@ void SceneManager::CreateCylinderGeometry()
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
+        } else if (attributeType == AttributeType::TANGENT) {
+            const auto vertexTangents = CreateCylinderTangents(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
+            globalBufferPos_ += vertexTangentsSize;
+
+            resourceManager_.SetBuffer(kMainBufferName, vertexTangents.data(), vertexTangentsSize, offset, false);
         }
 
         geometry.vertexOffsets.push_back(offset);

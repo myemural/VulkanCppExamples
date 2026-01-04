@@ -171,6 +171,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Gradient-Based LOD Control with Anisotropy](/Examples/RealTimeLighting/TextureSamplingAndFiltering/GradientBasedMipmapping)
 - **[Surface Detailing](/Examples/RealTimeLighting/SurfaceDetailing)**
   - [Bump Mapping](/Examples/RealTimeLighting/SurfaceDetailing/BumpMapping)
+  - [Normal Mapping](/Examples/RealTimeLighting/SurfaceDetailing/NormalMapping)
 
 ## Environment Support
 

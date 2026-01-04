@@ -384,6 +384,34 @@ std::vector<glm::vec3> CreateConeNormals(const int stackCount, const int sectorC
     return normals;
 }
 
+std::vector<glm::vec3> CreateConeTangents(const int stackCount, const int sectorCount)
+{
+    std::vector<glm::vec3> tangents;
+    tangents.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
+
+    constexpr float pi = std::numbers::pi_v<float>;
+
+    // Side
+    for (int i = 0; i <= stackCount; ++i) {
+        for (int j = 0; j <= sectorCount; ++j) {
+            const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
+
+            glm::vec3 tangent(-std::sinf(angle), 0.0f, std::cosf(angle));
+            tangents.emplace_back(glm::normalize(tangent));
+        }
+    }
+
+    // Base center
+    tangents.emplace_back(1.0f, 0.0f, 0.0f);
+
+    // Base ring
+    for (int j = 0; j <= sectorCount; ++j) {
+        tangents.emplace_back(1.0f, 0.0f, 0.0f);
+    }
+
+    return tangents;
+}
+
 std::vector<uint16_t> CreateConeIndices(const int stackCount, const int sectorCount)
 {
     std::vector<uint16_t> indices;
@@ -483,12 +511,14 @@ std::vector<glm::vec2> CreateCylinderUVs(const int stackCount, const int sectorC
     };
 
     // Top disk
-    for (int j = 0; j <= sectorCount; ++j)
+    for (int j = 0; j <= sectorCount; ++j) {
         uvs.emplace_back(makeDiskUV(j));
+    }
 
     // Bottom disk
-    for (int j = 0; j <= sectorCount; ++j)
+    for (int j = 0; j <= sectorCount; ++j) {
         uvs.emplace_back(makeDiskUV(j));
+    }
 
     return uvs;
 }
@@ -509,14 +539,46 @@ std::vector<glm::vec3> CreateCylinderNormals(const int stackCount, const int sec
     }
 
     // Top disk
-    for (int j = 0; j <= sectorCount; ++j)
+    for (int j = 0; j <= sectorCount; ++j) {
         normals.emplace_back(0.0f, 1.0f, 0.0f);
+    }
 
     // Bottom disk
-    for (int j = 0; j <= sectorCount; ++j)
+    for (int j = 0; j <= sectorCount; ++j) {
         normals.emplace_back(0.0f, -1.0f, 0.0f);
+    }
 
     return normals;
+}
+
+std::vector<glm::vec3> CreateCylinderTangents(const int stackCount, const int sectorCount)
+{
+    std::vector<glm::vec3> tangents;
+    tangents.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
+
+    constexpr float pi = std::numbers::pi_v<float>;
+
+    // Side surface
+    for (int i = 0; i <= stackCount; ++i) {
+        for (int j = 0; j <= sectorCount; ++j) {
+            const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
+
+            glm::vec3 tangent(-std::sinf(angle), 0.0f, std::cosf(angle));
+            tangents.emplace_back(glm::normalize(tangent));
+        }
+    }
+
+    // Top disk
+    for (int j = 0; j <= sectorCount; ++j) {
+        tangents.emplace_back(1.0f, 0.0f, 0.0f);
+    }
+
+    // Bottom disk
+    for (int j = 0; j <= sectorCount; ++j) {
+        tangents.emplace_back(1.0f, 0.0f, 0.0f);
+    }
+
+    return tangents;
 }
 
 std::vector<uint16_t> CreateCylinderIndices(const int stackCount, const int sectorCount)

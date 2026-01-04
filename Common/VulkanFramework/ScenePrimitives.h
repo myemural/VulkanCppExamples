@@ -46,6 +46,8 @@ std::vector<glm::vec2> CreateConeUVs(int stackCount, int sectorCount);
 
 std::vector<glm::vec3> CreateConeNormals(int stackCount, int sectorCount);
 
+std::vector<glm::vec3> CreateConeTangents(int stackCount, int sectorCount);
+
 std::vector<uint16_t> CreateConeIndices(int stackCount, int sectorCount);
 
 // For cylinders
@@ -54,6 +56,8 @@ std::vector<glm::vec3> CreateCylinderPositions(float height, int stackCount, int
 std::vector<glm::vec2> CreateCylinderUVs(int stackCount, int sectorCount);
 
 std::vector<glm::vec3> CreateCylinderNormals(int stackCount, int sectorCount);
+
+std::vector<glm::vec3> CreateCylinderTangents(int stackCount, int sectorCount);
 
 std::vector<uint16_t> CreateCylinderIndices(int stackCount, int sectorCount);
 

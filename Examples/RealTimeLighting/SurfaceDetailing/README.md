@@ -8,6 +8,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
 
 1. [Bump Mapping](/Examples/RealTimeLighting/SurfaceDetailing/BumpMapping)
    - `BumpMapping`
+2. [Normal Mapping](/Examples/RealTimeLighting/SurfaceDetailing/NormalMapping)
+   - `NormalMapping`
 
 ## Architecture of the Subsection
 
