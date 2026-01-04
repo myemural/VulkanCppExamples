@@ -29,6 +29,10 @@ SceneManager::SceneManager(ResourceManager& resourceManager, const SceneConfig& 
     if (resourceCreateInfo.Buffers.has_value()) {
         resourceManager_.CreateBuffers(resourceCreateInfo.Buffers.value());
     }
+
+    // Set primitive stack and sector counts
+    currentPrimStackCount_ = sceneConfig_.PrimitiveStackCount;
+    currentPrimSectorCount_ = sceneConfig_.PrimitiveSectorCount;
 }
 std::uint32_t SceneManager::GetAttributeCount() const { return sceneConfig_.AttributeLayout.size(); }
 
@@ -385,25 +389,25 @@ void SceneManager::CreateSphereGeometry()
         const auto accessorSize = GetAccessorSize(accessorType);
 
         if (attributeType == AttributeType::POSITION) {
-            const auto vertexPositons = CreateSpherePositions(1.0f, kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexPositons = CreateSpherePositions(1.0f, currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexPositonsSize = vertexPositons.size() * accessorSize;
             globalBufferPos_ += vertexPositonsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexPositons.data(), vertexPositonsSize, offset, false);
         } else if (attributeType == AttributeType::TEXCOORD) {
-            const auto vertexUVs = CreateSphereUVs(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexUVs = CreateSphereUVs(currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexUVsSize = vertexUVs.size() * accessorSize;
             globalBufferPos_ += vertexUVsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexUVs.data(), vertexUVsSize, offset, false);
         } else if (attributeType == AttributeType::NORMAL) {
-            const auto vertexNormals = CreateSphereNormals(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexNormals = CreateSphereNormals(currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexNormalsSize = vertexNormals.size() * accessorSize;
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
         } else if (attributeType == AttributeType::TANGENT) {
-            const auto vertexTangents = CreateSphereTangents(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexTangents = CreateSphereTangents(currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
             globalBufferPos_ += vertexTangentsSize;
 
@@ -413,7 +417,7 @@ void SceneManager::CreateSphereGeometry()
         geometry.vertexOffsets.push_back(offset);
     }
 
-    const auto indices = CreateSphereIndices(kPrimitiveStackCount, kPrimitiveSectorCount);
+    const auto indices = CreateSphereIndices(currentPrimStackCount_, currentPrimSectorCount_);
     geometry.indexOffset = globalBufferPos_;
     const auto indicesSize = indices.size() * sizeof(std::uint16_t);
     globalBufferPos_ += indicesSize;
@@ -432,25 +436,25 @@ void SceneManager::CreateConeGeometry()
         const auto accessorSize = GetAccessorSize(accessorType);
 
         if (attributeType == AttributeType::POSITION) {
-            const auto vertexPositons = CreateConePositions(1.0f, kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexPositons = CreateConePositions(1.0f, currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexPositonsSize = vertexPositons.size() * accessorSize;
             globalBufferPos_ += vertexPositonsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexPositons.data(), vertexPositonsSize, offset, false);
         } else if (attributeType == AttributeType::TEXCOORD) {
-            const auto vertexUVs = CreateConeUVs(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexUVs = CreateConeUVs(currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexUVsSize = vertexUVs.size() * accessorSize;
             globalBufferPos_ += vertexUVsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexUVs.data(), vertexUVsSize, offset, false);
         } else if (attributeType == AttributeType::NORMAL) {
-            const auto vertexNormals = CreateConeNormals(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexNormals = CreateConeNormals(currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexNormalsSize = vertexNormals.size() * accessorSize;
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
         } else if (attributeType == AttributeType::TANGENT) {
-            const auto vertexTangents = CreateConeTangents(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexTangents = CreateConeTangents(currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
             globalBufferPos_ += vertexTangentsSize;
 
@@ -460,7 +464,7 @@ void SceneManager::CreateConeGeometry()
         geometry.vertexOffsets.push_back(offset);
     }
 
-    const auto indices = CreateConeIndices(kPrimitiveStackCount, kPrimitiveSectorCount);
+    const auto indices = CreateConeIndices(currentPrimStackCount_, currentPrimSectorCount_);
     geometry.indexOffset = globalBufferPos_;
     const auto indicesSize = indices.size() * sizeof(std::uint16_t);
     globalBufferPos_ += indicesSize;
@@ -479,25 +483,25 @@ void SceneManager::CreateCylinderGeometry()
         const auto accessorSize = GetAccessorSize(accessorType);
 
         if (attributeType == AttributeType::POSITION) {
-            const auto vertexPositons = CreateCylinderPositions(1.0f, kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexPositons = CreateCylinderPositions(1.0f, currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexPositonsSize = vertexPositons.size() * accessorSize;
             globalBufferPos_ += vertexPositonsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexPositons.data(), vertexPositonsSize, offset, false);
         } else if (attributeType == AttributeType::TEXCOORD) {
-            const auto vertexUVs = CreateCylinderUVs(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexUVs = CreateCylinderUVs(currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexUVsSize = vertexUVs.size() * accessorSize;
             globalBufferPos_ += vertexUVsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexUVs.data(), vertexUVsSize, offset, false);
         } else if (attributeType == AttributeType::NORMAL) {
-            const auto vertexNormals = CreateCylinderNormals(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexNormals = CreateCylinderNormals(currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexNormalsSize = vertexNormals.size() * accessorSize;
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kMainBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
         } else if (attributeType == AttributeType::TANGENT) {
-            const auto vertexTangents = CreateCylinderTangents(kPrimitiveStackCount, kPrimitiveSectorCount);
+            const auto vertexTangents = CreateCylinderTangents(currentPrimStackCount_, currentPrimSectorCount_);
             const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
             globalBufferPos_ += vertexTangentsSize;
 
@@ -507,7 +511,7 @@ void SceneManager::CreateCylinderGeometry()
         geometry.vertexOffsets.push_back(offset);
     }
 
-    const auto indices = CreateCylinderIndices(kPrimitiveStackCount, kPrimitiveSectorCount);
+    const auto indices = CreateCylinderIndices(currentPrimStackCount_, currentPrimSectorCount_);
     geometry.indexOffset = globalBufferPos_;
     const auto indicesSize = indices.size() * sizeof(std::uint16_t);
     globalBufferPos_ += indicesSize;

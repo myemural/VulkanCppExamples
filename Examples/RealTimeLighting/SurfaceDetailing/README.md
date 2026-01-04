@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `BumpMapping`
 2. [Normal Mapping](/Examples/RealTimeLighting/SurfaceDetailing/NormalMapping)
    - `NormalMapping`
+3. [Displacement Mapping without Tessellation](/Examples/RealTimeLighting/SurfaceDetailing/BasicDisplacement)
+   - `BasicDisplacement`
 
 ## Architecture of the Subsection
 

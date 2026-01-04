@@ -172,10 +172,11 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Surface Detailing](/Examples/RealTimeLighting/SurfaceDetailing)**
   - [Bump Mapping](/Examples/RealTimeLighting/SurfaceDetailing/BumpMapping)
   - [Normal Mapping](/Examples/RealTimeLighting/SurfaceDetailing/NormalMapping)
+  - [Displacement Mapping without Tessellation](/Examples/RealTimeLighting/SurfaceDetailing/BasicDisplacement)
 
 ## Environment Support
 
-Currently only tested on Windows. Other operating systems will be added.
+The written code is primarily tested in a Windows environment. After a few examples are completed, it is then tested in a GNU/Linux environment.
 
 | Operating System | Support | Tested Compiler  |
 |------------------|---------|------------------|

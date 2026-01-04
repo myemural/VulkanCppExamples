@@ -170,7 +170,8 @@ std::vector<std::uint16_t> CreateCubeIndices()
     };
 }
 
-std::vector<glm::vec3> CreateSpherePositions(const float size, const int stackCount, const int sectorCount)
+std::vector<glm::vec3>
+CreateSpherePositions(const float size, const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> positions;
     positions.reserve((stackCount + 1) * (sectorCount + 1));
@@ -195,7 +196,7 @@ std::vector<glm::vec3> CreateSpherePositions(const float size, const int stackCo
     return positions;
 }
 
-std::vector<glm::vec2> CreateSphereUVs(const int stackCount, const int sectorCount)
+std::vector<glm::vec2> CreateSphereUVs(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec2> uvs;
     uvs.reserve((stackCount + 1) * (sectorCount + 1));
@@ -212,7 +213,7 @@ std::vector<glm::vec2> CreateSphereUVs(const int stackCount, const int sectorCou
     return uvs;
 }
 
-std::vector<glm::vec3> CreateSphereNormals(const int stackCount, const int sectorCount)
+std::vector<glm::vec3> CreateSphereNormals(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> normals;
     normals.reserve((stackCount + 1) * (sectorCount + 1));
@@ -236,7 +237,7 @@ std::vector<glm::vec3> CreateSphereNormals(const int stackCount, const int secto
     return normals;
 }
 
-std::vector<glm::vec3> CreateSphereTangents(const int stackCount, const int sectorCount)
+std::vector<glm::vec3> CreateSphereTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> tangents;
     tangents.reserve((stackCount + 1) * (sectorCount + 1));
@@ -259,14 +260,14 @@ std::vector<glm::vec3> CreateSphereTangents(const int stackCount, const int sect
     return tangents;
 }
 
-std::vector<std::uint16_t> CreateSphereIndices(const int stackCount, const int sectorCount)
+std::vector<std::uint16_t> CreateSphereIndices(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<std::uint16_t> indices;
     indices.reserve(stackCount * sectorCount * 6);
 
     for (int i = 0; i < stackCount; ++i) {
-        int k1 = i * (sectorCount + 1);
-        int k2 = k1 + sectorCount + 1;
+        std::uint32_t k1 = i * (sectorCount + 1);
+        std::uint32_t k2 = k1 + sectorCount + 1;
 
         for (int j = 0; j < sectorCount; ++j, ++k1, ++k2) {
             // Upper triangle
@@ -284,7 +285,8 @@ std::vector<std::uint16_t> CreateSphereIndices(const int stackCount, const int s
     return indices;
 }
 
-std::vector<glm::vec3> CreateConePositions(const float height, const int stackCount, const int sectorCount)
+std::vector<glm::vec3>
+CreateConePositions(const float height, const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> positions;
     positions.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
@@ -320,7 +322,7 @@ std::vector<glm::vec3> CreateConePositions(const float height, const int stackCo
     return positions;
 }
 
-std::vector<glm::vec2> CreateConeUVs(const int stackCount, const int sectorCount)
+std::vector<glm::vec2> CreateConeUVs(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec2> uvs;
     uvs.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
@@ -350,7 +352,7 @@ std::vector<glm::vec2> CreateConeUVs(const int stackCount, const int sectorCount
     return uvs;
 }
 
-std::vector<glm::vec3> CreateConeNormals(const int stackCount, const int sectorCount)
+std::vector<glm::vec3> CreateConeNormals(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> normals;
     normals.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
@@ -384,7 +386,7 @@ std::vector<glm::vec3> CreateConeNormals(const int stackCount, const int sectorC
     return normals;
 }
 
-std::vector<glm::vec3> CreateConeTangents(const int stackCount, const int sectorCount)
+std::vector<glm::vec3> CreateConeTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> tangents;
     tangents.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
@@ -412,17 +414,17 @@ std::vector<glm::vec3> CreateConeTangents(const int stackCount, const int sector
     return tangents;
 }
 
-std::vector<uint16_t> CreateConeIndices(const int stackCount, const int sectorCount)
+std::vector<uint16_t> CreateConeIndices(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<uint16_t> indices;
     indices.reserve(stackCount * sectorCount * 6 + sectorCount * 3);
 
-    const int ring = sectorCount + 1;
+    const std::uint32_t ring = sectorCount + 1;
 
     // Side indices
     for (int i = 0; i < stackCount; ++i) {
-        const int k1 = i * ring;  // Current ring
-        const int k2 = k1 + ring; // Next ring
+        const std::uint32_t k1 = i * ring;  // Current ring
+        const std::uint32_t k2 = k1 + ring; // Next ring
 
         for (int j = 0; j < sectorCount; ++j) {
 
@@ -439,8 +441,8 @@ std::vector<uint16_t> CreateConeIndices(const int stackCount, const int sectorCo
     }
 
     // Base indices
-    const int baseCenter = (stackCount + 1) * ring;
-    const int baseStart = baseCenter + 1;
+    const std::uint32_t baseCenter = (stackCount + 1) * ring;
+    const std::uint32_t baseStart = baseCenter + 1;
 
     // Base ring indices
     for (int j = 0; j < sectorCount; ++j) {
@@ -452,7 +454,8 @@ std::vector<uint16_t> CreateConeIndices(const int stackCount, const int sectorCo
     return indices;
 }
 
-std::vector<glm::vec3> CreateCylinderPositions(const float height, const int stackCount, const int sectorCount)
+std::vector<glm::vec3>
+CreateCylinderPositions(const float height, const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> positions;
     positions.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
@@ -486,7 +489,7 @@ std::vector<glm::vec3> CreateCylinderPositions(const float height, const int sta
     return positions;
 }
 
-std::vector<glm::vec2> CreateCylinderUVs(const int stackCount, const int sectorCount)
+std::vector<glm::vec2> CreateCylinderUVs(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec2> uvs;
     uvs.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
@@ -523,7 +526,7 @@ std::vector<glm::vec2> CreateCylinderUVs(const int stackCount, const int sectorC
     return uvs;
 }
 
-std::vector<glm::vec3> CreateCylinderNormals(const int stackCount, const int sectorCount)
+std::vector<glm::vec3> CreateCylinderNormals(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> normals;
     normals.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
@@ -551,7 +554,7 @@ std::vector<glm::vec3> CreateCylinderNormals(const int stackCount, const int sec
     return normals;
 }
 
-std::vector<glm::vec3> CreateCylinderTangents(const int stackCount, const int sectorCount)
+std::vector<glm::vec3> CreateCylinderTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> tangents;
     tangents.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
@@ -581,15 +584,15 @@ std::vector<glm::vec3> CreateCylinderTangents(const int stackCount, const int se
     return tangents;
 }
 
-std::vector<uint16_t> CreateCylinderIndices(const int stackCount, const int sectorCount)
+std::vector<uint16_t> CreateCylinderIndices(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<uint16_t> indices;
-    const int ring = sectorCount + 1;
+    const std::uint32_t ring = sectorCount + 1;
 
     // Side surface
     for (int i = 0; i < stackCount; ++i) {
-        const int k1 = i * ring;
-        const int k2 = k1 + ring;
+        const std::uint32_t k1 = i * ring;
+        const std::uint32_t k2 = k1 + ring;
 
         for (int j = 0; j < sectorCount; ++j) {
             indices.push_back(k1 + j);
@@ -603,8 +606,8 @@ std::vector<uint16_t> CreateCylinderIndices(const int stackCount, const int sect
     }
 
     // Top disk
-    const int topStart = (stackCount + 1) * ring;
-    const int topCenter = topStart + sectorCount;
+    const std::uint32_t topStart = (stackCount + 1) * ring;
+    const std::uint32_t topCenter = topStart + sectorCount;
 
     for (int j = 0; j < sectorCount; ++j) {
         indices.push_back(topCenter);
@@ -613,8 +616,8 @@ std::vector<uint16_t> CreateCylinderIndices(const int stackCount, const int sect
     }
 
     // Bottom disk
-    const int bottomStart = topStart + ring;
-    const int bottomCenter = bottomStart + sectorCount;
+    const std::uint32_t bottomStart = topStart + ring;
+    const std::uint32_t bottomCenter = bottomStart + sectorCount;
 
     for (int j = 0; j < sectorCount; ++j) {
         indices.push_back(bottomCenter);

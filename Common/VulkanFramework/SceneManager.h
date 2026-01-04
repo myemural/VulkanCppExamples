@@ -36,6 +36,8 @@ struct COMMON_API SceneConfig
 {
     std::vector<std::pair<AttributeType, AccessorType>> AttributeLayout;
     MaterialSystem CurrentMaterialSystem = MaterialSystem::PHONG;
+    std::uint32_t PrimitiveStackCount = 24U;
+    std::uint32_t PrimitiveSectorCount = 24U;
 };
 
 class COMMON_API SceneManager
@@ -144,8 +146,6 @@ private:
     static constexpr auto kMainBufferName = "MainBuffer";
     static constexpr auto kStorageBufferName = "StorageBuffer";
     static constexpr auto kBufferSizeInBytes = 1'000'000UL; // 16 MB
-    static constexpr auto kPrimitiveSectorCount = 24U;
-    static constexpr auto kPrimitiveStackCount = 24U;
 
     ResourceManager& resourceManager_;
     SceneConfig sceneConfig_;
@@ -166,6 +166,8 @@ private:
     bool isConeBufferCreated_ = false;
     bool isCylinderBufferCreated_ = false;
     bool isPlaneBufferCreated_ = false;
+    std::uint32_t currentPrimStackCount_ = 0;
+    std::uint32_t currentPrimSectorCount_ = 0;
 
     std::unordered_map<std::string, TextureRegistry> textureRegistries_;
     std::int32_t currentTextureId_ = 0;

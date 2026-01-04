@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(BumpMapping)
 add_subdirectory(NormalMapping)
+add_subdirectory(BasicDisplacement)
