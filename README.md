@@ -173,6 +173,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Bump Mapping](/Examples/RealTimeLighting/SurfaceDetailing/BumpMapping)
   - [Normal Mapping](/Examples/RealTimeLighting/SurfaceDetailing/NormalMapping)
   - [Displacement Mapping without Tessellation](/Examples/RealTimeLighting/SurfaceDetailing/BasicDisplacement)
+  - [Parallax Offset Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ParallaxOffsetMapping)
 
 ## Environment Support
 

@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `NormalMapping`
 3. [Displacement Mapping without Tessellation](/Examples/RealTimeLighting/SurfaceDetailing/BasicDisplacement)
    - `BasicDisplacement`
+4. [Parallax Offset Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ParallaxOffsetMapping)
+   - `ParallaxOffsetMapping`
 
 ## Architecture of the Subsection
 
