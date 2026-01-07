@@ -1,9 +1,8 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, in addition to normal mapping, parallax offset mapping, the simplest parallax mapping
- *          technique, is applied to the objects.
+ * @brief   In this example, in addition to normal mapping, steep parallax mapping technique is applied to the objects.
  * @author  Mustafa Yemural (myemural)
- * @date    06.01.2026
+ * @date    07.01.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +18,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::real_time_lighting::surface_detailing::parallax_offset_mapping;
+using namespace examples::real_time_lighting::surface_detailing::steep_parallax_mapping;
 
 inline ParameterSchema CreateParameterSchema()
 {

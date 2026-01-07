@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `BasicDisplacement`
 4. [Parallax Offset Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ParallaxOffsetMapping)
    - `ParallaxOffsetMapping`
+5. [Steep Parallax Mapping](/Examples/RealTimeLighting/SurfaceDetailing/SteepParallaxMapping)
+   - `SteepParallaxMapping`
 
 ## Architecture of the Subsection
 

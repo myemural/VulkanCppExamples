@@ -54,6 +54,37 @@ layout(push_constant) uniform MeshPushConstants {
     uint objectId;
 } pc;
 
+vec2 SteepParallaxMapping(vec2 texCoords, vec3 viewDirTS, sampler2D heightMap, float heightScale)
+{
+    // Change layer count to the view angle
+    const float minLayers = 8.0;
+    const float maxLayers = 32.0;
+    float numLayers = mix(maxLayers, minLayers, abs(viewDirTS.z));
+
+    float layerStep = 1.0 / numLayers;
+
+    // Grazing-angle fade
+    float ndotv = clamp(viewDirTS.z, 0.0, 1.0);
+    float parallaxFade = smoothstep(0.0, 0.2, ndotv);
+
+    float viewDirZ = max(viewDirTS.z, 1e-4);
+    vec2 P = (viewDirTS.xy / viewDirZ) * heightScale * parallaxFade;
+    vec2 deltaTexCoords = P / numLayers;
+
+    float rayHeight = 1.0;
+    vec2 currentTexCoords = texCoords;
+    float sampledHeight = texture(heightMap, currentTexCoords).r;
+
+    while (rayHeight > sampledHeight)
+    {
+        currentTexCoords -= deltaTexCoords;
+        rayHeight -= layerStep;
+        sampledHeight = texture(heightMap, currentTexCoords).r;
+    }
+
+    return currentTexCoords;
+}
+
 void main()
 {
     // Get mesh info
@@ -65,20 +96,11 @@ void main()
         vec3 viewDirWorldSpace = normalize(pc.cameraPosition.xyz - fragPos);
         vec3 viewDirTangentSpace = normalize(transpose(fragTBN) * viewDirWorldSpace);
 
-        // Height sample
-        float height = texture(uCombinedSamplers[meshInfo.heightMap], fragUv).r;
-
         // Parallax strength
-        const float parallaxScale = 0.03;
-
-        // Grazing-angle fade
-        float ndotv = clamp(viewDirTangentSpace.z, 0.0, 1.0);
-        float parallaxFade = smoothstep(0.0, 0.2, ndotv);
+        const float parallaxScale = 0.05;
 
         // UV offset
-        float viewDirTangentZ = max(viewDirTangentSpace.z, 1e-4);
-        vec2 parallaxOffset = (viewDirTangentSpace.xy * parallaxFade) / viewDirTangentZ * height * parallaxScale;
-        uv -= parallaxOffset;
+        uv = SteepParallaxMapping(fragUv, viewDirTangentSpace, uCombinedSamplers[meshInfo.heightMap], parallaxScale);
     }
 
     vec3 diffuseColor = meshInfo.diffuseColor.rgb;
