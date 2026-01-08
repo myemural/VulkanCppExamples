@@ -175,6 +175,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Displacement Mapping without Tessellation](/Examples/RealTimeLighting/SurfaceDetailing/BasicDisplacement)
   - [Parallax Offset Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ParallaxOffsetMapping)
   - [Steep Parallax Mapping](/Examples/RealTimeLighting/SurfaceDetailing/SteepParallaxMapping)
+  - [Parallax Occlusion Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ParallaxOcclusionMapping)
 
 ## Environment Support
 
