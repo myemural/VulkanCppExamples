@@ -18,7 +18,7 @@
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_lighting::surface_detailing::parallax_offset_mapping
+namespace examples::real_time_lighting::surface_detailing::relief_parallax_mapping
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -501,4 +501,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_lighting::surface_detailing::parallax_offset_mapping
+} // namespace examples::real_time_lighting::surface_detailing::parallax_occlusion_mapping

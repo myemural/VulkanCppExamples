@@ -14,6 +14,7 @@
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace common::vulkan_framework
 {
@@ -25,7 +26,7 @@ std::vector<glm::vec2> CreateCubeUVs();
 
 std::vector<glm::vec3> CreateCubeNormals();
 
-std::vector<glm::vec3> CreateCubeTangents();
+std::vector<glm::vec4> CreateCubeTangents();
 
 std::vector<std::uint16_t> CreateCubeIndices();
 
@@ -36,7 +37,7 @@ std::vector<glm::vec2> CreateSphereUVs(std::uint32_t stackCount, std::uint32_t s
 
 std::vector<glm::vec3> CreateSphereNormals(std::uint32_t stackCount, std::uint32_t sectorCount);
 
-std::vector<glm::vec3> CreateSphereTangents(std::uint32_t stackCount, std::uint32_t sectorCount);
+std::vector<glm::vec4> CreateSphereTangents(std::uint32_t stackCount, std::uint32_t sectorCount);
 
 std::vector<std::uint16_t> CreateSphereIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 
@@ -47,7 +48,7 @@ std::vector<glm::vec2> CreateConeUVs(std::uint32_t stackCount, std::uint32_t sec
 
 std::vector<glm::vec3> CreateConeNormals(std::uint32_t stackCount, std::uint32_t sectorCount);
 
-std::vector<glm::vec3> CreateConeTangents(std::uint32_t stackCount, std::uint32_t sectorCount);
+std::vector<glm::vec4> CreateConeTangents(std::uint32_t stackCount, std::uint32_t sectorCount);
 
 std::vector<uint16_t> CreateConeIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 
@@ -58,7 +59,7 @@ std::vector<glm::vec2> CreateCylinderUVs(std::uint32_t stackCount, std::uint32_t
 
 std::vector<glm::vec3> CreateCylinderNormals(std::uint32_t stackCount, std::uint32_t sectorCount);
 
-std::vector<glm::vec3> CreateCylinderTangents(std::uint32_t stackCount, std::uint32_t sectorCount);
+std::vector<glm::vec4> CreateCylinderTangents(std::uint32_t stackCount, std::uint32_t sectorCount);
 
 std::vector<uint16_t> CreateCylinderIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 
@@ -69,7 +70,7 @@ std::vector<glm::vec2> CreatePlaneUVs();
 
 std::vector<glm::vec3> CreatePlaneNormals();
 
-std::vector<glm::vec3> CreatePlaneTangents();
+std::vector<glm::vec4> CreatePlaneTangents();
 
 std::vector<std::uint16_t> CreatePlaneIndices();
 

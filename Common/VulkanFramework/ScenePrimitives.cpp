@@ -122,39 +122,39 @@ std::vector<glm::vec3> CreateCubeNormals()
     };
 }
 
-std::vector<glm::vec3> CreateCubeTangents()
+std::vector<glm::vec4> CreateCubeTangents()
 {
     return {
         // Front (+Z)
-        {1, 0, 0},
-        {1, 0, 0},
-        {1, 0, 0},
-        {1, 0, 0},
+        {1, 0, 0, 1},
+        {1, 0, 0, 1},
+        {1, 0, 0, 1},
+        {1, 0, 0, 1},
         // Back (-Z)
-        {-1, 0, 0},
-        {-1, 0, 0},
-        {-1, 0, 0},
-        {-1, 0, 0},
+        {-1, 0, 0, 1},
+        {-1, 0, 0, 1},
+        {-1, 0, 0, 1},
+        {-1, 0, 0, 1},
         // Left (-X)
-        {0, 0, 1},
-        {0, 0, 1},
-        {0, 0, 1},
-        {0, 0, 1},
+        {0, 0, 1, 1},
+        {0, 0, 1, 1},
+        {0, 0, 1, 1},
+        {0, 0, 1, 1},
         // Right (+X)
-        {0, 0, -1},
-        {0, 0, -1},
-        {0, 0, -1},
-        {0, 0, -1},
+        {0, 0, -1, 1},
+        {0, 0, -1, 1},
+        {0, 0, -1, 1},
+        {0, 0, -1, 1},
         // Top (+Y)
-        {1, 0, 0},
-        {1, 0, 0},
-        {1, 0, 0},
-        {1, 0, 0},
+        {1, 0, 0, 1},
+        {1, 0, 0, 1},
+        {1, 0, 0, 1},
+        {1, 0, 0, 1},
         // Bottom (-Y)
-        {1, 0, 0},
-        {1, 0, 0},
-        {1, 0, 0},
-        {1, 0, 0},
+        {1, 0, 0, -1},
+        {1, 0, 0, -1},
+        {1, 0, 0, -1},
+        {1, 0, 0, -1},
     };
 }
 
@@ -237,9 +237,9 @@ std::vector<glm::vec3> CreateSphereNormals(const std::uint32_t stackCount, const
     return normals;
 }
 
-std::vector<glm::vec3> CreateSphereTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec4> CreateSphereTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
-    std::vector<glm::vec3> tangents;
+    std::vector<glm::vec4> tangents;
     tangents.reserve((stackCount + 1) * (sectorCount + 1));
 
     constexpr float pi = std::numbers::pi_v<float>;
@@ -253,7 +253,7 @@ std::vector<glm::vec3> CreateSphereTangents(const std::uint32_t stackCount, cons
 
             glm::vec3 tangent(-xy * std::sinf(sectorAngle), xy * std::cosf(sectorAngle), 0.0f);
 
-            tangents.emplace_back(glm::normalize(tangent));
+            tangents.emplace_back(glm::normalize(tangent), 1.0f);
         }
     }
 
@@ -386,9 +386,9 @@ std::vector<glm::vec3> CreateConeNormals(const std::uint32_t stackCount, const s
     return normals;
 }
 
-std::vector<glm::vec3> CreateConeTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec4> CreateConeTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
-    std::vector<glm::vec3> tangents;
+    std::vector<glm::vec4> tangents;
     tangents.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
 
     constexpr float pi = std::numbers::pi_v<float>;
@@ -399,16 +399,16 @@ std::vector<glm::vec3> CreateConeTangents(const std::uint32_t stackCount, const 
             const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
 
             glm::vec3 tangent(-std::sinf(angle), 0.0f, std::cosf(angle));
-            tangents.emplace_back(glm::normalize(tangent));
+            tangents.emplace_back(glm::normalize(tangent), 1.0f);
         }
     }
 
     // Base center
-    tangents.emplace_back(1.0f, 0.0f, 0.0f);
+    tangents.emplace_back(1.0f, 0.0f, 0.0f, -1.0f);
 
     // Base ring
     for (int j = 0; j <= sectorCount; ++j) {
-        tangents.emplace_back(1.0f, 0.0f, 0.0f);
+        tangents.emplace_back(1.0f, 0.0f, 0.0f, -1.0f);
     }
 
     return tangents;
@@ -554,9 +554,9 @@ std::vector<glm::vec3> CreateCylinderNormals(const std::uint32_t stackCount, con
     return normals;
 }
 
-std::vector<glm::vec3> CreateCylinderTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec4> CreateCylinderTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
-    std::vector<glm::vec3> tangents;
+    std::vector<glm::vec4> tangents;
     tangents.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
 
     constexpr float pi = std::numbers::pi_v<float>;
@@ -567,18 +567,18 @@ std::vector<glm::vec3> CreateCylinderTangents(const std::uint32_t stackCount, co
             const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
 
             glm::vec3 tangent(-std::sinf(angle), 0.0f, std::cosf(angle));
-            tangents.emplace_back(glm::normalize(tangent));
+            tangents.emplace_back(glm::normalize(tangent), 1.0f);
         }
     }
 
     // Top disk
     for (int j = 0; j <= sectorCount; ++j) {
-        tangents.emplace_back(1.0f, 0.0f, 0.0f);
+        tangents.emplace_back(1.0f, 0.0f, 0.0f, 1.0f);
     }
 
     // Bottom disk
     for (int j = 0; j <= sectorCount; ++j) {
-        tangents.emplace_back(1.0f, 0.0f, 0.0f);
+        tangents.emplace_back(1.0f, 0.0f, 0.0f, -1.0f);
     }
 
     return tangents;
@@ -669,13 +669,13 @@ std::vector<glm::vec3> CreatePlaneNormals()
     return normals;
 }
 
-std::vector<glm::vec3> CreatePlaneTangents()
+std::vector<glm::vec4> CreatePlaneTangents()
 {
     return {
-        {1.0f, 0.0f, 0.0f},
-        {1.0f, 0.0f, 0.0f},
-        {1.0f, 0.0f, 0.0f},
-        {1.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f, -1.0f},
+        {1.0f, 0.0f, 0.0f, -1.0f},
+        {1.0f, 0.0f, 0.0f, -1.0f},
+        {1.0f, 0.0f, 0.0f, -1.0f},
     };
 }
 

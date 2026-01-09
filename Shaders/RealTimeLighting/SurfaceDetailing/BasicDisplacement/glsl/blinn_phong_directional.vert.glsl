@@ -11,7 +11,7 @@
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec2 inUV;
 layout(location = 2) in vec3 inNormal;
-layout(location = 3) in vec3 inTangent;
+layout(location = 3) in vec4 inTangent;
 
 layout(location = 0) out vec3 fragPos;
 layout(location = 1) out vec2 fragUv;
@@ -77,13 +77,13 @@ void main()
 
     // World-space normal and tangent
     vec3 N = normalize(normalMatrix * inNormal);
-    vec3 T = normalize(normalMatrix * inTangent);
+    vec3 T = normalize(normalMatrix * inTangent.xyz);
 
     // Orthonormalize T
     T = normalize(T - N * dot(N, T));
 
-    // Bitangent calculation
-    vec3 B = cross(N, T);
+    // Bitangent calculation (multiplying with bitangent sign value)
+    vec3 B = cross(N, T) * inTangent.w;
 
     fragTBN = mat3(T, B, N);
 

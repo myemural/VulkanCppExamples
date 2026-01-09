@@ -18,6 +18,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `SteepParallaxMapping`
 6. [Parallax Occlusion Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ParallaxOcclusionMapping)
    - `ParallaxOcclusionMapping`
+7. [Relief Parallax Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ReliefParallaxMapping)
+   - `ReliefParallaxMapping`
 
 ## Architecture of the Subsection
 

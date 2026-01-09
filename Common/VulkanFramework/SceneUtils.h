@@ -175,11 +175,14 @@ struct COMMON_API MeshInfo
                 [&](auto&& mat) {
                     using T = std::decay_t<decltype(mat)>;
 
+                    glm::mat4 modelMatrix = transform.GetModelMatrix();
+                    auto normalMatrix = glm::mat4(glm::transpose(glm::inverse(glm::mat3(modelMatrix))));
+
                     if constexpr (std::is_same_v<T, PhongMaterial>) {
                         // Phong material
                         MeshDataPhongGpu meshData{};
-                        meshData.model = transform.GetModelMatrix();
-                        meshData.normalMatrix = glm::transpose(glm::inverse(meshData.model));
+                        meshData.model = modelMatrix;
+                        meshData.normalMatrix = normalMatrix;
                         meshData.diffuseColor = glm::vec4(mat.diffuseColor, 1.0f);
                         meshData.specularColor = glm::vec4(mat.specularColor, 1.0f);
                         meshData.ambientStrength = mat.ambientStrength;
@@ -190,8 +193,8 @@ struct COMMON_API MeshInfo
                     } else if (std::is_same_v<T, PhongTexturedMaterial>) {
                         // Phong material with textures
                         MeshDataPhongTexturedGpu meshData{};
-                        meshData.model = transform.GetModelMatrix();
-                        meshData.normalMatrix = glm::transpose(glm::inverse(meshData.model));
+                        meshData.model = modelMatrix;
+                        meshData.normalMatrix = normalMatrix;
                         meshData.diffuseColor = glm::vec4(mat.diffuseColor, 1.0f);
                         meshData.specularColor = glm::vec4(mat.specularColor, 1.0f);
                         meshData.ambientStrength = mat.ambientStrength;
