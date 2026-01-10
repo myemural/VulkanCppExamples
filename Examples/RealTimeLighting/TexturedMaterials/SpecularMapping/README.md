@@ -43,11 +43,11 @@ In this example, specular map texture is used instead of specular color in the l
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type | Status             | Notes                                                                     |
+|-------------|--------------------|---------------------------------------------------------------------------|
+| GLSL        | :white_check_mark: |                                                                           |
+| HLSL        | :white_check_mark: | Get array length from constants is not working, using workaround for now. |
+| Slang       | :x:                | Will be implemented.                                                      |
 
 ## Theoretical Background
 

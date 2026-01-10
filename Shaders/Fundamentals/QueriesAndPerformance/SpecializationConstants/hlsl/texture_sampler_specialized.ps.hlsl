@@ -31,7 +31,7 @@ float4 main(PSInput input) : SV_Target
     }
     else if (MODE == 2)
     {
-        float4 textureColor = uImage.Sample(uSampler, input.uv);;
+        float4 textureColor = uImage.Sample(uSampler, input.uv);
         return lerp(float4(0.0, 0.0, 1.0, 1.0), textureColor, 0.5);
     }
 
