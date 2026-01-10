@@ -75,5 +75,6 @@ private:
 
     // Scene manager
     std::unique_ptr<common::vulkan_framework::SceneManager> scene_;
+    std::unique_ptr<common::vulkan_framework::MaterialManager> materialManager_;
 };
 } // namespace examples::real_time_lighting::textured_materials::basic_ambient_occlusion

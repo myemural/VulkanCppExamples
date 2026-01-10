@@ -41,19 +41,14 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::PebblesTexturePath,
                                                "Textures/Pebbles_027_BaseColor.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PebblesImage, "pebblesImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PebblesImageView, "pebblesImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::PebblesTexture, "pebblesTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::PebblesNormalTexturePath,
                                                "Textures/Pebbles_027_Normal.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PebblesNormalImage, "pebblesNormalImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PebblesNormalImageView, "pebblesNormalImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::PebblesNormalTexture, "pebblesNormalTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::PebblesHeightTexturePath,
                                                "Textures/Pebbles_027_Height.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PebblesHeightImage, "pebblesHeightImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PebblesHeightImageView, "pebblesHeightImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::PebblesHeightTexture, "pebblesHeightTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");

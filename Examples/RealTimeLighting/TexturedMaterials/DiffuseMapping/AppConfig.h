@@ -28,9 +28,8 @@ namespace AppConstants
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto MetalTexturePath = "AppConstants.MetalTexturePath";
-    constexpr auto MetalImage = "AppConstants.MetalImage";
-    constexpr auto MetalImageView = "AppConstants.MetalImageView";
     constexpr auto MetalTexture = "AppConstants.MetalTexture";
+    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";

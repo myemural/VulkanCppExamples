@@ -28,9 +28,8 @@ namespace AppConstants
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto FloorTexturePath = "AppConstants.FloorTexturePath";
-    constexpr auto FloorImage = "AppConstants.FloorImage";
-    constexpr auto FloorImageView = "AppConstants.FloorImageView";
     constexpr auto FloorTexture = "AppConstants.FloorTexture";
+    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";

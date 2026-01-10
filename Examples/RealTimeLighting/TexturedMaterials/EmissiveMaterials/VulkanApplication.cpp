@@ -15,7 +15,6 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
-#include "TextureLoader.h"
 #include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
@@ -91,12 +90,6 @@ void VulkanApplication::PreUpdate()
 
 void VulkanApplication::CreateInitialResources() const
 {
-    // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    const auto ceilingTextureHandler = textureLoader.Load(GetParamStr(AppConstants::CeilingTexturePath));
-    const auto ceilingEmissiveTextureHandler =
-            textureLoader.Load(GetParamStr(AppConstants::CeilingEmissiveTexturePath));
-
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
@@ -114,44 +107,25 @@ void VulkanApplication::CreateInitialResources() const
                                               {.Name = GetParamStr(AppConstants::LightObjectsFragmentShaderKey),
                                                .FileName = GetParamStr(AppConstants::LightObjectsFragmentShaderFile)}}};
 
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CeilingImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {ceilingTextureHandler.Width, ceilingTextureHandler.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CeilingImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::CeilingEmissiveImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_UNORM,
-            .Dimensions = {ceilingEmissiveTextureHandler.Width, ceilingEmissiveTextureHandler.Height, 1},
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CeilingEmissiveImageView),
-                                          .Format = VK_FORMAT_R8G8B8A8_UNORM}}},
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                          .Format = depthImageFormat_,
-                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}}};
+    resourceCreateInfo.Images = {ImageResourceCreateInfo{
+        .Name = GetParamStr(AppConstants::DepthImage),
+        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .Format = depthImageFormat_,
+        .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
+                                      .Format = depthImageFormat_,
+                                      .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                           .baseMipLevel = 0,
+                                                           .levelCount = 1,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 1}}}}};
 
     resourceCreateInfo.Samplers = {
         {.Name = GetParamStr(AppConstants::MainSampler),
          .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
-
-    // Set image resources
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CeilingImage), ceilingTextureHandler);
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CeilingEmissiveImage),
-                                    ceilingEmissiveTextureHandler);
 }
 
 void VulkanApplication::BuildScene()
@@ -162,48 +136,47 @@ void VulkanApplication::BuildScene()
     sceneConfig.AttributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.CurrentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
-    scene_ = std::make_unique<SceneManager>(*resources_, sceneConfig);
+    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_, ASSETS_DIR);
+    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
     scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
-    // Add texture registries
-    scene_->RegisterTexture(GetParamStr(AppConstants::CeilingTexture),
-                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::CeilingImage),
-                                                     GetParamStr(AppConstants::CeilingImageView)));
-    scene_->RegisterTexture(GetParamStr(AppConstants::CeilingEmissiveTexture),
-                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::CeilingEmissiveImage),
-                                                     GetParamStr(AppConstants::CeilingEmissiveImageView)));
+    // Materials
+    materialManager_->LoadTexture(GetParamStr(AppConstants::CeilingTexture), GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::CeilingTexturePath));
+    materialManager_->LoadTexture(GetParamStr(AppConstants::CeilingEmissiveTexture),
+                                  GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::CeilingEmissiveTexturePath), VK_FORMAT_R8G8B8A8_UNORM);
 
-    // Create materials
-    PhongTexturedMaterial material;
-    material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    material.shininess = GetParamFloat(AppSettings::Shininess);
-    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::CeilingTexture));
-    material.emissiveMap = scene_->GetTextureId(GetParamStr(AppConstants::CeilingEmissiveTexture));
+    const auto defaultMatName = GetParamStr(AppConstants::DefaultMaterial);
+    materialManager_->CreatePhongTexturedMaterial(defaultMatName)
+            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
+            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
+            .SetShininess(GetParamFloat(AppSettings::Shininess))
+            .SetDiffuseMap(GetParamStr(AppConstants::CeilingTexture))
+            .SetEmissiveMap(GetParamStr(AppConstants::CeilingEmissiveTexture))
+            .Build();
 
     // Add scene objects
     for (auto i = 0; i < 3; ++i) {
         const std::string rowStr = std::to_string(i);
         const auto zShift = static_cast<float>(i * 2 - 1);
         scene_->AddCube(GetParamStr(AppConstants::CubeObject) + rowStr, glm::vec3{-2.0f, -1.0f, zShift});
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::CubeObject) + rowStr, material);
+        scene_->SetMaterial(GetParamStr(AppConstants::CubeObject) + rowStr, defaultMatName);
         scene_->AddSphere(GetParamStr(AppConstants::SphereObject) + rowStr, glm::vec3{-0.5f, -1.0f, zShift});
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::SphereObject) + rowStr, material);
+        scene_->SetMaterial(GetParamStr(AppConstants::SphereObject) + rowStr, defaultMatName);
         scene_->AddCone(GetParamStr(AppConstants::ConeObject) + rowStr, glm::vec3{1.0f, -1.0f, zShift});
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::ConeObject) + rowStr, material);
+        scene_->SetMaterial(GetParamStr(AppConstants::ConeObject) + rowStr, defaultMatName);
         scene_->AddCylinder(GetParamStr(AppConstants::CylinderObject) + rowStr, glm::vec3{2.5f, -1.0f, zShift});
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::CylinderObject) + rowStr, material);
+        scene_->SetMaterial(GetParamStr(AppConstants::CylinderObject) + rowStr, defaultMatName);
     }
 
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObject), glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f),
                      glm::vec3{4.0f});
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::PlaneObject), material);
+    scene_->SetMaterial(GetParamStr(AppConstants::PlaneObject), defaultMatName);
 
     // Add light objects
     scene_->AddSphere(GetParamStr(AppConstants::LightObject), glm::vec3{0.0f}, glm::vec3{0.0f}, glm::vec3{0.3f});
@@ -213,7 +186,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = scene_->GetRegisteredTextureCount();
+    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .MaxSets = 2 + combinedImageSamplerCount,
         .PoolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
@@ -237,7 +210,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
                                VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = scene_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageBufferRequest;
     objectStorageBufferRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
@@ -371,7 +344,7 @@ void VulkanApplication::CreatePipelines()
     entry.offset = 0;
     entry.size = sizeof(uint32_t);
 
-    const std::uint32_t lightCount = scene_->GetRegisteredTextureCount();
+    const std::uint32_t lightCount = materialManager_->GetTextureCount();
 
     VkSpecializationInfo specInfo{};
     specInfo.mapEntryCount = 1;

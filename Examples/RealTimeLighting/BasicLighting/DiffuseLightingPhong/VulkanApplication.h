@@ -16,7 +16,6 @@
 #include "ApplicationBasicLighting.h"
 #include "PerspectiveCamera.h"
 #include "SceneManager.h"
-#include "TextureLoader.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -77,5 +76,6 @@ private:
 
     // Scene manager
     std::unique_ptr<common::vulkan_framework::SceneManager> scene_;
+    std::unique_ptr<common::vulkan_framework::MaterialManager> materialManager_;
 };
 } // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_phong

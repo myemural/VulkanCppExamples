@@ -41,25 +41,16 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternTexturePath, "Textures/Metal_Pattern_012_basecolor.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternImage, "metalPatternImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternImageView, "metalPatternImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternTexture, "metalPatternTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternNormalTexturePath, "Textures/Metal_Pattern_012_normal.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternNormalImage, "metalPatternNormalImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternNormalImageView, "metalPatternNormalImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternNormalTexture, "metalPatternNormalTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternHeightTexturePath, "Textures/Metal_Pattern_012_height.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternHeightImage, "metalPatternHeightImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternHeightImageView, "metalPatternHeightImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::MetalPatternHeightTexture, "metalPatternHeightTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SphereObject, "sphere");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ConeObject, "cone");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CylinderObject, "cylinder");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneObjectBottom, "planeBottom");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneObjectBack, "planeBack");
+    schema.RegisterImmutableParam<std::string>(AppConstants::SphereObject1, "sphere1");
+    schema.RegisterImmutableParam<std::string>(AppConstants::SphereObject2, "sphere2");
 
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);

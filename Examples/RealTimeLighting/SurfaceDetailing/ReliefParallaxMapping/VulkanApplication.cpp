@@ -15,7 +15,6 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
-#include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::real_time_lighting::surface_detailing::relief_parallax_mapping
@@ -90,12 +89,6 @@ void VulkanApplication::PreUpdate()
 
 void VulkanApplication::CreateInitialResources() const
 {
-    // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    const auto pebblesTextureHandler = textureLoader.Load(GetParamStr(AppConstants::PebblesTexturePath));
-    const auto pebblesNormalTextureHandler = textureLoader.Load(GetParamStr(AppConstants::PebblesNormalTexturePath));
-    const auto pebblesHeightTextureHandler = textureLoader.Load(GetParamStr(AppConstants::PebblesHeightTexturePath));
-
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
@@ -112,26 +105,6 @@ void VulkanApplication::CreateInitialResources() const
                                                .FileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)}}};
 
     resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::PebblesImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {pebblesTextureHandler.Width, pebblesTextureHandler.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::PebblesImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::PebblesNormalImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_UNORM,
-            .Dimensions = {pebblesNormalTextureHandler.Width, pebblesNormalTextureHandler.Height, 1},
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::PebblesNormalImageView),
-                                          .Format = VK_FORMAT_R8G8B8A8_UNORM}}},
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::PebblesHeightImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_UNORM,
-            .Dimensions = {pebblesHeightTextureHandler.Width, pebblesHeightTextureHandler.Height, 1},
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::PebblesHeightImageView),
-                                          .Format = VK_FORMAT_R8G8B8A8_UNORM}}},
         ImageResourceCreateInfo{
             .Name = GetParamStr(AppConstants::DepthImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -151,13 +124,6 @@ void VulkanApplication::CreateInitialResources() const
          .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
-
-    // Set image resources
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::PebblesImage), pebblesTextureHandler);
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::PebblesNormalImage),
-                                    pebblesNormalTextureHandler);
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::PebblesHeightImage),
-                                    pebblesHeightTextureHandler);
 }
 
 void VulkanApplication::BuildScene()
@@ -169,52 +135,50 @@ void VulkanApplication::BuildScene()
     sceneConfig.AttributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
     sceneConfig.CurrentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
-    scene_ = std::make_unique<SceneManager>(*resources_, sceneConfig);
+    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_, ASSETS_DIR);
+    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
     scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
-    // Add texture registries
-    scene_->RegisterTexture(GetParamStr(AppConstants::PebblesTexture),
-                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::PebblesImage),
-                                                     GetParamStr(AppConstants::PebblesImageView)));
-    scene_->RegisterTexture(GetParamStr(AppConstants::PebblesNormalTexture),
-                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::PebblesNormalImage),
-                                                     GetParamStr(AppConstants::PebblesNormalImageView)));
-    scene_->RegisterTexture(GetParamStr(AppConstants::PebblesHeightTexture),
-                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::PebblesHeightImage),
-                                                     GetParamStr(AppConstants::PebblesHeightImageView)));
+    // Materials
+    materialManager_->LoadTexture(GetParamStr(AppConstants::PebblesTexture), GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::PebblesTexturePath));
+    materialManager_->LoadTexture(GetParamStr(AppConstants::PebblesNormalTexture),
+                                  GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::PebblesNormalTexturePath), VK_FORMAT_R8G8B8A8_UNORM);
+    materialManager_->LoadTexture(GetParamStr(AppConstants::PebblesHeightTexture),
+                                  GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::PebblesHeightTexturePath), VK_FORMAT_R8G8B8A8_UNORM);
 
-    // Create materials
-    PhongTexturedMaterial material;
-    material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    material.shininess = GetParamFloat(AppSettings::Shininess);
-    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::PebblesTexture));
-    material.normalMap = scene_->GetTextureId(GetParamStr(AppConstants::PebblesNormalTexture));
-    material.heightMap = scene_->GetTextureId(GetParamStr(AppConstants::PebblesHeightTexture));
+    const auto defaultMatName = GetParamStr(AppConstants::DefaultMaterial);
+    materialManager_->CreatePhongTexturedMaterial(defaultMatName)
+            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
+            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
+            .SetShininess(GetParamFloat(AppSettings::Shininess))
+            .SetDiffuseMap(GetParamStr(AppConstants::PebblesTexture))
+            .SetNormalMap(GetParamStr(AppConstants::PebblesNormalTexture))
+            .SetHeightMap(GetParamStr(AppConstants::PebblesHeightTexture))
+            .Build();
 
     // Add scene objects
     scene_->AddCube(GetParamStr(AppConstants::CubeObject), glm::vec3{0.0f, -0.5f, 0.0f});
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::CubeObject), material);
+    scene_->SetMaterial(GetParamStr(AppConstants::CubeObject), defaultMatName);
     scene_->ScaleObject(GetParamStr(AppConstants::CubeObject), glm::vec3{2.0f});
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObjectBottom), glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f),
                      glm::vec3{4.0f});
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::PlaneObjectBottom), material);
+    scene_->SetMaterial(GetParamStr(AppConstants::PlaneObjectBottom), defaultMatName);
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObjectBack), glm::vec3{0.0f, 2.0f, -4.0f},
                      glm::vec3(90.0f, 0.0f, 0.0f), glm::vec3{4.0f});
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::PlaneObjectBack), material);
+    scene_->SetMaterial(GetParamStr(AppConstants::PlaneObjectBack), defaultMatName);
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = scene_->GetRegisteredTextureCount();
+    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .MaxSets = 2 + combinedImageSamplerCount,
         .PoolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
@@ -238,7 +202,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
                                VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = scene_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageBufferRequest;
     objectStorageBufferRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
@@ -372,7 +336,7 @@ void VulkanApplication::CreatePipelines()
     entry.offset = 0;
     entry.size = sizeof(uint32_t);
 
-    const std::uint32_t lightCount = scene_->GetRegisteredTextureCount();
+    const std::uint32_t lightCount = materialManager_->GetTextureCount();
 
     VkSpecializationInfo specInfo{};
     specInfo.mapEntryCount = 1;
@@ -501,4 +465,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_lighting::surface_detailing::parallax_occlusion_mapping
+} // namespace examples::real_time_lighting::surface_detailing::relief_parallax_mapping

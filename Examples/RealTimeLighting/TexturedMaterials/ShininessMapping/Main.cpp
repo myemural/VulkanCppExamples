@@ -44,17 +44,12 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::RockTexturePath, "Textures/Rock_Ore_001_COLOR.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::RockImage, "rockImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::RockImageView, "rockImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::RockTexture, "rockTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::RockSpecTexturePath, "Textures/Rock_Ore_001_SPEC.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::RockSpecImage, "rockSpecImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::RockSpecImageView, "rockSpecImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::RockSpecTexture, "rockSpecTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::RockRoughTexturePath, "Textures/Rock_Ore_001_ROUGH.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::RockRoughImage, "rockSpecImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::RockRoughImageView, "rockSpecImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::RockRoughTexture, "rockRoughTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");

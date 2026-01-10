@@ -15,8 +15,10 @@
 namespace common::vulkan_framework
 {
 
-SceneManager::SceneManager(ResourceManager& resourceManager, const SceneConfig& sceneConfig)
-    : resourceManager_{resourceManager}, sceneConfig_{sceneConfig}
+SceneManager::SceneManager(ResourceManager& resourceManager,
+                           MaterialManager& materialManager,
+                           const SceneConfig& sceneConfig)
+    : resourceManager_{resourceManager}, materialManager_(materialManager), sceneConfig_{sceneConfig}
 {
     ResourceDescriptor resourceCreateInfo;
 
@@ -243,38 +245,16 @@ void SceneManager::ScaleObject(const std::string& objectName, const glm::vec3& n
     UpdateMeshDataGpu(meshes_[objectName]);
 }
 
-void SceneManager::RegisterTexture(const std::string& textureName,
-                                   const std::shared_ptr<vulkan_wrapper::VulkanSampler>& sampler,
-                                   const std::shared_ptr<vulkan_wrapper::VulkanImageView>& imageView)
+void SceneManager::SetMaterial(const std::string& objectName, const std::string& materialName)
 {
-    TextureRegistry registry{};
-    registry.textureId = currentTextureId_++;
-    registry.sampler = sampler;
-    registry.imageView = imageView;
-
-    textureRegistries_[textureName] = registry;
-}
-
-TextureId SceneManager::GetTextureId(const std::string& textureName)
-{
-    return textureRegistries_[textureName].textureId;
-}
-
-std::uint32_t SceneManager::GetRegisteredTextureCount() const { return textureRegistries_.size(); }
-
-std::vector<VkDescriptorImageInfo> SceneManager::GetDescriptorImageInfos() const
-{
-    std::vector<VkDescriptorImageInfo> descriptorImageInfos;
-    descriptorImageInfos.resize(textureRegistries_.size());
-
-    for (const auto& textureRegistry: textureRegistries_) {
-        const auto [textureId, sampler, imageView] = textureRegistry.second;
-        descriptorImageInfos[textureId].sampler = sampler->GetHandle();
-        descriptorImageInfos[textureId].imageView = imageView->GetHandle();
-        descriptorImageInfos[textureId].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    auto& meshInfo = meshes_[objectName];
+    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
+        meshInfo.material = materialManager_.GetPhongMaterial(materialName);
+    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+        meshInfo.material = materialManager_.GetPhongTexturedMaterial(materialName);
     }
 
-    return descriptorImageInfos;
+    UpdateMeshDataGpu(meshInfo);
 }
 
 void SceneManager::AddPerspectiveCamera(

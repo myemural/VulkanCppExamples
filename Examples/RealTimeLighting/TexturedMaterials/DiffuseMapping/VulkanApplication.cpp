@@ -15,7 +15,6 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
-#include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::real_time_lighting::textured_materials::diffuse_mapping
@@ -90,10 +89,6 @@ void VulkanApplication::PreUpdate()
 
 void VulkanApplication::CreateInitialResources() const
 {
-    // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    const auto metalTextureHandler = textureLoader.Load(GetParamStr(AppConstants::MetalTexturePath));
-
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
@@ -110,12 +105,6 @@ void VulkanApplication::CreateInitialResources() const
                                                .FileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)}}};
 
     resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MetalImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {metalTextureHandler.Width, metalTextureHandler.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MetalImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
             .Name = GetParamStr(AppConstants::DepthImage),
             .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -135,9 +124,6 @@ void VulkanApplication::CreateInitialResources() const
          .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
-
-    // Set image resources
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MetalImage), metalTextureHandler);
 }
 
 void VulkanApplication::BuildScene()
@@ -148,37 +134,38 @@ void VulkanApplication::BuildScene()
     sceneConfig.AttributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.CurrentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
-    scene_ = std::make_unique<SceneManager>(*resources_, sceneConfig);
+    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_, ASSETS_DIR);
+    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
     scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
-    // Add texture registries
-    scene_->RegisterTexture(
-            GetParamStr(AppConstants::MetalTexture), resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-            resources_->GetImageView(GetParamStr(AppConstants::MetalImage), GetParamStr(AppConstants::MetalImageView)));
+    // Materials
+    materialManager_->LoadTexture(GetParamStr(AppConstants::MetalTexture), GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::MetalTexturePath));
 
-    // Create materials
-    PhongTexturedMaterial material;
-    material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    material.shininess = GetParamFloat(AppSettings::Shininess);
-    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::MetalTexture));
+    const auto defaultMatName = GetParamStr(AppConstants::DefaultMaterial);
+    materialManager_->CreatePhongTexturedMaterial(defaultMatName)
+            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
+            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
+            .SetShininess(GetParamFloat(AppSettings::Shininess))
+            .SetDiffuseMap(GetParamStr(AppConstants::MetalTexture))
+            .Build();
 
     // Add scene objects
     for (auto i = 0; i < 3; ++i) {
         const std::string rowStr = std::to_string(i);
         const auto zShift = static_cast<float>(i * 2 - 1);
         scene_->AddCube(GetParamStr(AppConstants::CubeObject) + rowStr, glm::vec3{-2.0f, -1.0f, zShift});
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::CubeObject) + rowStr, material);
+        scene_->SetMaterial(GetParamStr(AppConstants::CubeObject) + rowStr, defaultMatName);
         scene_->AddSphere(GetParamStr(AppConstants::SphereObject) + rowStr, glm::vec3{-0.5f, -1.0f, zShift});
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::SphereObject) + rowStr, material);
+        scene_->SetMaterial(GetParamStr(AppConstants::SphereObject) + rowStr, defaultMatName);
         scene_->AddCone(GetParamStr(AppConstants::ConeObject) + rowStr, glm::vec3{1.0f, -1.0f, zShift});
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::ConeObject) + rowStr, material);
+        scene_->SetMaterial(GetParamStr(AppConstants::ConeObject) + rowStr, defaultMatName);
         scene_->AddCylinder(GetParamStr(AppConstants::CylinderObject) + rowStr, glm::vec3{2.5f, -1.0f, zShift});
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::CylinderObject) + rowStr, material);
+        scene_->SetMaterial(GetParamStr(AppConstants::CylinderObject) + rowStr, defaultMatName);
     }
 
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObject), glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f),
@@ -188,7 +175,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = scene_->GetRegisteredTextureCount();
+    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .MaxSets = 2 + combinedImageSamplerCount,
         .PoolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
@@ -212,7 +199,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
                                VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = scene_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageBufferRequest;
     objectStorageBufferRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
@@ -346,7 +333,7 @@ void VulkanApplication::CreatePipelines()
     entry.offset = 0;
     entry.size = sizeof(uint32_t);
 
-    const std::uint32_t lightCount = scene_->GetRegisteredTextureCount();
+    const std::uint32_t lightCount = materialManager_->GetTextureCount();
 
     VkSpecializationInfo specInfo{};
     specInfo.mapEntryCount = 1;

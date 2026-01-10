@@ -38,7 +38,7 @@ protected:
     void PreUpdate() override;
 
 private:
-    void CreateInitialResources();
+    void CreateInitialResources() const;
 
     void BuildScene();
 
@@ -58,9 +58,6 @@ private:
 
     void ProcessInput() const;
 
-    // For mipmapping
-    std::uint32_t mipLevelCount_ = UINT32_MAX;
-
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> scenePipeline_;
@@ -78,5 +75,6 @@ private:
 
     // Scene manager
     std::unique_ptr<common::vulkan_framework::SceneManager> scene_;
+    std::unique_ptr<common::vulkan_framework::MaterialManager> materialManager_;
 };
 } // namespace examples::real_time_lighting::texture_sampling_and_filtering::gradient_based_mipmapping

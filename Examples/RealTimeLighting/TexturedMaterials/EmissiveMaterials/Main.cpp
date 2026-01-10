@@ -44,13 +44,10 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::CeilingTexturePath, "Textures/Ceiling_Gypsum_001_Base_Color.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingImage, "ceilingImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingImageView, "ceilingImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::CeilingTexture, "ceilingTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveTexturePath, "Textures/Ceiling_Gypsum_001_emissive.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveImage, "ceilingEmissiveImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveImageView, "ceilingEmissiveImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::CeilingEmissiveTexture, "ceilingEmissiveTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");

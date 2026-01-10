@@ -36,6 +36,7 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
     schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderKey, "fragScene");
     schema.RegisterImmutableParam<std::string>(AppConstants::LightObjectsFragmentShaderKey, "fragLight");
+    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::LightUniformBuffer, "lightUniformBuffer");
     schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");

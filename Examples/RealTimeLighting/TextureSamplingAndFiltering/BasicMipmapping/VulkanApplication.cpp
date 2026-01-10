@@ -15,8 +15,6 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
-#include "TextureLoader.h"
-#include "VulkanHelpers.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::real_time_lighting::texture_sampling_and_filtering::basic_mipmapping
@@ -92,13 +90,8 @@ void VulkanApplication::PreUpdate()
     ProcessInput();
 }
 
-void VulkanApplication::CreateInitialResources()
+void VulkanApplication::CreateInitialResources() const
 {
-    // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    const auto woodTextureHandler = textureLoader.Load(GetParamStr(AppConstants::WoodFloorTexturePath));
-    mipLevelCount_ = GetMipLevelCount(woodTextureHandler.Width, woodTextureHandler.Height);
-
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
@@ -114,31 +107,19 @@ void VulkanApplication::CreateInitialResources()
                                               {.Name = GetParamStr(AppConstants::SceneObjectsFragmentShaderKey),
                                                .FileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)}}};
 
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::WoodFloorImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_SRGB,
-            .Dimensions = {woodTextureHandler.Width, woodTextureHandler.Height, 1},
-            .MipLevels = mipLevelCount_,
-            .UsageFlags =
-                    VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::WoodFloorImageView),
-                                          .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                          .SubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevelCount_, 0, 1}}}},
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                          .Format = depthImageFormat_,
-                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}}};
+    resourceCreateInfo.Images = {ImageResourceCreateInfo{
+        .Name = GetParamStr(AppConstants::DepthImage),
+        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .Format = depthImageFormat_,
+        .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
+                                      .Format = depthImageFormat_,
+                                      .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                           .baseMipLevel = 0,
+                                                           .levelCount = 1,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 1}}}}};
 
     resourceCreateInfo.Samplers = {{.Name = GetParamStr(AppConstants::MainSampler),
                                     .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR,
@@ -149,12 +130,6 @@ void VulkanApplication::CreateInitialResources()
                                             .MaxLod = VK_LOD_CLAMP_NONE}}};
 
     CreateVulkanResources(resourceCreateInfo);
-
-    // Set image resources
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::WoodFloorImage), woodTextureHandler,
-                                    mipLevelCount_);
-    resources_->GenerateMipmaps(cmdPool_, queue_, GetParamStr(AppConstants::WoodFloorImage), woodTextureHandler,
-                                mipLevelCount_);
 }
 
 void VulkanApplication::BuildScene()
@@ -165,42 +140,42 @@ void VulkanApplication::BuildScene()
     sceneConfig.AttributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.CurrentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
-    scene_ = std::make_unique<SceneManager>(*resources_, sceneConfig);
+    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_, ASSETS_DIR);
+    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
     scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
-    // Add texture registries
-    scene_->RegisterTexture(GetParamStr(AppConstants::WoodFloorTexture),
-                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::WoodFloorImage),
-                                                     GetParamStr(AppConstants::WoodFloorImageView)));
+    // Materials
+    materialManager_->LoadTexture(GetParamStr(AppConstants::WoodFloorTexture), GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::WoodFloorTexturePath), VK_FORMAT_R8G8B8A8_SRGB, true);
 
-    // Create materials
-    PhongTexturedMaterial material;
-    material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    material.shininess = GetParamFloat(AppSettings::Shininess);
-    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::WoodFloorTexture));
+    const auto defaultMatName = GetParamStr(AppConstants::DefaultMaterial);
+    materialManager_->CreatePhongTexturedMaterial(defaultMatName)
+            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
+            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
+            .SetShininess(GetParamFloat(AppSettings::Shininess))
+            .SetDiffuseMap(GetParamStr(AppConstants::WoodFloorTexture))
+            .Build();
 
     // Add scene objects
     for (auto i = 0; i < modelPositions.size(); ++i) {
         const std::string indexStr = std::to_string(i);
         scene_->AddCube(GetParamStr(AppConstants::CubeObject) + indexStr, modelPositions[i]);
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::CubeObject) + indexStr, material);
+        scene_->SetMaterial(GetParamStr(AppConstants::CubeObject) + indexStr, defaultMatName);
     }
 
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObject), glm::vec3{0.0f, -7.0f, -8.0f}, glm::vec3(0.0f),
                      glm::vec3{6.0f});
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::PlaneObject), material);
+    scene_->SetMaterial(GetParamStr(AppConstants::PlaneObject), defaultMatName);
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = scene_->GetRegisteredTextureCount();
+    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .MaxSets = 2 + combinedImageSamplerCount,
         .PoolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
@@ -224,7 +199,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
                                VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = scene_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageBufferRequest;
     objectStorageBufferRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
@@ -358,7 +333,7 @@ void VulkanApplication::CreatePipelines()
     entry.offset = 0;
     entry.size = sizeof(uint32_t);
 
-    const std::uint32_t lightCount = scene_->GetRegisteredTextureCount();
+    const std::uint32_t lightCount = materialManager_->GetTextureCount();
 
     VkSpecializationInfo specInfo{};
     specInfo.mapEntryCount = 1;

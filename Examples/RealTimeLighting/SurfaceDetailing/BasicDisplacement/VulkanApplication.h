@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "ApplicationSurfaceDetailing.h"
+#include "MaterialManager.h"
 #include "PerspectiveCamera.h"
 #include "SceneManager.h"
 #include "VulkanCommandBuffer.h"
@@ -75,5 +76,6 @@ private:
 
     // Scene manager
     std::unique_ptr<common::vulkan_framework::SceneManager> scene_;
+    std::unique_ptr<common::vulkan_framework::MaterialManager> materialManager_;
 };
 } // namespace examples::real_time_lighting::surface_detailing::basic_displacement

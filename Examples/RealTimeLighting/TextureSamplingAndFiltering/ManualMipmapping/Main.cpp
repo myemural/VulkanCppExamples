@@ -42,9 +42,8 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::WoodFloorTexturePath,
                                                "Textures/Wood_Floor_015_basecolor.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::WoodFloorImage, "woodFloorImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::WoodFloorImageView, "woodFloorImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::WoodFloorTexture, "woodFloorTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");

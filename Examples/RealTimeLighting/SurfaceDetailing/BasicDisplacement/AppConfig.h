@@ -28,26 +28,17 @@ namespace AppConstants
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto MetalPatternTexturePath = "AppConstants.MetalPatternTexturePath";
-    constexpr auto MetalPatternImage = "AppConstants.MetalPatternImage";
-    constexpr auto MetalPatternImageView = "AppConstants.MetalPatternImageView";
     constexpr auto MetalPatternTexture = "AppConstants.MetalPatternTexture";
     constexpr auto MetalPatternNormalTexturePath = "AppConstants.MetalPatternNormalTexturePath";
-    constexpr auto MetalPatternNormalImage = "AppConstants.MetalPatternNormalImage";
-    constexpr auto MetalPatternNormalImageView = "AppConstants.MetalPatternNormalImageView";
     constexpr auto MetalPatternNormalTexture = "AppConstants.MetalPatternNormalTexture";
     constexpr auto MetalPatternHeightTexturePath = "AppConstants.MetalPatternHeightTexturePath";
     constexpr auto MetalPatternHeightTexture = "AppConstants.MetalPatternHeightTexture";
-    constexpr auto MetalPatternHeightImage = "AppConstants.MetalPatternHeightImage";
-    constexpr auto MetalPatternHeightImageView = "AppConstants.MetalPatternHeightImageView";
+    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";
-    constexpr auto CubeObject = "AppConstants.CubeObject";
-    constexpr auto SphereObject = "AppConstants.SphereObject";
-    constexpr auto ConeObject = "AppConstants.ConeObject";
-    constexpr auto CylinderObject = "AppConstants.CylinderObject";
-    constexpr auto PlaneObjectBottom = "AppConstants.PlaneObjectBottom";
-    constexpr auto PlaneObjectBack = "AppConstants.PlaneObjectBack";
+    constexpr auto SphereObject1 = "AppConstants.SphereObject1";
+    constexpr auto SphereObject2 = "AppConstants.SphereObject2";
 } // namespace AppConstants
 
 namespace AppSettings

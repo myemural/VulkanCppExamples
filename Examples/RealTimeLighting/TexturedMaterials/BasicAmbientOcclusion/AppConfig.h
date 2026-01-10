@@ -28,13 +28,10 @@ namespace AppConstants
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto WoodRoofTexturePath = "AppConstants.WoodRoofTexturePath";
-    constexpr auto WoodRoofImage = "AppConstants.WoodRoofImage";
-    constexpr auto WoodRoofImageView = "AppConstants.WoodRoofImageView";
     constexpr auto WoodRoofTexture = "AppConstants.WoodRoofTexture";
     constexpr auto WoodRoofAoTexturePath = "AppConstants.WoodRoofAoTexturePath";
-    constexpr auto WoodRoofAoImage = "AppConstants.WoodRoofAoImage";
-    constexpr auto WoodRoofAoImageView = "AppConstants.WoodRoofAoImageView";
     constexpr auto WoodRoofAoTexture = "AppConstants.WoodRoofAoTexture";
+    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";

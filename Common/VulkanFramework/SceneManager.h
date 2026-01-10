@@ -12,6 +12,7 @@
 #include <glm/vec3.hpp>
 
 #include "CameraBase.h"
+#include "MaterialManager.h"
 #include "ResourceManager.h"
 #include "SceneUtils.h"
 
@@ -25,13 +26,6 @@ enum class MaterialSystem
     PBR
 };
 
-struct TextureRegistry
-{
-    int32_t textureId;
-    std::shared_ptr<vulkan_wrapper::VulkanSampler> sampler;
-    std::shared_ptr<vulkan_wrapper::VulkanImageView> imageView;
-};
-
 struct COMMON_API SceneConfig
 {
     std::vector<std::pair<AttributeType, AccessorType>> AttributeLayout;
@@ -43,7 +37,9 @@ struct COMMON_API SceneConfig
 class COMMON_API SceneManager
 {
 public:
-    explicit SceneManager(ResourceManager& resourceManager, const SceneConfig& sceneConfig);
+    explicit SceneManager(ResourceManager& resourceManager,
+                          MaterialManager& materialManager,
+                          const SceneConfig& sceneConfig);
     ~SceneManager() = default;
 
     // Attributes and bindings
@@ -88,24 +84,7 @@ public:
     void ScaleObject(const std::string& objectName, const glm::vec3& newScale);
 
     // Change material
-    template<typename MaterialType>
-    void SetObjectMaterial(const std::string& objectName, const MaterialType& material)
-    {
-        auto& meshInfo = meshes_[objectName];
-        std::get<MaterialType>(meshInfo.material) = material;
-
-        UpdateMeshDataGpu(meshInfo);
-    }
-
-    void RegisterTexture(const std::string& textureName,
-                         const std::shared_ptr<vulkan_wrapper::VulkanSampler>& sampler,
-                         const std::shared_ptr<vulkan_wrapper::VulkanImageView>& imageView);
-
-    TextureId GetTextureId(const std::string& textureName);
-
-    [[nodiscard]] std::uint32_t GetRegisteredTextureCount() const;
-
-    [[nodiscard]] std::vector<VkDescriptorImageInfo> GetDescriptorImageInfos() const;
+    void SetMaterial(const std::string& objectName, const std::string& materialName);
 
     // Cameras
     void AddPerspectiveCamera(const std::string& cameraName,
@@ -169,8 +148,8 @@ private:
     std::uint32_t currentPrimStackCount_ = 0;
     std::uint32_t currentPrimSectorCount_ = 0;
 
-    std::unordered_map<std::string, TextureRegistry> textureRegistries_;
-    std::int32_t currentTextureId_ = 0;
+    // Material manager
+    MaterialManager& materialManager_;
 };
 
 } // namespace common::vulkan_framework

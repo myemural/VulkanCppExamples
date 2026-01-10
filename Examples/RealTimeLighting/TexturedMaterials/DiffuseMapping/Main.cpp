@@ -41,9 +41,8 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::MetalTexturePath, "Textures/Metal_Mesh_001_COLOR.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalImage, "metalImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MetalImageView, "metalImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::MetalTexture, "metalTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");

@@ -28,17 +28,12 @@ namespace AppConstants
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto PebblesTexturePath = "AppConstants.PebblesTexturePath";
-    constexpr auto PebblesImage = "AppConstants.PebblesImage";
-    constexpr auto PebblesImageView = "AppConstants.PebblesImageView";
     constexpr auto PebblesTexture = "AppConstants.PebblesTexture";
     constexpr auto PebblesNormalTexturePath = "AppConstants.PebblesNormalTexturePath";
-    constexpr auto PebblesNormalImage = "AppConstants.PebblesNormalImage";
-    constexpr auto PebblesNormalImageView = "AppConstants.PebblesNormalImageView";
     constexpr auto PebblesNormalTexture = "AppConstants.PebblesNormalTexture";
     constexpr auto PebblesHeightTexturePath = "AppConstants.PebblesHeightTexturePath";
-    constexpr auto PebblesHeightImage = "AppConstants.PebblesHeightImage";
-    constexpr auto PebblesHeightImageView = "AppConstants.PebblesHeightImageView";
     constexpr auto PebblesHeightTexture = "AppConstants.PebblesHeightTexture";
+    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";

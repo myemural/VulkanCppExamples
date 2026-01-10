@@ -142,35 +142,40 @@ void VulkanApplication::BuildScene()
     sceneConfig.AttributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
     sceneConfig.AttributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
 
-    scene_ = std::make_unique<SceneManager>(*resources_, sceneConfig);
+    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_, ASSETS_DIR);
+    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
     scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
-    // Create materials
-    PhongMaterial material;
-    material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    material.shininess = GetParamFloat(AppSettings::Shininess);
+    // Materials
+    const auto defaultMatName = GetParamStr(AppConstants::DefaultMaterial);
+    materialManager_->CreatePhongMaterial(defaultMatName)
+            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
+            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
+            .SetShininess(GetParamFloat(AppSettings::Shininess))
+            .Build();
+
+    auto& defaultMaterial = materialManager_->GetPhongMaterial(defaultMatName);
 
     // Add scene objects
     for (auto i = 0; i < 3; ++i) {
         const std::string rowStr = std::to_string(i);
         const auto zShift = static_cast<float>(i * 2 - 1);
         scene_->AddCube(GetParamStr(AppConstants::CubeObject) + rowStr, glm::vec3{-2.0f, -1.0f, zShift});
-        material.diffuseColor = GenerateRandomColor(0.2f);
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::CubeObject) + rowStr, material);
+        defaultMaterial.diffuseColor = GenerateRandomColor(0.2f);
+        scene_->SetMaterial(GetParamStr(AppConstants::CubeObject) + rowStr, defaultMatName);
         scene_->AddSphere(GetParamStr(AppConstants::SphereObject) + rowStr, glm::vec3{-0.5f, -1.0f, zShift});
-        material.diffuseColor = GenerateRandomColor(0.2f);
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::SphereObject) + rowStr, material);
+        defaultMaterial.diffuseColor = GenerateRandomColor(0.2f);
+        scene_->SetMaterial(GetParamStr(AppConstants::SphereObject) + rowStr, defaultMatName);
         scene_->AddCone(GetParamStr(AppConstants::ConeObject) + rowStr, glm::vec3{1.0f, -1.0f, zShift});
-        material.diffuseColor = GenerateRandomColor(0.2f);
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::ConeObject) + rowStr, material);
+        defaultMaterial.diffuseColor = GenerateRandomColor(0.2f);
+        scene_->SetMaterial(GetParamStr(AppConstants::ConeObject) + rowStr, defaultMatName);
         scene_->AddCylinder(GetParamStr(AppConstants::CylinderObject) + rowStr, glm::vec3{2.5f, -1.0f, zShift});
-        material.diffuseColor = GenerateRandomColor(0.2f);
-        scene_->SetObjectMaterial(GetParamStr(AppConstants::CylinderObject) + rowStr, material);
+        defaultMaterial.diffuseColor = GenerateRandomColor(0.2f);
+        scene_->SetMaterial(GetParamStr(AppConstants::CylinderObject) + rowStr, defaultMatName);
     }
     scene_->AddPlane(GetParamStr(AppConstants::PlaneObject), glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f),
                      glm::vec3{4.0f});

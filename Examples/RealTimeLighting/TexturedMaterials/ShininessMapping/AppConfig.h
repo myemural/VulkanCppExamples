@@ -30,17 +30,12 @@ namespace AppConstants
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto RockTexturePath = "AppConstants.RockTexturePath";
-    constexpr auto RockImage = "AppConstants.RockImage";
-    constexpr auto RockImageView = "AppConstants.RockImageView";
     constexpr auto RockTexture = "AppConstants.RockTexture";
     constexpr auto RockSpecTexturePath = "AppConstants.RockSpecTexturePath";
-    constexpr auto RockSpecImage = "AppConstants.RockSpecImage";
-    constexpr auto RockSpecImageView = "AppConstants.RockSpecImageView";
     constexpr auto RockSpecTexture = "AppConstants.RockSpecTexture";
     constexpr auto RockRoughTexturePath = "AppConstants.RockRoughTexturePath";
-    constexpr auto RockRoughImage = "AppConstants.RockRoughImage";
-    constexpr auto RockRoughImageView = "AppConstants.RockRoughImageView";
     constexpr auto RockRoughTexture = "AppConstants.RockRoughTexture";
+    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";

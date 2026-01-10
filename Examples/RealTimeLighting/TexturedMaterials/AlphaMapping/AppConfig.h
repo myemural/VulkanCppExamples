@@ -30,13 +30,10 @@ namespace AppConstants
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto ConcreteTexturePath = "AppConstants.ConcreteTexturePath";
-    constexpr auto ConcreteImage = "AppConstants.ConcreteImage";
-    constexpr auto ConcreteImageView = "AppConstants.ConcreteImageView";
     constexpr auto ConcreteTexture = "AppConstants.ConcreteTexture";
     constexpr auto ConcreteOpacityTexturePath = "AppConstants.ConcreteOpacityTexturePath";
-    constexpr auto ConcreteOpacityImage = "AppConstants.ConcreteOpacityImage";
-    constexpr auto ConcreteOpacityImageView = "AppConstants.ConcreteOpacityImageView";
     constexpr auto ConcreteOpacityTexture = "AppConstants.ConcreteOpacityTexture";
+    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";

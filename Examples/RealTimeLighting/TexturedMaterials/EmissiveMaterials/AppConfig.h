@@ -30,13 +30,10 @@ namespace AppConstants
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto CeilingTexturePath = "AppConstants.CeilingTexturePath";
-    constexpr auto CeilingImage = "AppConstants.CeilingImage";
-    constexpr auto CeilingImageView = "AppConstants.CeilingImageView";
     constexpr auto CeilingTexture = "AppConstants.CeilingTexture";
     constexpr auto CeilingEmissiveTexturePath = "AppConstants.CeilingEmissiveTexturePath";
-    constexpr auto CeilingEmissiveImage = "AppConstants.CeilingEmissiveImage";
-    constexpr auto CeilingEmissiveImageView = "AppConstants.CeilingEmissiveImageView";
     constexpr auto CeilingEmissiveTexture = "AppConstants.CeilingEmissiveTexture";
+    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";

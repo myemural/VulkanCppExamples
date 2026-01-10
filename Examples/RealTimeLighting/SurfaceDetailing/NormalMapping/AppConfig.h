@@ -28,13 +28,10 @@ namespace AppConstants
     constexpr auto MainDescSet = "AppConstants.MainDescSet";
     constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
     constexpr auto WallStoneTexturePath = "AppConstants.WallStoneTexturePath";
-    constexpr auto WallStoneImage = "AppConstants.WallStoneImage";
-    constexpr auto WallStoneImageView = "AppConstants.WallStoneImageView";
     constexpr auto WallStoneTexture = "AppConstants.WallStoneTexture";
     constexpr auto WallStoneNormalTexturePath = "AppConstants.WallStoneNormalTexturePath";
-    constexpr auto WallStoneNormalImage = "AppConstants.WallStoneNormalImage";
-    constexpr auto WallStoneNormalImageView = "AppConstants.WallStoneNormalImageView";
     constexpr auto WallStoneNormalTexture = "AppConstants.WallStoneNormalTexture";
+    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
 
     // Objects
     constexpr auto CameraObject = "AppConstants.CameraObject";

@@ -15,7 +15,6 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
-#include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::real_time_lighting::surface_detailing::basic_displacement
@@ -90,14 +89,6 @@ void VulkanApplication::PreUpdate()
 
 void VulkanApplication::CreateInitialResources() const
 {
-    // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    const auto metalPatternTextureHandler = textureLoader.Load(GetParamStr(AppConstants::MetalPatternTexturePath));
-    const auto metalPatternNormalTextureHandler =
-            textureLoader.Load(GetParamStr(AppConstants::MetalPatternNormalTexturePath));
-    const auto metalPatternHeightTextureHandler =
-            textureLoader.Load(GetParamStr(AppConstants::MetalPatternHeightTexturePath));
-
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
@@ -113,55 +104,25 @@ void VulkanApplication::CreateInitialResources() const
                                               {.Name = GetParamStr(AppConstants::SceneObjectsFragmentShaderKey),
                                                .FileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)}}};
 
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::MetalPatternImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_SRGB,
-            .Dimensions = {metalPatternTextureHandler.Width, metalPatternTextureHandler.Height, 1},
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MetalPatternImageView),
-                                          .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::MetalPatternNormalImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_UNORM,
-            .Dimensions = {metalPatternNormalTextureHandler.Width, metalPatternNormalTextureHandler.Height, 1},
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MetalPatternNormalImageView),
-                                          .Format = VK_FORMAT_R8G8B8A8_UNORM}}},
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::MetalPatternHeightImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_UNORM,
-            .Dimensions = {metalPatternHeightTextureHandler.Width, metalPatternHeightTextureHandler.Height, 1},
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MetalPatternHeightImageView),
-                                          .Format = VK_FORMAT_R8G8B8A8_UNORM}}},
-        ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                          .Format = depthImageFormat_,
-                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}}};
+    resourceCreateInfo.Images = {ImageResourceCreateInfo{
+        .Name = GetParamStr(AppConstants::DepthImage),
+        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .Format = depthImageFormat_,
+        .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
+                                      .Format = depthImageFormat_,
+                                      .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                           .baseMipLevel = 0,
+                                                           .levelCount = 1,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 1}}}}};
 
     resourceCreateInfo.Samplers = {
         {.Name = GetParamStr(AppConstants::MainSampler),
          .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
-
-    // Set image resources
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MetalPatternImage),
-                                    metalPatternTextureHandler);
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MetalPatternNormalImage),
-                                    metalPatternNormalTextureHandler);
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MetalPatternHeightImage),
-                                    metalPatternHeightTextureHandler);
 }
 
 void VulkanApplication::BuildScene()
@@ -175,49 +136,48 @@ void VulkanApplication::BuildScene()
     sceneConfig.PrimitiveStackCount = 128U;
     sceneConfig.PrimitiveSectorCount = 128U;
 
-    scene_ = std::make_unique<SceneManager>(*resources_, sceneConfig);
+    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_, ASSETS_DIR);
+    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
     scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
-    // Add texture registries
-    scene_->RegisterTexture(GetParamStr(AppConstants::MetalPatternTexture),
-                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::MetalPatternImage),
-                                                     GetParamStr(AppConstants::MetalPatternImageView)));
-    scene_->RegisterTexture(GetParamStr(AppConstants::MetalPatternNormalTexture),
-                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::MetalPatternNormalImage),
-                                                     GetParamStr(AppConstants::MetalPatternNormalImageView)));
-    scene_->RegisterTexture(GetParamStr(AppConstants::MetalPatternHeightTexture),
-                            resources_->GetSampler(GetParamStr(AppConstants::MainSampler)),
-                            resources_->GetImageView(GetParamStr(AppConstants::MetalPatternHeightImage),
-                                                     GetParamStr(AppConstants::MetalPatternHeightImageView)));
+    // Materials
+    materialManager_->LoadTexture(GetParamStr(AppConstants::MetalPatternTexture),
+                                  GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::MetalPatternTexturePath));
+    materialManager_->LoadTexture(GetParamStr(AppConstants::MetalPatternNormalTexture),
+                                  GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::MetalPatternNormalTexturePath), VK_FORMAT_R8G8B8A8_UNORM);
+    materialManager_->LoadTexture(GetParamStr(AppConstants::MetalPatternHeightTexture),
+                                  GetParamStr(AppConstants::MainSampler),
+                                  GetParamStr(AppConstants::MetalPatternHeightTexturePath), VK_FORMAT_R8G8B8A8_UNORM);
 
-    // Create materials
-    PhongTexturedMaterial material;
-    material.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    material.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    material.shininess = GetParamFloat(AppSettings::Shininess);
-    material.diffuseMap = scene_->GetTextureId(GetParamStr(AppConstants::MetalPatternTexture));
-    material.normalMap = scene_->GetTextureId(GetParamStr(AppConstants::MetalPatternNormalTexture));
-    material.heightMap = scene_->GetTextureId(GetParamStr(AppConstants::MetalPatternHeightTexture));
+    const auto defaultMatName = GetParamStr(AppConstants::DefaultMaterial);
+    materialManager_->CreatePhongTexturedMaterial(defaultMatName)
+            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
+            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
+            .SetShininess(GetParamFloat(AppSettings::Shininess))
+            .SetDiffuseMap(GetParamStr(AppConstants::MetalPatternTexture))
+            .SetNormalMap(GetParamStr(AppConstants::MetalPatternNormalTexture))
+            .SetHeightMap(GetParamStr(AppConstants::MetalPatternHeightTexture))
+            .Build();
 
     // Add scene objects
-    scene_->AddSphere(GetParamStr(AppConstants::CubeObject), glm::vec3{-2.0f, -0.5f, 0.0f});
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::CubeObject), material);
-    scene_->ScaleObject(GetParamStr(AppConstants::CubeObject), glm::vec3{2.0f});
-    scene_->AddSphere(GetParamStr(AppConstants::SphereObject), glm::vec3{2.0f, -0.5f, 0.0f});
-    scene_->SetObjectMaterial(GetParamStr(AppConstants::SphereObject), material);
-    scene_->ScaleObject(GetParamStr(AppConstants::SphereObject), glm::vec3{2.0f});
+    scene_->AddSphere(GetParamStr(AppConstants::SphereObject1), glm::vec3{-2.0f, -0.5f, 0.0f});
+    scene_->SetMaterial(GetParamStr(AppConstants::SphereObject1), defaultMatName);
+    scene_->ScaleObject(GetParamStr(AppConstants::SphereObject1), glm::vec3{2.0f});
+    scene_->AddSphere(GetParamStr(AppConstants::SphereObject2), glm::vec3{2.0f, -0.5f, 0.0f});
+    scene_->SetMaterial(GetParamStr(AppConstants::SphereObject2), defaultMatName);
+    scene_->ScaleObject(GetParamStr(AppConstants::SphereObject2), glm::vec3{2.0f});
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = scene_->GetRegisteredTextureCount();
+    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .MaxSets = 2 + combinedImageSamplerCount,
         .PoolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
@@ -241,7 +201,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
                                VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = scene_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageBufferRequest;
     objectStorageBufferRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
@@ -375,7 +335,7 @@ void VulkanApplication::CreatePipelines()
     entry.offset = 0;
     entry.size = sizeof(uint32_t);
 
-    const std::uint32_t lightCount = scene_->GetRegisteredTextureCount();
+    const std::uint32_t lightCount = materialManager_->GetTextureCount();
 
     VkSpecializationInfo specInfo{};
     specInfo.mapEntryCount = 1;

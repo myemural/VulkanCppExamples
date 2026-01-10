@@ -42,14 +42,11 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
     schema.RegisterImmutableParam<std::string>(AppConstants::WoodRoofTexturePath,
                                                "Textures/Wood_Roof_Shingles_002_basecolor.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::WoodRoofImage, "woodRoofImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::WoodRoofImageView, "woodRoofImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::WoodRoofTexture, "woodRoofTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::WoodRoofAoTexturePath,
                                                "Textures/Wood_Roof_Shingles_002_ambientOcclusion.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::WoodRoofAoImage, "woodRoofAoImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::WoodRoofAoImageView, "woodRoofAoImageView");
     schema.RegisterImmutableParam<std::string>(AppConstants::WoodRoofAoTexture, "woodRoofAoTexture");
+    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
 
     schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");
