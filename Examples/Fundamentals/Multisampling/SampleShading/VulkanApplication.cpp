@@ -105,8 +105,8 @@ void VulkanApplication::InitInputSystem()
     window_->DisableCursor();
 
     window_->OnMouseMove([&](const MouseMoveEvent& event) {
-        const auto xPos = static_cast<float>(event.X);
-        const auto yPos = static_cast<float>(event.Y);
+        const auto xPos = static_cast<float>(event.x);
+        const auto yPos = static_cast<float>(event.y);
 
         if (firstMouseTriggered_) {
             lastX_ = xPos;
@@ -145,78 +145,78 @@ void VulkanApplication::CreateResources()
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
 
-    resourceCreateInfo.Buffers = {
+    resourceCreateInfo.buffers = {
         {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
-                                  .ShaderType = SHADER_TYPE,
-                                  .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
+                                  .shaderType = SHADER_TYPE,
+                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {.MaxSets = 1,
-                                      .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
-                                      .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+    resourceCreateInfo.descriptors = {.maxSets = 1,
+                                      .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
+                                      .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                   .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
                                                                  VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-                                      .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                                                          .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+                                      .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                          .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
 
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CrateImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CrateImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}}};
+    resourceCreateInfo.images = {
+        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::CrateImage),
+                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                .format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CrateImageView),
+                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}}};
 
     const auto surfaceFormat = physicalDevice_->GetSurfaceFormat(surface_->GetHandle(), VK_FORMAT_B8G8R8A8_SRGB,
                                                                  VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
 
     // Create multisample supported color and depth images
     for (auto i = 0; i < swapChainImageViews_.size(); ++i) {
-        resourceCreateInfo.Images->emplace_back(ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::ResolveImage) + "_" + std::to_string(i),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = surfaceFormat->format,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .Samples = maxSampleCount_,
-            .UsageFlags = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-            .Views = {
-                ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::ResolveImageView) + "_" + std::to_string(i),
-                                    .Format = surfaceFormat->format,
-                                    .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        resourceCreateInfo.images->emplace_back(ImageResourceCreateInfo{
+            .name = GetParamStr(AppConstants::ResolveImage) + "_" + std::to_string(i),
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = surfaceFormat->format,
+            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .samples = maxSampleCount_,
+            .usageFlags = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+            .views = {
+                ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::ResolveImageView) + "_" + std::to_string(i),
+                                    .format = surfaceFormat->format,
+                                    .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                                                          .baseMipLevel = 0,
                                                          .levelCount = 1,
                                                          .baseArrayLayer = 0,
                                                          .layerCount = 1}}}});
 
-        resourceCreateInfo.Images->emplace_back(ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage) + "_" + std::to_string(i),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .Samples = maxSampleCount_,
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {
-                ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView) + "_" + std::to_string(i),
-                                    .Format = depthImageFormat_,
-                                    .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+        resourceCreateInfo.images->emplace_back(ImageResourceCreateInfo{
+            .name = GetParamStr(AppConstants::DepthImage) + "_" + std::to_string(i),
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = depthImageFormat_,
+            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .samples = maxSampleCount_,
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+            .views = {
+                ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView) + "_" + std::to_string(i),
+                                    .format = depthImageFormat_,
+                                    .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                          .baseMipLevel = 0,
                                                          .levelCount = 1,
                                                          .baseArrayLayer = 0,
                                                          .layerCount = 1}}}});
     }
 
-    resourceCreateInfo.Samplers = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.samplers = {
+        {.name = GetParamStr(AppConstants::MainSampler),
+         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
@@ -399,12 +399,12 @@ void VulkanApplication::UpdateDescriptorSets() const
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
-    samplerUpdateRequest.BindingIndex = 0;
-    samplerUpdateRequest.Images = imageSamplerInfos;
-    samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.bindingIndex = 0;
+    samplerUpdateRequest.images = imageSamplerInfos;
+    samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.imageWriteRequests = {samplerUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }

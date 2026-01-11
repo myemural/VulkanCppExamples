@@ -14,9 +14,9 @@
 
 #include <glm/glm.hpp>
 
+#include "MathUtils.h"
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
-#include "VulkanHelpers.h"
 
 namespace examples::fundamentals::queries_and_performance::dynamic_uniform_buffer
 {
@@ -34,7 +34,7 @@ struct ObjectUbo
 };
 
 // Model position vectors
-inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
+inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
         NUM_CUBES, glm::vec3(-5.0f, -3.0f, -12.0f), glm::vec3(5.0f, 3.0f, -2.0f), 1.5f);
 
 } // namespace examples::fundamentals::queries_and_performance::dynamic_uniform_buffer

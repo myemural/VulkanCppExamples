@@ -23,55 +23,51 @@ namespace common::utility
 
 struct COMMON_API GltfPrimitiveAttrib
 {
-    std::uint32_t VertexCount;
-    std::vector<glm::vec3> Positions;
-    std::vector<glm::vec3> Normals;
-    std::vector<glm::vec4> Tangents;
-    std::vector<glm::vec2> TexCoords0;
-    std::vector<glm::vec2> TexCoords1;
-    std::vector<glm::vec4> Colors0;
-    std::vector<glm::vec4> Colors1;
+    std::uint32_t vertexCount;
+    std::vector<glm::vec3> positions;
+    std::vector<glm::vec3> normals;
+    std::vector<glm::vec4> tangents;
+    std::vector<glm::vec2> texCoords0;
+    std::vector<glm::vec2> texCoords1;
+    std::vector<glm::vec4> colors0;
+    std::vector<glm::vec4> colors1;
     /// TODO: Joints and weights will be added later
 };
 
 struct COMMON_API GltfMaterial
 {
-    std::string Name;
     struct PbrMetallicRoughness
     {
-        int BaseColorTextureIndex = -1;
-    } PbrMetallicRoughness;
+        int baseColorTextureIndex = -1;
+    };
+
+    std::string name;
+    PbrMetallicRoughness pbrMetallicRoughness;
 };
 
 struct COMMON_API GltfMesh
 {
-    std::string Name;
-    GltfPrimitiveAttrib Attributes;
-    std::vector<std::uint16_t> Indices;
-    int MaterialIndex = -1;
+    std::string name;
+    GltfPrimitiveAttrib attributes;
+    std::vector<std::uint16_t> indices;
+    int materialIndex = -1;
 
     template<typename VertexType>
     std::vector<VertexType> GetVerticesAs();
 
-    [[nodiscard]] std::string GetVertexBufferName() const
-    {
-        return Name + "_VertexBuffer";
-    }
+    [[nodiscard]] std::string GetVertexBufferName() const { return name + "_VertexBuffer"; }
 
-    [[nodiscard]] std::string GetIndexBufferName() const
-    {
-        return Name + "_IndexBuffer";
-    }
+    [[nodiscard]] std::string GetIndexBufferName() const { return name + "_IndexBuffer"; }
 };
 
 struct COMMON_API GltfNode
 {
-    std::uint32_t ParentIndex = UINT32_MAX;
-    std::vector<std::uint32_t> ChildIndices;
-    std::uint32_t MeshIndex = UINT32_MAX;
-    std::uint32_t CameraIndex = UINT32_MAX;
-    glm::mat4 LocalTransform = glm::mat4(1.0f);
-    glm::mat4 WorldTransform = glm::mat4(1.0f);
+    std::uint32_t parentIndex = UINT32_MAX;
+    std::vector<std::uint32_t> childIndices;
+    std::uint32_t meshIndex = UINT32_MAX;
+    std::uint32_t cameraIndex = UINT32_MAX;
+    glm::mat4 localTransform = glm::mat4(1.0f);
+    glm::mat4 worldTransform = glm::mat4(1.0f);
 };
 
 enum class GltfCameraType
@@ -82,45 +78,48 @@ enum class GltfCameraType
 
 struct COMMON_API GltfCamera
 {
-    std::string Name;
-    GltfCameraType Type;
+    std::string name;
+    GltfCameraType type;
 
     struct Perspective
     {
-        float AspectRatio;
-        float Fov;
-        float Near;
-        float Far;
-    } PerspectiveFeatures;
+        float aspectRatio;
+        float fov;
+        float near;
+        float far;
+    };
 
     struct Orthographic
     {
-        float AspectRatio;
-        float Size;
-        float Near;
-        float Far;
-    } OrthographicFeatures;
+        float aspectRatio;
+        float size;
+        float near;
+        float far;
+    };
+
+    Perspective perspectiveFeatures;
+    Orthographic orthographicFeatures;
 };
 
 struct COMMON_API GltfModelHandler
 {
-    std::string Name;
-    std::uint32_t CurrentSceneIndex = UINT32_MAX;
-    std::vector<GltfCamera> Cameras;
-    std::vector<GltfNode> Nodes;
-    std::vector<GltfMesh> Meshes;
-    std::vector<GltfMaterial> Materials;
-    std::vector<TextureHandler> Textures;
+    std::string name;
+    std::uint32_t currentSceneIndex = UINT32_MAX;
+    std::vector<GltfCamera> cameras;
+    std::vector<GltfNode> nodes;
+    std::vector<GltfMesh> meshes;
+    std::vector<GltfMaterial> materials;
+    std::vector<TextureHandler> textures;
 };
 
 template<>
 inline std::vector<VertexPos3> GltfMesh::GetVerticesAs()
 {
-    std::vector<VertexPos3> result{Attributes.Positions.size()};
+    std::vector<VertexPos3> result{attributes.positions.size()};
 
-    for (auto i = 0U; i < Attributes.Positions.size(); ++i) {
+    for (auto i = 0U; i < attributes.positions.size(); ++i) {
         VertexPos3 current{};
-        current.Position.data = Attributes.Positions[i];
+        current.Position.data = attributes.positions[i];
         result[i] = current;
     }
 
@@ -130,13 +129,13 @@ inline std::vector<VertexPos3> GltfMesh::GetVerticesAs()
 template<>
 inline std::vector<VertexPos3Uv2> GltfMesh::GetVerticesAs()
 {
-    std::vector<VertexPos3Uv2> result{Attributes.Positions.size()};
+    std::vector<VertexPos3Uv2> result{attributes.positions.size()};
 
-    for (auto i = 0U; i < Attributes.Positions.size(); ++i) {
+    for (auto i = 0U; i < attributes.positions.size(); ++i) {
         VertexPos3Uv2 current{};
-        current.Position.data = Attributes.Positions[i];
-        current.Uv.data.x = Attributes.TexCoords0[i].x;
-        current.Uv.data.y = Attributes.TexCoords0[i].y;
+        current.Position.data = attributes.positions[i];
+        current.Uv.data.x = attributes.texCoords0[i].x;
+        current.Uv.data.y = attributes.texCoords0[i].y;
         result[i] = current;
     }
 

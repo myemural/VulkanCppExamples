@@ -12,9 +12,9 @@
 
 #include <algorithm>
 #include <cmath>
-#include <random>
 
 #include <glm/glm.hpp>
+
 #include <vulkan/vulkan_core.h>
 
 namespace common::vulkan_framework
@@ -146,105 +146,6 @@ inline VkRect2D GetAnimatedScissorRect(const float time, const float viewportWid
     rect.extent.height = static_cast<std::uint32_t>(scissorHeight);
 
     return rect;
-}
-
-/**
- * @brief Generates random position for certain amount of objects within specific scene bounds and min distance.
- * @param count Number of objects.
- * @param minBounds Minimum bounds of the scene.
- * @param maxBounds Maximum bounds of the scene.
- * @param minDistance Minimum distance between objects.
- * @return Random positions for the objects.
- */
-inline std::vector<glm::vec3> GenerateRandomPositions(const size_t count,
-                                                      const glm::vec3 minBounds,
-                                                      const glm::vec3 maxBounds,
-                                                      const float minDistance = 1.5f)
-{
-    std::vector<glm::vec3> positions;
-    positions.reserve(count);
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
-    std::uniform_real_distribution distX(minBounds.x, maxBounds.x);
-    std::uniform_real_distribution distY(minBounds.y, maxBounds.y);
-    std::uniform_real_distribution distZ(minBounds.z, maxBounds.z);
-
-    for (size_t i = 0; i < count; ++i) {
-        glm::vec3 pos;
-        bool valid;
-        int currentAttemptCount = 0;
-
-        do {
-            pos = glm::vec3(distX(gen), distY(gen), distZ(gen));
-            valid = true;
-            for (const auto& existingPos: positions) {
-                if (glm::distance(pos, existingPos) < minDistance) {
-                    valid = false;
-                    break;
-                }
-            }
-
-            // To avoid infinite loops we should add attempt count and max number of attempts
-            if (constexpr int maxNumberOfAttempts = 1000; ++currentAttemptCount > maxNumberOfAttempts) {
-                break;
-            }
-        } while (!valid);
-        positions.push_back(pos);
-    }
-
-    return positions;
-}
-
-/**
- * @brief Generates and returns random color value between min and max values. Alpha is not included.
- * @param minValue Minimum value per color component. Default is 0.
- * @param maxValue Maximum value for color component. Default is 1.
- * @return Returns random color value.
- */
-inline glm::vec3 GenerateRandomColor(const float minValue = 0.0f, const float maxValue = 1.0f)
-{
-    std::mt19937 generator{std::random_device{}()};
-    std::uniform_real_distribution distribution(minValue, maxValue);
-
-    return glm::vec3{distribution(generator), distribution(generator), distribution(generator)};
-}
-
-/**
- * @brief A concept type that encompasses both integers and floating-point numbers.
- */
-template<typename T>
-concept Numeric = std::integral<T> || std::floating_point<T>;
-
-/**
- * @brief Generates and returns random color value between min and max values. Alpha is not included.
- * @param minValue Minimum value. Default is 0.
- * @param maxValue Maximum value for color component. Default is 1.
- * @return Returns random color value.
- */
-template<Numeric T>
-T GenerateRandomValue(const T minValue, const T maxValue)
-{
-    std::mt19937 generator{std::random_device{}()};
-    if constexpr (std::integral<T>) {
-        std::uniform_int_distribution<T> distribution(minValue, maxValue);
-        return distribution(generator());
-    } else {
-        std::uniform_real_distribution<T> distribution(minValue, maxValue);
-        return distribution(generator());
-    }
-}
-
-/**
- * @brief Calculates mip level count to the texture image width and height.
- * @param textureWidth Width of the texture image.
- * @param textureHeight Height of the texture image.
- * @return Returns mip level count.
- */
-inline std::uint32_t GetMipLevelCount(const std::uint32_t textureWidth, const std::uint32_t textureHeight)
-{
-    return static_cast<uint32_t>(std::floor(std::log2(std::max(textureWidth, textureHeight)))) + 1;
 }
 
 } // namespace common::vulkan_framework

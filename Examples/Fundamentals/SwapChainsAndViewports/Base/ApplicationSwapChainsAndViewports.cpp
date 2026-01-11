@@ -122,24 +122,24 @@ void ApplicationSwapChainsAndViewports::CreateVulkanResources(const ResourceDesc
 {
     resources_ = std::make_unique<ResourceManager>(physicalDevice_, device_);
 
-    if (resourceCreateInfo.Buffers.has_value()) {
-        resources_->CreateBuffers(resourceCreateInfo.Buffers.value());
+    if (resourceCreateInfo.buffers.has_value()) {
+        resources_->CreateBuffers(resourceCreateInfo.buffers.value());
     }
 
-    if (resourceCreateInfo.Images.has_value()) {
-        resources_->CreateImages(resourceCreateInfo.Images.value());
+    if (resourceCreateInfo.images.has_value()) {
+        resources_->CreateImages(resourceCreateInfo.images.value());
     }
 
-    if (resourceCreateInfo.Samplers.has_value()) {
-        resources_->CreateSamplers(resourceCreateInfo.Samplers.value());
+    if (resourceCreateInfo.samplers.has_value()) {
+        resources_->CreateSamplers(resourceCreateInfo.samplers.value());
     }
 
-    if (resourceCreateInfo.Shaders.has_value()) {
-        resources_->CreateShaderModules(resourceCreateInfo.Shaders.value());
+    if (resourceCreateInfo.shaders.has_value()) {
+        resources_->CreateShaderModules(resourceCreateInfo.shaders.value());
     }
 
-    if (resourceCreateInfo.Descriptors.has_value()) {
-        resources_->CreateDescriptorSets(resourceCreateInfo.Descriptors.value());
+    if (resourceCreateInfo.descriptors.has_value()) {
+        resources_->CreateDescriptorSets(resourceCreateInfo.descriptors.value());
     }
 }
 } // namespace examples::fundamentals::swap_chains_and_viewports::base

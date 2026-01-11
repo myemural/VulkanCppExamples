@@ -85,7 +85,7 @@ void VulkanApplication::DrawFrame()
 void VulkanApplication::InitInputSystem() const
 {
     window_->OnKey([&](const KeyEvent& event) {
-        switch (event.Key) {
+        switch (event.key) {
             case GLFW_KEY_1:
                 currentColor = firstColor;
                 break;
@@ -113,12 +113,12 @@ void VulkanApplication::CreateResources()
     CreateBuffers(bufferCreateInfos);
 
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
-        .BasePath = SHADERS_DIR,
-        .ShaderType = SHADER_TYPE,
-        .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                     .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                    {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                     .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                     .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                    {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                     .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
     CreateShaderModules(shaderModuleCreateInfo);
 }
 

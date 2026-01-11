@@ -24,10 +24,10 @@ namespace common::vulkan_framework
 
 struct COMMON_API BufferResourceCreateInfo
 {
-    std::string Name;
-    std::uint32_t BufferSizeInBytes;
-    VkBufferUsageFlags UsageFlags;
-    VkMemoryPropertyFlags MemoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+    std::string name;
+    std::uint32_t bufferSizeInBytes;
+    VkBufferUsageFlags usageFlags;
+    VkMemoryPropertyFlags memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 };
 
 class COMMON_API BufferResource

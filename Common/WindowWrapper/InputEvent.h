@@ -32,41 +32,41 @@ public:
 class KeyEvent final : public InputEvent
 {
 public:
-    KeyEvent(const int key, const int action) : Key(key), Action(action) {}
+    KeyEvent(const int key, const int action) : key(key), action(action) {}
     [[nodiscard]] EventType GetType() const override { return EventType::Key; }
 
-    int Key;
-    int Action;
+    int key;
+    int action;
 };
 
 class MouseButtonEvent final : public InputEvent
 {
 public:
-    MouseButtonEvent(const int button, const int action) : Button(button), Action(action) {}
+    MouseButtonEvent(const int button, const int action) : button(button), action(action) {}
     [[nodiscard]] EventType GetType() const override { return EventType::MouseButton; }
 
-    int Button;
-    int Action;
+    int button;
+    int action;
 };
 
 class MouseMoveEvent final : public InputEvent
 {
 public:
-    MouseMoveEvent(const double x, const double y) : X(x), Y(y) {}
+    MouseMoveEvent(const double x, const double y) : x(x), y(y) {}
     [[nodiscard]] EventType GetType() const override { return EventType::MouseMove; }
 
-    double X;
-    double Y;
+    double x;
+    double y;
 };
 
 class MouseScrollEvent final : public InputEvent
 {
 public:
-    MouseScrollEvent(const double deltaX, const double deltaY) : DeltaX(deltaX), DeltaY(deltaY) {}
+    MouseScrollEvent(const double deltaX, const double deltaY) : deltaX(deltaX), deltaY(deltaY) {}
     [[nodiscard]] EventType GetType() const override { return EventType::MouseScroll; }
 
-    double DeltaX;
-    double DeltaY;
+    double deltaX;
+    double deltaY;
 };
 
 using KeyCallback = std::function<void(const KeyEvent&)>;

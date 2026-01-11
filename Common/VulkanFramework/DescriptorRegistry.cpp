@@ -12,13 +12,13 @@ DescriptorRegistry::DescriptorRegistry(const std::shared_ptr<vulkan_wrapper::Vul
 
 void DescriptorRegistry::CreateDescriptors(const DescriptorResourceCreateInfo& createInfo)
 {
-    CreatePool(createInfo.MaxSets, createInfo.PoolSizes);
+    CreatePool(createInfo.maxSets, createInfo.poolSizes);
 
-    for (const auto& [name, bindings]: createInfo.Layouts) {
+    for (const auto& [name, bindings]: createInfo.layouts) {
         CreateLayout(name, bindings);
     }
 
-    for (const auto& [name, layoutName] : createInfo.DescriptorSets) {
+    for (const auto& [name, layoutName] : createInfo.descriptorSets) {
         CreateSet(name, layoutName);
     }
 }

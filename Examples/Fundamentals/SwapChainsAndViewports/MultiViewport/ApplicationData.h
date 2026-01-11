@@ -16,7 +16,7 @@
 
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
-#include "VulkanHelpers.h"
+#include "MathUtils.h"
 
 namespace examples::fundamentals::swap_chains_and_viewports::multi_viewport
 {
@@ -46,6 +46,6 @@ enum class ViewportIndex : int
 };
 
 // Model position vectors
-inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
+inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
         NUM_CUBES, glm::vec3(-3.0f, -2.5f, -4.0f), glm::vec3(3.0f, 2.5f, -1.0f), 2.0f);
 } // namespace examples::fundamentals::swap_chains_and_viewports::multi_viewport

@@ -109,8 +109,8 @@ void VulkanApplication::InitInputSystem()
     window_->DisableCursor();
 
     window_->OnMouseMove([&](const MouseMoveEvent& event) {
-        const auto xPos = static_cast<float>(event.X);
-        const auto yPos = static_cast<float>(event.Y);
+        const auto xPos = static_cast<float>(event.x);
+        const auto yPos = static_cast<float>(event.y);
 
         if (firstMouseTriggered_) {
             lastX_ = xPos;
@@ -165,46 +165,46 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::PlaneIndexBuffer), planeIndexBufSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(crateTextureHandler_.Data.size()),
+        {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(crateTextureHandler_.data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
     // Fill shader module create infos
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
-        .BasePath = SHADERS_DIR,
-        .ShaderType = SHADER_TYPE,
-        .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                     .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                    {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                     .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                     .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                    {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                     .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     // Fill descriptor set create infos
     const DescriptorResourceCreateInfo descriptorSetCreateInfo = {
-        .MaxSets = 1,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
-        .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+        .maxSets = 1,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
+        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}}},
-        .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
     CreateDescriptorSets(descriptorSetCreateInfo);
 
     const std::vector<ImageResourceCreateInfo> imageResourceCreateInfos = {
-        {.Name = GetParamStr(AppConstants::CrateImage),
-         .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-         .Format = VK_FORMAT_R8G8B8A8_SRGB,
-         .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
-         .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CrateImageView),
-                                       .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
-        {.Name = GetParamStr(AppConstants::DepthImage),
-         .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-         .Format = depthImageFormat_,
-         .Dimensions = {currentWindowWidth_, currentWindowWidth_, 1},
-         .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-         .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                       .Format = depthImageFormat_,
-                                       .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+        {.name = GetParamStr(AppConstants::CrateImage),
+         .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+         .format = VK_FORMAT_R8G8B8A8_SRGB,
+         .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+         .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CrateImageView),
+                                       .format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        {.name = GetParamStr(AppConstants::DepthImage),
+         .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+         .format = depthImageFormat_,
+         .dimensions = {currentWindowWidth_, currentWindowWidth_, 1},
+         .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+         .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+                                       .format = depthImageFormat_,
+                                       .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                             .baseMipLevel = 0,
                                                             .levelCount = 1,
                                                             .baseArrayLayer = 0,
@@ -212,8 +212,8 @@ void VulkanApplication::CreateResources()
     CreateImages(imageResourceCreateInfos);
 
     const std::vector<SamplerResourceCreateInfo> samplerResourceCreateInfos = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+        {.name = GetParamStr(AppConstants::MainSampler),
+         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
     CreateSamplers(samplerResourceCreateInfos);
 }
 
@@ -227,12 +227,12 @@ void VulkanApplication::InitResources()
               planeVertices.size() * sizeof(VertexPos3Uv2));
     SetBuffer(GetParamStr(AppConstants::PlaneIndexBuffer), planeIndices.data(),
               planeIndices.size() * sizeof(planeIndices[0]));
-    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.Data.data(),
-              crateTextureHandler_.Data.size());
+    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.data.data(),
+              crateTextureHandler_.data.size());
 
     SetImageFromBuffer(GetParamStr(AppConstants::CrateImage),
                        buffers_[GetParamStr(AppConstants::ImageStagingBuffer)]->GetBuffer(),
-                       {crateTextureHandler_.Width, crateTextureHandler_.Height, 1});
+                       {crateTextureHandler_.width, crateTextureHandler_.height, 1});
 
     UpdateDescriptorSets();
 }
@@ -362,12 +362,12 @@ void VulkanApplication::UpdateDescriptorSets()
                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
-    samplerUpdateRequest.BindingIndex = 0;
-    samplerUpdateRequest.Images = imageSamplerInfos;
-    samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.bindingIndex = 0;
+    samplerUpdateRequest.images = imageSamplerInfos;
+    samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.imageWriteRequests = {samplerUpdateRequest}};
 
     UpdateDescriptorSet(descriptorSetUpdateInfo);
 }

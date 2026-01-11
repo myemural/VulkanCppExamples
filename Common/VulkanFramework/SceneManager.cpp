@@ -22,26 +22,26 @@ SceneManager::SceneManager(ResourceManager& resourceManager,
 {
     ResourceDescriptor resourceCreateInfo;
 
-    resourceCreateInfo.Buffers = {{kMainBufferName, kBufferSizeInBytes,
+    resourceCreateInfo.buffers = {{kMainBufferName, kBufferSizeInBytes,
                                    VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
                                   {kStorageBufferName, kBufferSizeInBytes, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
-    if (resourceCreateInfo.Buffers.has_value()) {
-        resourceManager_.CreateBuffers(resourceCreateInfo.Buffers.value());
+    if (resourceCreateInfo.buffers.has_value()) {
+        resourceManager_.CreateBuffers(resourceCreateInfo.buffers.value());
     }
 
     // Set primitive stack and sector counts
-    currentPrimStackCount_ = sceneConfig_.PrimitiveStackCount;
-    currentPrimSectorCount_ = sceneConfig_.PrimitiveSectorCount;
+    currentPrimStackCount_ = sceneConfig_.primitiveStackCount;
+    currentPrimSectorCount_ = sceneConfig_.primitiveSectorCount;
 }
-std::uint32_t SceneManager::GetAttributeCount() const { return sceneConfig_.AttributeLayout.size(); }
+std::uint32_t SceneManager::GetAttributeCount() const { return sceneConfig_.attributeLayout.size(); }
 
 std::vector<VkVertexInputBindingDescription> SceneManager::GetBindingDescriptions() const
 {
     std::vector<VkVertexInputBindingDescription> result;
-    for (uint32_t bindingIndex = 0; const auto& [attributeType, accessorType]: sceneConfig_.AttributeLayout) {
+    for (uint32_t bindingIndex = 0; const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
         VkVertexInputBindingDescription bindingDescription = {};
         bindingDescription.binding = bindingIndex++;
         bindingDescription.stride = GetAccessorSize(accessorType);
@@ -55,7 +55,7 @@ std::vector<VkVertexInputBindingDescription> SceneManager::GetBindingDescription
 std::vector<VkVertexInputAttributeDescription> SceneManager::GetAttributeDescriptions() const
 {
     std::vector<VkVertexInputAttributeDescription> result;
-    for (uint32_t bindingIndex = 0; const auto& [attributeType, accessorType]: sceneConfig_.AttributeLayout) {
+    for (uint32_t bindingIndex = 0; const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
         VkVertexInputAttributeDescription attributeDescription = {};
         attributeDescription.binding = bindingIndex;
         attributeDescription.location = bindingIndex++;
@@ -82,9 +82,9 @@ void SceneManager::AddCube(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -110,9 +110,9 @@ void SceneManager::AddSphere(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -138,9 +138,9 @@ void SceneManager::AddCone(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -166,9 +166,9 @@ void SceneManager::AddCylinder(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -194,9 +194,9 @@ void SceneManager::AddPlane(const std::string& objectName,
     meshInfo.transform = {initialPosition, initialRotation, initialScale};
 
     /// TODO: Will be increased
-    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = PhongMaterial{};
-    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = PhongTexturedMaterial{};
     }
 
@@ -248,9 +248,9 @@ void SceneManager::ScaleObject(const std::string& objectName, const glm::vec3& n
 void SceneManager::SetMaterial(const std::string& objectName, const std::string& materialName)
 {
     auto& meshInfo = meshes_[objectName];
-    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG) {
         meshInfo.material = materialManager_.GetPhongMaterial(materialName);
-    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         meshInfo.material = materialManager_.GetPhongTexturedMaterial(materialName);
     }
 
@@ -303,11 +303,11 @@ void SceneManager::UpdateMeshDataGpu(const MeshInfo& meshInfo) const
 {
     const auto meshData = meshInfo.GenerateMeshDataGpu();
 
-    if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG) {
+    if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG) {
         const auto offset = meshInfo.objectId * sizeof(MeshDataPhongGpu);
         resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongGpu>(meshData), sizeof(MeshDataPhongGpu),
                                    offset, false);
-    } else if (sceneConfig_.CurrentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+    } else if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
         const auto offset = meshInfo.objectId * sizeof(MeshDataPhongTexturedGpu);
         resourceManager_.SetBuffer(kStorageBufferName, &std::get<MeshDataPhongTexturedGpu>(meshData),
                                    sizeof(MeshDataPhongTexturedGpu), offset, false);
@@ -317,7 +317,7 @@ void SceneManager::UpdateMeshDataGpu(const MeshInfo& meshInfo) const
 void SceneManager::CreateCubeGeometry()
 {
     MeshInfo::GeometryInfo geometry;
-    for (const auto& [attributeType, accessorType]: sceneConfig_.AttributeLayout) {
+    for (const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
         const std::uint32_t offset = globalBufferPos_;
         const auto accessorSize = GetAccessorSize(accessorType);
 
@@ -364,7 +364,7 @@ void SceneManager::CreateCubeGeometry()
 void SceneManager::CreateSphereGeometry()
 {
     MeshInfo::GeometryInfo geometry;
-    for (const auto& [attributeType, accessorType]: sceneConfig_.AttributeLayout) {
+    for (const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
         const std::uint32_t offset = globalBufferPos_;
         const auto accessorSize = GetAccessorSize(accessorType);
 
@@ -411,7 +411,7 @@ void SceneManager::CreateSphereGeometry()
 void SceneManager::CreateConeGeometry()
 {
     MeshInfo::GeometryInfo geometry;
-    for (const auto& [attributeType, accessorType]: sceneConfig_.AttributeLayout) {
+    for (const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
         const std::uint32_t offset = globalBufferPos_;
         const auto accessorSize = GetAccessorSize(accessorType);
 
@@ -458,7 +458,7 @@ void SceneManager::CreateConeGeometry()
 void SceneManager::CreateCylinderGeometry()
 {
     MeshInfo::GeometryInfo geometry;
-    for (const auto& [attributeType, accessorType]: sceneConfig_.AttributeLayout) {
+    for (const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
         const std::uint32_t offset = globalBufferPos_;
         const auto accessorSize = GetAccessorSize(accessorType);
 
@@ -505,7 +505,7 @@ void SceneManager::CreateCylinderGeometry()
 void SceneManager::CreatePlaneGeometry()
 {
     MeshInfo::GeometryInfo geometry;
-    for (const auto& [attributeType, accessorType]: sceneConfig_.AttributeLayout) {
+    for (const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
         const std::uint32_t offset = globalBufferPos_;
         const auto accessorSize = GetAccessorSize(accessorType);
 

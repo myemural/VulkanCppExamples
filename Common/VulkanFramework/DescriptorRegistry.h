@@ -24,20 +24,20 @@ struct COMMON_API DescriptorResourceCreateInfo
 {
     struct Layout
     {
-        std::string Name;
-        std::vector<VkDescriptorSetLayoutBinding> Bindings;
+        std::string name;
+        std::vector<VkDescriptorSetLayoutBinding> bindings;
     };
 
     struct DescriptorSet
     {
-        std::string Name;
-        std::string LayoutName;
+        std::string name;
+        std::string layoutName;
     };
 
-    std::uint32_t MaxSets;
-    std::vector<VkDescriptorPoolSize> PoolSizes;
-    std::vector<Layout> Layouts;
-    std::vector<DescriptorSet> DescriptorSets;
+    std::uint32_t maxSets;
+    std::vector<VkDescriptorPoolSize> poolSizes;
+    std::vector<Layout> layouts;
+    std::vector<DescriptorSet> descriptorSets;
 };
 
 class COMMON_API DescriptorRegistry

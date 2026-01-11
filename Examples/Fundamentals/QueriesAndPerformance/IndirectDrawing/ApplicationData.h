@@ -13,10 +13,11 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <vulkan/vulkan_core.h>
 
+#include "MathUtils.h"
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
-#include "VulkanHelpers.h"
 
 namespace examples::fundamentals::queries_and_performance::indirect_drawing
 {
@@ -73,7 +74,7 @@ struct PrimitiveData
 };
 
 // Model position vectors
-inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
+inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
         MAX_NUM_OBJECTS, glm::vec3(-15.0f, -12.0f, -15.0f), glm::vec3(15.0f, 12.0f, -2.0f), 1.5f);
 
 } // namespace examples::fundamentals::queries_and_performance::indirect_drawing

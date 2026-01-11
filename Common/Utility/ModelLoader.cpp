@@ -63,10 +63,10 @@ namespace
                                const glm::mat4& parentWorldMatrix)
     {
         auto& node = nodes[nodeIndex];
-        node.WorldTransform = parentWorldMatrix * node.LocalTransform;
+        node.worldTransform = parentWorldMatrix * node.localTransform;
 
-        for (const auto childIndex: node.ChildIndices) {
-            ComputeWorldTransform(nodes, childIndex, node.WorldTransform);
+        for (const auto childIndex: node.childIndices) {
+            ComputeWorldTransform(nodes, childIndex, node.worldTransform);
         }
     }
 } // namespace
@@ -123,7 +123,7 @@ std::shared_ptr<GltfModelHandler> ModelLoader::LoadAsciiGltfFromFile(const std::
 std::shared_ptr<GltfModelHandler> ModelLoader::ProcessGltfModel(const std::string& filePath) const
 {
     auto gltfModelHandler = std::make_shared<GltfModelHandler>();
-    gltfModelHandler->Name = GenerateModelName(filePath);
+    gltfModelHandler->name = GenerateModelName(filePath);
 
     const std::string parentPath = (std::filesystem::path{filePath}.parent_path() / "").string();
     if (!ProcessTextures(gltfModelHandler, parentPath)) {
@@ -160,16 +160,16 @@ bool ModelLoader::ProcessTextures(const std::shared_ptr<GltfModelHandler>& handl
         if (const int texIndex = tex.source; texIndex >= 0 && texIndex < gltfModel_.images.size()) {
             TextureHandler textureHandler;
             if (const auto& image = gltfModel_.images[texIndex]; image.uri.empty()) {
-                textureHandler.Width = image.width;
-                textureHandler.Height = image.height;
-                textureHandler.Channels = image.component;
-                textureHandler.Data = image.image;
+                textureHandler.width = image.width;
+                textureHandler.height = image.height;
+                textureHandler.channels = image.component;
+                textureHandler.data = image.image;
             } else {
                 TextureLoader textureLoader{""};
                 textureHandler = textureLoader.Load(parentPath + image.uri);
             }
 
-            handler->Textures.push_back(textureHandler);
+            handler->textures.push_back(textureHandler);
         } else {
             std::cerr << "GLTF texture index is wrong!" << std::endl;
             return false;
@@ -185,15 +185,15 @@ bool ModelLoader::ProcessMaterials(const std::shared_ptr<GltfModelHandler>& hand
     for (const auto& mat: gltfModel_.materials) {
         GltfMaterial material;
         std::string matName = mat.name.empty() ? "mat" + std::to_string(i++) : mat.name;
-        material.Name = handler->Name + "_" + matName;
+        material.name = handler->name + "_" + matName;
         if (mat.values.contains("baseColorTexture")) {
-            material.PbrMetallicRoughness.BaseColorTextureIndex = mat.values.at("baseColorTexture").TextureIndex();
+            material.pbrMetallicRoughness.baseColorTextureIndex = mat.values.at("baseColorTexture").TextureIndex();
         } else {
             std::cerr << "Currently material that does not contain baseColorTexture is not supported!" << std::endl;
             return false;
         }
 
-        handler->Materials.push_back(material);
+        handler->materials.push_back(material);
     }
 
     return true;
@@ -206,7 +206,7 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
         for (const auto& primitive: mesh.primitives) {
             GltfMesh gltfMesh;
             std::string meshName = mesh.name.empty() ? "mesh" + std::to_string(meshCount++) : mesh.name;
-            gltfMesh.Name = handler->Name + "_" + meshName;
+            gltfMesh.name = handler->name + "_" + meshName;
 
             // Vertex Positions
             std::vector<glm::vec3> posData;
@@ -255,11 +255,11 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
 
             // Process vertices
             GltfPrimitiveAttrib attribute;
-            attribute.VertexCount = posData.size();
-            attribute.Positions = std::move(posData);
-            attribute.Normals = std::move(normData);
-            attribute.TexCoords0 = std::move(texData);
-            gltfMesh.Attributes = std::move(attribute);
+            attribute.vertexCount = posData.size();
+            attribute.positions = std::move(posData);
+            attribute.normals = std::move(normData);
+            attribute.texCoords0 = std::move(texData);
+            gltfMesh.attributes = std::move(attribute);
 
             // Indices
             const auto& idxAccessor = gltfModel_.accessors[primitive.indices];
@@ -270,15 +270,15 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
                 size_t start = idxBufferView.byteOffset + idxAccessor.byteOffset;
                 size_t length = idxAccessor.count * sizeof(std::uint16_t);
 
-                gltfMesh.Indices.resize(length);
-                std::memcpy(gltfMesh.Indices.data(), &idxBuffer.data[start], length);
+                gltfMesh.indices.resize(length);
+                std::memcpy(gltfMesh.indices.data(), &idxBuffer.data[start], length);
             } else {
                 std::cerr << "GLTF unsupported index type!" << std::endl;
                 return false;
             }
 
-            gltfMesh.MaterialIndex = primitive.material;
-            handler->Meshes.push_back(gltfMesh);
+            gltfMesh.materialIndex = primitive.material;
+            handler->meshes.push_back(gltfMesh);
         }
     }
 
@@ -292,29 +292,29 @@ bool ModelLoader::ProcessNodes(const std::shared_ptr<GltfModelHandler>& handler)
     // Set mesh index, child indices, camera index and local transform
     for (size_t i = 0; i < gltfModel_.nodes.size(); ++i) {
         if (gltfModel_.nodes[i].mesh != -1) {
-            gltfNodes[i].MeshIndex = gltfModel_.nodes[i].mesh;
+            gltfNodes[i].meshIndex = gltfModel_.nodes[i].mesh;
         }
         for (const auto child: gltfModel_.nodes[i].children) {
-            gltfNodes[i].ChildIndices.emplace_back(static_cast<std::uint32_t>(child));
+            gltfNodes[i].childIndices.emplace_back(static_cast<std::uint32_t>(child));
         }
-        gltfNodes[i].CameraIndex = gltfModel_.nodes[i].camera != -1 ? gltfModel_.nodes[i].camera : UINT32_MAX;
-        gltfNodes[i].LocalTransform = GetLocalTransform(gltfModel_.nodes[i]);
+        gltfNodes[i].cameraIndex = gltfModel_.nodes[i].camera != -1 ? gltfModel_.nodes[i].camera : UINT32_MAX;
+        gltfNodes[i].localTransform = GetLocalTransform(gltfModel_.nodes[i]);
     }
 
     // Set parents
     for (size_t i = 0; i < gltfModel_.nodes.size(); ++i) {
         for (const auto childIndex: gltfModel_.nodes[i].children) {
-            gltfNodes[childIndex].ParentIndex = static_cast<std::uint32_t>(i);
+            gltfNodes[childIndex].parentIndex = static_cast<std::uint32_t>(i);
         }
     }
 
     // Calculate world transforms
-    handler->CurrentSceneIndex = gltfModel_.defaultScene > -1 ? gltfModel_.defaultScene : 0;
-    for (const auto& scene = gltfModel_.scenes[handler->CurrentSceneIndex]; const auto rootNode: scene.nodes) {
+    handler->currentSceneIndex = gltfModel_.defaultScene > -1 ? gltfModel_.defaultScene : 0;
+    for (const auto& scene = gltfModel_.scenes[handler->currentSceneIndex]; const auto rootNode: scene.nodes) {
         ComputeWorldTransform(gltfNodes, static_cast<std::uint32_t>(rootNode), glm::mat4(1.0f));
     }
 
-    handler->Nodes = gltfNodes;
+    handler->nodes = gltfNodes;
 
     return true;
 }
@@ -323,24 +323,24 @@ bool ModelLoader::ProcessCameras(const std::shared_ptr<GltfModelHandler>& handle
 {
     for (const auto& camera: gltfModel_.cameras) {
         GltfCamera gltfCamera;
-        gltfCamera.Name = camera.name;
-        gltfCamera.Type = camera.type == "perspective" ? GltfCameraType::PERSPECTIVE : GltfCameraType::ORTHOGRAPHIC;
+        gltfCamera.name = camera.name;
+        gltfCamera.type = camera.type == "perspective" ? GltfCameraType::PERSPECTIVE : GltfCameraType::ORTHOGRAPHIC;
 
-        if (gltfCamera.Type == GltfCameraType::PERSPECTIVE) {
-            gltfCamera.PerspectiveFeatures.AspectRatio = static_cast<float>(camera.perspective.aspectRatio);
-            gltfCamera.PerspectiveFeatures.Fov = static_cast<float>(glm::degrees(camera.perspective.yfov));
-            gltfCamera.PerspectiveFeatures.Near = static_cast<float>(camera.perspective.znear);
-            gltfCamera.PerspectiveFeatures.Far = static_cast<float>(camera.perspective.zfar);
+        if (gltfCamera.type == GltfCameraType::PERSPECTIVE) {
+            gltfCamera.perspectiveFeatures.aspectRatio = static_cast<float>(camera.perspective.aspectRatio);
+            gltfCamera.perspectiveFeatures.fov = static_cast<float>(glm::degrees(camera.perspective.yfov));
+            gltfCamera.perspectiveFeatures.near = static_cast<float>(camera.perspective.znear);
+            gltfCamera.perspectiveFeatures.far = static_cast<float>(camera.perspective.zfar);
         } else {
-            gltfCamera.OrthographicFeatures.AspectRatio =
+            gltfCamera.orthographicFeatures.aspectRatio =
                     static_cast<float>(camera.orthographic.xmag / camera.orthographic.ymag);
-            gltfCamera.OrthographicFeatures.Size =
+            gltfCamera.orthographicFeatures.size =
                     static_cast<float>(std::max(camera.orthographic.xmag, camera.orthographic.ymag));
-            gltfCamera.OrthographicFeatures.Near = static_cast<float>(camera.orthographic.znear);
-            gltfCamera.OrthographicFeatures.Far = static_cast<float>(camera.orthographic.zfar);
+            gltfCamera.orthographicFeatures.near = static_cast<float>(camera.orthographic.znear);
+            gltfCamera.orthographicFeatures.far = static_cast<float>(camera.orthographic.zfar);
         }
 
-        handler->Cameras.push_back(gltfCamera);
+        handler->cameras.push_back(gltfCamera);
     }
 
     return true;

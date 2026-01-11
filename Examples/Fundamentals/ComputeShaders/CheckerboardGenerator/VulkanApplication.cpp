@@ -108,8 +108,8 @@ void VulkanApplication::InitInputSystem()
     window_->DisableCursor();
 
     window_->OnMouseMove([&](const MouseMoveEvent& event) {
-        const auto xPos = static_cast<float>(event.X);
-        const auto yPos = static_cast<float>(event.Y);
+        const auto xPos = static_cast<float>(event.x);
+        const auto yPos = static_cast<float>(event.y);
 
         if (firstMouseTriggered_) {
             lastX_ = xPos;
@@ -148,7 +148,7 @@ void VulkanApplication::CreateResources()
     const std::uint32_t sphereVertexSize = sphereVertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t sphereIndexSize = sphereIndices.size() * sizeof(sphereIndices[0]);
 
-    resourceCreateInfo.Buffers = {
+    resourceCreateInfo.buffers = {
         {GetParamStr(AppConstants::CubeVertexBuffer), cubeVertexSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::CubeIndexBuffer), cubeIndexSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
@@ -159,63 +159,63 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
-                                  .ShaderType = SHADER_TYPE,
-                                  .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::CheckerboardComputeShaderKey),
-                                               .FileName = GetParamStr(AppConstants::CheckerboardComputeShaderFile)}}};
+    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
+                                  .shaderType = SHADER_TYPE,
+                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)},
+                                              {.name = GetParamStr(AppConstants::CheckerboardComputeShaderKey),
+                                               .fileName = GetParamStr(AppConstants::CheckerboardComputeShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {
-        .MaxSets = 3,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}, {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1}},
-        .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+    resourceCreateInfo.descriptors = {
+        .maxSets = 3,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}, {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1}},
+        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}},
-                    {.Name = GetParamStr(AppConstants::ComputeDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr}}}},
-        .DescriptorSets = {{.Name = GetParamStr(AppConstants::CubeDescSet),
-                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)},
-                           {.Name = GetParamStr(AppConstants::SphereDescSet),
-                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)},
-                           {.Name = GetParamStr(AppConstants::ComputeDescSetLayout),
-                            .LayoutName = GetParamStr(AppConstants::ComputeDescSetLayout)}}};
+                    {.name = GetParamStr(AppConstants::ComputeDescSetLayout),
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr}}}},
+        .descriptorSets = {{.name = GetParamStr(AppConstants::CubeDescSet),
+                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)},
+                           {.name = GetParamStr(AppConstants::SphereDescSet),
+                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)},
+                           {.name = GetParamStr(AppConstants::ComputeDescSetLayout),
+                            .layoutName = GetParamStr(AppConstants::ComputeDescSetLayout)}}};
 
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CrateImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CrateImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+    resourceCreateInfo.images = {
+        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::CrateImage),
+                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                .format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CrateImageView),
+                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::CheckerboardStorageImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = VK_FORMAT_R8G8B8A8_UNORM,
-            .Dimensions = {checkerboardTextureSize_, checkerboardTextureSize_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CheckerboardStorageImageView),
-                                          .Format = VK_FORMAT_R8G8B8A8_UNORM}}},
+            .name = GetParamStr(AppConstants::CheckerboardStorageImage),
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = VK_FORMAT_R8G8B8A8_UNORM,
+            .dimensions = {checkerboardTextureSize_, checkerboardTextureSize_, 1},
+            .usageFlags = VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CheckerboardStorageImageView),
+                                          .format = VK_FORMAT_R8G8B8A8_UNORM}}},
         ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                          .Format = depthImageFormat_,
-                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+            .name = GetParamStr(AppConstants::DepthImage),
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = depthImageFormat_,
+            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+                                          .format = depthImageFormat_,
+                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                                .baseMipLevel = 0,
                                                                .levelCount = 1,
                                                                .baseArrayLayer = 0,
                                                                .layerCount = 1}}}}};
 
-    resourceCreateInfo.Samplers = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.samplers = {
+        {.name = GetParamStr(AppConstants::MainSampler),
+         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
@@ -402,25 +402,25 @@ void VulkanApplication::UpdateDescriptorSets() const
                                    VK_IMAGE_LAYOUT_GENERAL);
 
     ImageWriteRequest samplerUpdateRequestCube;
-    samplerUpdateRequestCube.DescriptorSetName = GetParamStr(AppConstants::CubeDescSet);
-    samplerUpdateRequestCube.BindingIndex = 0;
-    samplerUpdateRequestCube.Images = imageSamplerInfosCube;
-    samplerUpdateRequestCube.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerUpdateRequestCube.descriptorSetName = GetParamStr(AppConstants::CubeDescSet);
+    samplerUpdateRequestCube.bindingIndex = 0;
+    samplerUpdateRequestCube.images = imageSamplerInfosCube;
+    samplerUpdateRequestCube.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest samplerUpdateRequestSphere;
-    samplerUpdateRequestSphere.DescriptorSetName = GetParamStr(AppConstants::SphereDescSet);
-    samplerUpdateRequestSphere.BindingIndex = 0;
-    samplerUpdateRequestSphere.Images = imageSamplerInfosSphere;
-    samplerUpdateRequestSphere.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerUpdateRequestSphere.descriptorSetName = GetParamStr(AppConstants::SphereDescSet);
+    samplerUpdateRequestSphere.bindingIndex = 0;
+    samplerUpdateRequestSphere.images = imageSamplerInfosSphere;
+    samplerUpdateRequestSphere.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest storageUpdateRequest;
-    storageUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::ComputeDescSetLayout);
-    storageUpdateRequest.BindingIndex = 0;
-    storageUpdateRequest.Images = imageStorageInfos;
-    storageUpdateRequest.Type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+    storageUpdateRequest.descriptorSetName = GetParamStr(AppConstants::ComputeDescSetLayout);
+    storageUpdateRequest.bindingIndex = 0;
+    storageUpdateRequest.images = imageStorageInfos;
+    storageUpdateRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .ImageWriteRequests = {samplerUpdateRequestCube, samplerUpdateRequestSphere, storageUpdateRequest}};
+        .imageWriteRequests = {samplerUpdateRequestCube, samplerUpdateRequestSphere, storageUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }

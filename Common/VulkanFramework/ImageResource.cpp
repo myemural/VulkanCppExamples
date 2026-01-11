@@ -25,19 +25,19 @@ void ImageResource::CreateImage(const ImageResourceCreateInfo& createInfo)
         throw std::runtime_error("Device object not found!");
     }
 
-    name_ = createInfo.Name;
+    name_ = createInfo.name;
 
     image_ = devicePtr->CreateImage([&](auto& builder) {
-        builder.SetCreateFlags(createInfo.CreateFlags);
-        builder.SetImageType(createInfo.ImageType);
-        builder.SetFormat(createInfo.Format);
-        builder.SetDimensions(createInfo.Dimensions.width, createInfo.Dimensions.height, createInfo.Dimensions.depth);
-        builder.SetMipLevels(createInfo.MipLevels);
-        builder.SetArrayLayers(createInfo.ArrayLayers);
-        builder.SetSampleCount(createInfo.Samples);
-        builder.SetImageTiling(createInfo.Tiling);
-        builder.SetImageUsageFlags(createInfo.UsageFlags);
-        builder.SetInitialImageLayout(createInfo.InitialLayout);
+        builder.SetCreateFlags(createInfo.createFlags);
+        builder.SetImageType(createInfo.imageType);
+        builder.SetFormat(createInfo.format);
+        builder.SetDimensions(createInfo.dimensions.width, createInfo.dimensions.height, createInfo.dimensions.depth);
+        builder.SetMipLevels(createInfo.mipLevels);
+        builder.SetArrayLayers(createInfo.arrayLayers);
+        builder.SetSampleCount(createInfo.samples);
+        builder.SetImageTiling(createInfo.tiling);
+        builder.SetImageUsageFlags(createInfo.usageFlags);
+        builder.SetInitialImageLayout(createInfo.initialLayout);
     });
 
     if (!image_) {
@@ -46,18 +46,18 @@ void ImageResource::CreateImage(const ImageResourceCreateInfo& createInfo)
 
     AllocateImageMemory();
 
-    for (const auto& imageViewInfos: createInfo.Views) {
+    for (const auto& imageViewInfos: createInfo.views) {
         const auto imageView = devicePtr->CreateImageView(image_, [&](auto& builder) {
-            builder.SetCreateFlags(imageViewInfos.CreateFlags);
-            builder.SetImageViewType(imageViewInfos.ViewType);
-            builder.SetFormat(imageViewInfos.Format);
-            builder.SetComponents(imageViewInfos.Components);
-            builder.SetSubresourceRange(imageViewInfos.SubresourceRange);
+            builder.SetCreateFlags(imageViewInfos.createFlags);
+            builder.SetImageViewType(imageViewInfos.viewType);
+            builder.SetFormat(imageViewInfos.format);
+            builder.SetComponents(imageViewInfos.components);
+            builder.SetSubresourceRange(imageViewInfos.subresourceRange);
         });
-        imageViews_[imageViewInfos.ViewName] = imageView;
+        imageViews_[imageViewInfos.viewName] = imageView;
     }
 
-    memProps_ = createInfo.MemProperties;
+    memProps_ = createInfo.memProperties;
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanImageView> ImageResource::GetImageView(const std::string& viewName) const

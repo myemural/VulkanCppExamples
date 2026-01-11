@@ -96,82 +96,82 @@ void VulkanApplication::CreateResources()
     crateTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::CrateTexturePath));
 
     if (params_.Get<bool>(AppSettings::IsPerspectiveCamera)) {
-        const auto& currentCameraFeatures = quadModel_->Cameras[0].PerspectiveFeatures;
-        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.5f, 0.5f, 5.0f), currentCameraFeatures.AspectRatio,
-                                                      currentCameraFeatures.Fov, currentCameraFeatures.Near,
-                                                      currentCameraFeatures.Far);
+        const auto& currentCameraFeatures = quadModel_->cameras[0].perspectiveFeatures;
+        camera_ = std::make_unique<PerspectiveCamera>(glm::vec3(0.5f, 0.5f, 5.0f), currentCameraFeatures.aspectRatio,
+                                                      currentCameraFeatures.fov, currentCameraFeatures.near,
+                                                      currentCameraFeatures.far);
     } else {
-        const auto& currentCameraFeatures = quadModel_->Cameras[1].OrthographicFeatures;
-        camera_ = std::make_unique<OrthographicCamera>(glm::vec3(0.5f, 0.5f, 5.0f), currentCameraFeatures.AspectRatio,
-                                                       currentCameraFeatures.Size * 2.0f, currentCameraFeatures.Near,
-                                                       currentCameraFeatures.Far);
+        const auto& currentCameraFeatures = quadModel_->cameras[1].orthographicFeatures;
+        camera_ = std::make_unique<OrthographicCamera>(glm::vec3(0.5f, 0.5f, 5.0f), currentCameraFeatures.aspectRatio,
+                                                       currentCameraFeatures.size * 2.0f, currentCameraFeatures.near,
+                                                       currentCameraFeatures.far);
     }
 
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
     std::vector<BufferResourceCreateInfo> bufferCreateInfos;
-    const auto& quadMesh = quadModel_->Meshes.at(0);
-    const std::uint32_t vertexBufferSize = quadMesh.Attributes.VertexCount * sizeof(VertexPos3);
-    const std::uint32_t indexBufferSize = quadMesh.Indices.size() * sizeof(std::uint16_t);
+    const auto& quadMesh = quadModel_->meshes.at(0);
+    const std::uint32_t vertexBufferSize = quadMesh.attributes.vertexCount * sizeof(VertexPos3);
+    const std::uint32_t indexBufferSize = quadMesh.indices.size() * sizeof(std::uint16_t);
 
     bufferCreateInfos.emplace_back(quadMesh.GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     bufferCreateInfos.emplace_back(quadMesh.GetIndexBufferName(), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    resourceCreateInfo.Buffers = bufferCreateInfos;
+    resourceCreateInfo.buffers = bufferCreateInfos;
 
     // Fill shader module create infos
-    resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
-                                  .ShaderType = SHADER_TYPE,
-                                  .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
+                                  .shaderType = SHADER_TYPE,
+                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {.MaxSets = 1,
-                                      .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
-                                      .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+    resourceCreateInfo.descriptors = {.maxSets = 1,
+                                      .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
+                                      .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                   .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
                                                                  VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-                                      .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                                                          .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+                                      .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                          .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
 
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CrateImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CrateImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+    resourceCreateInfo.images = {
+        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::CrateImage),
+                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                .format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CrateImageView),
+                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                          .Format = depthImageFormat_,
-                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+            .name = GetParamStr(AppConstants::DepthImage),
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = depthImageFormat_,
+            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+                                          .format = depthImageFormat_,
+                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                                .baseMipLevel = 0,
                                                                .levelCount = 1,
                                                                .baseArrayLayer = 0,
                                                                .layerCount = 1}}}}};
 
-    resourceCreateInfo.Samplers = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.samplers = {
+        {.name = GetParamStr(AppConstants::MainSampler),
+         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
 
 void VulkanApplication::InitResources() const
 {
-    auto& quadMesh = quadModel_->Meshes.at(0);
+    auto& quadMesh = quadModel_->meshes.at(0);
     const auto& vertexBufferData = quadMesh.GetVerticesAs<VertexPos3>();
-    const auto& indexBufferData = quadMesh.Indices;
+    const auto& indexBufferData = quadMesh.indices;
     const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3);
     const std::uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
 
@@ -306,12 +306,12 @@ void VulkanApplication::UpdateDescriptorSets() const
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
-    samplerUpdateRequest.BindingIndex = 0;
-    samplerUpdateRequest.Images = imageSamplerInfos;
-    samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.bindingIndex = 0;
+    samplerUpdateRequest.images = imageSamplerInfos;
+    samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.imageWriteRequests = {samplerUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -351,17 +351,17 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
 
     // Draw quad mesh
-    const auto mesh = quadModel_->Meshes.at(0);
-    const auto meshNode = std::ranges::find_if(quadModel_->Nodes, [&](auto& node) { return node.MeshIndex == 0; });
+    const auto mesh = quadModel_->meshes.at(0);
+    const auto meshNode = std::ranges::find_if(quadModel_->nodes, [&](auto& node) { return node.meshIndex == 0; });
 
     MvpData mvpData{};
-    mvpData.mvpMatrix = camera_->GetProjectionMatrix() * camera_->GetViewMatrix() * meshNode->WorldTransform;
+    mvpData.mvpMatrix = camera_->GetProjectionMatrix() * camera_->GetViewMatrix() * meshNode->worldTransform;
     currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvpData);
 
     const std::vector vertexBuffers{resources_->GetBuffer(mesh.GetVertexBufferName())};
     currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
     currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(mesh.GetIndexBufferName()));
-    currentCmdBuffer->DrawIndexed(mesh.Indices.size(), 1, 0, 0, 0);
+    currentCmdBuffer->DrawIndexed(mesh.indices.size(), 1, 0, 0, 0);
 
     currentCmdBuffer->EndRenderPass();
     if (!currentCmdBuffer->EndCommandBuffer()) {

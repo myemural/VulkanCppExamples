@@ -26,11 +26,11 @@ namespace common::vulkan_framework
 {
 struct COMMON_API ResourceDescriptor
 {
-    std::optional<std::vector<BufferResourceCreateInfo>> Buffers;
-    std::optional<std::vector<ImageResourceCreateInfo>> Images;
-    std::optional<std::vector<SamplerResourceCreateInfo>> Samplers;
-    std::optional<ShaderModulesCreateInfo> Shaders;
-    std::optional<DescriptorResourceCreateInfo> Descriptors;
+    std::optional<std::vector<BufferResourceCreateInfo>> buffers;
+    std::optional<std::vector<ImageResourceCreateInfo>> images;
+    std::optional<std::vector<SamplerResourceCreateInfo>> samplers;
+    std::optional<ShaderModulesCreateInfo> shaders;
+    std::optional<DescriptorResourceCreateInfo> descriptors;
 };
 
 class COMMON_API ResourceManager

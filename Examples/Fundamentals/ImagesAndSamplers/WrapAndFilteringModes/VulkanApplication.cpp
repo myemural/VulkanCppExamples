@@ -93,29 +93,29 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(bricksTextureHandler_.Data.size()),
+        {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(bricksTextureHandler_.data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
     // Fill shader module create infos
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
-        .BasePath = SHADERS_DIR,
-        .ShaderType = SHADER_TYPE,
-        .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                     .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                    {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                     .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                     .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                    {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                     .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     // Fill descriptor set create infos
     const DescriptorResourceCreateInfo descriptorSetCreateInfo = {
-        .MaxSets = 1,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1}, {VK_DESCRIPTOR_TYPE_SAMPLER, 4}},
-        .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+        .maxSets = 1,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1}, {VK_DESCRIPTOR_TYPE_SAMPLER, 4}},
+        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_SAMPLER, 4, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-        .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
     CreateDescriptorSets(descriptorSetCreateInfo);
 
     CreateQuadTextureImage();
@@ -133,8 +133,8 @@ void VulkanApplication::InitResources()
 
     SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2Uv2));
     SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(indices[0]));
-    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), bricksTextureHandler_.Data.data(),
-              bricksTextureHandler_.Data.size());
+    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), bricksTextureHandler_.data.data(),
+              bricksTextureHandler_.data.size());
 
     UpdateDescriptorSets();
 
@@ -225,19 +225,19 @@ void VulkanApplication::UpdateDescriptorSets() const
     samplerInfos.emplace_back(samplerBottomRight_->GetHandle());
 
     ImageWriteRequest imageUpdateRequest;
-    imageUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
-    imageUpdateRequest.BindingIndex = 0;
-    imageUpdateRequest.Images = imageInfos;
-    imageUpdateRequest.Type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+    imageUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    imageUpdateRequest.bindingIndex = 0;
+    imageUpdateRequest.images = imageInfos;
+    imageUpdateRequest.type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 
     ImageWriteRequest samplersUpdateRequest;
-    samplersUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
-    samplersUpdateRequest.BindingIndex = 1;
-    samplersUpdateRequest.Images = samplerInfos;
-    samplersUpdateRequest.Type = VK_DESCRIPTOR_TYPE_SAMPLER;
+    samplersUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplersUpdateRequest.bindingIndex = 1;
+    samplersUpdateRequest.images = samplerInfos;
+    samplersUpdateRequest.type = VK_DESCRIPTOR_TYPE_SAMPLER;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .ImageWriteRequests = {imageUpdateRequest, samplersUpdateRequest}};
+        .imageWriteRequests = {imageUpdateRequest, samplersUpdateRequest}};
 
     UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -246,7 +246,7 @@ void VulkanApplication::CreateQuadTextureImage()
 {
     quadTextureImage_ = device_->CreateImage([&](auto& builder) {
         builder.SetFormat(VK_FORMAT_R8G8B8A8_SRGB);
-        builder.SetDimensions(bricksTextureHandler_.Width, bricksTextureHandler_.Height);
+        builder.SetDimensions(bricksTextureHandler_.width, bricksTextureHandler_.height);
     });
 
     if (!quadTextureImage_) {
@@ -379,7 +379,7 @@ void VulkanApplication::CopyStagingBuffer()
                     .layerCount = 1,
                 },
         .imageOffset = {0, 0, 0},
-        .imageExtent = {bricksTextureHandler_.Width, bricksTextureHandler_.Height, 1},
+        .imageExtent = {bricksTextureHandler_.width, bricksTextureHandler_.height, 1},
     };
     cmdBufferTransfer->CopyBufferToImage(buffers_[GetParamStr(AppConstants::ImageStagingBuffer)]->GetBuffer(),
                                          quadTextureImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, {copyRegion});

@@ -92,35 +92,35 @@ void VulkanApplication::CreateInitialResources() const
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    resourceCreateInfo.Buffers = {{GetParamStr(AppConstants::LightUniformBuffer), sizeof(LightUbo),
+    resourceCreateInfo.buffers = {{GetParamStr(AppConstants::LightUniformBuffer), sizeof(LightUbo),
                                    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
-                                  .ShaderType = SHADER_TYPE,
-                                  .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::SceneObjectsFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
+                                  .shaderType = SHADER_TYPE,
+                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                                              {.name = GetParamStr(AppConstants::SceneObjectsFragmentShaderKey),
+                                               .fileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)}}};
 
-    resourceCreateInfo.Images = {ImageResourceCreateInfo{
-        .Name = GetParamStr(AppConstants::DepthImage),
-        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        .Format = depthImageFormat_,
-        .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-        .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                      .Format = depthImageFormat_,
-                                      .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+    resourceCreateInfo.images = {ImageResourceCreateInfo{
+        .name = GetParamStr(AppConstants::DepthImage),
+        .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .format = depthImageFormat_,
+        .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+                                      .format = depthImageFormat_,
+                                      .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                            .baseMipLevel = 0,
                                                            .levelCount = 1,
                                                            .baseArrayLayer = 0,
                                                            .layerCount = 1}}}}};
 
-    resourceCreateInfo.Samplers = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.samplers = {
+        {.name = GetParamStr(AppConstants::MainSampler),
+         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
@@ -128,11 +128,11 @@ void VulkanApplication::CreateInitialResources() const
 void VulkanApplication::BuildScene()
 {
     SceneConfig sceneConfig;
-    sceneConfig.AttributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
-    sceneConfig.AttributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
-    sceneConfig.AttributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
-    sceneConfig.AttributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
-    sceneConfig.CurrentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
+    sceneConfig.attributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
+    sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
+    sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
+    sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.currentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_, ASSETS_DIR);
     scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
@@ -184,18 +184,18 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     // Create descriptor sets
     const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .MaxSets = 2 + combinedImageSamplerCount,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
+        .maxSets = 2 + combinedImageSamplerCount,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount}},
-        .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
+        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
                                    VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
                                    VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-        .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSet),
-                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSet),
+                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
 
@@ -209,26 +209,26 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageBufferRequest;
-    objectStorageBufferRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
-    objectStorageBufferRequest.BindingIndex = 0;
-    objectStorageBufferRequest.Buffers = storageBufferInfos;
-    objectStorageBufferRequest.Type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    objectStorageBufferRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    objectStorageBufferRequest.bindingIndex = 0;
+    objectStorageBufferRequest.buffers = storageBufferInfos;
+    objectStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     BufferWriteRequest lightUboRequest;
-    lightUboRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
-    lightUboRequest.BindingIndex = 1;
-    lightUboRequest.Buffers = lightUboInfos;
-    lightUboRequest.Type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    lightUboRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    lightUboRequest.bindingIndex = 1;
+    lightUboRequest.buffers = lightUboInfos;
+    lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
     ImageWriteRequest textureUpdateRequest;
-    textureUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSet);
-    textureUpdateRequest.BindingIndex = 2;
-    textureUpdateRequest.Images = descriptorImageInfos;
-    textureUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    textureUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    textureUpdateRequest.bindingIndex = 2;
+    textureUpdateRequest.images = descriptorImageInfos;
+    textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .BufferWriteRequests = {objectStorageBufferRequest, lightUboRequest},
-        .ImageWriteRequests = {textureUpdateRequest}};
+        .bufferWriteRequests = {objectStorageBufferRequest, lightUboRequest},
+        .imageWriteRequests = {textureUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -241,8 +241,8 @@ void VulkanApplication::InitInputSystem()
     window_->DisableCursor();
 
     window_->OnMouseMove([&](const MouseMoveEvent& event) {
-        const auto xPos = static_cast<float>(event.X);
-        const auto yPos = static_cast<float>(event.Y);
+        const auto xPos = static_cast<float>(event.x);
+        const auto yPos = static_cast<float>(event.y);
 
         if (firstMouseTriggered_) {
             lastX_ = xPos;

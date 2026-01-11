@@ -22,43 +22,43 @@ void DescriptorUpdater::ApplyUpdates()
 
     // Buffer write requests
     for (auto& req: bufferRequests_) {
-        const auto set = registry_.GetDescriptorSet(req.DescriptorSetName);
+        const auto set = registry_.GetDescriptorSet(req.descriptorSetName);
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         write.dstSet = set->GetHandle();
-        write.dstBinding = req.BindingIndex;
-        write.dstArrayElement = req.ArrayElement;
-        write.descriptorCount = static_cast<uint32_t>(req.Buffers.size());
-        write.descriptorType = req.Type;
-        write.pBufferInfo = req.Buffers.empty() ? nullptr : req.Buffers.data();
+        write.dstBinding = req.bindingIndex;
+        write.dstArrayElement = req.arrayElement;
+        write.descriptorCount = static_cast<uint32_t>(req.buffers.size());
+        write.descriptorType = req.type;
+        write.pBufferInfo = req.buffers.empty() ? nullptr : req.buffers.data();
         writes.push_back(write);
     }
 
     // Image write requests
     for (auto& req: imageRequests_) {
-        const auto set = registry_.GetDescriptorSet(req.DescriptorSetName);
+        const auto set = registry_.GetDescriptorSet(req.descriptorSetName);
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         write.dstSet = set->GetHandle();
-        write.dstBinding = req.BindingIndex;
-        write.dstArrayElement = req.ArrayElement;
-        write.descriptorCount = static_cast<uint32_t>(req.Images.size());
-        write.descriptorType = req.Type;
-        write.pImageInfo = req.Images.empty() ? nullptr : req.Images.data();
+        write.dstBinding = req.bindingIndex;
+        write.dstArrayElement = req.arrayElement;
+        write.descriptorCount = static_cast<uint32_t>(req.images.size());
+        write.descriptorType = req.type;
+        write.pImageInfo = req.images.empty() ? nullptr : req.images.data();
         writes.push_back(write);
     }
 
     // Texel buffer write requests
     for (auto& req: texelRequests_) {
-        const auto set = registry_.GetDescriptorSet(req.DescriptorSetName);
+        const auto set = registry_.GetDescriptorSet(req.descriptorSetName);
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         write.dstSet = set->GetHandle();
-        write.dstBinding = req.BindingIndex;
-        write.dstArrayElement = req.ArrayElement;
-        write.descriptorCount = static_cast<uint32_t>(req.BufferViews.size());
-        write.descriptorType = req.Type;
-        write.pTexelBufferView = req.BufferViews.empty() ? nullptr : req.BufferViews.data();
+        write.dstBinding = req.bindingIndex;
+        write.dstArrayElement = req.arrayElement;
+        write.descriptorCount = static_cast<uint32_t>(req.bufferViews.size());
+        write.descriptorType = req.type;
+        write.pTexelBufferView = req.bufferViews.empty() ? nullptr : req.bufferViews.data();
         writes.push_back(write);
     }
 
@@ -66,13 +66,13 @@ void DescriptorUpdater::ApplyUpdates()
     for (auto& req: copyRequests_) {
         VkCopyDescriptorSet copy{};
         copy.sType = VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
-        copy.srcSet = req.SourceSet->GetHandle();
-        copy.srcBinding = req.SourceBindingIndex;
-        copy.srcArrayElement = req.SourceArrayElement;
-        copy.dstSet = req.DestSet->GetHandle();
-        copy.dstBinding = req.DestBindingIndex;
-        copy.dstArrayElement = req.DestArrayElement;
-        copy.descriptorCount = req.Count;
+        copy.srcSet = req.sourceSet->GetHandle();
+        copy.srcBinding = req.sourceBindingIndex;
+        copy.srcArrayElement = req.sourceArrayElement;
+        copy.dstSet = req.destSet->GetHandle();
+        copy.dstBinding = req.destBindingIndex;
+        copy.dstArrayElement = req.destArrayElement;
+        copy.descriptorCount = req.count;
         copies.push_back(copy);
     }
 

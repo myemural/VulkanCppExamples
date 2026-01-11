@@ -104,8 +104,8 @@ void VulkanApplication::InitInputSystem()
     window_->DisableCursor();
 
     window_->OnMouseMove([&](const MouseMoveEvent& event) {
-        const auto xPos = static_cast<float>(event.X);
-        const auto yPos = static_cast<float>(event.Y);
+        const auto xPos = static_cast<float>(event.x);
+        const auto yPos = static_cast<float>(event.y);
 
         if (firstMouseTriggered_) {
             lastX_ = xPos;
@@ -137,76 +137,76 @@ void VulkanApplication::CreateResources()
     avocadoModel_ = modelLoader.LoadBinaryGltfFromFile(GetParamStr(AppConstants::AvocadoModelPath));
 
     // Load model textures
-    const auto meshMatIndex = avocadoModel_->Meshes[0].MaterialIndex;
-    const auto meshTexIndex = avocadoModel_->Materials[meshMatIndex].PbrMetallicRoughness.BaseColorTextureIndex;
-    avocadoMeshTextureHandler_ = avocadoModel_->Textures[meshTexIndex];
+    const auto meshMatIndex = avocadoModel_->meshes[0].materialIndex;
+    const auto meshTexIndex = avocadoModel_->materials[meshMatIndex].pbrMetallicRoughness.baseColorTextureIndex;
+    avocadoMeshTextureHandler_ = avocadoModel_->textures[meshTexIndex];
 
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    const std::uint32_t vertexBufferSize = avocadoModel_->Meshes[0].Attributes.VertexCount * sizeof(VertexPos3Uv2);
-    const uint32_t indexBufferSize = avocadoModel_->Meshes[0].Indices.size() * sizeof(std::uint16_t);
+    const std::uint32_t vertexBufferSize = avocadoModel_->meshes[0].attributes.vertexCount * sizeof(VertexPos3Uv2);
+    const uint32_t indexBufferSize = avocadoModel_->meshes[0].indices.size() * sizeof(std::uint16_t);
 
-    resourceCreateInfo.Buffers = {
-        {avocadoModel_->Meshes[0].GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+    resourceCreateInfo.buffers = {
+        {avocadoModel_->meshes[0].GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {avocadoModel_->Meshes[0].GetIndexBufferName(), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        {avocadoModel_->meshes[0].GetIndexBufferName(), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
-                                  .ShaderType = SHADER_TYPE,
-                                  .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
+                                  .shaderType = SHADER_TYPE,
+                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {.MaxSets = 1,
-                                      .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
-                                      .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+    resourceCreateInfo.descriptors = {.maxSets = 1,
+                                      .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
+                                      .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                   .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
                                                                  VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-                                      .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                                                          .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+                                      .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                          .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
 
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MeshImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {avocadoMeshTextureHandler_.Width, avocadoMeshTextureHandler_.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MeshImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+    resourceCreateInfo.images = {
+        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::MeshImage),
+                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                .format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .dimensions = {avocadoMeshTextureHandler_.width, avocadoMeshTextureHandler_.height, 1},
+                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::MeshImageView),
+                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                          .Format = depthImageFormat_,
-                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+            .name = GetParamStr(AppConstants::DepthImage),
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = depthImageFormat_,
+            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+                                          .format = depthImageFormat_,
+                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                                .baseMipLevel = 0,
                                                                .levelCount = 1,
                                                                .baseArrayLayer = 0,
                                                                .layerCount = 1}}}}};
 
-    resourceCreateInfo.Samplers = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.samplers = {
+        {.name = GetParamStr(AppConstants::MainSampler),
+         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
 
 void VulkanApplication::InitResources() const
 {
-    const auto& vertexBufferData = avocadoModel_->Meshes[0].GetVerticesAs<VertexPos3Uv2>();
-    const auto& indexBufferData = avocadoModel_->Meshes[0].Indices;
+    const auto& vertexBufferData = avocadoModel_->meshes[0].GetVerticesAs<VertexPos3Uv2>();
+    const auto& indexBufferData = avocadoModel_->meshes[0].indices;
     const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3Uv2);
     const uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
 
-    resources_->SetBuffer(avocadoModel_->Meshes[0].GetVertexBufferName(), vertexBufferData.data(), vertexBufferSize);
-    resources_->SetBuffer(avocadoModel_->Meshes[0].GetIndexBufferName(), indexBufferData.data(), indexBufferSize);
+    resources_->SetBuffer(avocadoModel_->meshes[0].GetVertexBufferName(), vertexBufferData.data(), vertexBufferSize);
+    resources_->SetBuffer(avocadoModel_->meshes[0].GetIndexBufferName(), indexBufferData.data(), indexBufferSize);
 
     resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MeshImage), avocadoMeshTextureHandler_);
 
@@ -337,12 +337,12 @@ void VulkanApplication::UpdateDescriptorSets() const
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
-    samplerUpdateRequest.BindingIndex = 0;
-    samplerUpdateRequest.Images = imageSamplerInfos;
-    samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.bindingIndex = 0;
+    samplerUpdateRequest.images = imageSamplerInfos;
+    samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.imageWriteRequests = {samplerUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -380,14 +380,14 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
     const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))};
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
-    const std::vector vertexBuffers{resources_->GetBuffer(avocadoModel_->Meshes[0].GetVertexBufferName())};
+    const std::vector vertexBuffers{resources_->GetBuffer(avocadoModel_->meshes[0].GetVertexBufferName())};
     currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
-    currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(avocadoModel_->Meshes[0].GetIndexBufferName()));
+    currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(avocadoModel_->meshes[0].GetIndexBufferName()));
 
     // Draw meshes
     for (auto& mvp: mvpData_) {
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvp);
-        currentCmdBuffer->DrawIndexed(avocadoModel_->Meshes[0].Indices.size(), 1, 0, 0, 0);
+        currentCmdBuffer->DrawIndexed(avocadoModel_->meshes[0].indices.size(), 1, 0, 0, 0);
     }
 
     currentCmdBuffer->EndRenderPass();

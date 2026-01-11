@@ -14,9 +14,9 @@
 
 #include <glm/glm.hpp>
 
+#include "MathUtils.h"
 #include "PrimitiveUtils.h"
 #include "Vertex.h"
-#include "VulkanHelpers.h"
 
 namespace examples::fundamentals::multisampling::explicit_resolving
 {
@@ -42,6 +42,6 @@ struct MvpData
 };
 
 // Model position vectors
-inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
+inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
         NUM_SPHERES, glm::vec3(-3.0f, -2.5f, -4.0f), glm::vec3(3.0f, 2.5f, -1.0f), 2.0f);
 } // namespace examples::fundamentals::multisampling::explicit_resolving

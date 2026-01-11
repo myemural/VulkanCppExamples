@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "MathUtils.h"
 #include "VulkanHelpers.h"
 
 namespace common::vulkan_framework
@@ -182,19 +183,19 @@ void MaterialManager::LoadTexture(const std::string& textureName,
     std::uint32_t mipLevels = 1;
     if (mipmappingEnabled) {
         usageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-        mipLevels = GetMipLevelCount(textureHandler.Width, textureHandler.Height);
+        mipLevels = utility::GetMipLevelCount(textureHandler.width, textureHandler.height);
     }
 
     const auto imageResource = ImageResourceCreateInfo{
-        .Name = textureImageName,
-        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        .Format = format,
-        .Dimensions = {textureHandler.Width, textureHandler.Height, 1},
-        .MipLevels = mipLevels,
-        .UsageFlags = usageFlags,
-        .Views = {ImageViewCreateInfo{.ViewName = textureImageViewName,
-                                      .Format = format,
-                                      .SubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, 0, 1}}}};
+        .name = textureImageName,
+        .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .format = format,
+        .dimensions = {textureHandler.width, textureHandler.height, 1},
+        .mipLevels = mipLevels,
+        .usageFlags = usageFlags,
+        .views = {ImageViewCreateInfo{.viewName = textureImageViewName,
+                                      .format = format,
+                                      .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, 0, 1}}}};
 
     resourceManager_.CreateImages({imageResource});
 

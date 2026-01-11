@@ -21,13 +21,13 @@ struct COMMON_API ShaderModulesCreateInfo
 {
     struct Module
     {
-        std::string Name;
-        std::string FileName;
+        std::string name;
+        std::string fileName;
     };
 
-    std::string BasePath;
-    std::string ShaderType;
-    std::vector<Module> Modules;
+    std::string basePath;
+    std::string shaderType;
+    std::vector<Module> modules;
 };
 
 class COMMON_API ShaderResource

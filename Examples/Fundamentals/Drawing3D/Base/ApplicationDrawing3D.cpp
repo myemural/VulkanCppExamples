@@ -156,8 +156,8 @@ void ApplicationDrawing3D::CreateDefaultSyncObjects()
 void ApplicationDrawing3D::CreateBuffers(const std::vector<BufferResourceCreateInfo>& bufferCreateInfos)
 {
     for (const auto& createInfo: bufferCreateInfos) {
-        buffers_[createInfo.Name] = std::make_unique<BufferResource>(physicalDevice_, device_);
-        buffers_[createInfo.Name]->CreateBuffer(createInfo);
+        buffers_[createInfo.name] = std::make_unique<BufferResource>(physicalDevice_, device_);
+        buffers_[createInfo.name]->CreateBuffer(createInfo);
     }
 }
 
@@ -171,16 +171,16 @@ void ApplicationDrawing3D::SetBuffer(const std::string& name, const void* data, 
 void ApplicationDrawing3D::CreateImages(const std::vector<ImageResourceCreateInfo>& imageCreateInfos)
 {
     for (const auto& createInfo: imageCreateInfos) {
-        images_[createInfo.Name] = std::make_unique<ImageResource>(physicalDevice_, device_);
-        images_[createInfo.Name]->CreateImage(createInfo);
+        images_[createInfo.name] = std::make_unique<ImageResource>(physicalDevice_, device_);
+        images_[createInfo.name]->CreateImage(createInfo);
     }
 }
 
 void ApplicationDrawing3D::CreateSamplers(const std::vector<SamplerResourceCreateInfo>& samplerCreateInfos)
 {
     for (const auto& createInfo: samplerCreateInfos) {
-        samplers_[createInfo.Name] = std::make_unique<SamplerResource>(device_);
-        samplers_[createInfo.Name]->CreateSampler(createInfo);
+        samplers_[createInfo.name] = std::make_unique<SamplerResource>(device_);
+        samplers_[createInfo.name]->CreateSampler(createInfo);
     }
 }
 
@@ -223,19 +223,19 @@ void ApplicationDrawing3D::CreateDescriptorSets(const DescriptorResourceCreateIn
 
 void ApplicationDrawing3D::UpdateDescriptorSet(const DescriptorUpdateInfo& descriptorSetUpdateInfo) const
 {
-    for (const auto& bufferUpdateInfo: descriptorSetUpdateInfo.BufferWriteRequests) {
+    for (const auto& bufferUpdateInfo: descriptorSetUpdateInfo.bufferWriteRequests) {
         descriptorUpdater_->AddBufferUpdate(bufferUpdateInfo);
     }
 
-    for (const auto& imageUpdateInfo: descriptorSetUpdateInfo.ImageWriteRequests) {
+    for (const auto& imageUpdateInfo: descriptorSetUpdateInfo.imageWriteRequests) {
         descriptorUpdater_->AddImageUpdate(imageUpdateInfo);
     }
 
-    for (const auto& texelUpdateInfo: descriptorSetUpdateInfo.TexelBufferWriteRequests) {
+    for (const auto& texelUpdateInfo: descriptorSetUpdateInfo.texelBufferWriteRequests) {
         descriptorUpdater_->AddTexelBufferUpdate(texelUpdateInfo);
     }
 
-    for (const auto& copyInfo: descriptorSetUpdateInfo.CopySetRequests) {
+    for (const auto& copyInfo: descriptorSetUpdateInfo.copySetRequests) {
         descriptorUpdater_->AddCopyRequest(copyInfo);
     }
 

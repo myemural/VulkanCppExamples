@@ -28,10 +28,10 @@ enum class MaterialSystem
 
 struct COMMON_API SceneConfig
 {
-    std::vector<std::pair<AttributeType, AccessorType>> AttributeLayout;
-    MaterialSystem CurrentMaterialSystem = MaterialSystem::PHONG;
-    std::uint32_t PrimitiveStackCount = 24U;
-    std::uint32_t PrimitiveSectorCount = 24U;
+    std::vector<std::pair<AttributeType, AccessorType>> attributeLayout;
+    MaterialSystem currentMaterialSystem = MaterialSystem::PHONG;
+    std::uint32_t primitiveStackCount = 24U;
+    std::uint32_t primitiveSectorCount = 24U;
 };
 
 class COMMON_API SceneManager

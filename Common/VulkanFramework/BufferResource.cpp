@@ -29,8 +29,8 @@ void BufferResource::CreateBuffer(const BufferResourceCreateInfo& createInfo)
     }
 
     buffer_ = devicePtr->CreateBuffer([&](auto& builder) {
-        builder.SetSize(createInfo_.BufferSizeInBytes);
-        builder.SetUsage(createInfo_.UsageFlags);
+        builder.SetSize(createInfo_.bufferSizeInBytes);
+        builder.SetUsage(createInfo_.usageFlags);
     });
 
     if (!buffer_) {
@@ -55,7 +55,7 @@ void BufferResource::AllocateBufferMemory()
     const auto memoryReq = buffer_->GetBufferMemoryRequirements();
 
     const uint32_t memoryTypeIndex =
-            physicalDevicePtr->FindMemoryType(memoryReq.memoryTypeBits, createInfo_.MemoryProperties);
+            physicalDevicePtr->FindMemoryType(memoryReq.memoryTypeBits, createInfo_.memoryProperties);
 
     deviceMemory_ = devicePtr->AllocateMemory(memoryReq.size, memoryTypeIndex);
 

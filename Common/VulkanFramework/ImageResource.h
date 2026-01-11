@@ -22,31 +22,31 @@ namespace common::vulkan_framework
 {
 struct COMMON_API ImageViewCreateInfo
 {
-    std::string ViewName;
-    VkImageViewCreateFlags CreateFlags = 0;
-    VkImageViewType ViewType = VK_IMAGE_VIEW_TYPE_2D;
-    VkFormat Format = VK_FORMAT_UNDEFINED;
-    VkComponentMapping Components = {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
+    std::string viewName;
+    VkImageViewCreateFlags createFlags = 0;
+    VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;
+    VkFormat format = VK_FORMAT_UNDEFINED;
+    VkComponentMapping components = {VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
                                      VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY};
-    VkImageSubresourceRange SubresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    VkImageSubresourceRange subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 };
 
 struct COMMON_API ImageResourceCreateInfo
 {
-    std::string Name;
-    VkMemoryPropertyFlags MemProperties;
-    VkImageCreateFlags CreateFlags = 0;
-    VkImageType ImageType = VK_IMAGE_TYPE_2D;
-    VkFormat Format = VK_FORMAT_UNDEFINED;
-    VkExtent3D Dimensions = {};
-    std::uint32_t MipLevels = 1;
-    std::uint32_t ArrayLayers = 1;
-    VkSampleCountFlagBits Samples = VK_SAMPLE_COUNT_1_BIT;
-    VkImageTiling Tiling = VK_IMAGE_TILING_OPTIMAL;
-    VkImageUsageFlags UsageFlags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-    VkImageLayout InitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    std::string name;
+    VkMemoryPropertyFlags memProperties;
+    VkImageCreateFlags createFlags = 0;
+    VkImageType imageType = VK_IMAGE_TYPE_2D;
+    VkFormat format = VK_FORMAT_UNDEFINED;
+    VkExtent3D dimensions = {};
+    std::uint32_t mipLevels = 1;
+    std::uint32_t arrayLayers = 1;
+    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
+    VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
+    VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     /// TODO: SharingMode and QueueFamilyIndices will be added later.
-    std::vector<ImageViewCreateInfo> Views;
+    std::vector<ImageViewCreateInfo> views;
 };
 
 class COMMON_API ImageResource

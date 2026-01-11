@@ -19,26 +19,26 @@ void SamplerResource::CreateSampler(const SamplerResourceCreateInfo& createInfo)
         throw std::runtime_error("Device object not found!");
     }
 
-    name_ = createInfo.Name;
+    name_ = createInfo.name;
 
     sampler_ = devicePtr->CreateSampler([&](auto& builder) {
-        builder.SetCreateFlags(createInfo.CreateFlags);
+        builder.SetCreateFlags(createInfo.createFlags);
 
-        builder.SetFilters(createInfo.FilteringBehavior.MagFilter, createInfo.FilteringBehavior.MinFilter);
-        builder.SetMipmapMode(createInfo.FilteringBehavior.MipmapMode);
-        builder.EnableAnisotropy(createInfo.FilteringBehavior.AnisotropyEnable);
-        builder.SetMaxAnisotropy(createInfo.FilteringBehavior.MaxAnisotropy);
+        builder.SetFilters(createInfo.filtering.magFilter, createInfo.filtering.minFilter);
+        builder.SetMipmapMode(createInfo.filtering.mipmapMode);
+        builder.EnableAnisotropy(createInfo.filtering.anisotropyEnable);
+        builder.SetMaxAnisotropy(createInfo.filtering.maxAnisotropy);
 
-        builder.SetAddressModes(createInfo.AddressModes.U, createInfo.AddressModes.V, createInfo.AddressModes.W);
-        builder.SetBorderColor(createInfo.AddressModes.BorderColor);
+        builder.SetAddressModes(createInfo.addressModes.u, createInfo.addressModes.v, createInfo.addressModes.w);
+        builder.SetBorderColor(createInfo.addressModes.borderColor);
 
-        builder.SetMipmapLodBias(createInfo.Lod.MipLodBias);
-        builder.SetMipmapLodRange(createInfo.Lod.MinLod, createInfo.Lod.MaxLod);
+        builder.SetMipmapLodBias(createInfo.lod.mipLodBias);
+        builder.SetMipmapLodRange(createInfo.lod.minLod, createInfo.lod.maxLod);
 
-        builder.EnableComparing(createInfo.ComparisonBehavior.CompareEnable);
-        builder.SetCompareOp(createInfo.ComparisonBehavior.CompareOp);
+        builder.EnableComparing(createInfo.comparisonBehavior.compareEnable);
+        builder.SetCompareOp(createInfo.comparisonBehavior.compareOp);
 
-        builder.EnableUnnormalizedCoordinates(createInfo.UnnormalizedCoordinates);
+        builder.EnableUnnormalizedCoordinates(createInfo.unnormalizedCoordinates);
     });
 
     if (!sampler_) {

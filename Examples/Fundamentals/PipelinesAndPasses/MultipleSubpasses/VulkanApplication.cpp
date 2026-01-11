@@ -103,60 +103,60 @@ void VulkanApplication::CreateResources()
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
 
-    resourceCreateInfo.Buffers = {
+    resourceCreateInfo.buffers = {
         {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
-                                  .ShaderType = SHADER_TYPE,
-                                  .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::ObjectFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::ObjectFragmentShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::DepthObjectFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::DepthObjectFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
+                                  .shaderType = SHADER_TYPE,
+                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                                              {.name = GetParamStr(AppConstants::ObjectFragmentShaderKey),
+                                               .fileName = GetParamStr(AppConstants::ObjectFragmentShaderFile)},
+                                              {.name = GetParamStr(AppConstants::DepthObjectFragmentShaderKey),
+                                               .fileName = GetParamStr(AppConstants::DepthObjectFragmentShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {
-        .MaxSets = 2,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1}},
-        .Layouts = {{.Name = GetParamStr(AppConstants::ObjectDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+    resourceCreateInfo.descriptors = {
+        .maxSets = 2,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1}},
+        .layouts = {{.name = GetParamStr(AppConstants::ObjectDescSetLayout),
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}},
-                    {.Name = GetParamStr(AppConstants::DepthObjectDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-        .DescriptorSets = {{.Name = GetParamStr(AppConstants::ObjectDescSetLayout),
-                            .LayoutName = GetParamStr(AppConstants::ObjectDescSetLayout)},
-                           {.Name = GetParamStr(AppConstants::DepthObjectDescSetLayout),
-                            .LayoutName = GetParamStr(AppConstants::DepthObjectDescSetLayout)}}};
+                    {.name = GetParamStr(AppConstants::DepthObjectDescSetLayout),
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
+        .descriptorSets = {{.name = GetParamStr(AppConstants::ObjectDescSetLayout),
+                            .layoutName = GetParamStr(AppConstants::ObjectDescSetLayout)},
+                           {.name = GetParamStr(AppConstants::DepthObjectDescSetLayout),
+                            .layoutName = GetParamStr(AppConstants::DepthObjectDescSetLayout)}}};
 
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::CrateImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {crateTextureHandler_.Width, crateTextureHandler_.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::CrateImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+    resourceCreateInfo.images = {
+        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::CrateImage),
+                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                .format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CrateImageView),
+                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                          .Format = depthImageFormat_,
-                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+            .name = GetParamStr(AppConstants::DepthImage),
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = depthImageFormat_,
+            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
+            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+                                          .format = depthImageFormat_,
+                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                                .baseMipLevel = 0,
                                                                .levelCount = 1,
                                                                .baseArrayLayer = 0,
                                                                .layerCount = 1}}}}};
 
-    resourceCreateInfo.Samplers = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.samplers = {
+        {.name = GetParamStr(AppConstants::MainSampler),
+         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
@@ -363,19 +363,19 @@ void VulkanApplication::UpdateDescriptorSets() const
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::ObjectDescSetLayout);
-    samplerUpdateRequest.BindingIndex = 0;
-    samplerUpdateRequest.Images = imageSamplerInfos;
-    samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::ObjectDescSetLayout);
+    samplerUpdateRequest.bindingIndex = 0;
+    samplerUpdateRequest.images = imageSamplerInfos;
+    samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest inputDepthUpdateRequest;
-    inputDepthUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::DepthObjectDescSetLayout);
-    inputDepthUpdateRequest.BindingIndex = 0;
-    inputDepthUpdateRequest.Images = depthImageInfos;
-    inputDepthUpdateRequest.Type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+    inputDepthUpdateRequest.descriptorSetName = GetParamStr(AppConstants::DepthObjectDescSetLayout);
+    inputDepthUpdateRequest.bindingIndex = 0;
+    inputDepthUpdateRequest.images = depthImageInfos;
+    inputDepthUpdateRequest.type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .ImageWriteRequests = {samplerUpdateRequest, inputDepthUpdateRequest}};
+        .imageWriteRequests = {samplerUpdateRequest, inputDepthUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }

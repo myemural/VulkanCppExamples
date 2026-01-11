@@ -183,8 +183,8 @@ void ApplicationImagesAndSamplers::CreateDefaultSyncObjects()
 void ApplicationImagesAndSamplers::CreateBuffers(const std::vector<BufferResourceCreateInfo>& bufferCreateInfos)
 {
     for (const auto& createInfo: bufferCreateInfos) {
-        buffers_[createInfo.Name] = std::make_unique<BufferResource>(physicalDevice_, device_);
-        buffers_[createInfo.Name]->CreateBuffer(createInfo);
+        buffers_[createInfo.name] = std::make_unique<BufferResource>(physicalDevice_, device_);
+        buffers_[createInfo.name]->CreateBuffer(createInfo);
     }
 }
 
@@ -211,19 +211,19 @@ void ApplicationImagesAndSamplers::CreateDescriptorSets(const DescriptorResource
 
 void ApplicationImagesAndSamplers::UpdateDescriptorSet(const DescriptorUpdateInfo& descriptorSetUpdateInfo) const
 {
-    for (const auto& bufferUpdateInfo: descriptorSetUpdateInfo.BufferWriteRequests) {
+    for (const auto& bufferUpdateInfo: descriptorSetUpdateInfo.bufferWriteRequests) {
         descriptorUpdater_->AddBufferUpdate(bufferUpdateInfo);
     }
 
-    for (const auto& imageUpdateInfo: descriptorSetUpdateInfo.ImageWriteRequests) {
+    for (const auto& imageUpdateInfo: descriptorSetUpdateInfo.imageWriteRequests) {
         descriptorUpdater_->AddImageUpdate(imageUpdateInfo);
     }
 
-    for (const auto& texelUpdateInfo: descriptorSetUpdateInfo.TexelBufferWriteRequests) {
+    for (const auto& texelUpdateInfo: descriptorSetUpdateInfo.texelBufferWriteRequests) {
         descriptorUpdater_->AddTexelBufferUpdate(texelUpdateInfo);
     }
 
-    for (const auto& copyInfo: descriptorSetUpdateInfo.CopySetRequests) {
+    for (const auto& copyInfo: descriptorSetUpdateInfo.copySetRequests) {
         descriptorUpdater_->AddCopyRequest(copyInfo);
     }
 

@@ -104,8 +104,8 @@ void VulkanApplication::InitInputSystem()
     window_->DisableCursor();
 
     window_->OnMouseMove([&](const MouseMoveEvent& event) {
-        const auto xPos = static_cast<float>(event.X);
-        const auto yPos = static_cast<float>(event.Y);
+        const auto xPos = static_cast<float>(event.x);
+        const auto yPos = static_cast<float>(event.y);
 
         if (firstMouseTriggered_) {
             lastX_ = xPos;
@@ -137,75 +137,75 @@ void VulkanApplication::CreateResources()
     lanternModel_ = modelLoader.LoadBinaryGltfFromFile(GetParamStr(AppConstants::LanternModelPath));
 
     // Load model textures
-    const auto meshMatIndex = lanternModel_->Meshes[0].MaterialIndex;
-    const auto meshTexIndex = lanternModel_->Materials[meshMatIndex].PbrMetallicRoughness.BaseColorTextureIndex;
-    lanternMeshTextureHandler_ = lanternModel_->Textures[meshTexIndex];
+    const auto meshMatIndex = lanternModel_->meshes[0].materialIndex;
+    const auto meshTexIndex = lanternModel_->materials[meshMatIndex].pbrMetallicRoughness.baseColorTextureIndex;
+    lanternMeshTextureHandler_ = lanternModel_->textures[meshTexIndex];
 
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
     std::vector<BufferResourceCreateInfo> bufferCreateInfos;
-    for (const auto& mesh: lanternModel_->Meshes) {
-        const std::uint32_t vertexBufferSize = mesh.Attributes.VertexCount * sizeof(VertexPos3Uv2);
-        const std::uint32_t indexBufferSize = mesh.Indices.size() * sizeof(std::uint16_t);
+    for (const auto& mesh: lanternModel_->meshes) {
+        const std::uint32_t vertexBufferSize = mesh.attributes.vertexCount * sizeof(VertexPos3Uv2);
+        const std::uint32_t indexBufferSize = mesh.indices.size() * sizeof(std::uint16_t);
 
         bufferCreateInfos.emplace_back(mesh.GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
         bufferCreateInfos.emplace_back(mesh.GetIndexBufferName(), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     }
-    resourceCreateInfo.Buffers = bufferCreateInfos;
+    resourceCreateInfo.buffers = bufferCreateInfos;
 
     // Fill shader module create infos
-    resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
-                                  .ShaderType = SHADER_TYPE,
-                                  .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
+                                  .shaderType = SHADER_TYPE,
+                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {.MaxSets = 1,
-                                      .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
-                                      .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                                                   .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
+    resourceCreateInfo.descriptors = {.maxSets = 1,
+                                      .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
+                                      .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                   .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
                                                                  VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-                                      .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                                                          .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+                                      .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                                                          .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
 
-    resourceCreateInfo.Images = {
-        ImageResourceCreateInfo{.Name = GetParamStr(AppConstants::MeshImage),
-                                .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .Format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .Dimensions = {lanternMeshTextureHandler_.Width, lanternMeshTextureHandler_.Height, 1},
-                                .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::MeshImageView),
-                                                              .Format = VK_FORMAT_R8G8B8A8_SRGB}}},
+    resourceCreateInfo.images = {
+        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::MeshImage),
+                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                .format = VK_FORMAT_R8G8B8A8_SRGB,
+                                .dimensions = {lanternMeshTextureHandler_.width, lanternMeshTextureHandler_.height, 1},
+                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::MeshImageView),
+                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
-            .Name = GetParamStr(AppConstants::DepthImage),
-            .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .Format = depthImageFormat_,
-            .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .UsageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::DepthImageView),
-                                          .Format = depthImageFormat_,
-                                          .SubresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+            .name = GetParamStr(AppConstants::DepthImage),
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = depthImageFormat_,
+            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+                                          .format = depthImageFormat_,
+                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                                .baseMipLevel = 0,
                                                                .levelCount = 1,
                                                                .baseArrayLayer = 0,
                                                                .layerCount = 1}}}}};
 
-    resourceCreateInfo.Samplers = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.samplers = {
+        {.name = GetParamStr(AppConstants::MainSampler),
+         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
 
 void VulkanApplication::InitResources() const
 {
-    for (auto& mesh: lanternModel_->Meshes) {
+    for (auto& mesh: lanternModel_->meshes) {
         const auto& vertexBufferData = mesh.GetVerticesAs<VertexPos3Uv2>();
-        const auto& indexBufferData = mesh.Indices;
+        const auto& indexBufferData = mesh.indices;
         const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3Uv2);
         const std::uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
 
@@ -342,12 +342,12 @@ void VulkanApplication::UpdateDescriptorSets() const
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
-    samplerUpdateRequest.BindingIndex = 0;
-    samplerUpdateRequest.Images = imageSamplerInfos;
-    samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.bindingIndex = 0;
+    samplerUpdateRequest.images = imageSamplerInfos;
+    samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.ImageWriteRequests = {samplerUpdateRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.imageWriteRequests = {samplerUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -387,22 +387,22 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
 
     // Draw meshes
-    for (const auto& node: lanternModel_->Nodes) {
-        if (node.MeshIndex == UINT32_MAX) {
+    for (const auto& node: lanternModel_->nodes) {
+        if (node.meshIndex == UINT32_MAX) {
             continue;
         }
 
-        const auto mesh = lanternModel_->Meshes[node.MeshIndex];
+        const auto mesh = lanternModel_->meshes[node.meshIndex];
 
         MvpData mvpData{};
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-        mvpData.mvpMatrix = camera_->GetProjectionMatrix() * camera_->GetViewMatrix() * scale * node.WorldTransform;
+        mvpData.mvpMatrix = camera_->GetProjectionMatrix() * camera_->GetViewMatrix() * scale * node.worldTransform;
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvpData);
 
         const std::vector vertexBuffers{resources_->GetBuffer(mesh.GetVertexBufferName())};
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
         currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(mesh.GetIndexBufferName()));
-        currentCmdBuffer->DrawIndexed(mesh.Indices.size(), 1, 0, 0, 0);
+        currentCmdBuffer->DrawIndexed(mesh.indices.size(), 1, 0, 0, 0);
     }
 
     currentCmdBuffer->EndRenderPass();

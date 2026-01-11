@@ -12,8 +12,8 @@
 
 #include <glm/glm.hpp>
 
+#include "MathUtils.h"
 #include "Vertex.h"
-#include "VulkanHelpers.h"
 
 namespace examples::real_time_lighting::texture_sampling_and_filtering::gradient_based_mipmapping
 {
@@ -27,7 +27,7 @@ struct alignas(16) LightUbo
 };
 
 // Model position vectors
-inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
+inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
         NUM_OBJECTS, glm::vec3(-5.0f, -5.0f, -20.0f), glm::vec3(5.0f, 5.0f, -1.0f), 1.5f);
 
 } // namespace examples::real_time_lighting::texture_sampling_and_filtering::gradient_based_mipmapping

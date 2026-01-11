@@ -14,8 +14,7 @@
 
 #include <glm/mat4x4.hpp>
 
-#include "ModelLoader.h"
-#include "VulkanHelpers.h"
+#include "MathUtils.h"
 
 namespace examples::fundamentals::model_loading::gltf_mesh_textured
 {
@@ -28,6 +27,6 @@ struct MvpData
 };
 
 // Model position vectors
-inline const std::vector<glm::vec3> modelPositions = common::vulkan_framework::GenerateRandomPositions(
+inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
         NUM_OBJECTS, glm::vec3(-3.0f, -3.0f, -4.0f), glm::vec3(3.0f, 3.0f, -1.0f), 15.0f);
 } // namespace examples::fundamentals::model_loading::gltf_mesh_textured

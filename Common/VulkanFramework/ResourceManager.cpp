@@ -23,24 +23,24 @@ ResourceManager::ResourceManager(const std::shared_ptr<vulkan_wrapper::VulkanPhy
 void ResourceManager::CreateBuffers(const std::vector<BufferResourceCreateInfo>& bufferCreateInfos)
 {
     for (const auto& createInfo: bufferCreateInfos) {
-        buffers_[createInfo.Name] = std::make_unique<BufferResource>(physicalDevice_, device_);
-        buffers_[createInfo.Name]->CreateBuffer(createInfo);
+        buffers_[createInfo.name] = std::make_unique<BufferResource>(physicalDevice_, device_);
+        buffers_[createInfo.name]->CreateBuffer(createInfo);
     }
 }
 
 void ResourceManager::CreateImages(const std::vector<ImageResourceCreateInfo>& imageCreateInfos)
 {
     for (const auto& createInfo: imageCreateInfos) {
-        images_[createInfo.Name] = std::make_unique<ImageResource>(physicalDevice_, device_);
-        images_[createInfo.Name]->CreateImage(createInfo);
+        images_[createInfo.name] = std::make_unique<ImageResource>(physicalDevice_, device_);
+        images_[createInfo.name]->CreateImage(createInfo);
     }
 }
 
 void ResourceManager::CreateSamplers(const std::vector<SamplerResourceCreateInfo>& samplerCreateInfos)
 {
     for (const auto& createInfo: samplerCreateInfos) {
-        samplers_[createInfo.Name] = std::make_unique<SamplerResource>(device_);
-        samplers_[createInfo.Name]->CreateSampler(createInfo);
+        samplers_[createInfo.name] = std::make_unique<SamplerResource>(device_);
+        samplers_[createInfo.name]->CreateSampler(createInfo);
     }
 }
 
@@ -60,19 +60,19 @@ void ResourceManager::CreateDescriptorSets(const DescriptorResourceCreateInfo& d
 
 void ResourceManager::UpdateDescriptorSet(const DescriptorUpdateInfo& descriptorSetUpdateInfo) const
 {
-    for (const auto& bufferUpdateInfo: descriptorSetUpdateInfo.BufferWriteRequests) {
+    for (const auto& bufferUpdateInfo: descriptorSetUpdateInfo.bufferWriteRequests) {
         descriptorUpdater_->AddBufferUpdate(bufferUpdateInfo);
     }
 
-    for (const auto& imageUpdateInfo: descriptorSetUpdateInfo.ImageWriteRequests) {
+    for (const auto& imageUpdateInfo: descriptorSetUpdateInfo.imageWriteRequests) {
         descriptorUpdater_->AddImageUpdate(imageUpdateInfo);
     }
 
-    for (const auto& texelUpdateInfo: descriptorSetUpdateInfo.TexelBufferWriteRequests) {
+    for (const auto& texelUpdateInfo: descriptorSetUpdateInfo.texelBufferWriteRequests) {
         descriptorUpdater_->AddTexelBufferUpdate(texelUpdateInfo);
     }
 
-    for (const auto& copyInfo: descriptorSetUpdateInfo.CopySetRequests) {
+    for (const auto& copyInfo: descriptorSetUpdateInfo.copySetRequests) {
         descriptorUpdater_->AddCopyRequest(copyInfo);
     }
 
@@ -159,13 +159,13 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
                                           VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, 0, 1});
 
     const BufferResourceCreateInfo stagingBufferCreateInfo{
-        imageName + "_tempStagingBuffer", static_cast<std::uint32_t>(textureHandler.Data.size()),
+        imageName + "_tempStagingBuffer", static_cast<std::uint32_t>(textureHandler.data.size()),
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
 
-    buffers_[stagingBufferCreateInfo.Name] = std::make_unique<BufferResource>(physicalDevice_, device_);
-    buffers_[stagingBufferCreateInfo.Name]->CreateBuffer(stagingBufferCreateInfo);
+    buffers_[stagingBufferCreateInfo.name] = std::make_unique<BufferResource>(physicalDevice_, device_);
+    buffers_[stagingBufferCreateInfo.name]->CreateBuffer(stagingBufferCreateInfo);
 
-    SetBuffer(stagingBufferCreateInfo.Name, textureHandler.Data.data(), textureHandler.Data.size());
+    SetBuffer(stagingBufferCreateInfo.name, textureHandler.data.data(), textureHandler.data.size());
 
     const VkBufferImageCopy copyRegion = {.bufferOffset = 0,
                                           .bufferRowLength = 0,
@@ -178,8 +178,8 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
                                                       .layerCount = 1,
                                                   },
                                           .imageOffset = {0, 0, 0},
-                                          .imageExtent = {textureHandler.Width, textureHandler.Height, 1}};
-    images_[imageName]->CopyDataFromBuffer(cmdPool, queue, buffers_[stagingBufferCreateInfo.Name]->GetBuffer(),
+                                          .imageExtent = {textureHandler.width, textureHandler.height, 1}};
+    images_[imageName]->CopyDataFromBuffer(cmdPool, queue, buffers_[stagingBufferCreateInfo.name]->GetBuffer(),
                                            copyRegion);
     images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                           VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -209,8 +209,8 @@ void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::Vulk
                                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceRange);
 
-    auto mipWidth = static_cast<int32_t>(textureHandler.Width);
-    auto mipHeight = static_cast<int32_t>(textureHandler.Height);
+    auto mipWidth = static_cast<int32_t>(textureHandler.width);
+    auto mipHeight = static_cast<int32_t>(textureHandler.height);
 
     for (uint32_t i = 1; i < mipLevels; ++i) {
         barrier.subresourceRange.baseMipLevel = i - 1;

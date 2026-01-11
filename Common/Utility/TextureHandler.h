@@ -25,11 +25,11 @@ enum class TextureChannelFormat
 
 struct COMMON_API TextureHandler
 {
-    std::vector<unsigned char> Data;
-    std::uint32_t Width = UINT32_MAX;
-    std::uint32_t Height = UINT32_MAX;
-    std::uint32_t Channels = UINT32_MAX;
-    TextureChannelFormat Format = TextureChannelFormat::RGBA;
+    std::vector<unsigned char> data;
+    std::uint32_t width = UINT32_MAX;
+    std::uint32_t height = UINT32_MAX;
+    std::uint32_t channels = UINT32_MAX;
+    TextureChannelFormat format = TextureChannelFormat::RGBA;
 };
 
 } // namespace common::utility

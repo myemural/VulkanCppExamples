@@ -90,48 +90,48 @@ void VulkanApplication::CreateResources()
     const std::uint32_t vertexBufferSize = quadVertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t indexDataSize = quadIndices.size() * sizeof(quadIndices[0]);
 
-    resourceCreateInfo.Buffers = {
+    resourceCreateInfo.buffers = {
         {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.Shaders = {.BasePath = SHADERS_DIR,
-                                  .ShaderType = SHADER_TYPE,
-                                  .Modules = {{.Name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .FileName = GetParamStr(AppConstants::MainFragmentShaderFile)},
-                                              {.Name = GetParamStr(AppConstants::GradientComputeShaderKey),
-                                               .FileName = GetParamStr(AppConstants::GradientComputeShaderFile)}}};
+    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
+                                  .shaderType = SHADER_TYPE,
+                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
+                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
+                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)},
+                                              {.name = GetParamStr(AppConstants::GradientComputeShaderKey),
+                                               .fileName = GetParamStr(AppConstants::GradientComputeShaderFile)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.Descriptors = {
-        .MaxSets = 2,
-        .PoolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1}},
-        .Layouts = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+    resourceCreateInfo.descriptors = {
+        .maxSets = 2,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1}},
+        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}},
-                    {.Name = GetParamStr(AppConstants::ComputeDescSetLayout),
-                     .Bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr}}}},
-        .DescriptorSets = {{.Name = GetParamStr(AppConstants::MainDescSetLayout),
-                            .LayoutName = GetParamStr(AppConstants::MainDescSetLayout)},
-                           {.Name = GetParamStr(AppConstants::ComputeDescSetLayout),
-                            .LayoutName = GetParamStr(AppConstants::ComputeDescSetLayout)}}};
+                    {.name = GetParamStr(AppConstants::ComputeDescSetLayout),
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr}}}},
+        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)},
+                           {.name = GetParamStr(AppConstants::ComputeDescSetLayout),
+                            .layoutName = GetParamStr(AppConstants::ComputeDescSetLayout)}}};
 
-    resourceCreateInfo.Images = {ImageResourceCreateInfo{
-        .Name = GetParamStr(AppConstants::GradientStorageImage),
-        .MemProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        .Format = VK_FORMAT_R8G8B8A8_UNORM,
-        .Dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-        .UsageFlags = VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-        .Views = {ImageViewCreateInfo{.ViewName = GetParamStr(AppConstants::GradientStorageImageView),
-                                      .Format = VK_FORMAT_R8G8B8A8_UNORM}}}};
+    resourceCreateInfo.images = {ImageResourceCreateInfo{
+        .name = GetParamStr(AppConstants::GradientStorageImage),
+        .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .format = VK_FORMAT_R8G8B8A8_UNORM,
+        .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .usageFlags = VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+        .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::GradientStorageImageView),
+                                      .format = VK_FORMAT_R8G8B8A8_UNORM}}}};
 
-    resourceCreateInfo.Samplers = {
-        {.Name = GetParamStr(AppConstants::MainSampler),
-         .FilteringBehavior = {.MagFilter = VK_FILTER_LINEAR, .MinFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.samplers = {
+        {.name = GetParamStr(AppConstants::MainSampler),
+         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
@@ -280,19 +280,19 @@ void VulkanApplication::UpdateDescriptorSets() const
                                    VK_IMAGE_LAYOUT_GENERAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
-    samplerUpdateRequest.BindingIndex = 0;
-    samplerUpdateRequest.Images = imageSamplerInfos;
-    samplerUpdateRequest.Type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.bindingIndex = 0;
+    samplerUpdateRequest.images = imageSamplerInfos;
+    samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest storageUpdateRequest;
-    storageUpdateRequest.DescriptorSetName = GetParamStr(AppConstants::ComputeDescSetLayout);
-    storageUpdateRequest.BindingIndex = 0;
-    storageUpdateRequest.Images = imageStorageInfos;
-    storageUpdateRequest.Type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+    storageUpdateRequest.descriptorSetName = GetParamStr(AppConstants::ComputeDescSetLayout);
+    storageUpdateRequest.bindingIndex = 0;
+    storageUpdateRequest.images = imageStorageInfos;
+    storageUpdateRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .ImageWriteRequests = {samplerUpdateRequest, storageUpdateRequest}};
+        .imageWriteRequests = {samplerUpdateRequest, storageUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }

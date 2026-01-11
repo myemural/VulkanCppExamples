@@ -19,44 +19,44 @@ namespace common::vulkan_framework
 {
 struct COMMON_API SamplerResourceCreateInfo
 {
-    std::string Name;
-    VkSamplerCreateFlags CreateFlags = 0;
+    std::string name;
+    VkSamplerCreateFlags createFlags = 0;
 
     struct Filtering
     {
-        VkFilter MagFilter = VK_FILTER_NEAREST;
-        VkFilter MinFilter = VK_FILTER_NEAREST;
-        VkSamplerMipmapMode MipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
-        VkBool32 AnisotropyEnable = VK_FALSE;
-        float MaxAnisotropy = 1.0f;
+        VkFilter magFilter = VK_FILTER_NEAREST;
+        VkFilter minFilter = VK_FILTER_NEAREST;
+        VkSamplerMipmapMode mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        VkBool32 anisotropyEnable = VK_FALSE;
+        float maxAnisotropy = 1.0f;
     };
 
     struct AddressModes
     {
-        VkSamplerAddressMode U = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        VkSamplerAddressMode V = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        VkSamplerAddressMode W = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        VkBorderColor BorderColor = VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
+        VkSamplerAddressMode u = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        VkSamplerAddressMode v = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        VkSamplerAddressMode w = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        VkBorderColor borderColor = VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
     };
 
     struct LodControl
     {
-        float MipLodBias = 0.0f;
-        float MinLod = 0.0f;
-        float MaxLod = 0.0f;
+        float mipLodBias = 0.0f;
+        float minLod = 0.0f;
+        float maxLod = 0.0f;
     };
 
     struct Comparison
     {
-        VkBool32 CompareEnable = VK_FALSE;
-        VkCompareOp CompareOp = VK_COMPARE_OP_ALWAYS;
+        VkBool32 compareEnable = VK_FALSE;
+        VkCompareOp compareOp = VK_COMPARE_OP_ALWAYS;
     };
 
-    Filtering FilteringBehavior{};
-    AddressModes AddressModes{};
-    LodControl Lod{};
-    Comparison ComparisonBehavior{};
-    VkBool32 UnnormalizedCoordinates = VK_FALSE;
+    Filtering filtering{};
+    AddressModes addressModes{};
+    LodControl lod{};
+    Comparison comparisonBehavior{};
+    VkBool32 unnormalizedCoordinates = VK_FALSE;
 };
 
 class COMMON_API SamplerResource
