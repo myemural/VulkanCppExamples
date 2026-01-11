@@ -32,11 +32,11 @@ This examples draws 4 quads to the screen. Then it applies a transparent leaf te
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type | Status             | Notes |
+|-------------|--------------------|-------|
+| GLSL        | :white_check_mark: |       |
+| HLSL        | :white_check_mark: |       |
+| Slang       | :white_check_mark: |       |
 
 ## Theoretical Background
 

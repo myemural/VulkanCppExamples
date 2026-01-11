@@ -48,7 +48,7 @@ inline void SetCommonParamSchema(utility::ParameterSchema& schema)
     schema.RegisterParam<bool>(WindowParams::Resizable, false);
 
     schema.RegisterParam<std::string>(VulkanParams::ApplicationName);
-    schema.RegisterParam<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_0);
+    schema.RegisterParam<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_1);
     schema.RegisterParam<std::uint32_t>(VulkanParams::ApplicationVersion, VK_MAKE_VERSION(1, 0, 0));
     schema.RegisterParam<std::string>(VulkanParams::EngineName, "DefaultEngine");
     schema.RegisterParam<std::uint32_t>(VulkanParams::EngineVersion, VK_MAKE_VERSION(1, 0, 0));
