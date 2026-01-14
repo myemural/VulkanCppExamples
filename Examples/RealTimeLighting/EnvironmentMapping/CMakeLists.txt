@@ -1,0 +1,6 @@
+set(SUBCATEGORY_NAME EnvironmentMapping)
+
+add_subdirectory(Base)
+include_directories(Base)
+
+add_subdirectory(CubemapSkybox)

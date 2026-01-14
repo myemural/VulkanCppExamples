@@ -208,7 +208,7 @@ void ApplicationDrawing3D::SetImageFromBuffer(const std::string& name,
                                                   },
                                           .imageOffset = {0, 0, 0},
                                           .imageExtent = dimensions};
-    images_[name]->CopyDataFromBuffer(cmdPool_, queue_, stagingBuffer, copyRegion);
+    images_[name]->CopyDataFromBuffer(cmdPool_, queue_, stagingBuffer, {copyRegion});
     images_[name]->ChangeImageLayout(cmdPool_, queue_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }

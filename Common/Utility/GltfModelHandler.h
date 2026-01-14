@@ -23,7 +23,7 @@ namespace common::utility
 
 struct COMMON_API GltfPrimitiveAttrib
 {
-    std::uint32_t vertexCount;
+    std::uint32_t vertexCount = UINT32_MAX;
     std::vector<glm::vec3> positions;
     std::vector<glm::vec3> normals;
     std::vector<glm::vec4> tangents;
@@ -38,11 +38,31 @@ struct COMMON_API GltfMaterial
 {
     struct PbrMetallicRoughness
     {
+        glm::vec4 baseColor = {1.0f, 1.0f, 1.0f, 1.0f};
         int baseColorTextureIndex = -1;
+        float metallicFactor = 1.0f;
+        float roughnessFactor = 1.0f;
+        int metallicRoughnessTextureIndex = -1;
+    };
+
+    struct NormalTextureInfo
+    {
+        int index = -1;
+        float scale = 1.0f;
+    };
+
+    struct OcclusionTextureInfo
+    {
+        int index = -1;
+        float strength = 1.0f;
     };
 
     std::string name;
     PbrMetallicRoughness pbrMetallicRoughness;
+    NormalTextureInfo normalTextureInfo;
+    OcclusionTextureInfo occlusionTextureInfo;
+    int emissionTextureIndex = -1;
+    glm::vec3 emissiveFactor = {0.0f, 0.0f, 0.0f};
 };
 
 struct COMMON_API GltfMesh
@@ -79,7 +99,7 @@ enum class GltfCameraType
 struct COMMON_API GltfCamera
 {
     std::string name;
-    GltfCameraType type;
+    GltfCameraType type = GltfCameraType::PERSPECTIVE;
 
     struct Perspective
     {
@@ -97,8 +117,8 @@ struct COMMON_API GltfCamera
         float far;
     };
 
-    Perspective perspectiveFeatures;
-    Orthographic orthographicFeatures;
+    Perspective perspectiveFeatures{};
+    Orthographic orthographicFeatures{};
 };
 
 struct COMMON_API GltfModelHandler

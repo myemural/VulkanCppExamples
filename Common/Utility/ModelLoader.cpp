@@ -186,12 +186,30 @@ bool ModelLoader::ProcessMaterials(const std::shared_ptr<GltfModelHandler>& hand
         GltfMaterial material;
         std::string matName = mat.name.empty() ? "mat" + std::to_string(i++) : mat.name;
         material.name = handler->name + "_" + matName;
-        if (mat.values.contains("baseColorTexture")) {
-            material.pbrMetallicRoughness.baseColorTextureIndex = mat.values.at("baseColorTexture").TextureIndex();
-        } else {
-            std::cerr << "Currently material that does not contain baseColorTexture is not supported!" << std::endl;
-            return false;
-        }
+
+        // pbrMetallicRoughness
+        const auto& baseColor = mat.pbrMetallicRoughness.baseColorFactor;
+        material.pbrMetallicRoughness.baseColor = {static_cast<float>(baseColor[0]), static_cast<float>(baseColor[1]),
+                                                   static_cast<float>(baseColor[2]), static_cast<float>(baseColor[3])};
+        material.pbrMetallicRoughness.baseColorTextureIndex = mat.pbrMetallicRoughness.baseColorTexture.index;
+        material.pbrMetallicRoughness.metallicFactor = static_cast<float>(mat.pbrMetallicRoughness.metallicFactor);
+        material.pbrMetallicRoughness.roughnessFactor = static_cast<float>(mat.pbrMetallicRoughness.roughnessFactor);
+        material.pbrMetallicRoughness.metallicRoughnessTextureIndex =
+                mat.pbrMetallicRoughness.metallicRoughnessTexture.index;
+
+        // normalTexture
+        material.normalTextureInfo.index = mat.normalTexture.index;
+        material.normalTextureInfo.scale = static_cast<float>(mat.normalTexture.scale);
+
+        // occlusionTexture
+        material.occlusionTextureInfo.index = mat.occlusionTexture.index;
+        material.occlusionTextureInfo.strength = static_cast<float>(mat.occlusionTexture.strength);
+
+        // emissive
+        material.emissionTextureIndex = mat.emissiveTexture.index;
+        const auto& emissiveFactor = mat.emissiveFactor;
+        material.emissiveFactor = {static_cast<float>(emissiveFactor[0]), static_cast<float>(emissiveFactor[1]),
+                                   static_cast<float>(emissiveFactor[2])};
 
         handler->materials.push_back(material);
     }
@@ -239,6 +257,20 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
                 std::memcpy(normData.data(), &normBuffer.data[start], length * sizeof(glm::vec3));
             }
 
+            // Vertex Normals
+            std::vector<glm::vec4> tangentData;
+            if (primitive.attributes.contains("TANGENT")) {
+                const auto& tangentAccessor = gltfModel_.accessors[primitive.attributes.at("TANGENT")];
+                const auto& tangentBufferView = gltfModel_.bufferViews[tangentAccessor.bufferView];
+                const auto& tangentBuffer = gltfModel_.buffers[tangentBufferView.buffer];
+
+                size_t start = tangentBufferView.byteOffset + tangentAccessor.byteOffset;
+                size_t length = tangentAccessor.count;
+
+                tangentData.resize(length);
+                std::memcpy(tangentData.data(), &tangentBuffer.data[start], length * sizeof(glm::vec4));
+            }
+
             // Vertex TexCoords (only TEXCOORD_0 for now)
             std::vector<glm::vec2> texData;
             if (primitive.attributes.contains("TEXCOORD_0")) {
@@ -258,6 +290,7 @@ bool ModelLoader::ProcessMeshes(const std::shared_ptr<GltfModelHandler>& handler
             attribute.vertexCount = posData.size();
             attribute.positions = std::move(posData);
             attribute.normals = std::move(normData);
+            attribute.tangents = std::move(tangentData);
             attribute.texCoords0 = std::move(texData);
             gltfMesh.attributes = std::move(attribute);
 

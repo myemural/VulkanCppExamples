@@ -148,7 +148,7 @@ void ImageResource::ChangeImageLayout(const std::shared_ptr<vulkan_wrapper::Vulk
 void ImageResource::CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                                        const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                        const std::shared_ptr<vulkan_wrapper::VulkanBuffer>& stagingBuffer,
-                                       const VkBufferImageCopy& copyRegion) const
+                                       const std::vector<VkBufferImageCopy>& copyRegions) const
 {
     const auto cmdBufferTransfer = cmdPool->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
 
@@ -157,7 +157,7 @@ void ImageResource::CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::Vul
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
-    cmdBufferTransfer->CopyBufferToImage(stagingBuffer, image_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, {copyRegion});
+    cmdBufferTransfer->CopyBufferToImage(stagingBuffer, image_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, copyRegions);
 
     if (!cmdBufferTransfer->EndCommandBuffer()) {
         throw std::runtime_error("Failed to end recording command buffer!");

@@ -168,12 +168,14 @@ public:
      * @param imageName Name of the image resource to be updated.
      * @param textureHandler Handler of the texture resource.
      * @param mipLevels Mip level count.
+     * @param currentLayer Current layer index.
      */
     void SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                              const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                              const std::string& imageName,
                              const utility::TextureHandler& textureHandler,
-                             std::uint32_t mipLevels = 1);
+                             std::uint32_t mipLevels = 1,
+                             std::uint32_t currentLayer = 0);
 
     /**
      * @brief Generates mipmap data in image memory area.

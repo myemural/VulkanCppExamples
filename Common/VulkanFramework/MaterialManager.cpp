@@ -14,7 +14,7 @@
 namespace common::vulkan_framework
 {
 
-PhongMaterialBuilder::PhongMaterialBuilder(MaterialManager& materialManager, std::string  materialName)
+PhongMaterialBuilder::PhongMaterialBuilder(MaterialManager& materialManager, std::string materialName)
     : materialManager_(materialManager), materialName_(std::move(materialName))
 {
 }
@@ -57,8 +57,7 @@ PhongMaterialBuilder& PhongMaterialBuilder::SetOpacity(const float opacity)
 
 void PhongMaterialBuilder::Build() { materialManager_.RegisterMaterial(materialName_, phongMaterial_); }
 
-PhongTexturedMaterialBuilder::PhongTexturedMaterialBuilder(MaterialManager& materialManager,
-                                                           std::string  materialName)
+PhongTexturedMaterialBuilder::PhongTexturedMaterialBuilder(MaterialManager& materialManager, std::string materialName)
     : materialManager_(materialManager), materialName_(std::move(materialName))
 {
 }
@@ -209,6 +208,97 @@ void MaterialManager::LoadTexture(const std::string& textureName,
             InternalTextureHandler{textureId, textureName, textureImageName, textureImageViewName, samplerName};
 }
 
+void MaterialManager::LoadTexture(const std::string& textureName,
+                                  const std::string& samplerName,
+                                  const utility::TextureHandler& textureHandler,
+                                  const VkFormat& format,
+                                  const bool mipmappingEnabled)
+{
+    // Create texture resource info
+    const TextureId textureId = globalTextureId_++;
+    const auto textureImageName = textureName + kVulkanImagePostfix;
+    const auto textureImageViewName = textureName + kVulkanImageViewPostfix;
+
+    VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+    std::uint32_t mipLevels = 1;
+    if (mipmappingEnabled) {
+        usageFlags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+        mipLevels = utility::GetMipLevelCount(textureHandler.width, textureHandler.height);
+    }
+
+    const auto imageResource = ImageResourceCreateInfo{
+        .name = textureImageName,
+        .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .format = format,
+        .dimensions = {textureHandler.width, textureHandler.height, 1},
+        .mipLevels = mipLevels,
+        .usageFlags = usageFlags,
+        .views = {ImageViewCreateInfo{.viewName = textureImageViewName,
+                                      .format = format,
+                                      .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, 0, 1}}}};
+
+    resourceManager_.CreateImages({imageResource});
+
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, textureHandler, mipLevels);
+
+    if (mipmappingEnabled) {
+        resourceManager_.GenerateMipmaps(cmdPool_, queue_, textureImageName, textureHandler, mipLevels);
+    }
+
+    textureHandlers_[textureName] =
+            InternalTextureHandler{textureId, textureName, textureImageName, textureImageViewName, samplerName};
+}
+void MaterialManager::LoadCubemapTexture(const std::string& textureName,
+                                         const std::string& samplerName,
+                                         const std::string& rightTextureFilePath,
+                                         const std::string& leftTextureFilePath,
+                                         const std::string& topTextureFilePath,
+                                         const std::string& bottomTextureFilePath,
+                                         const std::string& backTextureFilePath,
+                                         const std::string& frontTextureFilePath,
+                                         const VkFormat& format)
+{
+    const auto rightTextureHandler = textureLoader_.Load(rightTextureFilePath);
+    const auto leftTextureHandler = textureLoader_.Load(leftTextureFilePath);
+    const auto topTextureHandler = textureLoader_.Load(topTextureFilePath);
+    const auto bottomTextureHandler = textureLoader_.Load(bottomTextureFilePath);
+    const auto backTextureHandler = textureLoader_.Load(backTextureFilePath);
+    const auto frontTextureHandler = textureLoader_.Load(frontTextureFilePath);
+
+    // Create texture resource info
+    const TextureId textureId = globalTextureId_++;
+    const auto textureImageName = textureName + kVulkanImagePostfix;
+    const auto textureImageViewName = textureName + kVulkanImageViewPostfix;
+
+    VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+
+    const auto imageResource = ImageResourceCreateInfo{
+        .name = textureImageName,
+        .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
+        .format = format,
+        .dimensions = {rightTextureHandler.width, rightTextureHandler.height, 1},
+        .mipLevels = 1,
+        .arrayLayers = 6,
+        .usageFlags = usageFlags,
+        .views = {ImageViewCreateInfo{.viewName = textureImageViewName,
+                                      .viewType = VK_IMAGE_VIEW_TYPE_CUBE,
+                                      .format = format,
+                                      .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 6}}}};
+
+    resourceManager_.CreateImages({imageResource});
+
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, rightTextureHandler, 1, 0);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, leftTextureHandler, 1, 1);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, topTextureHandler, 1, 2);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, bottomTextureHandler, 1, 3);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, backTextureHandler, 1, 4);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, frontTextureHandler, 1, 5);
+
+    textureHandlers_[textureName] =
+            InternalTextureHandler{textureId, textureName, textureImageName, textureImageViewName, samplerName};
+}
+
 TextureId MaterialManager::GetTextureId(const std::string& textureName)
 {
     return textureHandlers_[textureName].textureId;
@@ -231,6 +321,20 @@ std::vector<VkDescriptorImageInfo> MaterialManager::GetDescriptorImageInfos() co
         descriptorImageInfos[textureId].imageView = imageView->GetHandle();
         descriptorImageInfos[textureId].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     }
+
+    return descriptorImageInfos;
+}
+
+std::vector<VkDescriptorImageInfo> MaterialManager::GetDescriptorImageInfo(const std::string& textureName)
+{
+    const auto& internalInfo = textureHandlers_[textureName];
+
+    std::vector<VkDescriptorImageInfo> descriptorImageInfos;
+    const auto sampler = resourceManager_.GetSampler(internalInfo.samplerResourceName);
+    const auto imageView =
+            resourceManager_.GetImageView(internalInfo.imageResourceName, internalInfo.imageViewResourceName);
+    descriptorImageInfos.emplace_back(sampler->GetHandle(), imageView->GetHandle(),
+                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     return descriptorImageInfos;
 }

@@ -14,6 +14,7 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 #include <vulkan/vulkan_core.h>
 
 namespace common::vulkan_framework
@@ -122,14 +123,14 @@ struct COMMON_API PhongTexturedMaterial
     float opacity = 1.0f; // For alpha blending
 
     // Textures
-    TextureId diffuseMap = -1; // Diffuse map texture
-    TextureId specularMap = -1; // Specular map texture
-    TextureId normalMap = -1; // Normal map texture
-    TextureId emissiveMap = -1; // Emissive map texture
+    TextureId diffuseMap = -1;   // Diffuse map texture
+    TextureId specularMap = -1;  // Specular map texture
+    TextureId normalMap = -1;    // Normal map texture
+    TextureId emissiveMap = -1;  // Emissive map texture
     TextureId shininessMap = -1; // Shininess map (reverse of the roughness map) texture
-    TextureId opacityMap = -1; // Opacity (alpha) map texture
-    TextureId aoMap = -1; // Ambient occlusion map texture
-    TextureId heightMap = -1; // Height map texture
+    TextureId opacityMap = -1;   // Opacity (alpha) map texture
+    TextureId aoMap = -1;        // Ambient occlusion map texture
+    TextureId heightMap = -1;    // Height map texture
 };
 
 using MaterialVariant = std::variant<PhongMaterial, PhongTexturedMaterial>;
@@ -148,6 +149,17 @@ struct COMMON_API MeshInfo
         glm::vec3 translation = glm::vec3(0.0f);
         glm::vec3 rotation = glm::vec3(0.0f);
         glm::vec3 scale = glm::vec3(1.0f);
+
+        /// TODO: Transform logic will be completely modified later.
+        void SetModelMatrix(const glm::mat4& modelMatrix)
+        {
+            glm::vec3 skew;
+            glm::vec4 perspective;
+            glm::quat orientation;
+            glm::decompose(modelMatrix, scale, orientation, translation, skew, perspective);
+            const glm::vec3 eulerRadians = glm::eulerAngles(orientation);
+            rotation = glm::degrees(eulerRadians);
+        }
 
         [[nodiscard]] glm::mat4 GetModelMatrix() const
         {

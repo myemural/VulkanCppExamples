@@ -10,8 +10,6 @@
 #include <array>
 #include <chrono>
 
-#include <glm/ext/matrix_clip_space.hpp>
-
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"

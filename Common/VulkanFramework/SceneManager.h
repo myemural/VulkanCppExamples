@@ -12,6 +12,7 @@
 #include <glm/vec3.hpp>
 
 #include "CameraBase.h"
+#include "GltfModelHandler.h"
 #include "MaterialManager.h"
 #include "ResourceManager.h"
 #include "SceneUtils.h"
@@ -32,6 +33,7 @@ struct COMMON_API SceneConfig
     MaterialSystem currentMaterialSystem = MaterialSystem::PHONG;
     std::uint32_t primitiveStackCount = 24U;
     std::uint32_t primitiveSectorCount = 24U;
+    std::string modelBasePath;
 };
 
 class COMMON_API SceneManager
@@ -69,6 +71,13 @@ public:
                      const glm::vec3& initialScale = glm::vec3{1.0f});
 
     void AddPlane(const std::string& objectName,
+                  const glm::vec3& initialPosition = glm::vec3{0.0f},
+                  const glm::vec3& initialRotation = glm::vec3{0.0f},
+                  const glm::vec3& initialScale = glm::vec3{1.0f});
+
+    void AddModel(const std::string& modelName,
+                  const std::string& modelPath,
+                  const std::string& defaultSamplerName,
                   const glm::vec3& initialPosition = glm::vec3{0.0f},
                   const glm::vec3& initialRotation = glm::vec3{0.0f},
                   const glm::vec3& initialScale = glm::vec3{1.0f});
@@ -121,6 +130,7 @@ private:
     void CreateConeGeometry();
     void CreateCylinderGeometry();
     void CreatePlaneGeometry();
+    MeshInfo::GeometryInfo CreateMeshGeometry(const utility::GltfMesh& mesh);
 
     static constexpr auto kMainBufferName = "MainBuffer";
     static constexpr auto kStorageBufferName = "StorageBuffer";
@@ -150,6 +160,9 @@ private:
 
     // Material manager
     MaterialManager& materialManager_;
+
+    // Model related
+    std::string modelBasePath_;
 };
 
 } // namespace common::vulkan_framework

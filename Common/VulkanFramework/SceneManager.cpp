@@ -8,6 +8,7 @@
 
 #include <glm/glm.hpp>
 
+#include "ModelLoader.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
 #include "ScenePrimitives.h"
@@ -35,6 +36,8 @@ SceneManager::SceneManager(ResourceManager& resourceManager,
     // Set primitive stack and sector counts
     currentPrimStackCount_ = sceneConfig_.primitiveStackCount;
     currentPrimSectorCount_ = sceneConfig_.primitiveSectorCount;
+
+    modelBasePath_ = sceneConfig_.modelBasePath;
 }
 std::uint32_t SceneManager::GetAttributeCount() const { return sceneConfig_.attributeLayout.size(); }
 
@@ -205,6 +208,85 @@ void SceneManager::AddPlane(const std::string& objectName,
     UpdateMeshDataGpu(meshInfo);
 
     meshes_[objectName] = meshInfo;
+}
+
+void SceneManager::AddModel(const std::string& modelName,
+                            const std::string& modelPath,
+                            const std::string& defaultSamplerName,
+                            const glm::vec3& initialPosition,
+                            const glm::vec3& initialRotation,
+                            const glm::vec3& initialScale)
+{
+    utility::ModelLoader modelLoader{modelBasePath_};
+
+    const auto modelHandler = modelLoader.LoadBinaryGltfFromFile(modelPath);
+
+    if (!modelHandler) {
+        throw std::runtime_error("Failed to load model \"" + modelPath + "\"");
+    }
+
+    // Create materials
+    for (const auto& material: modelHandler->materials) {
+        static int i = 0;
+
+        auto&& materialBuilder = materialManager_.CreatePhongTexturedMaterial(material.name);
+        materialBuilder.SetDiffuseColor(material.pbrMetallicRoughness.baseColor);
+
+        if (const auto diffuseTextureIndex = material.pbrMetallicRoughness.baseColorTextureIndex;
+            diffuseTextureIndex != -1) {
+            const std::string diffuseTextureName = std::string("Texture_diffuse_") + std::to_string(i++);
+            materialManager_.LoadTexture(diffuseTextureName, defaultSamplerName,
+                                         modelHandler->textures[diffuseTextureIndex]);
+            materialBuilder.SetDiffuseMap(diffuseTextureName);
+        }
+
+        if (const auto normalTextureIndex = material.normalTextureInfo.index; normalTextureIndex != -1) {
+            const std::string normalTextureName = std::string("Texture_normal_") + std::to_string(i++);
+            materialManager_.LoadTexture(normalTextureName, defaultSamplerName,
+                                         modelHandler->textures[normalTextureIndex], VK_FORMAT_R8G8B8A8_UNORM);
+            materialBuilder.SetNormalMap(normalTextureName);
+        }
+
+
+        if (const auto emissiveTextureIndex = material.emissionTextureIndex; emissiveTextureIndex != -1) {
+            const std::string emissiveTextureName = std::string("Texture_emissive_") + std::to_string(i++);
+            materialManager_.LoadTexture(emissiveTextureName, defaultSamplerName,
+                                         modelHandler->textures[emissiveTextureIndex], VK_FORMAT_R8G8B8A8_UNORM);
+            materialBuilder.SetEmissiveMap(emissiveTextureName);
+        }
+
+        materialBuilder.Build();
+    }
+
+    for (const auto& node: modelHandler->nodes) {
+        if (node.meshIndex == UINT32_MAX) {
+            continue;
+        }
+
+        const auto mesh = modelHandler->meshes[node.meshIndex];
+
+        MeshInfo meshInfo{};
+        meshInfo.geometry = CreateMeshGeometry(mesh);
+        /// TODO: Transform system is completely wrong here, will be adjusted later.
+        meshInfo.transform = {initialPosition, initialRotation, initialScale};
+        meshInfo.transform.SetModelMatrix(meshInfo.transform.GetModelMatrix() * node.worldTransform);
+
+        /// TODO: Will be increased
+        if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG) {
+            throw std::runtime_error("Only textured materials have been supported for models!");
+        } else if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG_TEXTURED) {
+            const auto meshMatIndex = mesh.materialIndex;
+            meshInfo.material = materialManager_.GetPhongTexturedMaterial(modelHandler->materials[meshMatIndex].name);
+        }
+
+        meshInfo.objectId = currentObjectId_++;
+
+        UpdateMeshDataGpu(meshInfo);
+
+        meshes_[mesh.name] = meshInfo;
+
+        AddToGroup(modelName, {mesh.name});
+    }
 }
 
 void SceneManager::AddToGroup(const std::string& groupName, const std::initializer_list<std::string>& objectNames)
@@ -547,6 +629,52 @@ void SceneManager::CreatePlaneGeometry()
 
     primitiveGeometries_[PrimitiveType::PLANE] = geometry;
     isPlaneBufferCreated_ = true;
+}
+
+MeshInfo::GeometryInfo SceneManager::CreateMeshGeometry(const utility::GltfMesh& mesh)
+{
+    MeshInfo::GeometryInfo geometry;
+    for (const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
+        const std::uint32_t offset = globalBufferPos_;
+        const auto accessorSize = GetAccessorSize(accessorType);
+
+        if (attributeType == AttributeType::POSITION) {
+            const auto vertexPositons = mesh.attributes.positions;
+            const auto vertexPositonsSize = vertexPositons.size() * accessorSize;
+            globalBufferPos_ += vertexPositonsSize;
+
+            resourceManager_.SetBuffer(kMainBufferName, vertexPositons.data(), vertexPositonsSize, offset, false);
+        } else if (attributeType == AttributeType::TEXCOORD) {
+            const auto vertexUVs = mesh.attributes.texCoords0;
+            const auto vertexUVsSize = vertexUVs.size() * accessorSize;
+            globalBufferPos_ += vertexUVsSize;
+
+            resourceManager_.SetBuffer(kMainBufferName, vertexUVs.data(), vertexUVsSize, offset, false);
+        } else if (attributeType == AttributeType::NORMAL) {
+            const auto vertexNormals = mesh.attributes.normals;
+            const auto vertexNormalsSize = vertexNormals.size() * accessorSize;
+            globalBufferPos_ += vertexNormalsSize;
+
+            resourceManager_.SetBuffer(kMainBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
+        } else if (attributeType == AttributeType::TANGENT) {
+            const auto vertexTangents = mesh.attributes.tangents;
+            const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
+            globalBufferPos_ += vertexTangentsSize;
+
+            resourceManager_.SetBuffer(kMainBufferName, vertexTangents.data(), vertexTangentsSize, offset, false);
+        }
+
+        geometry.vertexOffsets.push_back(offset);
+    }
+
+    const auto indices = mesh.indices;
+    geometry.indexOffset = globalBufferPos_;
+    const auto indicesSize = indices.size() * sizeof(std::uint16_t);
+    globalBufferPos_ += indicesSize;
+    resourceManager_.SetBuffer(kMainBufferName, indices.data(), indicesSize, geometry.indexOffset, false);
+    geometry.indexCount = indices.size();
+
+    return geometry;
 }
 
 } // namespace common::vulkan_framework

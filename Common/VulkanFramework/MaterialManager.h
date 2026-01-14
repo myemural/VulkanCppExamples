@@ -33,7 +33,7 @@ struct InternalTextureHandler
 class COMMON_API PhongMaterialBuilder
 {
 public:
-    PhongMaterialBuilder(MaterialManager& materialManager, std::string  materialName);
+    PhongMaterialBuilder(MaterialManager& materialManager, std::string materialName);
 
     PhongMaterialBuilder& SetDiffuseColor(const glm::vec3& diffuseColor);
 
@@ -58,7 +58,7 @@ private:
 class COMMON_API PhongTexturedMaterialBuilder
 {
 public:
-    PhongTexturedMaterialBuilder(MaterialManager& materialManager, std::string  materialName);
+    PhongTexturedMaterialBuilder(MaterialManager& materialManager, std::string materialName);
 
     PhongTexturedMaterialBuilder& SetDiffuseColor(const glm::vec3& diffuseColor);
 
@@ -105,13 +105,35 @@ public:
                              const std::string& basePath);
     ~MaterialManager() = default;
 
-    void LoadTexture(const std::string& textureName, const std::string& samplerName, const std::string& filePath, const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB, bool mipmappingEnabled = false);
+    void LoadTexture(const std::string& textureName,
+                     const std::string& samplerName,
+                     const std::string& filePath,
+                     const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB,
+                     bool mipmappingEnabled = false);
+
+    void LoadTexture(const std::string& textureName,
+                     const std::string& samplerName,
+                     const utility::TextureHandler& textureHandler,
+                     const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB,
+                     bool mipmappingEnabled = false);
+
+    void LoadCubemapTexture(const std::string& textureName,
+                     const std::string& samplerName,
+                     const std::string& rightTextureFilePath,
+                     const std::string& leftTextureFilePath,
+                     const std::string& topTextureFilePath,
+                     const std::string& bottomTextureFilePath,
+                     const std::string& backTextureFilePath,
+                     const std::string& frontTextureFilePath,
+                     const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB);
 
     TextureId GetTextureId(const std::string& textureName);
 
     [[nodiscard]] std::uint32_t GetTextureCount() const;
 
     [[nodiscard]] std::vector<VkDescriptorImageInfo> GetDescriptorImageInfos() const;
+
+    [[nodiscard]] std::vector<VkDescriptorImageInfo> GetDescriptorImageInfo(const std::string& textureName);
 
     PhongMaterialBuilder CreatePhongMaterial(const std::string& materialName);
 

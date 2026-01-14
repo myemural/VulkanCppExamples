@@ -177,6 +177,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Steep Parallax Mapping](/Examples/RealTimeLighting/SurfaceDetailing/SteepParallaxMapping)
   - [Parallax Occlusion Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ParallaxOcclusionMapping)
   - [Relief Parallax Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ReliefParallaxMapping)
+- **[Environment Mapping](/Examples/RealTimeLighting/EnvironmentMapping)**
+  - [Simple Cubemap Skybox](/Examples/RealTimeLighting/EnvironmentMapping/CubemapSkybox)
 
 ## Environment Support
 

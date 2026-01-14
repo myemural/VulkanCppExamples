@@ -84,12 +84,12 @@ public:
      * @param cmdPool Command pool that the command buffer will be created.
      * @param queue Queue that the command buffer will be sent.
      * @param stagingBuffer Source buffer to be copied.
-     * @param copyRegion Copy region on the buffer.
+     * @param copyRegions Copy regions for the buffer.
      */
     void CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                             const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                             const std::shared_ptr<vulkan_wrapper::VulkanBuffer>& stagingBuffer,
-                            const VkBufferImageCopy& copyRegion) const;
+                            const std::vector<VkBufferImageCopy>& copyRegions) const;
 
     /**
      * @brief Deletes image view from the resource.

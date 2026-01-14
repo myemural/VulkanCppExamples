@@ -152,11 +152,12 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
                                           const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                           const std::string& imageName,
                                           const utility::TextureHandler& textureHandler,
-                                          const std::uint32_t mipLevels)
+                                          const std::uint32_t mipLevels,
+                                          const std::uint32_t currentLayer)
 {
-    images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_UNDEFINED,
-                                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                          VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, 0, 1});
+    images_[imageName]->ChangeImageLayout(
+            cmdPool, queue, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, currentLayer, 1});
 
     const BufferResourceCreateInfo stagingBufferCreateInfo{
         imageName + "_tempStagingBuffer", static_cast<std::uint32_t>(textureHandler.data.size()),
@@ -174,15 +175,16 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
                                                   {
                                                       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                                                       .mipLevel = 0,
-                                                      .baseArrayLayer = 0,
+                                                      .baseArrayLayer = currentLayer,
                                                       .layerCount = 1,
                                                   },
                                           .imageOffset = {0, 0, 0},
                                           .imageExtent = {textureHandler.width, textureHandler.height, 1}};
     images_[imageName]->CopyDataFromBuffer(cmdPool, queue, buffers_[stagingBufferCreateInfo.name]->GetBuffer(),
-                                           copyRegion);
+                                           {copyRegion});
     images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                          VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, currentLayer, 1});
 }
 
 void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
