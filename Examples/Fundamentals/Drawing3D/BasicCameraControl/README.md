@@ -8,7 +8,7 @@ This examples draws a cube to the screen and rotates it constantly. But this tim
 
 ## Output
 
-![](/Docs/ExampleMedia/Fundamentals/Drawing3D/BasicCameraControl.gif?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/Drawing3D/BasicCameraControl.png?raw=true)
 
 ## Controls
 

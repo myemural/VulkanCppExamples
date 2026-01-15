@@ -8,7 +8,7 @@ This example draws a square in the center of the screen. Then rotates it in cloc
 
 ## Output
 
-![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/Transformation2dWithUB.gif?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/Transformation2dWithUB.png?raw=true)
 
 ## Controls
 

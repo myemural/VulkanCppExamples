@@ -8,7 +8,7 @@ This example draws 10 static cubes on the screen using the user-specified cull m
 
 ## Output
 
-![](/Docs/ExampleMedia/Fundamentals/Drawing3D/FaceCulling.gif?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/Drawing3D/FaceCulling.png?raw=true)
 
 ## Controls
 

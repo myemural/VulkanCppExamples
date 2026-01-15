@@ -8,7 +8,7 @@ This example draws 4 triangles to the different areas of the screen. Then it app
 
 ## Output
 
-![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/MultipleUniformBuffers.gif?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/MultipleUniformBuffers.png?raw=true)
 
 ## Controls
 

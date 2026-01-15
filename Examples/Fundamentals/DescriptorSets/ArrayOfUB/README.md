@@ -8,7 +8,7 @@ This example draws 4 squares to the screen. Then it applies different transforma
 
 ## Output
 
-![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/ArrayOfUB.gif?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/DescriptorSets/ArrayOfUB.png?raw=true)
 
 ## Controls
 

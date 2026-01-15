@@ -55,16 +55,17 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::WallStoneNormalTexture, "wallStoneNormalTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubemapTexture, "cubemapTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubemapRightTexturePath,
-                                               "Textures/cubemap/rightCubemap.jpg");
+                                               "Textures/calm_sea_cubemap/calm_sea_right.jpg");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubemapLeftTexturePath,
-                                               "Textures/cubemap/leftCubemap.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubemapTopTexturePath, "Textures/cubemap/topCubemap.jpg");
+                                               "Textures/calm_sea_cubemap/calm_sea_left.jpg");
+    schema.RegisterImmutableParam<std::string>(AppConstants::CubemapTopTexturePath,
+                                               "Textures/calm_sea_cubemap/calm_sea_up.jpg");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubemapBottomTexturePath,
-                                               "Textures/cubemap/bottomCubemap.jpg");
+                                               "Textures/calm_sea_cubemap/calm_sea_down.jpg");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubemapBackTexturePath,
-                                               "Textures/cubemap/backCubemap.jpg");
+                                               "Textures/calm_sea_cubemap/calm_sea_back.jpg");
     schema.RegisterImmutableParam<std::string>(AppConstants::CubemapFrontTexturePath,
-                                               "Textures/cubemap/frontCubemap.jpg");
+                                               "Textures/calm_sea_cubemap/calm_sea_front.jpg");
     schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
     schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxObjectGroup, "skyboxObjectGroup");
 
@@ -99,7 +100,7 @@ bool SetParams(ParameterServer& params)
 
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.175f, 0.175f, 0.175f, 1.0f});
-        params.Set(AppSettings::MouseSensitivity, 6.0f);
+        params.Set(AppSettings::MouseSensitivity, 8.0f);
         params.Set(AppSettings::CameraZoomSpeed, 0.4f);
         params.Set(AppSettings::LightDirection, glm::vec3(-0.1f, -0.4f, -0.7f));
         params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));

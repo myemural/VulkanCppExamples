@@ -267,7 +267,7 @@ void VulkanApplication::InitInputSystem()
         const float sensitivity = GetParamFloat(AppSettings::MouseSensitivity) * static_cast<float>(deltaTime_);
 
         const float yawSensitivity = sensitivity;
-        const float pitchSensitivity = sensitivity * 0.3f; // Should less sensitive than yaw
+        const float pitchSensitivity = sensitivity * 0.5f; // Should less sensitive than yaw
 
         orbitYaw_ += xOffset * yawSensitivity;
         orbitPitch_ += yOffset * pitchSensitivity;

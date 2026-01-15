@@ -8,7 +8,7 @@ This examples draws two planes and two cubes to the screen. Then applies depth t
 
 ## Output
 
-![](/Docs/ExampleMedia/Fundamentals/Drawing3D/DepthTestingOperations.gif?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/Drawing3D/DepthTestingOperations.png?raw=true)
 
 ## Controls
 

@@ -3,6 +3,7 @@
 This directory contains several texture files that taken from different free sources in the internet. This list contains the sources of the textures:
 
 - bricks.jpg ([Weathered Brick Texture, stockcake.com](https://stockcake.com/i/weathered-brick-texture_1756192_1254333))
+- calm_sea_cubemap ([Xonotic Skyboxes, opengameart.org](https://opengameart.org/content/xonotic-skyboxes))
 - Ceiling_Gypsum_001_Base_Color.jpg ([Ceiling Gypsum 001a, 3dtextures.me](https://3dtextures.me/2019/01/30/ceiling-gypsum-001a/))
 - Ceiling_Gypsum_001_emissive.jpg ([Ceiling Gypsum 001a, 3dtextures.me](https://3dtextures.me/2019/01/30/ceiling-gypsum-001a/))
 - Concrete_Blocks_016_basecolor.png ([Concrete Blocks 016, 3dtextures.me](https://3dtextures.me/2025/11/04/concrete-blocks-016/))

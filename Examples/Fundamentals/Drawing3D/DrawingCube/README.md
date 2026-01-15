@@ -8,7 +8,7 @@ This example draws a cube to the screen and rotates it X and Y directions simult
 
 ## Output
 
-![](/Docs/ExampleMedia/Fundamentals/Drawing3D/DrawingCube.gif?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/Drawing3D/DrawingCube.png?raw=true)
 
 ## Controls
 

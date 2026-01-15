@@ -8,7 +8,7 @@ This example draws 20 rotating cubes on the screen using instanced rendering met
 
 ## Output
 
-![](/Docs/ExampleMedia/Fundamentals/Drawing3D/InstancedRendering.gif?raw=true)
+![](/Docs/ExampleMedia/Fundamentals/Drawing3D/InstancedRendering.png?raw=true)
 
 ## Controls
 
