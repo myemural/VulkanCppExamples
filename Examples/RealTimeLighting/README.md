@@ -59,7 +59,15 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 
 ## [Surface Detailing](/Examples/RealTimeLighting/SurfaceDetailing)
 
-TBD
+- Implementing bump mapping technique with using heightmaps
+- Using derivative functions in shaders
+- Implementing normal mapping technique with using normal maps
+- Changing surface normals via normal maps
+- Implementing basic displacement mapping in vertex shader using heightmaps
+- Implementing most basic parallax mapping technique with using offsets
+- Implementing steep parallax mapping technique
+- Implementing the more advanced parallax mapping technique that called parallax occlusion mapping to improve visualization of the parallax maps
+- Implementing the least known parallax mapping technique that mostly called relief parallax mapping
 
 ## [Environment Mapping](/Examples/RealTimeLighting/EnvironmentMapping)
 
