@@ -181,6 +181,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Relief Parallax Mapping](/Examples/RealTimeLighting/SurfaceDetailing/ReliefParallaxMapping)
 - **[Environment Mapping](/Examples/RealTimeLighting/EnvironmentMapping)**
   - [Simple Cubemap Skybox](/Examples/RealTimeLighting/EnvironmentMapping/CubemapSkybox)
+  - [Cubemap Reflections](/Examples/RealTimeLighting/EnvironmentMapping/CubemapReflections)
 
 ## Environment Support
 

@@ -15,7 +15,7 @@
 #include "ApplicationData.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_lighting::environment_mapping::cubemap_skybox
+namespace examples::real_time_lighting::environment_mapping::cubemap_reflections
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -131,6 +131,8 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
     sceneConfig.currentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
+    sceneConfig.primitiveStackCount = 64U;
+    sceneConfig.primitiveSectorCount = 64U;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_, ASSETS_DIR);
     scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
@@ -142,11 +144,6 @@ void VulkanApplication::BuildScene()
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
     // Materials
-    materialManager_->LoadTexture(GetParamStr(AppConstants::WallStoneTexture), GetParamStr(AppConstants::MainSampler),
-                                  GetParamStr(AppConstants::WallStoneTexturePath));
-    materialManager_->LoadTexture(GetParamStr(AppConstants::WallStoneNormalTexture),
-                                  GetParamStr(AppConstants::MainSampler),
-                                  GetParamStr(AppConstants::WallStoneNormalTexturePath), VK_FORMAT_R8G8B8A8_UNORM);
     materialManager_->LoadCubemapTexture(
             GetParamStr(AppConstants::CubemapTexture), GetParamStr(AppConstants::SkyboxSampler),
             GetParamStr(AppConstants::CubemapRightTexturePath), GetParamStr(AppConstants::CubemapLeftTexturePath),
@@ -158,8 +155,7 @@ void VulkanApplication::BuildScene()
             .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
             .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
             .SetShininess(GetParamFloat(AppSettings::Shininess))
-            .SetDiffuseMap(GetParamStr(AppConstants::WallStoneTexture))
-            .SetNormalMap(GetParamStr(AppConstants::WallStoneNormalTexture))
+            .SetDiffuseColor(params_.Get<glm::vec3>(AppSettings::DiffuseColor))
             .Build();
 
     // Add scene objects
@@ -175,19 +171,21 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const auto cubemapCount = materialManager_->GetCubemapTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 2 + combinedImageSamplerCount + cubemapCount,
+        .maxSets = 2 + 2 * cubemapCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
-                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + cubemapCount}},
+                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2 * cubemapCount}},
         .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
-                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
-                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
-                                   VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
+                     .bindings =
+                             {
+                                 {0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
+                                  VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                 {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                 {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+                                  nullptr},
+                             }},
                     {.name = GetParamStr(AppConstants::SkyboxDescSetLayout),
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}}},
@@ -205,8 +203,6 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
                                VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
-
     auto cubemapImageInfos = materialManager_->GetCubemapDescriptorImageInfo(GetParamStr(AppConstants::CubemapTexture));
 
     BufferWriteRequest objectStorageBufferRequest;
@@ -221,21 +217,21 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     lightUboRequest.buffers = lightUboInfos;
     lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
-    ImageWriteRequest textureUpdateRequest;
-    textureUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
-    textureUpdateRequest.bindingIndex = 2;
-    textureUpdateRequest.images = descriptorImageInfos;
-    textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    ImageWriteRequest cubemapReflectionUpdateRequest;
+    cubemapReflectionUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    cubemapReflectionUpdateRequest.bindingIndex = 3;
+    cubemapReflectionUpdateRequest.images = cubemapImageInfos;
+    cubemapReflectionUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    ImageWriteRequest cubemapUpdateRequest;
-    cubemapUpdateRequest.descriptorSetName = GetParamStr(AppConstants::SkyboxDescSet);
-    cubemapUpdateRequest.bindingIndex = 0;
-    cubemapUpdateRequest.images = cubemapImageInfos;
-    cubemapUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    ImageWriteRequest cubemapSkyboxUpdateRequest;
+    cubemapSkyboxUpdateRequest.descriptorSetName = GetParamStr(AppConstants::SkyboxDescSet);
+    cubemapSkyboxUpdateRequest.bindingIndex = 0;
+    cubemapSkyboxUpdateRequest.images = cubemapImageInfos;
+    cubemapSkyboxUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
         .bufferWriteRequests = {objectStorageBufferRequest, lightUboRequest},
-        .imageWriteRequests = {textureUpdateRequest, cubemapUpdateRequest}};
+        .imageWriteRequests = {cubemapReflectionUpdateRequest, cubemapSkyboxUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -385,19 +381,6 @@ void VulkanApplication::CreatePipelines()
     const auto bindings = scene_->GetBindingDescriptions();
     const auto attributes = scene_->GetAttributeDescriptions();
 
-    VkSpecializationMapEntry entry{};
-    entry.constantID = 0;
-    entry.offset = 0;
-    entry.size = sizeof(uint32_t);
-
-    const std::uint32_t lightCount = materialManager_->GetTextureCount();
-
-    VkSpecializationInfo specInfo{};
-    specInfo.mapEntryCount = 1;
-    specInfo.pMapEntries = &entry;
-    specInfo.dataSize = sizeof(uint32_t);
-    specInfo.pData = &lightCount;
-
     scenePipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -408,7 +391,6 @@ void VulkanApplication::CreatePipelines()
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
             shaderStageCreateInfo.module =
                     resources_->GetShaderModule(GetParamStr(AppConstants::SceneObjectsFragmentShaderKey))->GetHandle();
-            shaderStageCreateInfo.pSpecializationInfo = &specInfo;
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -572,4 +554,4 @@ void VulkanApplication::UpdateSceneTransforms() const
     lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
     resources_->SetBuffer(GetParamStr(AppConstants::LightUniformBuffer), &lightUbo, sizeof(lightUbo));
 }
-} // namespace examples::real_time_lighting::environment_mapping::cubemap_skybox
+} // namespace examples::real_time_lighting::environment_mapping::cubemap_reflections

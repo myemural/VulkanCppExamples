@@ -118,22 +118,24 @@ public:
                      bool mipmappingEnabled = false);
 
     void LoadCubemapTexture(const std::string& textureName,
-                     const std::string& samplerName,
-                     const std::string& rightTextureFilePath,
-                     const std::string& leftTextureFilePath,
-                     const std::string& topTextureFilePath,
-                     const std::string& bottomTextureFilePath,
-                     const std::string& backTextureFilePath,
-                     const std::string& frontTextureFilePath,
-                     const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB);
+                            const std::string& samplerName,
+                            const std::string& rightTextureFilePath,
+                            const std::string& leftTextureFilePath,
+                            const std::string& topTextureFilePath,
+                            const std::string& bottomTextureFilePath,
+                            const std::string& backTextureFilePath,
+                            const std::string& frontTextureFilePath,
+                            const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB);
 
     TextureId GetTextureId(const std::string& textureName);
 
     [[nodiscard]] std::uint32_t GetTextureCount() const;
 
+    [[nodiscard]] std::uint32_t GetCubemapTextureCount() const;
+
     [[nodiscard]] std::vector<VkDescriptorImageInfo> GetDescriptorImageInfos() const;
 
-    [[nodiscard]] std::vector<VkDescriptorImageInfo> GetDescriptorImageInfo(const std::string& textureName);
+    [[nodiscard]] std::vector<VkDescriptorImageInfo> GetCubemapDescriptorImageInfo(const std::string& textureName);
 
     PhongMaterialBuilder CreatePhongMaterial(const std::string& materialName);
 
@@ -156,6 +158,7 @@ private:
 
     std::int32_t globalTextureId_ = 0;
     std::unordered_map<std::string, InternalTextureHandler> textureHandlers_;
+    std::unordered_map<std::string, InternalTextureHandler> cubemapTextureHandlers_;
     std::unordered_map<std::string, MaterialVariant> materialHandlers_;
 };
 

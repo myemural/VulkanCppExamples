@@ -8,6 +8,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
 
 1. [Simple Cubemap Skybox](/Examples/RealTimeLighting/EnvironmentMapping/CubemapSkybox)
    - `CubemapSkybox`
+2. [Cubemap Reflections](/Examples/RealTimeLighting/EnvironmentMapping/CubemapReflections)
+   - `CubemapReflections`
 
 ## Architecture of the Subsection
 

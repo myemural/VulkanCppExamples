@@ -295,7 +295,7 @@ void MaterialManager::LoadCubemapTexture(const std::string& textureName,
     resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, backTextureHandler, 1, 4);
     resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, frontTextureHandler, 1, 5);
 
-    textureHandlers_[textureName] =
+    cubemapTextureHandlers_[textureName] =
             InternalTextureHandler{textureId, textureName, textureImageName, textureImageViewName, samplerName};
 }
 
@@ -305,6 +305,8 @@ TextureId MaterialManager::GetTextureId(const std::string& textureName)
 }
 
 std::uint32_t MaterialManager::GetTextureCount() const { return textureHandlers_.size(); }
+
+std::uint32_t MaterialManager::GetCubemapTextureCount() const { return cubemapTextureHandlers_.size(); }
 
 std::vector<VkDescriptorImageInfo> MaterialManager::GetDescriptorImageInfos() const
 {
@@ -325,9 +327,9 @@ std::vector<VkDescriptorImageInfo> MaterialManager::GetDescriptorImageInfos() co
     return descriptorImageInfos;
 }
 
-std::vector<VkDescriptorImageInfo> MaterialManager::GetDescriptorImageInfo(const std::string& textureName)
+std::vector<VkDescriptorImageInfo> MaterialManager::GetCubemapDescriptorImageInfo(const std::string& textureName)
 {
-    const auto& internalInfo = textureHandlers_[textureName];
+    const auto& internalInfo = cubemapTextureHandlers_[textureName];
 
     std::vector<VkDescriptorImageInfo> descriptorImageInfos;
     const auto sampler = resourceManager_.GetSampler(internalInfo.samplerResourceName);
