@@ -500,8 +500,8 @@ void VulkanApplication::UpdateSceneTransforms() const
             glm::vec4(scene_->GetMesh(GetParamStr(AppConstants::SpotlightObject)).transform.translation, 1.0f);
     lightBuffer.lights[1].lightDirection = glm::vec4(glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f)), 1.0f);
     lightBuffer.lights[1].lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    lightBuffer.lights[1].spotlightParams.x = std::cosf(glm::radians(GetParamFloat(AppSettings::InnerCutoffAngle)));
-    lightBuffer.lights[1].spotlightParams.y = std::cosf(glm::radians(GetParamFloat(AppSettings::OuterCutoffAngle)));
+    lightBuffer.lights[1].spotlightParams.x = std::cos(glm::radians(GetParamFloat(AppSettings::InnerCutoffAngle)));
+    lightBuffer.lights[1].spotlightParams.y = std::cos(glm::radians(GetParamFloat(AppSettings::OuterCutoffAngle)));
 
     // Point light 1
     lightBuffer.lights[2].lightTypeParams.x = static_cast<float>(LIGHT_TYPE_POINT);

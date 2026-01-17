@@ -466,7 +466,7 @@ void VulkanApplication::UpdateSceneTransforms() const
         lightBlock.lightUbo[i].lightDirection =
                 glm::vec4(glm::normalize(params_.Get<glm::vec3>(AppSettings::LightDirection)), 1.0f);
         lightBlock.lightUbo[i].lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-        lightBlock.lightUbo[i].spotlightParams.x = std::cosf(glm::radians(GetParamFloat(AppSettings::CutoffAngle)));
+        lightBlock.lightUbo[i].spotlightParams.x = std::cos(glm::radians(GetParamFloat(AppSettings::CutoffAngle)));
     }
     resources_->SetBuffer(GetParamStr(AppConstants::LightUniformBuffer), &lightBlock, sizeof(LightBlock));
 }

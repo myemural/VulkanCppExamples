@@ -181,13 +181,13 @@ CreateSpherePositions(const float size, const std::uint32_t stackCount, const st
 
     for (int i = 0; i <= stackCount; ++i) {
         const float stackAngle = pi * 0.5f - static_cast<float>(i) * (pi / static_cast<float>(stackCount));
-        const float xy = radius * std::cosf(stackAngle);
-        const float z = radius * std::sinf(stackAngle);
+        const float xy = radius * std::cos(stackAngle);
+        const float z = radius * std::sin(stackAngle);
 
         for (int j = 0; j <= sectorCount; ++j) {
             const float sectorAngle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-            const float x = xy * std::cosf(sectorAngle);
-            const float y = xy * std::sinf(sectorAngle);
+            const float x = xy * std::cos(sectorAngle);
+            const float y = xy * std::sin(sectorAngle);
 
             positions.emplace_back(x, y, z);
         }
@@ -222,13 +222,13 @@ std::vector<glm::vec3> CreateSphereNormals(const std::uint32_t stackCount, const
 
     for (int i = 0; i <= stackCount; ++i) {
         const float stackAngle = pi * 0.5f - static_cast<float>(i) * (pi / static_cast<float>(stackCount));
-        const float xy = std::cosf(stackAngle);
-        const float z = std::sinf(stackAngle);
+        const float xy = std::cos(stackAngle);
+        const float z = std::sin(stackAngle);
 
         for (int j = 0; j <= sectorCount; ++j) {
             const float sectorAngle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-            const float x = xy * std::cosf(sectorAngle);
-            const float y = xy * std::sinf(sectorAngle);
+            const float x = xy * std::cos(sectorAngle);
+            const float y = xy * std::sin(sectorAngle);
 
             normals.emplace_back(x, y, z);
         }
@@ -246,12 +246,12 @@ std::vector<glm::vec4> CreateSphereTangents(const std::uint32_t stackCount, cons
 
     for (int i = 0; i <= stackCount; ++i) {
         const float stackAngle = pi * 0.5f - static_cast<float>(i) * (pi / static_cast<float>(stackCount));
-        const float xy = std::cosf(stackAngle);
+        const float xy = std::cos(stackAngle);
 
         for (int j = 0; j <= sectorCount; ++j) {
             const float sectorAngle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
 
-            glm::vec3 tangent(-xy * std::sinf(sectorAngle), xy * std::cosf(sectorAngle), 0.0f);
+            glm::vec3 tangent(-xy * std::sin(sectorAngle), xy * std::cos(sectorAngle), 0.0f);
 
             tangents.emplace_back(glm::normalize(tangent), 1.0f);
         }
@@ -303,8 +303,8 @@ CreateConePositions(const float height, const std::uint32_t stackCount, const st
 
         for (int j = 0; j <= sectorCount; ++j) {
             const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-            const float x = r * std::cosf(angle);
-            const float z = r * std::sinf(angle);
+            const float x = r * std::cos(angle);
+            const float z = r * std::sin(angle);
 
             positions.emplace_back(x, y, z);
         }
@@ -344,8 +344,8 @@ std::vector<glm::vec2> CreateConeUVs(const std::uint32_t stackCount, const std::
     // Base ring UV
     for (int j = 0; j <= sectorCount; ++j) {
         const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-        const float x = std::cosf(angle) * 0.5f;
-        const float y = std::sinf(angle) * 0.5f;
+        const float x = std::cos(angle) * 0.5f;
+        const float y = std::sin(angle) * 0.5f;
         uvs.emplace_back(0.5f + x, 0.5f + y);
     }
 
@@ -364,8 +364,8 @@ std::vector<glm::vec3> CreateConeNormals(const std::uint32_t stackCount, const s
         for (int j = 0; j <= sectorCount; ++j) {
 
             const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-            const float x = std::cosf(angle);
-            const float z = std::sinf(angle);
+            const float x = std::cos(angle);
+            const float z = std::sin(angle);
 
             constexpr float slope = 0.5f; // Slope is constant, because always radius = height * 0.5
             glm::vec3 n(x, slope, z);
@@ -398,7 +398,7 @@ std::vector<glm::vec4> CreateConeTangents(const std::uint32_t stackCount, const 
         for (int j = 0; j <= sectorCount; ++j) {
             const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
 
-            glm::vec3 tangent(-std::sinf(angle), 0.0f, std::cosf(angle));
+            glm::vec3 tangent(-std::sin(angle), 0.0f, std::cos(angle));
             tangents.emplace_back(glm::normalize(tangent), 1.0f);
         }
     }
@@ -470,20 +470,20 @@ CreateCylinderPositions(const float height, const std::uint32_t stackCount, cons
 
         for (int j = 0; j <= sectorCount; ++j) {
             const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-            positions.emplace_back(radius * std::cosf(angle), y, radius * std::sinf(angle));
+            positions.emplace_back(radius * std::cos(angle), y, radius * std::sin(angle));
         }
     }
 
     // Top disk
     for (int j = 0; j <= sectorCount; ++j) {
         const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-        positions.emplace_back(radius * std::cosf(angle), halfH, radius * std::sinf(angle));
+        positions.emplace_back(radius * std::cos(angle), halfH, radius * std::sin(angle));
     }
 
     // Bottom disk
     for (int j = 0; j <= sectorCount; ++j) {
         const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-        positions.emplace_back(radius * std::cosf(angle), -halfH, radius * std::sinf(angle));
+        positions.emplace_back(radius * std::cos(angle), -halfH, radius * std::sin(angle));
     }
 
     return positions;
@@ -508,8 +508,8 @@ std::vector<glm::vec2> CreateCylinderUVs(const std::uint32_t stackCount, const s
 
     auto makeDiskUV = [&](const int j) {
         const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-        const float u = 0.5f + 0.5f * std::cosf(angle);
-        const float v = 0.5f + 0.5f * std::sinf(angle);
+        const float u = 0.5f + 0.5f * std::cos(angle);
+        const float v = 0.5f + 0.5f * std::sin(angle);
         return glm::vec2(u, v);
     };
 
@@ -537,7 +537,7 @@ std::vector<glm::vec3> CreateCylinderNormals(const std::uint32_t stackCount, con
     for (int i = 0; i <= stackCount; ++i) {
         for (int j = 0; j <= sectorCount; ++j) {
             const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
-            normals.emplace_back(std::cosf(angle), 0.0f, std::sinf(angle));
+            normals.emplace_back(std::cos(angle), 0.0f, std::sin(angle));
         }
     }
 
@@ -566,7 +566,7 @@ std::vector<glm::vec4> CreateCylinderTangents(const std::uint32_t stackCount, co
         for (int j = 0; j <= sectorCount; ++j) {
             const float angle = static_cast<float>(j) * (2.0f * pi / static_cast<float>(sectorCount));
 
-            glm::vec3 tangent(-std::sinf(angle), 0.0f, std::cosf(angle));
+            glm::vec3 tangent(-std::sin(angle), 0.0f, std::cos(angle));
             tangents.emplace_back(glm::normalize(tangent), 1.0f);
         }
     }

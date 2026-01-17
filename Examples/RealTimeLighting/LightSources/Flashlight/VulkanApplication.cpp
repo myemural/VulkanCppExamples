@@ -407,8 +407,8 @@ void VulkanApplication::UpdateSceneTransforms() const
     flashLight.lightPosition = glm::vec4(camera_->GetPosition(), 1.0f);
     flashLight.lightDirection = glm::vec4(glm::normalize(camera_->GetFrontVector()), 1.0f);
     flashLight.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    flashLight.spotlightParams.x = std::cosf(glm::radians(GetParamFloat(AppSettings::InnerCutoffAngle)));
-    flashLight.spotlightParams.y = std::cosf(glm::radians(GetParamFloat(AppSettings::OuterCutoffAngle)));
+    flashLight.spotlightParams.x = std::cos(glm::radians(GetParamFloat(AppSettings::InnerCutoffAngle)));
+    flashLight.spotlightParams.y = std::cos(glm::radians(GetParamFloat(AppSettings::OuterCutoffAngle)));
 
     resources_->SetBuffer(GetParamStr(AppConstants::LightUniformBuffer), &flashLight, sizeof(LightUbo));
 }
