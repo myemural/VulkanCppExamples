@@ -1,4 +1,5 @@
 #version 450
+#extension GL_EXT_nonuniform_qualifier : require
 
 // ------------------------------------------------------------------------
 // Author: Mustafa Yemural
@@ -13,8 +14,6 @@ layout(location = 0) out vec4 outColor;
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec2 fragUv;
 layout(location = 2) in vec3 fragNormal;
-
-layout(constant_id = 0) const uint TEXTURE_COUNT = 1;
 
 struct MeshData {
     mat4 model;
@@ -46,7 +45,7 @@ layout(std140, set = 0, binding = 1) uniform LightUBO
     vec4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
 } light;
 
-layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[TEXTURE_COUNT];
+layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[];
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
@@ -62,13 +61,13 @@ void main()
 
     vec3 diffuseColor = meshInfo.diffuseColor.rgb;
     if (meshInfo.diffuseMap != -1) {
-        vec4 diffuseTextureColor = texture(uCombinedSamplers[meshInfo.diffuseMap], fragUv);
+        vec4 diffuseTextureColor = texture(uCombinedSamplers[nonuniformEXT(meshInfo.diffuseMap)], fragUv);
         diffuseColor = diffuseTextureColor.rgb;
     }
 
     vec3 specularColor = meshInfo.specularColor.rgb;
     if (meshInfo.specularMap != -1) {
-        vec4 specularTextureColor = texture(uCombinedSamplers[meshInfo.specularMap], fragUv);
+        vec4 specularTextureColor = texture(uCombinedSamplers[nonuniformEXT(meshInfo.specularMap)], fragUv);
         specularColor = specularTextureColor.rgb;
     }
 
@@ -95,7 +94,7 @@ void main()
         float minShine = 8.0;
         float maxShine = 1024.0;
 
-        float roughness = texture(uCombinedSamplers[meshInfo.shininessMap], fragUv).r;
+        float roughness = texture(uCombinedSamplers[nonuniformEXT(meshInfo.shininessMap)], fragUv).r;
         float perceptualRoughness = roughness * roughness;
         shininess = mix(maxShine, minShine, perceptualRoughness);
         energyComp = mix(1.0, 0.1, perceptualRoughness);

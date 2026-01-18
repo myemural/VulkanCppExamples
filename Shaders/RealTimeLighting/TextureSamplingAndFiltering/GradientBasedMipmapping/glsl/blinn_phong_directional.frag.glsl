@@ -1,4 +1,5 @@
 #version 450
+#extension GL_EXT_nonuniform_qualifier : require
 
 // ------------------------------------------------------------------------
 // Author: Mustafa Yemural
@@ -13,8 +14,6 @@ layout(location = 0) out vec4 outColor;
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec2 fragUv;
 layout(location = 2) in vec3 fragNormal;
-
-layout(constant_id = 0) const uint TEXTURE_COUNT = 1;
 
 struct MeshData {
     mat4 model;
@@ -45,7 +44,7 @@ layout(std140, set = 0, binding = 1) uniform LightUBO
     vec4 lightColor;     // rgb = Light Color
 } light;
 
-layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[TEXTURE_COUNT];
+layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[];
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
@@ -81,7 +80,7 @@ void main()
         dy *= lodScale;
 
         /// NOTE: Scale texture to see anisotropic filtering effect well
-        vec4 diffuseTextureColor = textureGrad(uCombinedSamplers[meshInfo.diffuseMap], uv, dx, dy);
+        vec4 diffuseTextureColor = textureGrad(uCombinedSamplers[nonuniformEXT(meshInfo.diffuseMap)], uv, dx, dy);
         // Mix the texture color with red depending on the distance
         diffuseColor = mix(diffuseTextureColor.rgb, vec3(1.0, 0.0, 0.0), lodFactor);
     }

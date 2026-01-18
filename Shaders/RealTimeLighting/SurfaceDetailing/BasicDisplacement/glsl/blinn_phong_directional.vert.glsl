@@ -1,4 +1,5 @@
 #version 450
+#extension GL_EXT_nonuniform_qualifier : require
 
 // ------------------------------------------------------------------------
 // Author: Mustafa Yemural
@@ -16,8 +17,6 @@ layout(location = 3) in vec4 inTangent;
 layout(location = 0) out vec3 fragPos;
 layout(location = 1) out vec2 fragUv;
 layout(location = 2) out mat3 fragTBN;
-
-layout(constant_id = 0) const uint TEXTURE_COUNT = 1;
 
 struct MeshData {
     mat4 model;
@@ -42,7 +41,7 @@ layout(std430, binding = 0) readonly buffer MeshDataBuffer {
     MeshData meshes[];
 };
 
-layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[TEXTURE_COUNT];
+layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[];
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
@@ -61,7 +60,7 @@ void main()
     // Sample displacement (object space)
     float height = 0.0;
     if (mesh.heightMap != -1) {
-        height = texture(uCombinedSamplers[mesh.heightMap], inUV).r;
+        height = texture(uCombinedSamplers[nonuniformEXT(mesh.heightMap)], inUV).r;
     }
 
     // Displace vertex along normal (object space)

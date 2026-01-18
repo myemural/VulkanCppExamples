@@ -102,24 +102,22 @@ void VulkanApplication::CreateInitialResources() const
                                               {.name = GetParamStr(AppConstants::SceneObjectsFragmentShaderKey),
                                                .fileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)}}};
 
-    resourceCreateInfo.images = {
-        ImageResourceCreateInfo{
-            .name = GetParamStr(AppConstants::DepthImage),
-            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = depthImageFormat_,
-            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
-                                          .format = depthImageFormat_,
-                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}}};
+    resourceCreateInfo.images = {ImageResourceCreateInfo{
+        .name = GetParamStr(AppConstants::DepthImage),
+        .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .format = depthImageFormat_,
+        .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+                                      .format = depthImageFormat_,
+                                      .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                           .baseMipLevel = 0,
+                                                           .levelCount = 1,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 1}}}}};
 
-    resourceCreateInfo.samplers = {
-        {.name = GetParamStr(AppConstants::MainSampler),
-         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
+    resourceCreateInfo.samplers = {{.name = GetParamStr(AppConstants::MainSampler),
+                                    .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
@@ -329,19 +327,6 @@ void VulkanApplication::CreatePipelines()
     const auto bindings = scene_->GetBindingDescriptions();
     const auto attributes = scene_->GetAttributeDescriptions();
 
-    VkSpecializationMapEntry entry{};
-    entry.constantID = 0;
-    entry.offset = 0;
-    entry.size = sizeof(uint32_t);
-
-    const std::uint32_t lightCount = materialManager_->GetTextureCount();
-
-    VkSpecializationInfo specInfo{};
-    specInfo.mapEntryCount = 1;
-    specInfo.pMapEntries = &entry;
-    specInfo.dataSize = sizeof(uint32_t);
-    specInfo.pData = &lightCount;
-
     scenePipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -352,7 +337,6 @@ void VulkanApplication::CreatePipelines()
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
             shaderStageCreateInfo.module =
                     resources_->GetShaderModule(GetParamStr(AppConstants::SceneObjectsFragmentShaderKey))->GetHandle();
-            shaderStageCreateInfo.pSpecializationInfo = &specInfo;
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();

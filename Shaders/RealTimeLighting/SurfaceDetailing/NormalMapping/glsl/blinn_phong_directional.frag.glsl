@@ -1,4 +1,5 @@
 #version 450
+#extension GL_EXT_nonuniform_qualifier : require
 
 // ------------------------------------------------------------------------
 // Author: Mustafa Yemural
@@ -13,8 +14,6 @@ layout(location = 0) out vec4 outColor;
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec2 fragUv;
 layout(location = 2) in mat3 fragTBN;
-
-layout(constant_id = 0) const uint TEXTURE_COUNT = 1;
 
 struct MeshData {
     mat4 model;
@@ -45,7 +44,7 @@ layout(std140, set = 0, binding = 1) uniform LightUBO
     vec4 lightColor;     // rgb = Light Color
 } light;
 
-layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[TEXTURE_COUNT];
+layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[];
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
@@ -61,7 +60,7 @@ void main()
 
     vec3 diffuseColor = meshInfo.diffuseColor.rgb;
     if (meshInfo.diffuseMap != -1) {
-        vec4 diffuseTextureColor = texture(uCombinedSamplers[meshInfo.diffuseMap], fragUv);
+        vec4 diffuseTextureColor = texture(uCombinedSamplers[nonuniformEXT(meshInfo.diffuseMap)], fragUv);
         diffuseColor = diffuseTextureColor.rgb;
     }
 
@@ -69,7 +68,7 @@ void main()
     vec3 normalWorldSpace;
     if (meshInfo.normalMap != -1) {
         // Normal map sample (tangent space)
-        vec3 normalTangent = texture(uCombinedSamplers[meshInfo.normalMap], fragUv).rgb;
+        vec3 normalTangent = texture(uCombinedSamplers[nonuniformEXT(meshInfo.normalMap)], fragUv).rgb;
 
         // Transform from [0,1] to [-1,1] range
         normalTangent = normalize(normalTangent * 2.0 - 1.0);

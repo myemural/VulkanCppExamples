@@ -55,10 +55,10 @@ template<typename T>
 concept Numeric = std::integral<T> || std::floating_point<T>;
 
 /**
- * @brief Generates and returns random color value between min and max values. Alpha is not included.
- * @param minValue Minimum value. Default is 0.
- * @param maxValue Maximum value for color component. Default is 1.
- * @return Returns random color value.
+ * @brief Generates and returns random value between min and max values.
+ * @param minValue Minimum value.
+ * @param maxValue Maximum value.
+ * @return Returns random value.
  */
 template<Numeric T>
 T GenerateRandomValue(const T minValue, const T maxValue)
@@ -66,10 +66,10 @@ T GenerateRandomValue(const T minValue, const T maxValue)
     std::mt19937 generator{std::random_device{}()};
     if constexpr (std::integral<T>) {
         std::uniform_int_distribution<T> distribution(minValue, maxValue);
-        return distribution(generator());
+        return distribution(generator);
     } else {
         std::uniform_real_distribution<T> distribution(minValue, maxValue);
-        return distribution(generator());
+        return distribution(generator);
     }
 }
 

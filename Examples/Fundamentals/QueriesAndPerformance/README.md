@@ -22,6 +22,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `SpecializationConstants`
 8. [Pipeline Caches](/Examples/Fundamentals/QueriesAndPerformance/PipelineCaches)
    - `PipelineCaches`
+9. [Descriptor Indexing](/Examples/Fundamentals/QueriesAndPerformance/DescriptorIndexing)
+   - `DescriptorIndexing`
 
 ## Architecture of the Subsection
 

@@ -144,6 +144,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Reduce CPU Bottleneck with Indirect Drawing](/Examples/Fundamentals/QueriesAndPerformance/IndirectDrawing)
   - [Specialization Constants](/Examples/Fundamentals/QueriesAndPerformance/SpecializationConstants)
   - [Pipeline Caches](/Examples/Fundamentals/QueriesAndPerformance/PipelineCaches)
+  - [Descriptor Indexing](/Examples/Fundamentals/QueriesAndPerformance/DescriptorIndexing)
 
 ### [Real-Time Lighting](/Examples/RealTimeLighting)
 

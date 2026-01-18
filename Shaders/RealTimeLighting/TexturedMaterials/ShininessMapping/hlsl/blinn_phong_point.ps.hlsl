@@ -6,8 +6,6 @@
 // Licensed under the MIT License.
 // ------------------------------------------------------------------------
 
-#define TEXTURE_COUNT 3 // Workaround: Getting array size from specialization constants is not working on HLSL
-
 struct PSInput
 {
     [[vk::location(0)]] float3 fragPos : POSITION;
@@ -58,8 +56,8 @@ cbuffer Light : register(b1)
     LightUBO light;
 };
 
-[[vk::binding(2, 0)]] SamplerState uSamplers[TEXTURE_COUNT];
-[[vk::binding(2, 0)]] Texture2D uImages[TEXTURE_COUNT];
+[[vk::binding(2, 0)]] SamplerState uSamplers[];
+[[vk::binding(2, 0)]] Texture2D uImages[];
 
 float4 main(PSInput input) : SV_Target
 {

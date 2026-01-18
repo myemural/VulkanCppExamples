@@ -75,6 +75,7 @@ bool SetParams(ParameterServer& params)
         // Vulkan settings
         params.Set<std::string>(VulkanParams::ApplicationName, params.Get<std::string>(WindowParams::Title));
         params.Set<std::vector<std::string>>(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
+        params.Set<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_2);
 
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.175f, 0.175f, 0.175f, 1.0f});

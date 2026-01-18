@@ -137,3 +137,6 @@ The topics covered by this subsection:
 - Using pipeline caches in Vulkan
 - Saving pipeline to a cache file
 - Loading pipelines from a cache if the cache is available
+- Implementing and using descriptor indexing feature in Vulkan
+- Using variable sized sampler arrays in shaders
+- Access variable sized sampler arrays via non-uniform indexing

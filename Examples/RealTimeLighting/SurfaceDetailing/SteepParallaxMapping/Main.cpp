@@ -39,8 +39,7 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PebblesTexturePath,
-                                               "Textures/Pebbles_027_BaseColor.jpg");
+    schema.RegisterImmutableParam<std::string>(AppConstants::PebblesTexturePath, "Textures/Pebbles_027_BaseColor.jpg");
     schema.RegisterImmutableParam<std::string>(AppConstants::PebblesTexture, "pebblesTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::PebblesNormalTexturePath,
                                                "Textures/Pebbles_027_Normal.jpg");
@@ -113,6 +112,7 @@ int main()
         return -1;
     }
     params.Set<std::vector<std::string>>(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
+    params.Set<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_2);
 
     // Init Vulkan application
     VulkanApplication app{std::move(params)};

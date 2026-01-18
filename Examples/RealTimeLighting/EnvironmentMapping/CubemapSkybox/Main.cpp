@@ -131,6 +131,7 @@ int main()
         return -1;
     }
     params.Set<std::vector<std::string>>(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
+    params.Set<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_2);
 
     // Init Vulkan application
     VulkanApplication app{std::move(params)};

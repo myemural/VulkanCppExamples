@@ -37,8 +37,8 @@ bool ApplicationTexturedMaterials::Init()
         resources_ = std::make_unique<ResourceManager>(physicalDevice_, device_);
 
         depthImageFormat_ = physicalDevice_->FindSupportedFormat(
-            {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
-            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+                {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+                VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -103,8 +103,16 @@ void ApplicationTexturedMaterials::CreateDefaultLogicalDevice()
     deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
     deviceFeatures.multiDrawIndirect = VK_TRUE;
 
+    VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};
+    descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+    descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+    descriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
+    descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
+    descriptorIndexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
+
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
-        builder.AddLayer("VK_LAYER_KHRONOS_validation")
+        builder.AddExtendingStructure(&descriptorIndexingFeatures)
+                .AddLayer("VK_LAYER_KHRONOS_validation")
                 .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;

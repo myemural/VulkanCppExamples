@@ -43,9 +43,11 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
     schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteTexturePath, "Textures/Concrete_Blocks_016_basecolor.png");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteTexturePath,
+                                               "Textures/Concrete_Blocks_016_basecolor.png");
     schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteTexture, "concreteTexture");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteOpacityTexturePath, "Textures/Concrete_Blocks_016_opacity.png");
+    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteOpacityTexturePath,
+                                               "Textures/Concrete_Blocks_016_opacity.png");
     schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteOpacityTexture, "concreteOpacityTexture");
     schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
 
@@ -119,6 +121,7 @@ int main()
         return -1;
     }
     params.Set<std::vector<std::string>>(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
+    params.Set<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_2);
 
     // Init Vulkan application
     VulkanApplication app{std::move(params)};

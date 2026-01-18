@@ -13,5 +13,6 @@ macro(build_target TARGET_NAME LIB_NAMES EXAMPLE_NAME)
         add_test(NAME "${TARGET_NAME}_test"
                 COMMAND ${TARGET_NAME}
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        set_tests_properties("${TARGET_NAME}_test" PROPERTIES LABELS "${CATEGORY_NAME}")
     endif ()
 endmacro()

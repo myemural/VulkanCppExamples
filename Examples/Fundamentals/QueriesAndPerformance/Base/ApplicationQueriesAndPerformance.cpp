@@ -75,8 +75,16 @@ void ApplicationQueriesAndPerformance::CreateDefaultLogicalDevice()
     deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
     deviceFeatures.multiDrawIndirect = VK_TRUE;
 
+    VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};
+    descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+    descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+    descriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
+    descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
+    descriptorIndexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
+
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
-        builder.AddLayer("VK_LAYER_KHRONOS_validation")
+        builder.AddExtendingStructure(&descriptorIndexingFeatures)
+                .AddLayer("VK_LAYER_KHRONOS_validation")
                 .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
@@ -91,7 +99,10 @@ void ApplicationQueriesAndPerformance::CreateDefaultLogicalDevice()
     }
 }
 
-void ApplicationQueriesAndPerformance::CreateDefaultQueue() { queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0); }
+void ApplicationQueriesAndPerformance::CreateDefaultQueue()
+{
+    queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0);
+}
 
 void ApplicationQueriesAndPerformance::CreateDefaultSwapChain()
 {
