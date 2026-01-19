@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `CubemapSkybox`
 2. [Cubemap Reflections](/Examples/RealTimeLighting/EnvironmentMapping/CubemapReflections)
    - `CubemapReflections`
+3. [Fresnel Effect](/Examples/RealTimeLighting/EnvironmentMapping/FresnelEffect)
+   - `FresnelEffect`
 
 ## Architecture of the Subsection
 

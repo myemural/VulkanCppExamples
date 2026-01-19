@@ -183,6 +183,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Environment Mapping](/Examples/RealTimeLighting/EnvironmentMapping)**
   - [Simple Cubemap Skybox](/Examples/RealTimeLighting/EnvironmentMapping/CubemapSkybox)
   - [Cubemap Reflections](/Examples/RealTimeLighting/EnvironmentMapping/CubemapReflections)
+  - [Fresnel Effect](/Examples/RealTimeLighting/EnvironmentMapping/FresnelEffect)
 
 ## Environment Support
 

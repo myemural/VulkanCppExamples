@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(CubemapSkybox)
 add_subdirectory(CubemapReflections)
+add_subdirectory(FresnelEffect)
