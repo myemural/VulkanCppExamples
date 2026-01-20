@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `CubemapReflections`
 3. [Fresnel Effect](/Examples/RealTimeLighting/EnvironmentMapping/FresnelEffect)
    - `FresnelEffect`
+4. [Refraction with Cubemaps](/Examples/RealTimeLighting/EnvironmentMapping/CubemapRefractions)
+   - `CubemapRefractions`
 
 ## Architecture of the Subsection
 
