@@ -269,7 +269,6 @@ void SceneManager::AddModel(const std::string& modelName,
         meshInfo.geometry = CreateMeshGeometry(mesh);
         /// TODO: Transform system is completely wrong here, will be adjusted later.
         meshInfo.transform = {initialPosition, initialRotation, initialScale};
-        meshInfo.transform.SetModelMatrix(meshInfo.transform.GetModelMatrix() * node.worldTransform);
 
         /// TODO: Will be increased
         if (sceneConfig_.currentMaterialSystem == MaterialSystem::PHONG) {

@@ -33,7 +33,6 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw/include")
 
 set(GLM_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glm")
 include_directories("${GLM_DIR}/include")
-add_compile_definitions("-DGLM_ENABLE_EXPERIMENTAL")
 
 set(TINYGLTF_HEADER_ONLY OFF CACHE INTERNAL "" FORCE)
 set(TINYGLTF_INSTALL OFF CACHE INTERNAL "" FORCE)

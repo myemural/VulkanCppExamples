@@ -14,7 +14,6 @@
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
 #include <vulkan/vulkan_core.h>
 
 namespace common::vulkan_framework
@@ -149,17 +148,6 @@ struct COMMON_API MeshInfo
         glm::vec3 translation = glm::vec3(0.0f);
         glm::vec3 rotation = glm::vec3(0.0f);
         glm::vec3 scale = glm::vec3(1.0f);
-
-        /// TODO: Transform logic will be completely modified later.
-        void SetModelMatrix(const glm::mat4& modelMatrix)
-        {
-            glm::vec3 skew;
-            glm::vec4 perspective;
-            glm::quat orientation;
-            glm::decompose(modelMatrix, scale, orientation, translation, skew, perspective);
-            const glm::vec3 eulerRadians = glm::eulerAngles(orientation);
-            rotation = glm::degrees(eulerRadians);
-        }
 
         [[nodiscard]] glm::mat4 GetModelMatrix() const
         {
