@@ -70,6 +70,7 @@ struct COMMON_API MeshDataPhongTexturedGpu
     float shininess;
     float specularStrength;
     float opacity;
+    float reflectivity;
     TextureId diffuseMap;
     TextureId specularMap;
     TextureId normalMap;
@@ -78,12 +79,14 @@ struct COMMON_API MeshDataPhongTexturedGpu
     TextureId opacityMap;
     TextureId aoMap;
     TextureId heightMap;
+    float _pad[3];
 };
 
 struct COMMON_API MeshPushConstantsGpu
 {
     glm::mat4 view;
     glm::mat4 projection;
+    glm::mat4 reflectionViewProjection;
     glm::vec4 cameraPosition;
     std::uint32_t objectId;
 };
@@ -120,6 +123,7 @@ struct COMMON_API PhongTexturedMaterial
 
     // Optional tweaks
     float opacity = 1.0f; // For alpha blending
+    float reflectivity = 0.0f; // For reflection intensity
 
     // Textures
     TextureId diffuseMap = -1;   // Diffuse map texture
@@ -201,6 +205,7 @@ struct COMMON_API MeshInfo
                         meshData.shininess = mat.shininess;
                         meshData.specularStrength = mat.specularStrength;
                         meshData.opacity = mat.opacity;
+                        meshData.reflectivity = mat.reflectivity;
                         meshData.diffuseMap = mat.diffuseMap;
                         meshData.specularMap = mat.specularMap;
                         meshData.normalMap = mat.normalMap;
@@ -216,13 +221,16 @@ struct COMMON_API MeshInfo
         return result;
     }
 
-    [[nodiscard]] MeshPushConstantsGpu GenerateMeshPushConstantsGpu(const glm::mat4& viewMatrix,
-                                                                    const glm::mat4& projMatrix,
-                                                                    const glm::vec4& cameraPosition) const
+    [[nodiscard]] MeshPushConstantsGpu
+    GenerateMeshPushConstantsGpu(const glm::mat4& viewMatrix,
+                                 const glm::mat4& projMatrix,
+                                 const glm::vec4& cameraPosition,
+                                 const glm::mat4& reflectionViewProj = glm::mat4(1.0f)) const
     {
         MeshPushConstantsGpu pushConstants{};
         pushConstants.view = viewMatrix;
         pushConstants.projection = projMatrix;
+        pushConstants.reflectionViewProjection = reflectionViewProj;
         pushConstants.objectId = objectId;
         pushConstants.cameraPosition = cameraPosition;
         return pushConstants;

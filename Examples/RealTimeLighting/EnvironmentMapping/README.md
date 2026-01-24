@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `FresnelEffect`
 4. [Refraction with Cubemaps](/Examples/RealTimeLighting/EnvironmentMapping/CubemapRefractions)
    - `CubemapRefractions`
+5. [Dynamic Planar Reflections](/Examples/RealTimeLighting/EnvironmentMapping/PlanarReflections)
+   - `PlanarReflections`
 
 ## Architecture of the Subsection
 

@@ -15,6 +15,7 @@ layout(location = 0) in vec3 directionVector;
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;

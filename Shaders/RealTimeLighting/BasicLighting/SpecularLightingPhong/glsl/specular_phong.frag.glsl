@@ -37,6 +37,7 @@ layout(std140, set = 0, binding = 1) uniform LightUBO
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;

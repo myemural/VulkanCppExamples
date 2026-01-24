@@ -22,8 +22,7 @@ struct MeshData {
     float ambientStrength;
     float shininess;
     float specularStrength;
-    float opacity;
-    int diffuseMap;
+
     int specularMap;
     int normalMap;
     int emissiveMap;
@@ -40,6 +39,7 @@ layout(std430, binding = 0) readonly buffer MeshDataBuffer {
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;

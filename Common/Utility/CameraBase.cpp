@@ -20,6 +20,27 @@ CameraBase::CameraBase(glm::vec3 position, float aspect, float nearPlane, float 
 
 glm::mat4 CameraBase::GetViewMatrix() const { return glm::lookAt(position_, position_ + cameraFront_, cameraUp_); }
 
+glm::mat4 CameraBase::GetReflectedViewMatrix(const Plane& plane) const
+{
+    const glm::mat4 view = GetViewMatrix();
+    const glm::mat4 reflect = plane.BuildReflectionMatrix();
+
+    return view * reflect;
+}
+
+glm::mat4 CameraBase::GetReflectionViewProjMatrix(const Plane& plane) const
+{
+    const glm::mat4 reflectedView = GetReflectedViewMatrix(plane);
+    const glm::mat4 projection = GetProjectionMatrix();
+
+    // Clip space [-1, 1] to texture space [0, 1] transform
+    glm::mat4 clipToTextureSpace(1.0f);
+    clipToTextureSpace = glm::translate(clipToTextureSpace, glm::vec3(0.5f, 0.5f, 0.0f));
+    clipToTextureSpace = glm::scale(clipToTextureSpace, glm::vec3(0.5f, 0.5f, 1.0f));
+
+    return clipToTextureSpace * projection * reflectedView;
+}
+
 void CameraBase::SetPosition(const glm::vec3& position) { position_ = position; }
 
 glm::vec3 CameraBase::GetPosition() const { return position_; }

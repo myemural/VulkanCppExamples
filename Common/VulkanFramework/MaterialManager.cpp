@@ -98,6 +98,12 @@ PhongTexturedMaterialBuilder& PhongTexturedMaterialBuilder::SetOpacity(const flo
     return *this;
 }
 
+PhongTexturedMaterialBuilder& PhongTexturedMaterialBuilder::SetReflectivity(float reflectivity)
+{
+    phongTexturedMaterial_.reflectivity = reflectivity;
+    return *this;
+}
+
 PhongTexturedMaterialBuilder& PhongTexturedMaterialBuilder::SetDiffuseMap(const std::string& diffuseTextureName)
 {
     const auto textureId = materialManager_.GetTextureId(diffuseTextureName);

@@ -72,6 +72,8 @@ public:
 
     PhongTexturedMaterialBuilder& SetOpacity(float opacity);
 
+    PhongTexturedMaterialBuilder& SetReflectivity(float reflectivity);
+
     PhongTexturedMaterialBuilder& SetDiffuseMap(const std::string& diffuseTextureName);
 
     PhongTexturedMaterialBuilder& SetSpecularMap(const std::string& specularTextureName);

@@ -13,6 +13,7 @@
 #include <glm/glm.hpp>
 
 #include "CoreDefines.h"
+#include "Plane.h"
 
 namespace common::utility
 {
@@ -41,6 +42,20 @@ public:
      * @return Returns calculated view matrix of the camera.
      */
     [[nodiscard]] glm::mat4 GetViewMatrix() const;
+
+    /**
+     * @brief Returns reflected view matrix to a plane.
+     * @param plane Plane information.
+     * @return Returns reflected view matrix to a plane.
+     */
+    [[nodiscard]] glm::mat4 GetReflectedViewMatrix(const Plane& plane) const;
+
+    /**
+     * @brief Returns reflection view projection matrix to a plane.
+     * @param plane Plane information.
+     * @return Returns reflection view projection matrix to a plane.
+     */
+    [[nodiscard]] glm::mat4 GetReflectionViewProjMatrix(const Plane& plane) const;
 
     /**
      * @brief Sets position of the camera.

@@ -23,6 +23,7 @@ struct MeshData
     float shininess;
     float specularStrength;
     float opacity;
+    float reflectivity;
     int diffuseMap;
     int specularMap;
     int normalMap;

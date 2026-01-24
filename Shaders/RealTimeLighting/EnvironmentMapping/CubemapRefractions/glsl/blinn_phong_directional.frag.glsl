@@ -24,6 +24,7 @@ struct MeshData {
     float shininess;
     float specularStrength;
     float opacity;
+    float reflectivity;
     int diffuseMap;
     int specularMap;
     int normalMap;
@@ -49,6 +50,7 @@ layout(set = 0, binding = 3) uniform samplerCube uEnvironmentMap;
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
+    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;

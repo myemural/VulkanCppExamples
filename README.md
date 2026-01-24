@@ -185,6 +185,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Cubemap Reflections](/Examples/RealTimeLighting/EnvironmentMapping/CubemapReflections)
   - [Fresnel Effect](/Examples/RealTimeLighting/EnvironmentMapping/FresnelEffect)
   - [Refraction with Cubemaps](/Examples/RealTimeLighting/EnvironmentMapping/CubemapRefractions)
+  - [Dynamic Planar Reflections](/Examples/RealTimeLighting/EnvironmentMapping/PlanarReflections)
 
 ## Environment Support
 
