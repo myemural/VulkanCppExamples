@@ -81,4 +81,13 @@ T GenerateRandomValue(const T minValue, const T maxValue)
  */
 COMMON_API std::uint32_t GetMipLevelCount(std::uint32_t textureWidth, std::uint32_t textureHeight);
 
+/**
+ * @brief Creates a view matrix for a single cubemap face.
+ * @param pos World-space position of the cubemap camera.
+ * @param dir Forward direction of the cubemap face (must be axis-aligned).
+ * @param up Up vector defining the vertical orientation of the cubemap face.
+ * @return View matrix for the specified cubemap face.
+ */
+COMMON_API glm::mat4 MakeCubemapView(const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& up);
+
 } // namespace common::utility

@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `CubemapRefractions`
 5. [Dynamic Planar Reflections](/Examples/RealTimeLighting/EnvironmentMapping/PlanarReflections)
    - `PlanarReflections`
+6. [Dynamic Cubemap Reflections](/Examples/RealTimeLighting/EnvironmentMapping/DynamicCubemapReflections)
+   - `DynamicCubemapReflections`
 
 ## Architecture of the Subsection
 

@@ -10,6 +10,8 @@
  */
 #pragma once
 
+#include <array>
+
 #include <glm/glm.hpp>
 
 #include "CoreDefines.h"
@@ -56,6 +58,12 @@ public:
      * @return Returns reflection view projection matrix to a plane.
      */
     [[nodiscard]] glm::mat4 GetReflectionViewProjMatrix(const Plane& plane) const;
+
+    /**
+     * @brief Returns cubemap view matrices for reflection capture.
+     * @return Array of 6 view matrices (+X, -X, +Y, -Y, +Z, -Z).
+     */
+    [[nodiscard]] std::array<glm::mat4, 6> GetCubemapViewMatrices() const;
 
     /**
      * @brief Sets position of the camera.

@@ -68,4 +68,26 @@ std::uint32_t GetMipLevelCount(const std::uint32_t textureWidth, const std::uint
     return static_cast<uint32_t>(std::floor(std::log2(std::max(textureWidth, textureHeight)))) + 1;
 }
 
+glm::mat4 MakeCubemapView(const glm::vec3& pos, const glm::vec3& dir, const glm::vec3& up)
+{
+    const glm::vec3 f = glm::normalize(dir);
+    const glm::vec3 r = glm::normalize(glm::cross(f, up));
+    const glm::vec3 u = glm::cross(r, f);
+
+    glm::mat4 m(1.0f);
+    m[0][0] = r.x;
+    m[1][0] = r.y;
+    m[2][0] = r.z;
+    m[0][1] = u.x;
+    m[1][1] = u.y;
+    m[2][1] = u.z;
+    m[0][2] = -f.x;
+    m[1][2] = -f.y;
+    m[2][2] = -f.z;
+    m[3][0] = -glm::dot(r, pos);
+    m[3][1] = -glm::dot(u, pos);
+    m[3][2] = glm::dot(f, pos);
+    return m;
+}
+
 } // namespace common::utility

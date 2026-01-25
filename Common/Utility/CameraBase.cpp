@@ -10,6 +10,8 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
+#include "MathUtils.h"
+
 namespace common::utility
 {
 CameraBase::CameraBase(glm::vec3 position, float aspect, float nearPlane, float farPlane)
@@ -39,6 +41,23 @@ glm::mat4 CameraBase::GetReflectionViewProjMatrix(const Plane& plane) const
     clipToTextureSpace = glm::scale(clipToTextureSpace, glm::vec3(0.5f, 0.5f, 1.0f));
 
     return clipToTextureSpace * projection * reflectedView;
+}
+
+std::array<glm::mat4, 6> CameraBase::GetCubemapViewMatrices() const
+{
+    const glm::vec3 pos = position_;
+    std::array<glm::mat4, 6> views{};
+
+    views[0] = MakeCubemapView(pos, {1, 0, 0}, {0, -1, 0});  // +X
+    views[1] = MakeCubemapView(pos, {-1, 0, 0}, {0, -1, 0}); // -X
+
+    views[2] = MakeCubemapView(pos, {0, 1, 0}, {0, 0, 1});   // +Y
+    views[3] = MakeCubemapView(pos, {0, -1, 0}, {0, 0, -1}); // -Y
+
+    views[4] = MakeCubemapView(pos, {0, 0, 1}, {0, -1, 0}); // +Z
+    views[5] = MakeCubemapView(pos, {0, 0, -1}, {0, -1, 0});  // -Z
+
+    return views;
 }
 
 void CameraBase::SetPosition(const glm::vec3& position) { position_ = position; }
