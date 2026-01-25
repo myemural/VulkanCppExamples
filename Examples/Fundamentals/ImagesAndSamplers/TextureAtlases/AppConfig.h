@@ -12,21 +12,25 @@
 
 namespace examples::fundamentals::images_and_samplers::texture_atlases
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_offset_uv_with_rect.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
-    // Resources
-    constexpr auto MainVertexBuffer = "AppConstants.MainVertexBuffer";
-    constexpr auto MainIndexBuffer = "AppConstants.MainIndexBuffer";
-    constexpr auto ImageStagingBuffer = "AppConstants.ImageStagingBuffer";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto AtlasTexturePath = "AppConstants.AtlasTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kMainVertexBuffer = "mainVertexBuffer";
+    inline constexpr auto kMainIndexBuffer = "mainIndexBuffer";
+    inline constexpr auto kImageStagingBuffer = "imageStagingBuffer";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kAtlasTexturePath = "Textures/texture_atlas.jpg";
+} // namespace constants
 
 namespace AppSettings
 {

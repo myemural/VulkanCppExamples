@@ -12,23 +12,27 @@
 
 namespace examples::fundamentals::images_and_samplers::using_multiple_textures
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_offset.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "multiple_texture_sampler.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
-    // Resources
-    constexpr auto MainVertexBuffer = "AppConstants.MainVertexBuffer";
-    constexpr auto MainIndexBuffer = "AppConstants.MainIndexBuffer";
-    constexpr auto BricksStagingBuffer = "AppConstants.BricksStagingBuffer";
-    constexpr auto WallStagingBuffer = "AppConstants.WallStagingBuffer";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto BricksTexturePath = "AppConstants.BricksTexturePath";
-    constexpr auto WallTexturePath = "AppConstants.WallTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kMainVertexBuffer = "mainVertexBuffer";
+    inline constexpr auto kMainIndexBuffer = "mainIndexBuffer";
+    inline constexpr auto kBricksStagingBuffer = "bricksStagingBuffer";
+    inline constexpr auto kWallStagingBuffer = "wallStagingBuffer";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kBricksTexturePath = "Textures/bricks.jpg";
+    inline constexpr auto kWallTexturePath = "Textures/wall.jpg";
+} // namespace constants
 
 namespace AppSettings
 {

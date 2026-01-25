@@ -12,18 +12,18 @@
 
 namespace examples::fundamentals::descriptor_sets::basic_push_constants
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "passthrough_position.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "pushconst_color.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
-    // Resources
-    constexpr auto MainVertexBuffer = "AppConstants.MainVertexBuffer";
-    constexpr auto MainIndexBuffer = "AppConstants.MainIndexBuffer";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kMainVertexBuffer = "mainVertexBuffer";
+    inline constexpr auto kMainIndexBuffer = "mainIndexBuffer";
+} // namespace constants
 
 namespace AppSettings
 {

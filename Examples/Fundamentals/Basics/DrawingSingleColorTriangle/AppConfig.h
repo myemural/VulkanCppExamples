@@ -12,14 +12,17 @@
 
 namespace examples::fundamentals::basics::drawing_single_color_triangle
 {
-namespace AppConstants
+namespace constants
 {
-    constexpr auto VertexCount = "AppConstants.VertexCount";
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
-} // namespace AppConstants
+    // Drawing
+    inline constexpr auto kVertexCount = 3U;
+
+    // Shaders
+    inline constexpr auto kMainVertexShaderFile = "hardcoded_position.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "hardcoded_color.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
+} // namespace constants
 
 namespace AppSettings
 {

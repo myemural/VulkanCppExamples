@@ -21,6 +21,7 @@
 
 namespace examples::fundamentals::descriptor_sets::array_of_ub
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -90,27 +91,25 @@ void VulkanApplication::CreateResources()
     constexpr std::uint32_t uniformBufferSize = sizeof(UniformBufferObject);
 
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
-        {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        {kMainVertexBuffer, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::MainIndexBuffer), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        {kMainIndexBuffer, indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::TopLeftUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kTopLeftUB, uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::TopRightUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kTopRightUB, uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::BottomLeftUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kBottomLeftUB, uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::BottomRightUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kBottomRightUB, uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
         .basePath = SHADERS_DIR,
         .shaderType = SHADER_TYPE,
-        .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                    {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     CreateDescriptorPool();
@@ -125,14 +124,12 @@ void VulkanApplication::InitResources()
     modelUbObject[BOTTOM_LEFT_QUAD_INDEX].model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.5f, 0.0f));
     modelUbObject[BOTTOM_RIGHT_QUAD_INDEX].model = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.0f));
 
-    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
-    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(std::uint16_t));
-    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &modelUbObject[TOP_LEFT_QUAD_INDEX], sizeof(UniformBufferObject));
-    SetBuffer(GetParamStr(AppConstants::TopRightUB), &modelUbObject[TOP_RIGHT_QUAD_INDEX], sizeof(UniformBufferObject));
-    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &modelUbObject[BOTTOM_LEFT_QUAD_INDEX],
-              sizeof(UniformBufferObject));
-    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &modelUbObject[BOTTOM_RIGHT_QUAD_INDEX],
-              sizeof(UniformBufferObject));
+    SetBuffer(kMainVertexBuffer, vertices.data(), vertices.size() * sizeof(VertexPos2));
+    SetBuffer(kMainIndexBuffer, indices.data(), indices.size() * sizeof(std::uint16_t));
+    SetBuffer(kTopLeftUB, &modelUbObject[TOP_LEFT_QUAD_INDEX], sizeof(UniformBufferObject));
+    SetBuffer(kTopRightUB, &modelUbObject[TOP_RIGHT_QUAD_INDEX], sizeof(UniformBufferObject));
+    SetBuffer(kBottomLeftUB, &modelUbObject[BOTTOM_LEFT_QUAD_INDEX], sizeof(UniformBufferObject));
+    SetBuffer(kBottomRightUB, &modelUbObject[BOTTOM_RIGHT_QUAD_INDEX], sizeof(UniformBufferObject));
 }
 
 void VulkanApplication::CreateDescriptorPool()
@@ -169,28 +166,28 @@ void VulkanApplication::CreateDescriptorSet()
 
     VkDescriptorBufferInfo bufferInfoTopLeft;
     {
-        bufferInfoTopLeft.buffer = buffers_[GetParamStr(AppConstants::TopLeftUB)]->GetBuffer()->GetHandle();
+        bufferInfoTopLeft.buffer = buffers_[kTopLeftUB]->GetBuffer()->GetHandle();
         bufferInfoTopLeft.offset = 0;
         bufferInfoTopLeft.range = VK_WHOLE_SIZE;
     }
 
     VkDescriptorBufferInfo bufferInfoTopRight;
     {
-        bufferInfoTopRight.buffer = buffers_[GetParamStr(AppConstants::TopRightUB)]->GetBuffer()->GetHandle();
+        bufferInfoTopRight.buffer = buffers_[kTopRightUB]->GetBuffer()->GetHandle();
         bufferInfoTopRight.offset = 0;
         bufferInfoTopRight.range = VK_WHOLE_SIZE;
     }
 
     VkDescriptorBufferInfo bufferInfoBottomLeft;
     {
-        bufferInfoBottomLeft.buffer = buffers_[GetParamStr(AppConstants::BottomLeftUB)]->GetBuffer()->GetHandle();
+        bufferInfoBottomLeft.buffer = buffers_[kBottomLeftUB]->GetBuffer()->GetHandle();
         bufferInfoBottomLeft.offset = 0;
         bufferInfoBottomLeft.range = VK_WHOLE_SIZE;
     }
 
     VkDescriptorBufferInfo bufferInfoBottomRight;
     {
-        bufferInfoBottomRight.buffer = buffers_[GetParamStr(AppConstants::BottomRightUB)]->GetBuffer()->GetHandle();
+        bufferInfoBottomRight.buffer = buffers_[kBottomRightUB]->GetBuffer()->GetHandle();
         bufferInfoBottomRight.offset = 0;
         bufferInfoBottomRight.range = VK_WHOLE_SIZE;
     }
@@ -239,13 +236,11 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -299,10 +294,8 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t indexCount)
                 VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffers_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         cmdBuffers_[i]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, {descriptorSet_});
-        cmdBuffers_[i]->BindVertexBuffers({buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()}, 0, 1,
-                                          {0});
-        cmdBuffers_[i]->BindIndexBuffer(buffers_[GetParamStr(AppConstants::MainIndexBuffer)]->GetBuffer(), 0,
-                                        VK_INDEX_TYPE_UINT16);
+        cmdBuffers_[i]->BindVertexBuffers({buffers_[kMainVertexBuffer]->GetBuffer()}, 0, 1, {0});
+        cmdBuffers_[i]->BindIndexBuffer(buffers_[kMainIndexBuffer]->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
         for (int j = 0; j < 4; ++j) {
             cmdBuffers_[i]->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(int), &j);
             cmdBuffers_[i]->DrawIndexed(indexCount, 1, 0, 0, 0);
@@ -323,13 +316,13 @@ void VulkanApplication::UpdateUniformBuffers()
 
     UniformBufferObject tempObject{};
     tempObject.model = glm::rotate(modelUbObject[TOP_LEFT_QUAD_INDEX].model, rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &tempObject, sizeof(UniformBufferObject));
+    SetBuffer(kTopLeftUB, &tempObject, sizeof(UniformBufferObject));
     tempObject.model =
             glm::scale(modelUbObject[TOP_RIGHT_QUAD_INDEX].model, glm::vec3(scalingFactor, scalingFactor, 0.0f));
-    SetBuffer(GetParamStr(AppConstants::TopRightUB), &tempObject, sizeof(UniformBufferObject));
+    SetBuffer(kTopRightUB, &tempObject, sizeof(UniformBufferObject));
     tempObject.model = glm::translate(modelUbObject[BOTTOM_LEFT_QUAD_INDEX].model, glm::vec3(translation, 0.0f, 0.0f));
-    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &tempObject, sizeof(UniformBufferObject));
+    SetBuffer(kBottomLeftUB, &tempObject, sizeof(UniformBufferObject));
     tempObject.model = glm::translate(modelUbObject[BOTTOM_RIGHT_QUAD_INDEX].model, glm::vec3(0.0f, translation, 0.0f));
-    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &tempObject, sizeof(UniformBufferObject));
+    SetBuffer(kBottomRightUB, &tempObject, sizeof(UniformBufferObject));
 }
 } // namespace examples::fundamentals::descriptor_sets::array_of_ub

@@ -26,20 +26,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "passthrough_position.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "multiple_ubo_color.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexBuffer, "mainVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ScreenSizeUB, "screenSizeUB");
-    schema.RegisterImmutableParam<std::string>(AppConstants::TopLeftUB, "topLeftUB");
-    schema.RegisterImmutableParam<std::string>(AppConstants::TopRightUB, "topRightUB");
-    schema.RegisterImmutableParam<std::string>(AppConstants::BottomLeftUB, "bottomLeftUB");
-    schema.RegisterImmutableParam<std::string>(AppConstants::BottomRightUB, "bottomRightUB");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
 

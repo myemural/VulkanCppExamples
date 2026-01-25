@@ -20,6 +20,7 @@
 
 namespace examples::fundamentals::descriptor_sets::multiple_uniform_buffers
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -74,16 +75,16 @@ void VulkanApplication::DrawFrame()
     const auto currentTime = static_cast<float>(GetCurrentTime());
     const auto currentValue = 0.5f + 0.5f * std::sin(currentTime * 1.1f);
     const glm::vec3 topLeftColor{currentValue, 0.0f, 0.0f};
-    SetBuffer(GetParamStr(AppConstants::TopLeftUB), &topLeftColor, sizeof(glm::vec3));
+    SetBuffer(kTopLeftUB, &topLeftColor, sizeof(glm::vec3));
 
     const glm::vec3 topRightColor{0.0f, currentValue, 0.0f};
-    SetBuffer(GetParamStr(AppConstants::TopRightUB), &topRightColor, sizeof(glm::vec3));
+    SetBuffer(kTopRightUB, &topRightColor, sizeof(glm::vec3));
 
     const glm::vec3 bottomLeftColor{0.0f, 0.0f, currentValue};
-    SetBuffer(GetParamStr(AppConstants::BottomLeftUB), &bottomLeftColor, sizeof(glm::vec3));
+    SetBuffer(kBottomLeftUB, &bottomLeftColor, sizeof(glm::vec3));
 
     const glm::vec3 bottomRightColor{currentValue, 0.0f, currentValue};
-    SetBuffer(GetParamStr(AppConstants::BottomRightUB), &bottomRightColor, sizeof(glm::vec3));
+    SetBuffer(kBottomRightUB, &bottomRightColor, sizeof(glm::vec3));
 
     queue_->Submit({cmdBuffers_[imageIndex]}, {imageAvailableSemaphores_[currentIndex_]},
                    {renderFinishedSemaphores_[imageIndex]}, inFlightFences_[currentIndex_],
@@ -99,27 +100,25 @@ void VulkanApplication::CreateResources()
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
     constexpr std::uint32_t uniformBufferSize = sizeof(glm::vec3);
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
-        {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        {kMainVertexBuffer, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ScreenSizeUB), 2 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kScreenSizeUB, 2 * sizeof(float), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::TopLeftUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kTopLeftUB, uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::TopRightUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kTopRightUB, uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::BottomLeftUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kBottomLeftUB, uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::BottomRightUB), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kBottomRightUB, uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
         .basePath = SHADERS_DIR,
         .shaderType = SHADER_TYPE,
-        .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                    {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     CreateDescriptorPool();
@@ -131,8 +130,8 @@ void VulkanApplication::InitResources()
 {
     const std::array screenSizes = {static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_)};
 
-    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
-    SetBuffer(GetParamStr(AppConstants::ScreenSizeUB), &screenSizes, sizeof(screenSizes));
+    SetBuffer(kMainVertexBuffer, vertices.data(), vertices.size() * sizeof(VertexPos2));
+    SetBuffer(kScreenSizeUB, &screenSizes, sizeof(screenSizes));
 }
 
 void VulkanApplication::CreateDescriptorPool()
@@ -170,24 +169,19 @@ void VulkanApplication::CreateDescriptorSet()
     }
 
     std::vector<VkDescriptorBufferInfo> bufferInfoScreenSizes;
-    bufferInfoScreenSizes.emplace_back(buffers_[GetParamStr(AppConstants::ScreenSizeUB)]->GetBuffer()->GetHandle(), 0,
-                                       VK_WHOLE_SIZE);
+    bufferInfoScreenSizes.emplace_back(buffers_[kScreenSizeUB]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> bufferInfoTopLeft;
-    bufferInfoTopLeft.emplace_back(buffers_[GetParamStr(AppConstants::TopLeftUB)]->GetBuffer()->GetHandle(), 0,
-                                   VK_WHOLE_SIZE);
+    bufferInfoTopLeft.emplace_back(buffers_[kTopLeftUB]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> bufferInfoTopRight;
-    bufferInfoTopRight.emplace_back(buffers_[GetParamStr(AppConstants::TopRightUB)]->GetBuffer()->GetHandle(), 0,
-                                    VK_WHOLE_SIZE);
+    bufferInfoTopRight.emplace_back(buffers_[kTopRightUB]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> bufferInfoBottomLeft;
-    bufferInfoBottomLeft.emplace_back(buffers_[GetParamStr(AppConstants::BottomLeftUB)]->GetBuffer()->GetHandle(), 0,
-                                      VK_WHOLE_SIZE);
+    bufferInfoBottomLeft.emplace_back(buffers_[kBottomLeftUB]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> bufferInfoBottomRight;
-    bufferInfoBottomRight.emplace_back(buffers_[GetParamStr(AppConstants::BottomRightUB)]->GetBuffer()->GetHandle(), 0,
-                                       VK_WHOLE_SIZE);
+    bufferInfoBottomRight.emplace_back(buffers_[kBottomRightUB]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     const auto descriptorWriteScreenSize =
             descriptorSet_->CreateWriteDescriptorSet(0, 0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, bufferInfoScreenSizes);
@@ -235,13 +229,11 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -295,8 +287,7 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t vertexCount)
                 VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffers_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         cmdBuffers_[i]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, {descriptorSet_});
-        cmdBuffers_[i]->BindVertexBuffers({buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()}, 0, 1,
-                                          {0});
+        cmdBuffers_[i]->BindVertexBuffers({buffers_[kMainVertexBuffer]->GetBuffer()}, 0, 1, {0});
         cmdBuffers_[i]->Draw(vertexCount, 1, 0, 0);
         cmdBuffers_[i]->EndRenderPass();
         if (!cmdBuffers_[i]->EndCommandBuffer()) {

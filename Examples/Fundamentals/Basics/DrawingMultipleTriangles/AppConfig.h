@@ -12,13 +12,13 @@
 
 namespace examples::fundamentals::basics::drawing_multiple_triangles
 {
-namespace AppConstants
+namespace constants
 {
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
-} // namespace AppConstants
+    inline constexpr auto kMainVertexShaderFile = "passthrough_position.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "hardcoded_color.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
+} // namespace constants
 
 namespace AppSettings
 {

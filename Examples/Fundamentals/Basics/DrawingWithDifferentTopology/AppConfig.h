@@ -12,13 +12,14 @@
 
 namespace examples::fundamentals::basics::drawing_with_different_topology
 {
-namespace AppConstants
+namespace constants
 {
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
-} // namespace AppConstants
+    // Shaders
+    inline constexpr auto kMainVertexShaderFile = "passthrough_position_color.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "passthrough_color.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
+} // namespace constants
 
 namespace AppSettings
 {

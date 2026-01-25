@@ -12,22 +12,22 @@
 
 namespace examples::fundamentals::descriptor_sets::array_of_ub
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_indexed_ubo_model.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "hardcoded_color_from_index.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
-    // Resources
-    constexpr auto MainVertexBuffer = "AppConstants.MainVertexBuffer";
-    constexpr auto MainIndexBuffer = "AppConstants.MainIndexBuffer";
-    constexpr auto TopLeftUB = "AppConstants.TopLeftUB";
-    constexpr auto TopRightUB = "AppConstants.TopRightUB";
-    constexpr auto BottomLeftUB = "AppConstants.BottomLeftUB";
-    constexpr auto BottomRightUB = "AppConstants.BottomRightUB";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kMainVertexBuffer = "mainVertexBuffer";
+    inline constexpr auto kMainIndexBuffer = "mainIndexBuffer";
+    inline constexpr auto kTopLeftUB = "topLeftUB";
+    inline constexpr auto kTopRightUB = "topRightUB";
+    inline constexpr auto kBottomLeftUB = "bottomLeftUB";
+    inline constexpr auto kBottomRightUB = "bottomRightUB";
+} // namespace constants
 
 namespace AppSettings
 {

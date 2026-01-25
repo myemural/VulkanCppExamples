@@ -19,6 +19,7 @@
 
 namespace examples::fundamentals::images_and_samplers::combined_image_sampler
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -83,17 +84,17 @@ void VulkanApplication::CreateResources()
 {
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    bricksTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::BricksTexturePath));
+    bricksTextureHandler_ = textureLoader.Load(kBricksTexturePath);
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2Uv2);
     const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
-        {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        {kMainVertexBuffer, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        {kMainIndexBuffer, indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(bricksTextureHandler_.data.size()),
+        {kImageStagingBuffer, static_cast<std::uint32_t>(bricksTextureHandler_.data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
@@ -101,21 +102,18 @@ void VulkanApplication::CreateResources()
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
         .basePath = SHADERS_DIR,
         .shaderType = SHADER_TYPE,
-        .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                    {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     // Fill descriptor set create infos
     const DescriptorResourceCreateInfo descriptorSetCreateInfo = {
         .maxSets = 1,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
-        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+        .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}}},
-        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+        .descriptorSets = {{.name = kMainDescSetLayout, .layoutName = kMainDescSetLayout}}};
     CreateDescriptorSets(descriptorSetCreateInfo);
 
     CreateQuadTextureImage();
@@ -125,10 +123,9 @@ void VulkanApplication::CreateResources()
 
 void VulkanApplication::InitResources()
 {
-    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2Uv2));
-    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(indices[0]));
-    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), bricksTextureHandler_.data.data(),
-              bricksTextureHandler_.data.size());
+    SetBuffer(kMainVertexBuffer, vertices.data(), vertices.size() * sizeof(VertexPos2Uv2));
+    SetBuffer(kMainIndexBuffer, indices.data(), indices.size() * sizeof(indices[0]));
+    SetBuffer(kImageStagingBuffer, bricksTextureHandler_.data.data(), bricksTextureHandler_.data.size());
 
     UpdateDescriptorSets();
 
@@ -140,8 +137,7 @@ void VulkanApplication::InitResources()
 
 void VulkanApplication::CreatePipeline()
 {
-    pipelineLayout_ = device_->CreatePipelineLayout(
-            {descriptorRegistry_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))});
+    pipelineLayout_ = device_->CreatePipelineLayout({descriptorRegistry_->GetDescriptorLayout(kMainDescSetLayout)});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -171,13 +167,11 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -209,7 +203,7 @@ void VulkanApplication::UpdateDescriptorSets() const
                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.descriptorSetName = kMainDescSetLayout;
     samplerUpdateRequest.bindingIndex = 0;
     samplerUpdateRequest.images = imageSamplerInfos;
     samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -291,13 +285,10 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t indexCou
                 },
                 VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffersPresent_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        cmdBuffersPresent_[i]->BindDescriptorSets(
-                VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
-                {descriptorRegistry_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))});
-        cmdBuffersPresent_[i]->BindVertexBuffers({buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()},
-                                                 0, 1, {0});
-        cmdBuffersPresent_[i]->BindIndexBuffer(buffers_[GetParamStr(AppConstants::MainIndexBuffer)]->GetBuffer(), 0,
-                                               VK_INDEX_TYPE_UINT16);
+        cmdBuffersPresent_[i]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0,
+                                                  {descriptorRegistry_->GetDescriptorSet(kMainDescSetLayout)});
+        cmdBuffersPresent_[i]->BindVertexBuffers({buffers_[kMainVertexBuffer]->GetBuffer()}, 0, 1, {0});
+        cmdBuffersPresent_[i]->BindIndexBuffer(buffers_[kMainIndexBuffer]->GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
         cmdBuffersPresent_[i]->DrawIndexed(indexCount, 1, 0, 0, 0);
         cmdBuffersPresent_[i]->EndRenderPass();
         if (!cmdBuffersPresent_[i]->EndCommandBuffer()) {
@@ -329,8 +320,8 @@ void VulkanApplication::CopyStagingBuffer()
         .imageOffset = {0, 0, 0},
         .imageExtent = {bricksTextureHandler_.width, bricksTextureHandler_.height, 1},
     };
-    cmdBufferTransfer->CopyBufferToImage(buffers_[GetParamStr(AppConstants::ImageStagingBuffer)]->GetBuffer(),
-                                         quadTextureImage_, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, {copyRegion});
+    cmdBufferTransfer->CopyBufferToImage(buffers_[kImageStagingBuffer]->GetBuffer(), quadTextureImage_,
+                                         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, {copyRegion});
 
     if (!cmdBufferTransfer->EndCommandBuffer()) {
         throw std::runtime_error("Failed to end recording command buffer!");

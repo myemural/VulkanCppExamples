@@ -19,6 +19,7 @@
 
 namespace examples::fundamentals::descriptor_sets::changing_color_with_ub
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -85,19 +86,17 @@ void VulkanApplication::CreateResources()
     constexpr std::uint32_t uniformBufferSize = sizeof(params_.Get<glm::vec3>(AppSettings::TriangleColor));
 
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
-        {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        {kMainVertexBuffer, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::MainUniformBuffer), uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+        {kMainUniformBuffer, uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
         .basePath = SHADERS_DIR,
         .shaderType = SHADER_TYPE,
-        .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                    {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     CreateDescriptorPool();
@@ -107,9 +106,9 @@ void VulkanApplication::CreateResources()
 
 void VulkanApplication::InitResources()
 {
-    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos2));
+    SetBuffer(kMainVertexBuffer, vertices.data(), vertices.size() * sizeof(VertexPos2));
     const auto triangleColor = params_.Get<glm::vec3>(AppSettings::TriangleColor);
-    SetBuffer(GetParamStr(AppConstants::MainUniformBuffer), &triangleColor, sizeof(glm::vec3));
+    SetBuffer(kMainUniformBuffer, &triangleColor, sizeof(glm::vec3));
 }
 
 void VulkanApplication::CreateDescriptorPool()
@@ -145,8 +144,7 @@ void VulkanApplication::CreateDescriptorSet()
     }
 
     std::vector<VkDescriptorBufferInfo> bufferInfos;
-    bufferInfos.emplace_back(buffers_[GetParamStr(AppConstants::MainUniformBuffer)]->GetBuffer()->GetHandle(), 0,
-                             VK_WHOLE_SIZE);
+    bufferInfos.emplace_back(buffers_[kMainUniformBuffer]->GetBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     const auto descriptorWrite =
             descriptorSet_->CreateWriteDescriptorSet(0, 0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, bufferInfos);
@@ -185,13 +183,11 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -245,8 +241,7 @@ void VulkanApplication::RecordCommandBuffers(const std::uint32_t vertexCount)
                 VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffers_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         cmdBuffers_[i]->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, {descriptorSet_});
-        cmdBuffers_[i]->BindVertexBuffers({buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()}, 0, 1,
-                                          {0});
+        cmdBuffers_[i]->BindVertexBuffers({buffers_[kMainVertexBuffer]->GetBuffer()}, 0, 1, {0});
         cmdBuffers_[i]->Draw(vertexCount, 1, 0, 0);
         cmdBuffers_[i]->EndRenderPass();
         if (!cmdBuffers_[i]->EndCommandBuffer()) {

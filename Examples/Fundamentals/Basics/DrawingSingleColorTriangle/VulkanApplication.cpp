@@ -12,6 +12,7 @@
 
 namespace examples::fundamentals::basics::drawing_single_color_triangle
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -74,20 +75,20 @@ void VulkanApplication::CreateShaderModules()
 {
     const ShaderLoader shaderLoader{SHADERS_DIR, SHADER_TYPE};
     // Vertex Shader
-    const auto vertexShaderCode = shaderLoader.LoadSpirV(GetParamStr(AppConstants::MainVertexShaderFile));
+    const auto vertexShaderCode = shaderLoader.LoadSpirV(kMainVertexShaderFile);
     const auto vertexShaderModule = device_->CreateShaderModule(vertexShaderCode);
     if (!vertexShaderModule) {
         throw std::runtime_error("Failed to create vertex shader module!");
     }
-    shaderModules_[GetParamStr(AppConstants::MainVertexShaderKey)] = vertexShaderModule;
+    shaderModules_[kMainVertexShaderKey] = vertexShaderModule;
 
     // Fragment Shader
-    const auto fragmentShaderCode = shaderLoader.LoadSpirV(GetParamStr(AppConstants::MainFragmentShaderFile));
+    const auto fragmentShaderCode = shaderLoader.LoadSpirV(kMainFragmentShaderFile);
     const auto fragmentShaderModule = device_->CreateShaderModule(fragmentShaderCode);
     if (!fragmentShaderModule) {
         throw std::runtime_error("Failed to create fragment shader module!");
     }
-    shaderModules_[GetParamStr(AppConstants::MainFragmentShaderKey)] = fragmentShaderModule;
+    shaderModules_[kMainFragmentShaderKey] = fragmentShaderModule;
 }
 
 void VulkanApplication::CreatePipeline()
@@ -116,13 +117,11 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    shaderModules_[params_.Get<std::string>(AppConstants::MainVertexShaderKey)]->GetHandle();
+            shaderStageCreateInfo.module = shaderModules_[kMainVertexShaderKey]->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    shaderModules_[params_.Get<std::string>(AppConstants::MainFragmentShaderKey)]->GetHandle();
+            shaderStageCreateInfo.module = shaderModules_[kMainFragmentShaderKey]->GetHandle();
         });
         builder.SetViewportState([&](auto& viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
@@ -169,7 +168,7 @@ void VulkanApplication::RecordCommandBuffers()
                 },
                 VK_SUBPASS_CONTENTS_INLINE);
         cmdBuffers_[i]->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        cmdBuffers_[i]->Draw(GetParamU32(AppConstants::VertexCount), 1, 0, 0);
+        cmdBuffers_[i]->Draw(kVertexCount, 1, 0, 0);
         cmdBuffers_[i]->EndRenderPass();
         if (!cmdBuffers_[i]->EndCommandBuffer()) {
             throw std::runtime_error("Failed to end recording command buffer!");
