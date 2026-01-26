@@ -22,6 +22,7 @@
 
 namespace examples::fundamentals::drawing_3d::face_culling
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -50,8 +51,7 @@ bool VulkanApplication::Init()
 
         CreateRenderPass();
         CreatePipeline();
-        CreateDefaultFramebuffers(images_[GetParamStr(AppConstants::DepthImage)]->GetImageView(
-                GetParamStr(AppConstants::DepthImageView)));
+        CreateDefaultFramebuffers(images_[kDepthImage]->GetImageView(kDepthImageView));
 
         CreateCommandBuffers();
     } catch (const std::exception& e) {
@@ -148,17 +148,17 @@ void VulkanApplication::CreateResources()
             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    crateTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::CrateTexturePath));
+    crateTextureHandler_ = textureLoader.Load(kCrateTexturePath);
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
     const std::vector<BufferResourceCreateInfo> bufferCreateInfos = {
-        {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        {kMainVertexBuffer, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        {kMainIndexBuffer, indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ImageStagingBuffer), static_cast<std::uint32_t>(crateTextureHandler_.data.size()),
+        {kImageStagingBuffer, static_cast<std::uint32_t>(crateTextureHandler_.data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
@@ -166,36 +166,32 @@ void VulkanApplication::CreateResources()
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
         .basePath = SHADERS_DIR,
         .shaderType = SHADER_TYPE,
-        .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                    {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                     .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     // Fill descriptor set create infos
     const DescriptorResourceCreateInfo descriptorSetCreateInfo = {
         .maxSets = 1,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}},
-        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+        .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}}},
-        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+        .descriptorSets = {{.name = kMainDescSetLayout, .layoutName = kMainDescSetLayout}}};
     CreateDescriptorSets(descriptorSetCreateInfo);
 
     const std::vector<ImageResourceCreateInfo> imageResourceCreateInfos = {
-        {.name = GetParamStr(AppConstants::CrateImage),
+        {.name = kCrateImage,
          .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
          .format = VK_FORMAT_R8G8B8A8_SRGB,
          .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
-         .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CrateImageView),
-                                       .format = VK_FORMAT_R8G8B8A8_SRGB}}},
-        {.name = GetParamStr(AppConstants::DepthImage),
+         .views = {ImageViewCreateInfo{.viewName = kCrateImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        {.name = kDepthImage,
          .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
          .format = depthImageFormat_,
          .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
          .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-         .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+         .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
                                        .format = depthImageFormat_,
                                        .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                             .baseMipLevel = 0,
@@ -205,20 +201,17 @@ void VulkanApplication::CreateResources()
     CreateImages(imageResourceCreateInfos);
 
     const std::vector<SamplerResourceCreateInfo> samplerResourceCreateInfos = {
-        {.name = GetParamStr(AppConstants::MainSampler),
-         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
+        {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
     CreateSamplers(samplerResourceCreateInfos);
 }
 
 void VulkanApplication::InitResources()
 {
-    SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(), vertices.size() * sizeof(VertexPos3Uv2));
-    SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(), indices.size() * sizeof(indices[0]));
-    SetBuffer(GetParamStr(AppConstants::ImageStagingBuffer), crateTextureHandler_.data.data(),
-              crateTextureHandler_.data.size());
+    SetBuffer(kMainVertexBuffer, vertices.data(), vertices.size() * sizeof(VertexPos3Uv2));
+    SetBuffer(kMainIndexBuffer, indices.data(), indices.size() * sizeof(indices[0]));
+    SetBuffer(kImageStagingBuffer, crateTextureHandler_.data.data(), crateTextureHandler_.data.size());
 
-    SetImageFromBuffer(GetParamStr(AppConstants::CrateImage),
-                       buffers_[GetParamStr(AppConstants::ImageStagingBuffer)]->GetBuffer(),
+    SetImageFromBuffer(kCrateImage, buffers_[kImageStagingBuffer]->GetBuffer(),
                        {crateTextureHandler_.width, crateTextureHandler_.height, 1});
 
     UpdateDescriptorSets();
@@ -271,9 +264,8 @@ void VulkanApplication::CreatePipeline()
     mvpPushConstant.size = sizeof(MvpData);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    pipelineLayout_ = device_->CreatePipelineLayout(
-            {descriptorRegistry_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))},
-            {mvpPushConstant});
+    pipelineLayout_ = device_->CreatePipelineLayout({descriptorRegistry_->GetDescriptorLayout(kMainDescSetLayout)},
+                                                    {mvpPushConstant});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -303,13 +295,11 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    shaderResources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = shaderResources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -346,14 +336,12 @@ void VulkanApplication::CreatePipeline()
 void VulkanApplication::UpdateDescriptorSets()
 {
     std::vector<VkDescriptorImageInfo> imageSamplerInfos;
-    imageSamplerInfos.emplace_back(samplers_[GetParamStr(AppConstants::MainSampler)]->GetSampler()->GetHandle(),
-                                   images_[GetParamStr(AppConstants::CrateImage)]
-                                           ->GetImageView(GetParamStr(AppConstants::CrateImageView))
-                                           ->GetHandle(),
+    imageSamplerInfos.emplace_back(samplers_[kMainSampler]->GetSampler()->GetHandle(),
+                                   images_[kCrateImage]->GetImageView(kCrateImageView)->GetHandle(),
                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.descriptorSetName = kMainDescSetLayout;
     samplerUpdateRequest.bindingIndex = 0;
     samplerUpdateRequest.images = imageSamplerInfos;
     samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -395,11 +383,11 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             VK_SUBPASS_CONTENTS_INLINE);
 
     currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    const std::vector descSets{descriptorRegistry_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))};
+    const std::vector descSets{descriptorRegistry_->GetDescriptorSet(kMainDescSetLayout)};
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
-    const std::vector vertexBuffers{buffers_[GetParamStr(AppConstants::MainVertexBuffer)]->GetBuffer()};
+    const std::vector vertexBuffers{buffers_[kMainVertexBuffer]->GetBuffer()};
     currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
-    currentCmdBuffer->BindIndexBuffer(buffers_[GetParamStr(AppConstants::MainIndexBuffer)]->GetBuffer());
+    currentCmdBuffer->BindIndexBuffer(buffers_[kMainIndexBuffer]->GetBuffer());
 
     // Draw cubes
     for (auto& mvp: mvpData_) {

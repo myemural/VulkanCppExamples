@@ -1,6 +1,6 @@
 /**
  * @file    AppConfig.h
- * @brief   This header file keeps key names for user-provided config key names.
+ * @brief   This header file keeps example specific constants and settings.
  * @author  Mustafa Yemural (myemural)
  * @date    12.10.2025
  *
