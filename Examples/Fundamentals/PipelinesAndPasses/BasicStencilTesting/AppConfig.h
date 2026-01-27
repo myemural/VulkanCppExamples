@@ -12,27 +12,35 @@
 
 namespace examples::fundamentals::pipelines_and_passes::basic_stencil_testing
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto ObjectFragmentShaderFile = "AppConstants.ObjectFragmentShaderFile";
-    constexpr auto OutlineFragmentShaderFile = "AppConstants.OutlineFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto ObjectFragmentShaderKey = "AppConstants.ObjectFragmentShaderKey";
-    constexpr auto OutlineFragmentShaderKey = "AppConstants.OutlineFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kObjectFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kOutlineFragmentShaderFile = "hardcoded_color.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kObjectFragmentShaderKey = "fragObject";
+    inline constexpr auto kOutlineFragmentShaderKey = "fragOutline";
 
-    // Resources
-    constexpr auto MainVertexBuffer = "AppConstants.MainVertexBuffer";
-    constexpr auto MainIndexBuffer = "AppConstants.MainIndexBuffer";
-    constexpr auto CrateImage = "AppConstants.CrateImage";
-    constexpr auto CrateImageView = "AppConstants.CrateImageView";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kMainVertexBuffer = "mainVertexBuffer";
+    inline constexpr auto kMainIndexBuffer = "mainIndexBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kCrateImage = "crateImage";
+    inline constexpr auto kCrateImageView = "crateImageView";
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kCrateTexturePath = "Textures/crate1_diffuse.png";
+} // namespace constants
 
 namespace AppSettings
 {

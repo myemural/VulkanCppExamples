@@ -26,36 +26,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundVertexShaderFile,
-                                               "passthrough_position_uv.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundFragmentShaderFile,
-                                               "texture_sampler_shift_with_time.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexShaderFile, "position_with_mvp.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeFragmentShaderFile, "texture_sampler.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundVertexShaderKey, "vertBackground");
-    schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundFragmentShaderKey, "fragBackground");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexShaderKey, "vertCube");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeFragmentShaderKey, "fragCube");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexBuffer, "cubeVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeIndexBuffer, "cubeIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneVertexBuffer, "planeVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneIndexBuffer, "planeIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::TimeSpeedUniformBuffer, "timeSpeedUniformBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CloudImage, "cloudImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CloudImageView, "cloudImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::BackgroundDescSetLayout, "backgroundDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeDescSetLayout, "cubeDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CloudTexturePath, "Textures/cloud.png");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);

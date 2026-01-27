@@ -28,26 +28,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "position_with_mvp.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::RedFragmentShaderFile, "texture_sampler_mix_red.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::BlueFragmentShaderFile,
-                                               "texture_sampler_mix_blue.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::RedFragmentShaderKey, "fragRed");
-    schema.RegisterImmutableParam<std::string>(AppConstants::BlueFragmentShaderKey, "fragBlue");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexBuffer, "mainVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainIndexBuffer, "mainIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);

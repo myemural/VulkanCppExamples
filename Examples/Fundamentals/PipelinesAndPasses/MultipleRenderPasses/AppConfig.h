@@ -12,36 +12,44 @@
 
 namespace examples::fundamentals::pipelines_and_passes::multiple_render_passes
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto BackgroundVertexShaderFile = "AppConstants.BackgroundVertexShaderFile";
-    constexpr auto BackgroundFragmentShaderFile = "AppConstants.BackgroundFragmentShaderFile";
-    constexpr auto CubeVertexShaderFile = "AppConstants.CubeVertexShaderFile";
-    constexpr auto CubeFragmentShaderFile = "AppConstants.CubeFragmentShaderFile";
-    constexpr auto BackgroundVertexShaderKey = "AppConstants.BackgroundVertexShaderKey";
-    constexpr auto BackgroundFragmentShaderKey = "AppConstants.BackgroundFragmentShaderKey";
-    constexpr auto CubeVertexShaderKey = "AppConstants.CubeVertexShaderKey";
-    constexpr auto CubeFragmentShaderKey = "AppConstants.CubeFragmentShaderKey";
+    inline constexpr auto kBackgroundVertexShaderFile = "passthrough_position_uv.vert.spv";
+    inline constexpr auto kBackgroundFragmentShaderFile = "texture_sampler_shift_with_time.frag.spv";
+    inline constexpr auto kCubeVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kCubeFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kBackgroundVertexShaderKey = "vertBackground";
+    inline constexpr auto kBackgroundFragmentShaderKey = "fragBackground";
+    inline constexpr auto kCubeVertexShaderKey = "vertCube";
+    inline constexpr auto kCubeFragmentShaderKey = "fragCube";
 
-    // Resources
-    constexpr auto CubeVertexBuffer = "AppConstants.CubeVertexBuffer";
-    constexpr auto CubeIndexBuffer = "AppConstants.CubeIndexBuffer";
-    constexpr auto PlaneVertexBuffer = "AppConstants.PlaneVertexBuffer";
-    constexpr auto PlaneIndexBuffer = "AppConstants.PlaneIndexBuffer";
-    constexpr auto TimeSpeedUniformBuffer = "AppConstants.TimeSpeedUniformBuffer";
-    constexpr auto CrateImage = "AppConstants.CrateImage";
-    constexpr auto CrateImageView = "AppConstants.CrateImageView";
-    constexpr auto CloudImage = "AppConstants.CloudImage";
-    constexpr auto CloudImageView = "AppConstants.CloudImageView";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto BackgroundDescSetLayout = "AppConstants.BackgroundDescSetLayout";
-    constexpr auto CubeDescSetLayout = "AppConstants.CubeDescSetLayout";
-    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
-    constexpr auto CloudTexturePath = "AppConstants.CloudTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kCubeVertexBuffer = "cubeVertexBuffer";
+    inline constexpr auto kCubeIndexBuffer = "cubeIndexBuffer";
+    inline constexpr auto kPlaneVertexBuffer = "planeVertexBuffer";
+    inline constexpr auto kPlaneIndexBuffer = "planeIndexBuffer";
+    inline constexpr auto kTimeSpeedUniformBuffer = "timeSpeedUniformBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kCrateImage = "crateImage";
+    inline constexpr auto kCrateImageView = "crateImageView";
+    inline constexpr auto kCloudImage = "cloudImage";
+    inline constexpr auto kCloudImageView = "cloudImageView";
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kBackgroundDescSetLayout = "backgroundDescSetLayout";
+    inline constexpr auto kCubeDescSetLayout = "cubeDescSetLayout";
+
+    // Textures
+    inline constexpr auto kCrateTexturePath = "Textures/crate1_diffuse.png";
+    inline constexpr auto kCloudTexturePath = "Textures/cloud.png";
+} // namespace constants
 
 namespace AppSettings
 {

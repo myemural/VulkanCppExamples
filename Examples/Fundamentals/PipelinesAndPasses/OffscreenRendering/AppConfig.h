@@ -12,34 +12,42 @@
 
 namespace examples::fundamentals::pipelines_and_passes::offscreen_rendering
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto QuadVertexShaderFile = "AppConstants.QuadVertexShaderFile";
-    constexpr auto SceneVertexShaderFile = "AppConstants.SceneVertexShaderFile";
-    constexpr auto QuadFragmentShaderFile = "AppConstants.QuadFragmentShaderFile";
-    constexpr auto SceneFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
-    constexpr auto QuadVertexShaderKey = "AppConstants.QuadVertexShaderKey";
-    constexpr auto SceneVertexShaderKey = "AppConstants.SceneVertexShaderKey";
-    constexpr auto QuadFragmentShaderKey = "AppConstants.QuadFragmentShaderKey";
-    constexpr auto SceneFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
+    inline constexpr auto kQuadVertexShaderFile = "passthrough_position_uv.vert.spv";
+    inline constexpr auto kSceneVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kQuadFragmentShaderFile = "texture_sampler_with_border.frag.spv";
+    inline constexpr auto kSceneFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kQuadVertexShaderKey = "vertQuad";
+    inline constexpr auto kSceneVertexShaderKey = "vertScene";
+    inline constexpr auto kQuadFragmentShaderKey = "fragQuad";
+    inline constexpr auto kSceneFragmentShaderKey = "fragScene";
 
-    // Resources
-    constexpr auto CubeVertexBuffer = "AppConstants.CubeVertexBuffer";
-    constexpr auto CubeIndexBuffer = "AppConstants.CubeIndexBuffer";
-    constexpr auto PlaneVertexBuffer = "AppConstants.PlaneVertexBuffer";
-    constexpr auto PlaneIndexBuffer = "AppConstants.PlaneIndexBuffer";
-    constexpr auto CrateImage = "AppConstants.CrateImage";
-    constexpr auto CrateImageView = "AppConstants.CrateImageView";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto OffscreenImage = "AppConstants.OffscreenImage";
-    constexpr auto OffscreenImageView = "AppConstants.OffscreenImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto SceneDescSetLayout = "AppConstants.SceneDescSetLayout";
-    constexpr auto QuadDescSetLayout = "AppConstants.QuadDescSetLayout";
-    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kCubeVertexBuffer = "cubeVertexBuffer";
+    inline constexpr auto kCubeIndexBuffer = "cubeIndexBuffer";
+    inline constexpr auto kPlaneVertexBuffer = "planeVertexBuffer";
+    inline constexpr auto kPlaneIndexBuffer = "planeIndexBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kCrateImage = "crateImage";
+    inline constexpr auto kCrateImageView = "crateImageView";
+    inline constexpr auto kOffscreenImage = "offscreenImage";
+    inline constexpr auto kOffscreenImageView = "offscreenImageView";
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kSceneDescSetLayout = "sceneDescSetLayout";
+    inline constexpr auto kQuadDescSetLayout = "quadDescSetLayout";
+
+    // Textures
+    inline constexpr auto kCrateTexturePath = "Textures/crate1_diffuse.png";
+} // namespace constants
 
 namespace AppSettings
 {

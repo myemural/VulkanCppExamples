@@ -22,6 +22,7 @@
 
 namespace examples::fundamentals::pipelines_and_passes::multiple_subpasses
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -51,8 +52,7 @@ bool VulkanApplication::Init()
 
         CreateRenderPass();
         CreatePipeline();
-        CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                           GetParamStr(AppConstants::DepthImageView)));
+        CreateDefaultFramebuffers(resources_->GetImageView(kDepthImage, kDepthImageView));
         CreateCommandBuffers();
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -95,7 +95,7 @@ void VulkanApplication::CreateResources()
 
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    crateTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::CrateTexturePath));
+    crateTextureHandler_ = textureLoader.Load(kCrateTexturePath);
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -103,50 +103,45 @@ void VulkanApplication::CreateResources()
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t indexDataSize = indices.size() * sizeof(indices[0]);
 
-    resourceCreateInfo.buffers = {
-        {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
+    resourceCreateInfo.buffers = {{kMainVertexBuffer, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kMainIndexBuffer, indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::ObjectFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::ObjectFragmentShaderFile)},
-                                              {.name = GetParamStr(AppConstants::DepthObjectFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::DepthObjectFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kObjectFragmentShaderKey, .fileName = kObjectFragmentShaderFile},
+                    {.name = kDepthObjectFragmentShaderKey, .fileName = kDepthObjectFragmentShaderFile}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
         .maxSets = 2,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1}},
-        .layouts = {{.name = GetParamStr(AppConstants::ObjectDescSetLayout),
+        .layouts = {{.name = kObjectDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}},
-                    {.name = GetParamStr(AppConstants::DepthObjectDescSetLayout),
+                    {.name = kDepthObjectDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-        .descriptorSets = {{.name = GetParamStr(AppConstants::ObjectDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::ObjectDescSetLayout)},
-                           {.name = GetParamStr(AppConstants::DepthObjectDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::DepthObjectDescSetLayout)}}};
+        .descriptorSets = {{.name = kObjectDescSetLayout, .layoutName = kObjectDescSetLayout},
+                           {.name = kDepthObjectDescSetLayout, .layoutName = kDepthObjectDescSetLayout}}};
 
     resourceCreateInfo.images = {
-        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::CrateImage),
-                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
-                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CrateImageView),
-                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
-            .name = GetParamStr(AppConstants::DepthImage),
+            .name = kCrateImage,
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = VK_FORMAT_R8G8B8A8_SRGB,
+            .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+            .views = {ImageViewCreateInfo{.viewName = kCrateImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        ImageResourceCreateInfo{
+            .name = kDepthImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
             .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
-            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+            .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
                                           .format = depthImageFormat_,
                                           .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                                .baseMipLevel = 0,
@@ -155,20 +150,17 @@ void VulkanApplication::CreateResources()
                                                                .layerCount = 1}}}}};
 
     resourceCreateInfo.samplers = {
-        {.name = GetParamStr(AppConstants::MainSampler),
-         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
+        {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
 
 void VulkanApplication::InitResources() const
 {
-    resources_->SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), vertices.data(),
-                          vertices.size() * sizeof(VertexPos3Uv2));
-    resources_->SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), indices.data(),
-                          indices.size() * sizeof(indices[0]));
+    resources_->SetBuffer(kMainVertexBuffer, vertices.data(), vertices.size() * sizeof(VertexPos3Uv2));
+    resources_->SetBuffer(kMainIndexBuffer, indices.data(), indices.size() * sizeof(indices[0]));
 
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage), crateTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, kCrateImage, crateTextureHandler_);
 
     UpdateDescriptorSets();
 }
@@ -237,15 +229,15 @@ void VulkanApplication::CreatePipeline()
     mvpPushConstant.size = sizeof(MvpData);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    pipelineLayoutObject_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::ObjectDescSetLayout))}, {mvpPushConstant});
+    pipelineLayoutObject_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kObjectDescSetLayout)}, {mvpPushConstant});
 
     if (!pipelineLayoutObject_) {
         throw std::runtime_error("Failed to create pipeline layout (object)!");
     }
 
     pipelineLayoutDepthObject_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::DepthObjectDescSetLayout))}, {mvpPushConstant});
+            {resources_->GetDescriptorLayout(kDepthObjectDescSetLayout)}, {mvpPushConstant});
 
     if (!pipelineLayoutDepthObject_) {
         throw std::runtime_error("Failed to create pipeline layout (depth object)!");
@@ -275,13 +267,11 @@ void VulkanApplication::CreatePipeline()
     pipelineObject_ = device_->CreateGraphicsPipeline(pipelineLayoutObject_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::ObjectFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kObjectFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -314,13 +304,11 @@ void VulkanApplication::CreatePipeline()
     pipelineDepthObject_ = device_->CreateGraphicsPipeline(pipelineLayoutDepthObject_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::DepthObjectFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kDepthObjectFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -349,27 +337,22 @@ void VulkanApplication::CreatePipeline()
 void VulkanApplication::UpdateDescriptorSets() const
 {
     std::vector<VkDescriptorImageInfo> imageSamplerInfos;
-    imageSamplerInfos.emplace_back(
-            resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-            resources_->GetImageView(GetParamStr(AppConstants::CrateImage), GetParamStr(AppConstants::CrateImageView))
-                    ->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    imageSamplerInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
+                                   resources_->GetImageView(kCrateImage, kCrateImageView)->GetHandle(),
+                                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     std::vector<VkDescriptorImageInfo> depthImageInfos;
-    depthImageInfos.emplace_back(
-            VK_NULL_HANDLE,
-            resources_->GetImageView(GetParamStr(AppConstants::DepthImage), GetParamStr(AppConstants::DepthImageView))
-                    ->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    depthImageInfos.emplace_back(VK_NULL_HANDLE, resources_->GetImageView(kDepthImage, kDepthImageView)->GetHandle(),
+                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::ObjectDescSetLayout);
+    samplerUpdateRequest.descriptorSetName = kObjectDescSetLayout;
     samplerUpdateRequest.bindingIndex = 0;
     samplerUpdateRequest.images = imageSamplerInfos;
     samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest inputDepthUpdateRequest;
-    inputDepthUpdateRequest.descriptorSetName = GetParamStr(AppConstants::DepthObjectDescSetLayout);
+    inputDepthUpdateRequest.descriptorSetName = kDepthObjectDescSetLayout;
     inputDepthUpdateRequest.bindingIndex = 0;
     inputDepthUpdateRequest.images = depthImageInfos;
     inputDepthUpdateRequest.type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
@@ -411,13 +394,13 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             },
             VK_SUBPASS_CONTENTS_INLINE);
 
-    const std::vector vertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::MainVertexBuffer))};
+    const std::vector vertexBuffers{resources_->GetBuffer(kMainVertexBuffer)};
     currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
-    currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)));
+    currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(kMainIndexBuffer));
 
     // Moving Cubes
     currentCmdBuffer->BindPipeline(pipelineObject_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    const std::vector objectDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::ObjectDescSetLayout))};
+    const std::vector objectDescSets{resources_->GetDescriptorSet(kObjectDescSetLayout)};
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutObject_, 0, objectDescSets);
     for (size_t i = 0; i < NUM_CUBES - 1; ++i) {
         currentCmdBuffer->PushConstants(pipelineLayoutObject_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
@@ -429,7 +412,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
     // Depth Cube
     currentCmdBuffer->BindPipeline(pipelineDepthObject_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    const std::vector depthDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::DepthObjectDescSetLayout))};
+    const std::vector depthDescSets{resources_->GetDescriptorSet(kDepthObjectDescSetLayout)};
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutDepthObject_, 0, depthDescSets);
     currentCmdBuffer->PushConstants(pipelineLayoutDepthObject_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
                                     &mvpData_[3]);

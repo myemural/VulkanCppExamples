@@ -22,6 +22,7 @@
 
 namespace examples::fundamentals::pipelines_and_passes::multiple_render_passes
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -53,8 +54,7 @@ bool VulkanApplication::Init()
 
         CreateRenderPasses();
         CreatePipelines();
-        CreateFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                    GetParamStr(AppConstants::DepthImageView)));
+        CreateFramebuffers(resources_->GetImageView(kDepthImage, kDepthImageView));
         CreateCommandBuffers();
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -79,8 +79,7 @@ void VulkanApplication::DrawFrame()
 
     timeSpeedUbo_.time = static_cast<float>(GetCurrentTime());
     timeSpeedUbo_.speed = GetParamFloat(AppSettings::CloudSpeed);
-    resources_->SetBuffer(GetParamStr(AppConstants::TimeSpeedUniformBuffer), &timeSpeedUbo_,
-                          sizeof(UniformBufferObject));
+    resources_->SetBuffer(kTimeSpeedUniformBuffer, &timeSpeedUbo_, sizeof(UniformBufferObject));
     CalculateAndSetMvp();
     RecordPresentCommandBuffers(imageIndex);
 
@@ -140,8 +139,8 @@ void VulkanApplication::CreateResources()
 
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    crateTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::CrateTexturePath));
-    cloudTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::CloudTexturePath));
+    crateTextureHandler_ = textureLoader.Load(kCrateTexturePath);
+    cloudTextureHandler_ = textureLoader.Load(kCloudTexturePath);
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -152,66 +151,60 @@ void VulkanApplication::CreateResources()
     const uint32_t planeIndexBufferSize = planeIndices.size() * sizeof(planeIndices[0]);
     constexpr std::uint32_t timeSpeedUboSize = sizeof(UniformBufferObject);
 
-    resourceCreateInfo.buffers = {
-        {GetParamStr(AppConstants::CubeVertexBuffer), cubeVertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::CubeIndexBuffer), cubeIndexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::PlaneVertexBuffer), planeVertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::PlaneIndexBuffer), planeIndexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::TimeSpeedUniformBuffer), timeSpeedUboSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
+    resourceCreateInfo.buffers = {{kCubeVertexBuffer, cubeVertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kCubeIndexBuffer, cubeIndexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kPlaneVertexBuffer, planeVertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kPlaneIndexBuffer, planeIndexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kTimeSpeedUniformBuffer, timeSpeedUboSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = GetParamStr(AppConstants::BackgroundVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::BackgroundVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::CubeVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::CubeVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::BackgroundFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::BackgroundFragmentShaderFile)},
-                                              {.name = GetParamStr(AppConstants::CubeFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::CubeFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = kBackgroundVertexShaderKey, .fileName = kBackgroundVertexShaderFile},
+                    {.name = kCubeVertexShaderKey, .fileName = kCubeVertexShaderFile},
+                    {.name = kBackgroundFragmentShaderKey, .fileName = kBackgroundFragmentShaderFile},
+                    {.name = kCubeFragmentShaderKey, .fileName = kCubeFragmentShaderFile}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
         .maxSets = 3,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}, {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}},
-        .layouts = {{.name = GetParamStr(AppConstants::CubeDescSetLayout),
+        .layouts = {{.name = kCubeDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}},
-                    {.name = GetParamStr(AppConstants::BackgroundDescSetLayout),
+                    {.name = kBackgroundDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-        .descriptorSets = {{.name = GetParamStr(AppConstants::CubeDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::CubeDescSetLayout)},
-                           {.name = GetParamStr(AppConstants::BackgroundDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::BackgroundDescSetLayout)}}};
+        .descriptorSets = {{.name = kCubeDescSetLayout, .layoutName = kCubeDescSetLayout},
+                           {.name = kBackgroundDescSetLayout, .layoutName = kBackgroundDescSetLayout}}};
 
     resourceCreateInfo.images = {
-        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::CrateImage),
-                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
-                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CrateImageView),
-                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
-        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::CloudImage),
-                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .dimensions = {cloudTextureHandler_.width, cloudTextureHandler_.height, 1},
-                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CloudImageView),
-                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
-            .name = GetParamStr(AppConstants::DepthImage),
+            .name = kCrateImage,
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = VK_FORMAT_R8G8B8A8_SRGB,
+            .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+            .views = {ImageViewCreateInfo{.viewName = kCrateImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        ImageResourceCreateInfo{
+            .name = kCloudImage,
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = VK_FORMAT_R8G8B8A8_SRGB,
+            .dimensions = {cloudTextureHandler_.width, cloudTextureHandler_.height, 1},
+            .views = {ImageViewCreateInfo{.viewName = kCloudImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        ImageResourceCreateInfo{
+            .name = kDepthImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
             .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+            .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
                                           .format = depthImageFormat_,
                                           .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                                .baseMipLevel = 0,
@@ -220,25 +213,20 @@ void VulkanApplication::CreateResources()
                                                                .layerCount = 1}}}}};
 
     resourceCreateInfo.samplers = {
-        {.name = GetParamStr(AppConstants::MainSampler),
-         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
+        {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
 
 void VulkanApplication::InitResources() const
 {
-    resources_->SetBuffer(GetParamStr(AppConstants::CubeVertexBuffer), cubeVertices.data(),
-                          cubeVertices.size() * sizeof(VertexPos3Uv2));
-    resources_->SetBuffer(GetParamStr(AppConstants::CubeIndexBuffer), cubeIndices.data(),
-                          cubeIndices.size() * sizeof(cubeIndices[0]));
-    resources_->SetBuffer(GetParamStr(AppConstants::PlaneVertexBuffer), planeVertices.data(),
-                          planeVertices.size() * sizeof(VertexPos3Uv2));
-    resources_->SetBuffer(GetParamStr(AppConstants::PlaneIndexBuffer), planeIndices.data(),
-                          planeIndices.size() * sizeof(planeIndices[0]));
+    resources_->SetBuffer(kCubeVertexBuffer, cubeVertices.data(), cubeVertices.size() * sizeof(VertexPos3Uv2));
+    resources_->SetBuffer(kCubeIndexBuffer, cubeIndices.data(), cubeIndices.size() * sizeof(cubeIndices[0]));
+    resources_->SetBuffer(kPlaneVertexBuffer, planeVertices.data(), planeVertices.size() * sizeof(VertexPos3Uv2));
+    resources_->SetBuffer(kPlaneIndexBuffer, planeIndices.data(), planeIndices.size() * sizeof(planeIndices[0]));
 
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage), crateTextureHandler_);
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CloudImage), cloudTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, kCrateImage, crateTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, kCloudImage, cloudTextureHandler_);
 
     UpdateDescriptorSets();
 }
@@ -307,8 +295,8 @@ void VulkanApplication::CreateRenderPasses()
 
 void VulkanApplication::CreatePipelines()
 {
-    backgroundPipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::BackgroundDescSetLayout))});
+    backgroundPipelineLayout_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kBackgroundDescSetLayout)});
 
     if (!backgroundPipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout (background)!");
@@ -339,15 +327,12 @@ void VulkanApplication::CreatePipelines()
             device_->CreateGraphicsPipeline(backgroundPipelineLayout_, backgroundRenderPass_, [&](auto& builder) {
                 builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                     shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-                    shaderStageCreateInfo.module =
-                            resources_->GetShaderModule(GetParamStr(AppConstants::BackgroundVertexShaderKey))
-                                    ->GetHandle();
+                    shaderStageCreateInfo.module = resources_->GetShaderModule(kBackgroundVertexShaderKey)->GetHandle();
                 });
                 builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                     shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
                     shaderStageCreateInfo.module =
-                            resources_->GetShaderModule(GetParamStr(AppConstants::BackgroundFragmentShaderKey))
-                                    ->GetHandle();
+                            resources_->GetShaderModule(kBackgroundFragmentShaderKey)->GetHandle();
                 });
                 builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
                     vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -376,8 +361,8 @@ void VulkanApplication::CreatePipelines()
     mvpPushConstant.size = sizeof(MvpData);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    cubePipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::CubeDescSetLayout))}, {mvpPushConstant});
+    cubePipelineLayout_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kCubeDescSetLayout)}, {mvpPushConstant});
 
     if (!cubePipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout (cube)!");
@@ -386,13 +371,11 @@ void VulkanApplication::CreatePipelines()
     cubePipeline_ = device_->CreateGraphicsPipeline(cubePipelineLayout_, foregroundRenderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::CubeVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kCubeVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::CubeFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kCubeFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -451,37 +434,32 @@ void VulkanApplication::CreateFramebuffers(const std::shared_ptr<VulkanImageView
 void VulkanApplication::UpdateDescriptorSets() const
 {
     std::vector<VkDescriptorImageInfo> backgroundSamplerInfos;
-    backgroundSamplerInfos.emplace_back(
-            resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-            resources_->GetImageView(GetParamStr(AppConstants::CloudImage), GetParamStr(AppConstants::CloudImageView))
-                    ->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    backgroundSamplerInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
+                                        resources_->GetImageView(kCloudImage, kCloudImageView)->GetHandle(),
+                                        VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     std::vector<VkDescriptorBufferInfo> bufferInfos;
-    bufferInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::TimeSpeedUniformBuffer))->GetHandle(), 0,
-                             VK_WHOLE_SIZE);
+    bufferInfos.emplace_back(resources_->GetBuffer(kTimeSpeedUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorImageInfo> cubeSamplerInfos;
-    cubeSamplerInfos.emplace_back(
-            resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-            resources_->GetImageView(GetParamStr(AppConstants::CrateImage), GetParamStr(AppConstants::CrateImageView))
-                    ->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    cubeSamplerInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
+                                  resources_->GetImageView(kCrateImage, kCrateImageView)->GetHandle(),
+                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest samplerBackgroundUpdateRequest;
-    samplerBackgroundUpdateRequest.descriptorSetName = GetParamStr(AppConstants::BackgroundDescSetLayout);
+    samplerBackgroundUpdateRequest.descriptorSetName = kBackgroundDescSetLayout;
     samplerBackgroundUpdateRequest.bindingIndex = 0;
     samplerBackgroundUpdateRequest.images = backgroundSamplerInfos;
     samplerBackgroundUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     BufferWriteRequest uboUpdateRequest;
-    uboUpdateRequest.descriptorSetName = GetParamStr(AppConstants::BackgroundDescSetLayout);
+    uboUpdateRequest.descriptorSetName = kBackgroundDescSetLayout;
     uboUpdateRequest.bindingIndex = 1;
     uboUpdateRequest.buffers = bufferInfos;
     uboUpdateRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
     ImageWriteRequest samplerCubeUpdateRequest;
-    samplerCubeUpdateRequest.descriptorSetName = GetParamStr(AppConstants::CubeDescSetLayout);
+    samplerCubeUpdateRequest.descriptorSetName = kCubeDescSetLayout;
     samplerCubeUpdateRequest.bindingIndex = 0;
     samplerCubeUpdateRequest.images = cubeSamplerInfos;
     samplerCubeUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -527,11 +505,11 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 },
                 VK_SUBPASS_CONTENTS_INLINE);
 
-        const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::BackgroundDescSetLayout))};
+        const std::vector descSets{resources_->GetDescriptorSet(kBackgroundDescSetLayout)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, backgroundPipelineLayout_, 0, descSets);
-        const std::vector vertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::PlaneVertexBuffer))};
+        const std::vector vertexBuffers{resources_->GetBuffer(kPlaneVertexBuffer)};
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
-        currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::PlaneIndexBuffer)));
+        currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(kPlaneIndexBuffer));
         currentCmdBuffer->BindPipeline(backgroundPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         currentCmdBuffer->DrawIndexed(planeIndices.size(), 1, 0, 0, 0);
 
@@ -551,11 +529,11 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 },
                 VK_SUBPASS_CONTENTS_INLINE);
 
-        const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::CubeDescSetLayout))};
+        const std::vector descSets{resources_->GetDescriptorSet(kCubeDescSetLayout)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, cubePipelineLayout_, 0, descSets);
-        const std::vector vertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::CubeVertexBuffer))};
+        const std::vector vertexBuffers{resources_->GetBuffer(kCubeVertexBuffer)};
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
-        currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::CubeIndexBuffer)));
+        currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(kCubeIndexBuffer));
         currentCmdBuffer->BindPipeline(cubePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
         for (auto& cubeMvp: cubeMvpData_) {

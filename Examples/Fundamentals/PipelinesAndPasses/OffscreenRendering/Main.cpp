@@ -26,33 +26,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadVertexShaderFile, "passthrough_position_uv.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneVertexShaderFile, "position_with_mvp.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadFragmentShaderFile,
-                                               "texture_sampler_with_border.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneFragmentShaderFile, "texture_sampler.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadVertexShaderKey, "vertQuad");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneVertexShaderKey, "vertScene");
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadFragmentShaderKey, "fragQuad");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneFragmentShaderKey, "fragScene");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexBuffer, "cubeVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeIndexBuffer, "cubeIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneVertexBuffer, "planeVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneIndexBuffer, "planeIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::OffscreenImage, "offscreenImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::OffscreenImageView, "offscreenImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneDescSetLayout, "sceneDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadDescSetLayout, "quadDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);
