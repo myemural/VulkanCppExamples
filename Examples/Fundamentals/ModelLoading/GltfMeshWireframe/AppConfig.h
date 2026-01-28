@@ -12,19 +12,21 @@
 
 namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "hardcoded_color.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
-    // Resources
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto AvocadoModelPath = "AppConstants.AvocadoModelPath";
-} // namespace AppConstants
+    // Images and Image Views
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Models
+    inline constexpr auto kAvocadoModelPath = "Models/Avocado.glb";
+} // namespace constants
 
 namespace AppSettings
 {

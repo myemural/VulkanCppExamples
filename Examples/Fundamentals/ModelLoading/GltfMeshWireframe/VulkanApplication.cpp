@@ -20,6 +20,7 @@
 
 namespace examples::fundamentals::model_loading::gltf_mesh_wireframe
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -51,8 +52,7 @@ bool VulkanApplication::Init()
 
         CreateRenderPass();
         CreatePipeline();
-        CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                           GetParamStr(AppConstants::DepthImageView)));
+        CreateDefaultFramebuffers(resources_->GetImageView(kDepthImage, kDepthImageView));
         CreateCommandBuffers();
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -134,7 +134,7 @@ void VulkanApplication::CreateResources()
 
     // Load models
     ModelLoader modelLoader{ASSETS_DIR};
-    avocadoModel_ = modelLoader.LoadBinaryGltfFromFile(GetParamStr(AppConstants::AvocadoModelPath));
+    avocadoModel_ = modelLoader.LoadBinaryGltfFromFile(kAvocadoModelPath);
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -151,18 +151,16 @@ void VulkanApplication::CreateResources()
     // Fill shader module create infos
     resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
                                   .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+                                  .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                                              {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
 
     resourceCreateInfo.images = {ImageResourceCreateInfo{
-        .name = GetParamStr(AppConstants::DepthImage),
+        .name = kDepthImage,
         .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         .format = depthImageFormat_,
         .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
         .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+        .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
                                       .format = depthImageFormat_,
                                       .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                            .baseMipLevel = 0,
@@ -261,13 +259,11 @@ void VulkanApplication::CreatePipeline()
     pipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;

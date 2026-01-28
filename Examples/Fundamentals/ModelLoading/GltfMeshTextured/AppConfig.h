@@ -12,23 +12,29 @@
 
 namespace examples::fundamentals::model_loading::gltf_mesh_textured
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
-    // Resources
-    constexpr auto MeshImage = "AppConstants.MeshImage";
-    constexpr auto MeshImageView = "AppConstants.MeshImageView";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto AvocadoModelPath = "AppConstants.AvocadoModelPath";
-} // namespace AppConstants
+    // Images and Image Views
+    inline constexpr auto kMeshImage = "meshImage";
+    inline constexpr auto kMeshImageView = "meshImageView";
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Models
+    inline constexpr auto kAvocadoModelPath = "Models/Avocado.glb";
+} // namespace constants
 
 namespace AppSettings
 {
