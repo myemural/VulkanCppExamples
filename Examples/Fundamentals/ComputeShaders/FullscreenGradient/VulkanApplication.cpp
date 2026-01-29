@@ -21,6 +21,7 @@
 
 namespace examples::fundamentals::compute_shaders::fullscreen_gradient
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -90,58 +91,49 @@ void VulkanApplication::CreateResources()
     const std::uint32_t vertexBufferSize = quadVertices.size() * sizeof(VertexPos3Uv2);
     const uint32_t indexDataSize = quadIndices.size() * sizeof(quadIndices[0]);
 
-    resourceCreateInfo.buffers = {
-        {GetParamStr(AppConstants::MainVertexBuffer), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::MainIndexBuffer), indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
+    resourceCreateInfo.buffers = {{kMainVertexBuffer, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kMainIndexBuffer, indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)},
-                                              {.name = GetParamStr(AppConstants::GradientComputeShaderKey),
-                                               .fileName = GetParamStr(AppConstants::GradientComputeShaderFile)}}};
+    resourceCreateInfo.shaders = {
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile},
+                    {.name = kGradientComputeShaderKey, .fileName = kGradientComputeShaderFile}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
         .maxSets = 2,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1}},
-        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+        .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}},
-                    {.name = GetParamStr(AppConstants::ComputeDescSetLayout),
+                    {.name = kComputeDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr}}}},
-        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)},
-                           {.name = GetParamStr(AppConstants::ComputeDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::ComputeDescSetLayout)}}};
+        .descriptorSets = {{.name = kMainDescSetLayout, .layoutName = kMainDescSetLayout},
+                           {.name = kComputeDescSetLayout, .layoutName = kComputeDescSetLayout}}};
 
     resourceCreateInfo.images = {ImageResourceCreateInfo{
-        .name = GetParamStr(AppConstants::GradientStorageImage),
+        .name = kGradientStorageImage,
         .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         .format = VK_FORMAT_R8G8B8A8_UNORM,
         .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
         .usageFlags = VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-        .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::GradientStorageImageView),
-                                      .format = VK_FORMAT_R8G8B8A8_UNORM}}}};
+        .views = {ImageViewCreateInfo{.viewName = kGradientStorageImageView, .format = VK_FORMAT_R8G8B8A8_UNORM}}}};
 
     resourceCreateInfo.samplers = {
-        {.name = GetParamStr(AppConstants::MainSampler),
-         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
+        {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
 
 void VulkanApplication::InitResources() const
 {
-    resources_->SetBuffer(GetParamStr(AppConstants::MainVertexBuffer), quadVertices.data(),
-                          quadVertices.size() * sizeof(VertexPos3Uv2));
-    resources_->SetBuffer(GetParamStr(AppConstants::MainIndexBuffer), quadIndices.data(),
-                          quadIndices.size() * sizeof(quadIndices[0]));
+    resources_->SetBuffer(kMainVertexBuffer, quadVertices.data(), quadVertices.size() * sizeof(VertexPos3Uv2));
+    resources_->SetBuffer(kMainIndexBuffer, quadIndices.data(), quadIndices.size() * sizeof(quadIndices[0]));
 
     UpdateDescriptorSets();
 }
@@ -180,8 +172,8 @@ void VulkanApplication::CreatePipelines()
     timePushConstant.size = sizeof(float);
     timePushConstant.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
 
-    gradientComputePipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::ComputeDescSetLayout))}, {timePushConstant});
+    gradientComputePipelineLayout_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kComputeDescSetLayout)}, {timePushConstant});
 
     if (!gradientComputePipelineLayout_) {
         throw std::runtime_error("Failed to create compute pipeline layout!");
@@ -190,8 +182,7 @@ void VulkanApplication::CreatePipelines()
     gradientComputePipeline_ = device_->CreateComputePipeline(gradientComputePipelineLayout_, [&](auto& builder) {
         builder.SetShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::GradientComputeShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kGradientComputeShaderKey)->GetHandle();
         });
     });
 
@@ -199,8 +190,7 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create compute pipeline!");
     }
 
-    graphicsPipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))});
+    graphicsPipelineLayout_ = device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kMainDescSetLayout)});
 
     if (!graphicsPipelineLayout_) {
         throw std::runtime_error("Failed to create graphics pipeline layout!");
@@ -230,13 +220,11 @@ void VulkanApplication::CreatePipelines()
     graphicsPipeline_ = device_->CreateGraphicsPipeline(graphicsPipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -264,29 +252,24 @@ void VulkanApplication::CreatePipelines()
 void VulkanApplication::UpdateDescriptorSets() const
 {
     std::vector<VkDescriptorImageInfo> imageSamplerInfos;
-    imageSamplerInfos.emplace_back(resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-                                   resources_
-                                           ->GetImageView(GetParamStr(AppConstants::GradientStorageImage),
-                                                          GetParamStr(AppConstants::GradientStorageImageView))
-                                           ->GetHandle(),
-                                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    imageSamplerInfos.emplace_back(
+            resources_->GetSampler(kMainSampler)->GetHandle(),
+            resources_->GetImageView(kGradientStorageImage, kGradientStorageImageView)->GetHandle(),
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     std::vector<VkDescriptorImageInfo> imageStorageInfos;
-    imageStorageInfos.emplace_back(VK_NULL_HANDLE,
-                                   resources_
-                                           ->GetImageView(GetParamStr(AppConstants::GradientStorageImage),
-                                                          GetParamStr(AppConstants::GradientStorageImageView))
-                                           ->GetHandle(),
-                                   VK_IMAGE_LAYOUT_GENERAL);
+    imageStorageInfos.emplace_back(
+            VK_NULL_HANDLE, resources_->GetImageView(kGradientStorageImage, kGradientStorageImageView)->GetHandle(),
+            VK_IMAGE_LAYOUT_GENERAL);
 
     ImageWriteRequest samplerUpdateRequest;
-    samplerUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSetLayout);
+    samplerUpdateRequest.descriptorSetName = kMainDescSetLayout;
     samplerUpdateRequest.bindingIndex = 0;
     samplerUpdateRequest.images = imageSamplerInfos;
     samplerUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest storageUpdateRequest;
-    storageUpdateRequest.descriptorSetName = GetParamStr(AppConstants::ComputeDescSetLayout);
+    storageUpdateRequest.descriptorSetName = kComputeDescSetLayout;
     storageUpdateRequest.bindingIndex = 0;
     storageUpdateRequest.images = imageStorageInfos;
     storageUpdateRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -320,14 +303,14 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Compute phase
     {
         // Change image layout from VK_IMAGE_LAYOUT_UNDEFINED to VK_IMAGE_LAYOUT_GENERAL
-        const auto gradientStorageImage = resources_->GetImage(GetParamStr(AppConstants::GradientStorageImage));
+        const auto gradientStorageImage = resources_->GetImage(kGradientStorageImage);
         const auto barrierUndefinedToGeneral = gradientStorageImage->CreateImageMemoryBarrier(
                 0, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
         currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                                           {barrierUndefinedToGeneral});
 
         currentCmdBuffer->BindPipeline(gradientComputePipeline_, VK_PIPELINE_BIND_POINT_COMPUTE);
-        const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::ComputeDescSetLayout))};
+        const std::vector descSets{resources_->GetDescriptorSet(kComputeDescSetLayout)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_COMPUTE, gradientComputePipelineLayout_, 0,
                                              descSets);
 
@@ -344,7 +327,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Render phase
     {
         // Change image layout from VK_IMAGE_LAYOUT_GENERAL to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-        const auto gradientStorageImage = resources_->GetImage(GetParamStr(AppConstants::GradientStorageImage));
+        const auto gradientStorageImage = resources_->GetImage(kGradientStorageImage);
         const auto barrierGeneralToShaderRead = gradientStorageImage->CreateImageMemoryBarrier(
                 VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_GENERAL,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -362,11 +345,11 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 },
                 VK_SUBPASS_CONTENTS_INLINE);
         currentCmdBuffer->BindPipeline(graphicsPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSetLayout))};
+        const std::vector descSets{resources_->GetDescriptorSet(kMainDescSetLayout)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipelineLayout_, 0, descSets);
-        const std::vector vertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::MainVertexBuffer))};
+        const std::vector vertexBuffers{resources_->GetBuffer(kMainVertexBuffer)};
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
-        currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::MainIndexBuffer)));
+        currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(kMainIndexBuffer));
         currentCmdBuffer->DrawIndexed(quadIndices.size(), 1, 0, 0, 0);
 
         currentCmdBuffer->EndRenderPass();

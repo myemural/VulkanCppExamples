@@ -12,23 +12,29 @@
 
 namespace examples::fundamentals::compute_shaders::fullscreen_gradient
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto GradientComputeShaderFile = "AppConstants.GradientComputeShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
-    constexpr auto GradientComputeShaderKey = "AppConstants.GradientComputeShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "passthrough_position_uv.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kGradientComputeShaderFile = "gradient_generator.comp.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
+    inline constexpr auto kGradientComputeShaderKey = "compGradient";
 
-    // Resources
-    constexpr auto MainVertexBuffer = "AppConstants.MainVertexBuffer";
-    constexpr auto MainIndexBuffer = "AppConstants.MainIndexBuffer";
-    constexpr auto GradientStorageImage = "AppConstants.GradientStorageImage";
-    constexpr auto GradientStorageImageView = "AppConstants.GradientStorageImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto ComputeDescSetLayout = "AppConstants.ComputeDescSetLayout";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kMainVertexBuffer = "mainVertexBuffer";
+    inline constexpr auto kMainIndexBuffer = "mainIndexBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kGradientStorageImage = "gradientStorageImage";
+    inline constexpr auto kGradientStorageImageView = "gradientStorageImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+    inline constexpr auto kComputeDescSetLayout = "computeDescSetLayout";
+} // namespace constants
 } // namespace examples::fundamentals::compute_shaders::fullscreen_gradient

@@ -21,6 +21,7 @@
 
 namespace examples::fundamentals::multisampling::explicit_resolving
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -137,7 +138,7 @@ void VulkanApplication::CreateResources()
 
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    marbleTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::MarbleTexturePath));
+    marbleTextureHandler_ = textureLoader.Load(kMarbleTexturePath);
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -148,56 +149,52 @@ void VulkanApplication::CreateResources()
     const uint32_t planeIndexBufSize = planeIndices.size() * sizeof(planeIndices[0]);
 
     resourceCreateInfo.buffers = {
-        {.name = GetParamStr(AppConstants::SphereVertexBuffer),
+        {.name = kSphereVertexBuffer,
          .bufferSizeInBytes = sphereVertexBufSize,
          .usageFlags = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          .memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::SphereIndexBuffer), sphereIndexBufSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        {kSphereIndexBuffer, sphereIndexBufSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::PlaneVertexBuffer), planeVertexBufSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        {kPlaneVertexBuffer, planeVertexBufSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::PlaneIndexBuffer), planeIndexBufSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        {kPlaneIndexBuffer, planeIndexBufSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
     resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
                                   .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = GetParamStr(AppConstants::QuadVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::QuadVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::SceneVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::SceneVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)}}};
+                                  .modules = {{.name = kQuadVertexShaderKey, .fileName = kQuadVertexShaderFile},
+                                              {.name = kSceneVertexShaderKey, .fileName = kSceneVertexShaderFile},
+                                              {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.descriptors = {.maxSets = 2,
-                                      .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}},
-                                      .layouts = {{.name = GetParamStr(AppConstants::SceneDescSetLayout),
-                                                   .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
-                                                                 VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
-                                                  {.name = GetParamStr(AppConstants::QuadDescSetLayout),
-                                                   .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,
-                                                                 VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-                                      .descriptorSets = {{.name = GetParamStr(AppConstants::SceneDescSetLayout),
-                                                          .layoutName = GetParamStr(AppConstants::SceneDescSetLayout)},
-                                                         {.name = GetParamStr(AppConstants::QuadDescSetLayout),
-                                                          .layoutName = GetParamStr(AppConstants::QuadDescSetLayout)}}};
+    resourceCreateInfo.descriptors = {
+        .maxSets = 2,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}},
+        .layouts = {{.name = kSceneDescSetLayout,
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+                                   nullptr}}},
+                    {.name = kQuadDescSetLayout,
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+                                   nullptr}}}},
+        .descriptorSets = {{.name = kSceneDescSetLayout, .layoutName = kSceneDescSetLayout},
+                           {.name = kQuadDescSetLayout, .layoutName = kQuadDescSetLayout}}};
 
     resourceCreateInfo.images = {
-        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::MarbleImage),
-                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .dimensions = {marbleTextureHandler_.width, marbleTextureHandler_.height, 1},
-                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::MarbleImageView),
-                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
-            .name = GetParamStr(AppConstants::MultisampledImage),
+            .name = kMarbleImage,
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = VK_FORMAT_R8G8B8A8_SRGB,
+            .dimensions = {marbleTextureHandler_.width, marbleTextureHandler_.height, 1},
+            .views = {ImageViewCreateInfo{.viewName = kMarbleImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        ImageResourceCreateInfo{
+            .name = kMultisampledImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = VK_FORMAT_B8G8R8A8_SRGB,
             .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
             .samples = maxSampleCount_,
             .usageFlags = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::MultisampledImageView),
+            .views = {ImageViewCreateInfo{.viewName = kMultisampledImageView,
                                           .format = VK_FORMAT_B8G8R8A8_SRGB,
                                           .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                                                                .baseMipLevel = 0,
@@ -206,13 +203,13 @@ void VulkanApplication::CreateResources()
                                                                .layerCount = 1}}}},
 
         ImageResourceCreateInfo{
-            .name = GetParamStr(AppConstants::ResolvedImage),
+            .name = kResolvedImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = VK_FORMAT_B8G8R8A8_SRGB,
             .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
             .samples = VK_SAMPLE_COUNT_1_BIT,
             .usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::ResolvedImageView),
+            .views = {ImageViewCreateInfo{.viewName = kResolvedImageView,
                                           .format = VK_FORMAT_B8G8R8A8_SRGB,
                                           .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
                                                                .baseMipLevel = 0,
@@ -221,13 +218,13 @@ void VulkanApplication::CreateResources()
                                                                .layerCount = 1}}}}};
 
     resourceCreateInfo.images->emplace_back(ImageResourceCreateInfo{
-        .name = GetParamStr(AppConstants::DepthImage),
+        .name = kDepthImage,
         .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         .format = depthImageFormat_,
         .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
         .samples = maxSampleCount_,
         .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+        .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
                                       .format = depthImageFormat_,
                                       .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                            .baseMipLevel = 0,
@@ -236,24 +233,19 @@ void VulkanApplication::CreateResources()
                                                            .layerCount = 1}}}});
 
     resourceCreateInfo.samplers = {
-        {.name = GetParamStr(AppConstants::MainSampler),
-         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
+        {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
 
 void VulkanApplication::InitResources() const
 {
-    resources_->SetBuffer(GetParamStr(AppConstants::SphereVertexBuffer), sphereVertices.data(),
-                          sphereVertices.size() * sizeof(VertexPos3Uv2));
-    resources_->SetBuffer(GetParamStr(AppConstants::SphereIndexBuffer), sphereIndices.data(),
-                          sphereIndices.size() * sizeof(sphereIndices[0]));
-    resources_->SetBuffer(GetParamStr(AppConstants::PlaneVertexBuffer), planeVertices.data(),
-                          planeVertices.size() * sizeof(VertexPos3Uv2));
-    resources_->SetBuffer(GetParamStr(AppConstants::PlaneIndexBuffer), planeIndices.data(),
-                          planeIndices.size() * sizeof(planeIndices[0]));
+    resources_->SetBuffer(kSphereVertexBuffer, sphereVertices.data(), sphereVertices.size() * sizeof(VertexPos3Uv2));
+    resources_->SetBuffer(kSphereIndexBuffer, sphereIndices.data(), sphereIndices.size() * sizeof(sphereIndices[0]));
+    resources_->SetBuffer(kPlaneVertexBuffer, planeVertices.data(), planeVertices.size() * sizeof(VertexPos3Uv2));
+    resources_->SetBuffer(kPlaneIndexBuffer, planeIndices.data(), planeIndices.size() * sizeof(planeIndices[0]));
 
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::MarbleImage), marbleTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, kMarbleImage, marbleTextureHandler_);
 
     UpdateDescriptorSets();
 }
@@ -327,8 +319,8 @@ void VulkanApplication::CreatePipelines()
     mvpPushConstant.size = sizeof(MvpData);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
-    scenePipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::SceneDescSetLayout))}, {mvpPushConstant});
+    scenePipelineLayout_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kSceneDescSetLayout)}, {mvpPushConstant});
 
     if (!scenePipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout (scene)!");
@@ -355,8 +347,7 @@ void VulkanApplication::CreatePipelines()
     const auto uvAttribDescription = GenerateAttributeDescription(VertexPos3Uv2, Uv, bindingIndex);
     const std::array attributeDescriptions{posAttribDescription, uvAttribDescription};
 
-    quadPipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::QuadDescSetLayout))});
+    quadPipelineLayout_ = device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kQuadDescSetLayout)});
 
     if (!quadPipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout (quad)!");
@@ -365,13 +356,11 @@ void VulkanApplication::CreatePipelines()
     quadPipeline_ = device_->CreateGraphicsPipeline(quadPipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::QuadVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kQuadVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -398,13 +387,11 @@ void VulkanApplication::CreatePipelines()
     offscreenPipeline_ = device_->CreateGraphicsPipeline(scenePipelineLayout_, offscreenRP_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::SceneVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kSceneVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -453,11 +440,9 @@ void VulkanApplication::CreateFramebuffers()
         framebuffers_.push_back(framebuffer);
     }
 
-    const auto currentMultisampledImageView = resources_->GetImageView(
-            GetParamStr(AppConstants::MultisampledImage), GetParamStr(AppConstants::MultisampledImageView));
+    const auto currentMultisampledImageView = resources_->GetImageView(kMultisampledImage, kMultisampledImageView);
 
-    const auto currentDepthImageView =
-            resources_->GetImageView(GetParamStr(AppConstants::DepthImage), GetParamStr(AppConstants::DepthImageView));
+    const auto currentDepthImageView = resources_->GetImageView(kDepthImage, kDepthImageView);
 
     offscreenFramebuffer_ = device_->CreateFramebuffer(
             offscreenRP_, {currentMultisampledImageView, currentDepthImageView},
@@ -471,28 +456,23 @@ void VulkanApplication::CreateFramebuffers()
 void VulkanApplication::UpdateDescriptorSets() const
 {
     std::vector<VkDescriptorImageInfo> sceneImageInfos;
-    sceneImageInfos.emplace_back(
-            resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-            resources_->GetImageView(GetParamStr(AppConstants::MarbleImage), GetParamStr(AppConstants::MarbleImageView))
-                    ->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    sceneImageInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
+                                 resources_->GetImageView(kMarbleImage, kMarbleImageView)->GetHandle(),
+                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     std::vector<VkDescriptorImageInfo> quadImageInfos;
-    quadImageInfos.emplace_back(resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-                                resources_
-                                        ->GetImageView(GetParamStr(AppConstants::ResolvedImage),
-                                                       GetParamStr(AppConstants::ResolvedImageView))
-                                        ->GetHandle(),
+    quadImageInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
+                                resources_->GetImageView(kResolvedImage, kResolvedImageView)->GetHandle(),
                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     ImageWriteRequest sceneImageUpdateRequest;
-    sceneImageUpdateRequest.descriptorSetName = GetParamStr(AppConstants::SceneDescSetLayout);
+    sceneImageUpdateRequest.descriptorSetName = kSceneDescSetLayout;
     sceneImageUpdateRequest.bindingIndex = 0;
     sceneImageUpdateRequest.images = sceneImageInfos;
     sceneImageUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest quadImageUpdateRequest;
-    quadImageUpdateRequest.descriptorSetName = GetParamStr(AppConstants::QuadDescSetLayout);
+    quadImageUpdateRequest.descriptorSetName = kQuadDescSetLayout;
     quadImageUpdateRequest.bindingIndex = 0;
     quadImageUpdateRequest.images = quadImageInfos;
     quadImageUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -544,8 +524,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     }
 
     // Manual resolving multisampled image
-    const auto multisampledImage = resources_->GetImage(GetParamStr(AppConstants::MultisampledImage));
-    const auto resolvedImage = resources_->GetImage(GetParamStr(AppConstants::ResolvedImage));
+    const auto multisampledImage = resources_->GetImage(kMultisampledImage);
+    const auto resolvedImage = resources_->GetImage(kResolvedImage);
 
     const auto multisampledBarrierSrc = multisampledImage->CreateImageMemoryBarrier(
             VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -628,10 +608,10 @@ void VulkanApplication::ProcessInput() const
 
 void VulkanApplication::RenderScene(const std::shared_ptr<VulkanCommandBuffer>& cmdBuffer) const
 {
-    const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::SceneDescSetLayout))};
+    const std::vector descSets{resources_->GetDescriptorSet(kSceneDescSetLayout)};
     cmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, scenePipelineLayout_, 0, descSets);
-    cmdBuffer->BindVertexBuffers({resources_->GetBuffer(GetParamStr(AppConstants::SphereVertexBuffer))}, 0, 1, {0});
-    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::SphereIndexBuffer)));
+    cmdBuffer->BindVertexBuffers({resources_->GetBuffer(kSphereVertexBuffer)}, 0, 1, {0});
+    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(kSphereIndexBuffer));
 
     for (auto& mvp: mvpData_) {
         cmdBuffer->PushConstants(scenePipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvp);
@@ -641,10 +621,10 @@ void VulkanApplication::RenderScene(const std::shared_ptr<VulkanCommandBuffer>& 
 
 void VulkanApplication::RenderQuad(const std::shared_ptr<VulkanCommandBuffer>& cmdBuffer) const
 {
-    const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::QuadDescSetLayout))};
+    const std::vector descSets{resources_->GetDescriptorSet(kQuadDescSetLayout)};
     cmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, quadPipelineLayout_, 0, descSets);
-    cmdBuffer->BindVertexBuffers({resources_->GetBuffer(GetParamStr(AppConstants::PlaneVertexBuffer))}, 0, 1, {0});
-    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::PlaneIndexBuffer)));
+    cmdBuffer->BindVertexBuffers({resources_->GetBuffer(kPlaneVertexBuffer)}, 0, 1, {0});
+    cmdBuffer->BindIndexBuffer(resources_->GetBuffer(kPlaneIndexBuffer));
     cmdBuffer->DrawIndexed(planeIndices.size(), 1, 0, 0, 0);
 }
 } // namespace examples::fundamentals::multisampling::explicit_resolving

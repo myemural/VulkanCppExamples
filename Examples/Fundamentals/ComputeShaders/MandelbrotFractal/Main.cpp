@@ -26,24 +26,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "passthrough_position_uv.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "texture_sampler.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MandelbrotComputeShaderFile,
-                                               "mandelbrot_generator.comp.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MandelbrotComputeShaderKey, "compMandelbrot");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexBuffer, "mainVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainIndexBuffer, "mainIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MandelbrotStorageImage, "mandelbrotStorageImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MandelbrotStorageImageView, "mandelbrotStorageImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ComputeDescSetLayout, "computeDescSetLayout");
-
     // Register Customizable Settings
     schema.RegisterParam<float>(AppSettings::LoopTime);
     schema.RegisterParam<float>(AppSettings::ZoomSpeed);

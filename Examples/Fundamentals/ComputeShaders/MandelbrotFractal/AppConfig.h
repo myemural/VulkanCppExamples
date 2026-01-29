@@ -12,25 +12,31 @@
 
 namespace examples::fundamentals::compute_shaders::mandelbrot_fractal
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MandelbrotComputeShaderFile = "AppConstants.MandelbrotComputeShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
-    constexpr auto MandelbrotComputeShaderKey = "AppConstants.MandelbrotComputeShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "passthrough_position_uv.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kMandelbrotComputeShaderFile = "mandelbrot_generator.comp.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
+    inline constexpr auto kMandelbrotComputeShaderKey = "compMandelbrot";
 
-    // Resources
-    constexpr auto MainVertexBuffer = "AppConstants.MainVertexBuffer";
-    constexpr auto MainIndexBuffer = "AppConstants.MainIndexBuffer";
-    constexpr auto MandelbrotStorageImage = "AppConstants.MandelbrotStorageImage";
-    constexpr auto MandelbrotStorageImageView = "AppConstants.MandelbrotStorageImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto ComputeDescSetLayout = "AppConstants.ComputeDescSetLayout";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kMainVertexBuffer = "mainVertexBuffer";
+    inline constexpr auto kMainIndexBuffer = "mainIndexBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kMandelbrotStorageImage = "mandelbrotStorageImage";
+    inline constexpr auto kMandelbrotStorageImageView = "mandelbrotStorageImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+    inline constexpr auto kComputeDescSetLayout = "computeDescSetLayout";
+} // namespace constants
 
 namespace AppSettings
 {

@@ -12,34 +12,42 @@
 
 namespace examples::fundamentals::multisampling::explicit_resolving
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto QuadVertexShaderFile = "AppConstants.QuadVertexShaderFile";
-    constexpr auto SceneVertexShaderFile = "AppConstants.SceneVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto QuadVertexShaderKey = "AppConstants.QuadVertexShaderKey";
-    constexpr auto SceneVertexShaderKey = "AppConstants.SceneVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
+    inline constexpr auto kQuadVertexShaderFile = "passthrough_position_uv.vert.spv";
+    inline constexpr auto kSceneVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kQuadVertexShaderKey = "vertQuad";
+    inline constexpr auto kSceneVertexShaderKey = "vertScene";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
-    // Resources
-    constexpr auto SphereVertexBuffer = "AppConstants.SphereVertexBuffer";
-    constexpr auto SphereIndexBuffer = "AppConstants.SphereIndexBuffer";
-    constexpr auto PlaneVertexBuffer = "AppConstants.PlaneVertexBuffer";
-    constexpr auto PlaneIndexBuffer = "AppConstants.PlaneIndexBuffer";
-    constexpr auto MarbleImage = "AppConstants.MarbleImage";
-    constexpr auto MarbleImageView = "AppConstants.MarbleImageView";
-    constexpr auto MultisampledImage = "AppConstants.MultisampledImage";
-    constexpr auto MultisampledImageView = "AppConstants.MultisampledImageView";
-    constexpr auto ResolvedImage = "AppConstants.ResolvedImage";
-    constexpr auto ResolvedImageView = "AppConstants.ResolvedImageView";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto SceneDescSetLayout = "AppConstants.SceneDescSetLayout";
-    constexpr auto QuadDescSetLayout = "AppConstants.QuadDescSetLayout";
-    constexpr auto MarbleTexturePath = "AppConstants.MarbleTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kSphereVertexBuffer = "sphereVertexBuffer";
+    inline constexpr auto kSphereIndexBuffer = "sphereIndexBuffer";
+    inline constexpr auto kPlaneVertexBuffer = "planeVertexBuffer";
+    inline constexpr auto kPlaneIndexBuffer = "planeIndexBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kMarbleImage = "marbleImage";
+    inline constexpr auto kMarbleImageView = "marbleImageView";
+    inline constexpr auto kMultisampledImage = "multisampledImage";
+    inline constexpr auto kMultisampledImageView = "multisampledImageView";
+    inline constexpr auto kResolvedImage = "resolvedImage";
+    inline constexpr auto kResolvedImageView = "resolvedImageView";
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kSceneDescSetLayout = "sceneDescSetLayout";
+    inline constexpr auto kQuadDescSetLayout = "quadDescSetLayout";
+
+    // Textures
+    inline constexpr auto kMarbleTexturePath = "Textures/marble.jpg";
+} // namespace constants
 
 namespace AppSettings
 {

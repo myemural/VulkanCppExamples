@@ -22,6 +22,7 @@
 
 namespace examples::fundamentals::compute_shaders::basic_particles
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -53,8 +54,7 @@ bool VulkanApplication::Init()
 
         CreateRenderPass();
         CreatePipelines();
-        CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                           GetParamStr(AppConstants::DepthImageView)));
+        CreateDefaultFramebuffers(resources_->GetImageView(kDepthImage, kDepthImageView));
 
         CreateCommandBuffers();
     } catch (const std::exception& e) {
@@ -137,7 +137,7 @@ void VulkanApplication::CreateResources()
 
     // Pre-load textures
     const TextureLoader textureLoader{ASSETS_DIR};
-    crateTextureHandler_ = textureLoader.Load(GetParamStr(AppConstants::CrateTexturePath));
+    crateTextureHandler_ = textureLoader.Load(kCrateTexturePath);
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -146,60 +146,52 @@ void VulkanApplication::CreateResources()
     const uint32_t cubeIndexSize = cubeIndices.size() * sizeof(cubeIndices[0]);
     const uint32_t particleBufferSize = GetParamU32(AppSettings::ParticleCount) * sizeof(ParticleData);
 
-    resourceCreateInfo.buffers = {
-        {GetParamStr(AppConstants::CubeVertexBuffer), cubeVertexSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::CubeIndexBuffer), cubeIndexSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {GetParamStr(AppConstants::ParticleStorageBuffer), particleBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
+    resourceCreateInfo.buffers = {{kCubeVertexBuffer, cubeVertexSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kCubeIndexBuffer, cubeIndexSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kParticleStorageBuffer, particleBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::MainFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainFragmentShaderFile)},
-                                              {.name = GetParamStr(AppConstants::ParticleVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::ParticleVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::ParticleFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::ParticleFragmentShaderFile)},
-                                              {.name = GetParamStr(AppConstants::ParticleComputeShaderKey),
-                                               .fileName = GetParamStr(AppConstants::ParticleComputeShaderFile)}}};
+    resourceCreateInfo.shaders = {
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile},
+                    {.name = kParticleVertexShaderKey, .fileName = kParticleVertexShaderFile},
+                    {.name = kParticleFragmentShaderKey, .fileName = kParticleFragmentShaderFile},
+                    {.name = kParticleComputeShaderKey, .fileName = kParticleComputeShaderFile}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
         .maxSets = 3,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}, {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2}},
-        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+        .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}},
-                    {.name = GetParamStr(AppConstants::ParticleDescSetLayout),
+                    {.name = kParticleDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr}}},
-                    {.name = GetParamStr(AppConstants::ParticleComputeDescSetLayout),
+                    {.name = kParticleComputeDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr}}}},
-        .descriptorSets = {{.name = GetParamStr(AppConstants::CubeDescSet),
-                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)},
-                           {.name = GetParamStr(AppConstants::ParticleDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::ParticleDescSetLayout)},
-                           {.name = GetParamStr(AppConstants::ParticleComputeDescSetLayout),
-                            .layoutName = GetParamStr(AppConstants::ParticleComputeDescSetLayout)}}};
+        .descriptorSets = {{.name = kCubeDescSet, .layoutName = kMainDescSetLayout},
+                           {.name = kParticleDescSetLayout, .layoutName = kParticleDescSetLayout},
+                           {.name = kParticleComputeDescSetLayout, .layoutName = kParticleComputeDescSetLayout}}};
 
     resourceCreateInfo.images = {
-        ImageResourceCreateInfo{.name = GetParamStr(AppConstants::CrateImage),
-                                .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .format = VK_FORMAT_R8G8B8A8_SRGB,
-                                .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
-                                .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::CrateImageView),
-                                                              .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
-            .name = GetParamStr(AppConstants::DepthImage),
+            .name = kCrateImage,
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = VK_FORMAT_R8G8B8A8_SRGB,
+            .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+            .views = {ImageViewCreateInfo{.viewName = kCrateImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
+        ImageResourceCreateInfo{
+            .name = kDepthImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
             .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+            .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
                                           .format = depthImageFormat_,
                                           .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                                .baseMipLevel = 0,
@@ -208,20 +200,17 @@ void VulkanApplication::CreateResources()
                                                                .layerCount = 1}}}}};
 
     resourceCreateInfo.samplers = {
-        {.name = GetParamStr(AppConstants::MainSampler),
-         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
+        {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
 
 void VulkanApplication::InitResources() const
 {
-    resources_->SetBuffer(GetParamStr(AppConstants::CubeVertexBuffer), cubeVertices.data(),
-                          cubeVertices.size() * sizeof(VertexPos3Uv2));
-    resources_->SetBuffer(GetParamStr(AppConstants::CubeIndexBuffer), cubeIndices.data(),
-                          cubeIndices.size() * sizeof(cubeIndices[0]));
+    resources_->SetBuffer(kCubeVertexBuffer, cubeVertices.data(), cubeVertices.size() * sizeof(VertexPos3Uv2));
+    resources_->SetBuffer(kCubeIndexBuffer, cubeIndices.data(), cubeIndices.size() * sizeof(cubeIndices[0]));
 
-    resources_->SetImageFromTexture(cmdPool_, queue_, GetParamStr(AppConstants::CrateImage), crateTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, kCrateImage, crateTextureHandler_);
 
     UpdateDescriptorSets();
 }
@@ -276,8 +265,7 @@ void VulkanApplication::CreatePipelines()
         particlePushConstant.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
 
         particleComputePipelineLayout_ = device_->CreatePipelineLayout(
-                {resources_->GetDescriptorLayout(GetParamStr(AppConstants::ParticleComputeDescSetLayout))},
-                {particlePushConstant});
+                {resources_->GetDescriptorLayout(kParticleComputeDescSetLayout)}, {particlePushConstant});
 
         if (!particleComputePipelineLayout_) {
             throw std::runtime_error("Failed to create compute pipeline layout!");
@@ -286,8 +274,7 @@ void VulkanApplication::CreatePipelines()
         particleComputePipeline_ = device_->CreateComputePipeline(particleComputePipelineLayout_, [&](auto& builder) {
             builder.SetShaderStage([&](auto& shaderStageCreateInfo) {
                 shaderStageCreateInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-                shaderStageCreateInfo.module =
-                        resources_->GetShaderModule(GetParamStr(AppConstants::ParticleComputeShaderKey))->GetHandle();
+                shaderStageCreateInfo.module = resources_->GetShaderModule(kParticleComputeShaderKey)->GetHandle();
             });
         });
 
@@ -319,7 +306,7 @@ void VulkanApplication::CreatePipelines()
     // Graphics pipeline (for particles)
     {
         particleGraphicsPipelineLayout_ = device_->CreatePipelineLayout(
-                {resources_->GetDescriptorLayout(GetParamStr(AppConstants::ParticleDescSetLayout))}, {mvpPushConstant});
+                {resources_->GetDescriptorLayout(kParticleDescSetLayout)}, {mvpPushConstant});
 
         if (!particleGraphicsPipelineLayout_) {
             throw std::runtime_error("Failed to create graphics pipeline layout (for particles)!");
@@ -330,14 +317,12 @@ void VulkanApplication::CreatePipelines()
                     builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                         shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
                         shaderStageCreateInfo.module =
-                                resources_->GetShaderModule(GetParamStr(AppConstants::ParticleVertexShaderKey))
-                                        ->GetHandle();
+                                resources_->GetShaderModule(kParticleVertexShaderKey)->GetHandle();
                     });
                     builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                         shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
                         shaderStageCreateInfo.module =
-                                resources_->GetShaderModule(GetParamStr(AppConstants::ParticleFragmentShaderKey))
-                                        ->GetHandle();
+                                resources_->GetShaderModule(kParticleFragmentShaderKey)->GetHandle();
                     });
                     builder.SetInputAssemblyState([&](auto& assemblyStateCreateInfo) {
                         assemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
@@ -369,8 +354,8 @@ void VulkanApplication::CreatePipelines()
 
     // Graphics pipeline (for cubes)
     {
-        mainGraphicsPipelineLayout_ = device_->CreatePipelineLayout(
-                {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))}, {mvpPushConstant});
+        mainGraphicsPipelineLayout_ =
+                device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kMainDescSetLayout)}, {mvpPushConstant});
 
         if (!mainGraphicsPipelineLayout_) {
             throw std::runtime_error("Failed to create graphics pipeline layout (for cubes)!");
@@ -386,15 +371,11 @@ void VulkanApplication::CreatePipelines()
                 device_->CreateGraphicsPipeline(mainGraphicsPipelineLayout_, renderPass_, [&](auto& builder) {
                     builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                         shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-                        shaderStageCreateInfo.module =
-                                resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))
-                                        ->GetHandle();
+                        shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
                     });
                     builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                         shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-                        shaderStageCreateInfo.module =
-                                resources_->GetShaderModule(GetParamStr(AppConstants::MainFragmentShaderKey))
-                                        ->GetHandle();
+                        shaderStageCreateInfo.module = resources_->GetShaderModule(kMainFragmentShaderKey)->GetHandle();
                     });
                     builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
                         vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
@@ -428,30 +409,27 @@ void VulkanApplication::CreatePipelines()
 void VulkanApplication::UpdateDescriptorSets() const
 {
     std::vector<VkDescriptorImageInfo> imageSamplerInfosCube;
-    imageSamplerInfosCube.emplace_back(
-            resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-            resources_->GetImageView(GetParamStr(AppConstants::CrateImage), GetParamStr(AppConstants::CrateImageView))
-                    ->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    imageSamplerInfosCube.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
+                                       resources_->GetImageView(kCrateImage, kCrateImageView)->GetHandle(),
+                                       VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     std::vector<VkDescriptorBufferInfo> bufferStorageInfos;
-    bufferStorageInfos.emplace_back(
-            resources_->GetBuffer(GetParamStr(AppConstants::ParticleStorageBuffer))->GetHandle(), 0, VK_WHOLE_SIZE);
+    bufferStorageInfos.emplace_back(resources_->GetBuffer(kParticleStorageBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
     ImageWriteRequest samplerUpdateRequestCube;
-    samplerUpdateRequestCube.descriptorSetName = GetParamStr(AppConstants::CubeDescSet);
+    samplerUpdateRequestCube.descriptorSetName = kCubeDescSet;
     samplerUpdateRequestCube.bindingIndex = 0;
     samplerUpdateRequestCube.images = imageSamplerInfosCube;
     samplerUpdateRequestCube.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     BufferWriteRequest storageBufferUpdateRequestCube;
-    storageBufferUpdateRequestCube.descriptorSetName = GetParamStr(AppConstants::ParticleDescSetLayout);
+    storageBufferUpdateRequestCube.descriptorSetName = kParticleDescSetLayout;
     storageBufferUpdateRequestCube.bindingIndex = 0;
     storageBufferUpdateRequestCube.buffers = bufferStorageInfos;
     storageBufferUpdateRequestCube.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     BufferWriteRequest storageBufferUpdateRequestParticle;
-    storageBufferUpdateRequestParticle.descriptorSetName = GetParamStr(AppConstants::ParticleComputeDescSetLayout);
+    storageBufferUpdateRequestParticle.descriptorSetName = kParticleComputeDescSetLayout;
     storageBufferUpdateRequestParticle.bindingIndex = 0;
     storageBufferUpdateRequestParticle.buffers = bufferStorageInfos;
     storageBufferUpdateRequestParticle.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -487,8 +465,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Generate particles (compute phase)
     {
         currentCmdBuffer->BindPipeline(particleComputePipeline_, VK_PIPELINE_BIND_POINT_COMPUTE);
-        const std::vector descSets{
-            resources_->GetDescriptorSet(GetParamStr(AppConstants::ParticleComputeDescSetLayout))};
+        const std::vector descSets{resources_->GetDescriptorSet(kParticleComputeDescSetLayout)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_COMPUTE, particleComputePipelineLayout_, 0,
                                              descSets);
         ParticlePushConstant particlePushConstant{};
@@ -503,7 +480,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Render phase
     {
         // Before start render pass, put memory barrier for particle storage buffer
-        const auto particleStorageBuffer = resources_->GetBuffer(GetParamStr(AppConstants::ParticleStorageBuffer));
+        const auto particleStorageBuffer = resources_->GetBuffer(kParticleStorageBuffer);
         const auto barrier =
                 particleStorageBuffer->CreateBufferMemoryBarrier(VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT);
         currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, {},
@@ -523,12 +500,12 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         // Draw cubes
         for (const auto mvp: mvpData_) {
             currentCmdBuffer->BindPipeline(mainGraphicsPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-            const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::CubeDescSet))};
+            const std::vector descSets{resources_->GetDescriptorSet(kCubeDescSet)};
             currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, mainGraphicsPipelineLayout_, 0,
                                                  descSets);
-            const std::vector vertexBuffers{resources_->GetBuffer(GetParamStr(AppConstants::CubeVertexBuffer))};
+            const std::vector vertexBuffers{resources_->GetBuffer(kCubeVertexBuffer)};
             currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
-            currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(GetParamStr(AppConstants::CubeIndexBuffer)));
+            currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(kCubeIndexBuffer));
             currentCmdBuffer->PushConstants(mainGraphicsPipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData),
                                             &mvp);
             currentCmdBuffer->DrawIndexed(cubeIndices.size(), 1, 0, 0, 0);
@@ -537,7 +514,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         // Draw particles
         for (const auto mvp: mvpData_) {
             currentCmdBuffer->BindPipeline(particleGraphicsPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-            const std::vector descSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::ParticleDescSetLayout))};
+            const std::vector descSets{resources_->GetDescriptorSet(kParticleDescSetLayout)};
             currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, particleGraphicsPipelineLayout_, 0,
                                                  descSets);
             currentCmdBuffer->PushConstants(particleGraphicsPipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,

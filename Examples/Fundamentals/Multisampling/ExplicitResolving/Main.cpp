@@ -26,32 +26,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadVertexShaderFile, "passthrough_position_uv.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneVertexShaderFile, "position_with_mvp.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "texture_sampler.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadVertexShaderKey, "vertQuad");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneVertexShaderKey, "vertScene");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::SphereVertexBuffer, "sphereVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SphereIndexBuffer, "sphereIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneVertexBuffer, "planeVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneIndexBuffer, "planeIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MarbleImage, "marbleImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MarbleImageView, "marbleImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MultisampledImage, "multisampledImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MultisampledImageView, "multisampledImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ResolvedImage, "resolvedImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ResolvedImageView, "resolvedImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneDescSetLayout, "sceneDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::QuadDescSetLayout, "quadDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MarbleTexturePath, "Textures/marble.jpg");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);

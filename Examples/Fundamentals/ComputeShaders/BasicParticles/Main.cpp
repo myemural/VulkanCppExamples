@@ -26,33 +26,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "position_with_mvp.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile, "texture_sampler.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleVertexShaderFile, "particle_position.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleFragmentShaderFile, "particle_coloring.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleComputeShaderFile, "particle_generator.comp.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleVertexShaderKey, "vertParticle");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleFragmentShaderKey, "fragParticle");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleComputeShaderKey, "compParticle");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeVertexBuffer, "cubeVertexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeIndexBuffer, "cubeIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleStorageBuffer, "particleStorageBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeDescSet, "cubeDescSet");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleDescSetLayout, "particleDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ParticleComputeDescSetLayout,
-                                               "particleComputeDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);

@@ -12,34 +12,42 @@
 
 namespace examples::fundamentals::compute_shaders::checkerboard_generator
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto CheckerboardComputeShaderFile = "AppConstants.CheckerboardComputeShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
-    constexpr auto CheckerboardComputeShaderKey = "AppConstants.CheckerboardComputeShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kCheckerboardComputeShaderFile = "checkerboard_generator.comp.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
+    inline constexpr auto kCheckerboardComputeShaderKey = "compCheckerboard";
 
-    // Resources
-    constexpr auto CubeVertexBuffer = "AppConstants.CubeVertexBuffer";
-    constexpr auto CubeIndexBuffer = "AppConstants.CubeIndexBuffer";
-    constexpr auto SphereVertexBuffer = "AppConstants.SphereVertexBuffer";
-    constexpr auto SphereIndexBuffer = "AppConstants.SphereIndexBuffer";
-    constexpr auto CheckerboardStorageImage = "AppConstants.CheckerboardStorageImage";
-    constexpr auto CheckerboardStorageImageView = "AppConstants.CheckerboardStorageImageView";
-    constexpr auto CrateImage = "AppConstants.CrateImage";
-    constexpr auto CrateImageView = "AppConstants.CrateImageView";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto CubeDescSet = "AppConstants.CubeDescSet";
-    constexpr auto SphereDescSet = "AppConstants.SphereDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto ComputeDescSetLayout = "AppConstants.ComputeDescSetLayout";
-    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kCubeVertexBuffer = "cubeVertexBuffer";
+    inline constexpr auto kCubeIndexBuffer = "cubeIndexBuffer";
+    inline constexpr auto kSphereVertexBuffer = "sphereVertexBuffer";
+    inline constexpr auto kSphereIndexBuffer = "sphereIndexBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kCheckerboardStorageImage = "checkerboardStorageImage";
+    inline constexpr auto kCheckerboardStorageImageView = "checkerboardStorageImageView";
+    inline constexpr auto kCrateImage = "crateImage";
+    inline constexpr auto kCrateImageView = "crateImageView";
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kCubeDescSet = "cubeDescSet";
+    inline constexpr auto kSphereDescSet = "sphereDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+    inline constexpr auto kComputeDescSetLayout = "computeDescSetLayout";
+
+    // Textures
+    inline constexpr auto kCrateTexturePath = "Textures/crate1_diffuse.png";
+} // namespace constants
 
 namespace AppSettings
 {

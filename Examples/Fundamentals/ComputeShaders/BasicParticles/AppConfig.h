@@ -12,35 +12,43 @@
 
 namespace examples::fundamentals::compute_shaders::basic_particles
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto ParticleVertexShaderFile = "AppConstants.ParticleVertexShaderFile";
-    constexpr auto ParticleFragmentShaderFile = "AppConstants.ParticleFragmentShaderFile";
-    constexpr auto ParticleComputeShaderFile = "AppConstants.ParticleComputeShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
-    constexpr auto ParticleVertexShaderKey = "AppConstants.ParticleVertexShaderKey";
-    constexpr auto ParticleFragmentShaderKey = "AppConstants.ParticleFragmentShaderKey";
-    constexpr auto ParticleComputeShaderKey = "AppConstants.ParticleComputeShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kParticleVertexShaderFile = "particle_position.vert.spv";
+    inline constexpr auto kParticleFragmentShaderFile = "particle_coloring.frag.spv";
+    inline constexpr auto kParticleComputeShaderFile = "particle_generator.comp.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
+    inline constexpr auto kParticleVertexShaderKey = "vertParticle";
+    inline constexpr auto kParticleFragmentShaderKey = "fragParticle";
+    inline constexpr auto kParticleComputeShaderKey = "compParticle";
 
-    // Resources
-    constexpr auto CubeVertexBuffer = "AppConstants.CubeVertexBuffer";
-    constexpr auto CubeIndexBuffer = "AppConstants.CubeIndexBuffer";
-    constexpr auto ParticleStorageBuffer = "AppConstants.ParticleStorageBuffer";
-    constexpr auto CrateImage = "AppConstants.CrateImage";
-    constexpr auto CrateImageView = "AppConstants.CrateImageView";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto CubeDescSet = "AppConstants.CubeDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto ParticleDescSetLayout = "AppConstants.ParticleDescSetLayout";
-    constexpr auto ParticleComputeDescSetLayout = "AppConstants.ParticleComputeDescSetLayout";
-    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kCubeVertexBuffer = "cubeVertexBuffer";
+    inline constexpr auto kCubeIndexBuffer = "cubeIndexBuffer";
+    inline constexpr auto kParticleStorageBuffer = "particleStorageBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kCrateImage = "crateImage";
+    inline constexpr auto kCrateImageView = "crateImageView";
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kCubeDescSet = "cubeDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+    inline constexpr auto kParticleDescSetLayout = "particleDescSetLayout";
+    inline constexpr auto kParticleComputeDescSetLayout = "particleComputeDescSetLayout";
+
+    // Textures
+    inline constexpr auto kCrateTexturePath = "Textures/crate1_diffuse.png";
+} // namespace constants
 
 namespace AppSettings
 {
