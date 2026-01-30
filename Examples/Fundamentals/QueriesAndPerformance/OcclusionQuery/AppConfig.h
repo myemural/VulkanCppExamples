@@ -12,32 +12,40 @@
 
 namespace examples::fundamentals::queries_and_performance::occlusion_query
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "texture_sampler.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
-    // Resources
-    constexpr auto CubeVertexBuffer = "AppConstants.CubeVertexBuffer";
-    constexpr auto CubeIndexBuffer = "AppConstants.CubeIndexBuffer";
-    constexpr auto SphereVertexBuffer = "AppConstants.SphereVertexBuffer";
-    constexpr auto SphereIndexBuffer = "AppConstants.SphereIndexBuffer";
-    constexpr auto CrateImage = "AppConstants.CrateImage";
-    constexpr auto CrateImageView = "AppConstants.CrateImageView";
-    constexpr auto MarbleImage = "AppConstants.MarbleImage";
-    constexpr auto MarbleImageView = "AppConstants.MarbleImageView";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto CubeDescSet = "AppConstants.CubeDescSet";
-    constexpr auto SphereDescSet = "AppConstants.SphereDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
-    constexpr auto MarbleTexturePath = "AppConstants.MarbleTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kCubeVertexBuffer = "cubeVertexBuffer";
+    inline constexpr auto kCubeIndexBuffer = "cubeIndexBuffer";
+    inline constexpr auto kSphereVertexBuffer = "sphereVertexBuffer";
+    inline constexpr auto kSphereIndexBuffer = "sphereIndexBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kCrateImage = "crateImage";
+    inline constexpr auto kCrateImageView = "crateImageView";
+    inline constexpr auto kMarbleImage = "marbleImage";
+    inline constexpr auto kMarbleImageView = "marbleImageView";
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kCubeDescSet = "cubeDescSet";
+    inline constexpr auto kSphereDescSet = "sphereDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kCrateTexturePath = "Textures/crate1_diffuse.png";
+    inline constexpr auto kMarbleTexturePath = "Textures/marble.jpg";
+} // namespace constants
 
 namespace AppSettings
 {

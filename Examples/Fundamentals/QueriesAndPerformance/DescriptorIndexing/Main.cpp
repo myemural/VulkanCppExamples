@@ -26,28 +26,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "position_with_mvp.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderFile,
-                                               "texture_sampler_desc_indexing.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainFragmentShaderKey, "fragMain");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexIndexBuffer, "mainVertexIndexBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DynamicUniformBuffer, "dynamicUniformBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImage, "crateImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateImageView, "crateImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::WallStoneImage, "wallStoneImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::WallStoneImageView, "wallStoneImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeDescSet, "cubeDescSet");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CrateTexturePath, "Textures/crate1_diffuse.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::WallStoneTexturePath, "Textures/Wall_Stone_034_basecolor.png");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);

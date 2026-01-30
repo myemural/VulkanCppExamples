@@ -12,29 +12,37 @@
 
 namespace examples::fundamentals::queries_and_performance::descriptor_indexing
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto MainFragmentShaderFile = "AppConstants.MainFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto MainFragmentShaderKey = "AppConstants.MainFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "position_with_mvp.vert.spv";
+    inline constexpr auto kMainFragmentShaderFile = "texture_sampler_desc_indexing.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
-    // Resources
-    constexpr auto MainVertexIndexBuffer = "AppConstants.MainVertexIndexBuffer";
-    constexpr auto DynamicUniformBuffer = "AppConstants.DynamicUniformBuffer";
-    constexpr auto CrateImage = "AppConstants.CrateImage";
-    constexpr auto CrateImageView = "AppConstants.CrateImageView";
-    constexpr auto WallStoneImage = "AppConstants.WallStoneImage";
-    constexpr auto WallStoneImageView = "AppConstants.WallStoneImageView";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto CubeDescSet = "AppConstants.CubeDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto CrateTexturePath = "AppConstants.CrateTexturePath";
-    constexpr auto WallStoneTexturePath = "AppConstants.WallStoneTexturePath";
-} // namespace AppConstants
+    // Buffers
+    inline constexpr auto kMainVertexIndexBuffer = "mainVertexIndexBuffer";
+    inline constexpr auto kDynamicUniformBuffer = "dynamicUniformBuffer";
+
+    // Images and Image Views
+    inline constexpr auto kCrateImage = "crateImage";
+    inline constexpr auto kCrateImageView = "crateImageView";
+    inline constexpr auto kWallStoneImage = "wallStoneImage";
+    inline constexpr auto kWallStoneImageView = "wallStoneImageView";
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kCubeDescSet = "cubeDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kCrateTexturePath = "Textures/crate1_diffuse.png";
+    inline constexpr auto kWallStoneTexturePath = "Textures/Wall_Stone_034_basecolor.png";
+} // namespace constants
 
 namespace AppSettings
 {
