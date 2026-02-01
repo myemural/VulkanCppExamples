@@ -12,30 +12,36 @@
 
 namespace examples::real_time_lighting::light_sources::flashlight
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto SceneObjectsFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "blinn_phong_spotlight.vert.spv";
+    inline constexpr auto kSceneObjectsFragmentShaderFile = "blinn_phong_spotlight.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kSceneObjectsFragmentShaderKey = "fragScene";
 
-    // Resources
-    constexpr auto LightUniformBuffer = "AppConstants.LightUniformBuffer";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainDescSet = "AppConstants.MainDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
+    // Buffers
+    inline constexpr auto kLightUniformBuffer = "lightUniformBuffer";
 
-    // Objects
-    constexpr auto CameraObject = "AppConstants.CameraObject";
-    constexpr auto CubeObject = "AppConstants.CubeObject";
-    constexpr auto SphereObject = "AppConstants.SphereObject";
-    constexpr auto ConeObject = "AppConstants.ConeObject";
-    constexpr auto CylinderObject = "AppConstants.CylinderObject";
-    constexpr auto PlaneObject = "AppConstants.PlaneObject";
-} // namespace AppConstants
+    // Images and Image Views
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSet = "mainDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Materials
+    inline constexpr auto kDefaultMaterial = "defaultMaterial";
+
+    // Scene Objects
+    inline constexpr auto kCameraObject = "camera";
+    inline constexpr auto kCubeObject = "cube";
+    inline constexpr auto kSphereObject = "sphere";
+    inline constexpr auto kConeObject = "cone";
+    inline constexpr auto kCylinderObject = "cylinder";
+    inline constexpr auto kPlaneObject = "plane";
+} // namespace constants
 
 namespace AppSettings
 {
