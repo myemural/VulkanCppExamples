@@ -12,41 +12,51 @@
 
 namespace examples::real_time_lighting::textured_materials::emissive_materials
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
-    constexpr auto LightObjectsFragmentShaderFile = "AppConstants.LightFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto SceneObjectsFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
-    constexpr auto LightObjectsFragmentShaderKey = "AppConstants.LightFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "blinn_phong_point.vert.spv";
+    inline constexpr auto kSceneObjectsFragmentShaderFile = "blinn_phong_point.frag.spv";
+    inline constexpr auto kLightObjectsFragmentShaderFile = "hardcoded_color_for_lights.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kSceneObjectsFragmentShaderKey = "fragScene";
+    inline constexpr auto kLightObjectsFragmentShaderKey = "fragLight";
 
-    // Resources
-    constexpr auto LightUniformBuffer = "AppConstants.LightUniformBuffer";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto MainDescSet = "AppConstants.MainDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto CeilingTexturePath = "AppConstants.CeilingTexturePath";
-    constexpr auto CeilingTexture = "AppConstants.CeilingTexture";
-    constexpr auto CeilingEmissiveTexturePath = "AppConstants.CeilingEmissiveTexturePath";
-    constexpr auto CeilingEmissiveTexture = "AppConstants.CeilingEmissiveTexture";
-    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
+    // Buffers
+    inline constexpr auto kLightUniformBuffer = "lightUniformBuffer";
 
-    // Objects
-    constexpr auto CameraObject = "AppConstants.CameraObject";
-    constexpr auto CubeObject = "AppConstants.CubeObject";
-    constexpr auto SphereObject = "AppConstants.SphereObject";
-    constexpr auto ConeObject = "AppConstants.ConeObject";
-    constexpr auto CylinderObject = "AppConstants.CylinderObject";
-    constexpr auto PlaneObject = "AppConstants.PlaneObject";
-    constexpr auto LightObject = "AppConstants.LightObject";
+    // Images and Image Views
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
 
-    // Groups
-    constexpr auto LightGroup = "AppConstants.LightGroup";
-} // namespace AppConstants
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSet = "mainDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kCeilingTexturePath = "Textures/Ceiling_Gypsum_001_Base_Color.jpg";
+    inline constexpr auto kCeilingTexture = "ceilingTexture";
+    inline constexpr auto kCeilingEmissiveTexturePath = "Textures/Ceiling_Gypsum_001_emissive.jpg";
+    inline constexpr auto kCeilingEmissiveTexture = "ceilingEmissiveTexture";
+
+    // Materials
+    inline constexpr auto kDefaultMaterial = "defaultMaterial";
+
+    // Scene Objects
+    inline constexpr auto kCameraObject = "camera";
+    inline constexpr auto kCubeObject = "cube";
+    inline constexpr auto kSphereObject = "sphere";
+    inline constexpr auto kConeObject = "cone";
+    inline constexpr auto kCylinderObject = "cylinder";
+    inline constexpr auto kPlaneObject = "plane";
+    inline constexpr auto kLightObject = "light";
+
+    // Object Groups
+    inline constexpr auto kLightGroup = "lights";
+} // namespace constants
 
 namespace AppSettings
 {

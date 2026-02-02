@@ -12,43 +12,53 @@
 
 namespace examples::real_time_lighting::textured_materials::shininess_mapping
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
-    constexpr auto LightObjectsFragmentShaderFile = "AppConstants.LightFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto SceneObjectsFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
-    constexpr auto LightObjectsFragmentShaderKey = "AppConstants.LightFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "blinn_phong_point.vert.spv";
+    inline constexpr auto kSceneObjectsFragmentShaderFile = "blinn_phong_point.frag.spv";
+    inline constexpr auto kLightObjectsFragmentShaderFile = "hardcoded_color_for_lights.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kSceneObjectsFragmentShaderKey = "fragScene";
+    inline constexpr auto kLightObjectsFragmentShaderKey = "fragLight";
 
-    // Resources
-    constexpr auto LightUniformBuffer = "AppConstants.LightUniformBuffer";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto MainDescSet = "AppConstants.MainDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto RockTexturePath = "AppConstants.RockTexturePath";
-    constexpr auto RockTexture = "AppConstants.RockTexture";
-    constexpr auto RockSpecTexturePath = "AppConstants.RockSpecTexturePath";
-    constexpr auto RockSpecTexture = "AppConstants.RockSpecTexture";
-    constexpr auto RockRoughTexturePath = "AppConstants.RockRoughTexturePath";
-    constexpr auto RockRoughTexture = "AppConstants.RockRoughTexture";
-    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
+    // Buffers
+    inline constexpr auto kLightUniformBuffer = "lightUniformBuffer";
 
-    // Objects
-    constexpr auto CameraObject = "AppConstants.CameraObject";
-    constexpr auto CubeObject = "AppConstants.CubeObject";
-    constexpr auto SphereObject = "AppConstants.SphereObject";
-    constexpr auto ConeObject = "AppConstants.ConeObject";
-    constexpr auto CylinderObject = "AppConstants.CylinderObject";
-    constexpr auto PlaneObject = "AppConstants.PlaneObject";
-    constexpr auto LightObject = "AppConstants.LightObject";
+    // Images and Image Views
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
 
-    // Groups
-    constexpr auto LightGroup = "AppConstants.LightGroup";
-} // namespace AppConstants
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSet = "mainDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kRockTexturePath = "Textures/Rock_Ore_001_COLOR.jpg";
+    inline constexpr auto kRockTexture = "rockTexture";
+    inline constexpr auto kRockSpecTexturePath = "Textures/Rock_Ore_001_SPEC.jpg";
+    inline constexpr auto kRockSpecTexture = "rockSpecTexture";
+    inline constexpr auto kRockRoughTexturePath = "Textures/Rock_Ore_001_ROUGH.jpg";
+    inline constexpr auto kRockRoughTexture = "rockRoughTexture";
+
+    // Materials
+    inline constexpr auto kDefaultMaterial = "defaultMaterial";
+
+    // Scene Objects
+    inline constexpr auto kCameraObject = "camera";
+    inline constexpr auto kCubeObject = "cube";
+    inline constexpr auto kSphereObject = "sphere";
+    inline constexpr auto kConeObject = "cone";
+    inline constexpr auto kCylinderObject = "cylinder";
+    inline constexpr auto kPlaneObject = "plane";
+    inline constexpr auto kLightObject = "light";
+
+    // Object Groups
+    inline constexpr auto kLightGroup = "lights";
+} // namespace constants
 
 namespace AppSettings
 {

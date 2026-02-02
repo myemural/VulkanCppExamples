@@ -26,41 +26,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "blinn_phong_point.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderFile,
-                                               "blinn_phong_point.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::LightObjectsFragmentShaderFile,
-                                               "hardcoded_color_for_lights.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderKey, "fragScene");
-    schema.RegisterImmutableParam<std::string>(AppConstants::LightObjectsFragmentShaderKey, "fragLight");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::LightUniformBuffer, "lightUniformBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteTexturePath,
-                                               "Textures/Concrete_Blocks_016_basecolor.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteTexture, "concreteTexture");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteOpacityTexturePath,
-                                               "Textures/Concrete_Blocks_016_opacity.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ConcreteOpacityTexture, "concreteOpacityTexture");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SphereObject, "sphere");
-    schema.RegisterImmutableParam<std::string>(AppConstants::ConeObject, "cone");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CylinderObject, "cylinder");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneObject, "plane");
-    schema.RegisterImmutableParam<std::string>(AppConstants::LightObject, "light");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::LightGroup, "lights");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);

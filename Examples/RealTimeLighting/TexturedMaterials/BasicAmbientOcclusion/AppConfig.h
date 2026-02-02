@@ -12,35 +12,45 @@
 
 namespace examples::real_time_lighting::textured_materials::basic_ambient_occlusion
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto SceneObjectsFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "blinn_phong_directional.vert.spv";
+    inline constexpr auto kSceneObjectsFragmentShaderFile = "blinn_phong_directional.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kSceneObjectsFragmentShaderKey = "fragScene";
 
-    // Resources
-    constexpr auto LightUniformBuffer = "AppConstants.LightUniformBuffer";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto MainDescSet = "AppConstants.MainDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto WoodRoofTexturePath = "AppConstants.WoodRoofTexturePath";
-    constexpr auto WoodRoofTexture = "AppConstants.WoodRoofTexture";
-    constexpr auto WoodRoofAoTexturePath = "AppConstants.WoodRoofAoTexturePath";
-    constexpr auto WoodRoofAoTexture = "AppConstants.WoodRoofAoTexture";
-    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
+    // Buffers
+    inline constexpr auto kLightUniformBuffer = "lightUniformBuffer";
 
-    // Objects
-    constexpr auto CameraObject = "AppConstants.CameraObject";
-    constexpr auto CubeObject = "AppConstants.CubeObject";
-    constexpr auto SphereObject = "AppConstants.SphereObject";
-    constexpr auto ConeObject = "AppConstants.ConeObject";
-    constexpr auto CylinderObject = "AppConstants.CylinderObject";
-    constexpr auto PlaneObject = "AppConstants.PlaneObject";
-} // namespace AppConstants
+    // Images and Image Views
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSet = "mainDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kWoodRoofTexturePath = "Textures/Wood_Roof_Shingles_002_basecolor.png";
+    inline constexpr auto kWoodRoofTexture = "woodRoofTexture";
+    inline constexpr auto kWoodRoofAoTexturePath = "Textures/Wood_Roof_Shingles_002_ambientOcclusion.png";
+    inline constexpr auto kWoodRoofAoTexture = "woodRoofAoTexture";
+
+    // Materials
+    inline constexpr auto kDefaultMaterial = "defaultMaterial";
+
+    // Scene Objects
+    inline constexpr auto kCameraObject = "camera";
+    inline constexpr auto kCubeObject = "cube";
+    inline constexpr auto kSphereObject = "sphere";
+    inline constexpr auto kConeObject = "cone";
+    inline constexpr auto kCylinderObject = "cylinder";
+    inline constexpr auto kPlaneObject = "plane";
+} // namespace constants
 
 namespace AppSettings
 {
