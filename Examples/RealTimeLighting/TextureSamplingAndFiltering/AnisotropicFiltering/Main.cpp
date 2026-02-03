@@ -27,29 +27,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "blinn_phong_directional.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderFile,
-                                               "blinn_phong_directional.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderKey, "fragScene");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::LightUniformBuffer, "lightUniformBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::FloorTexturePath,
-                                               "Textures/Linoleum_Floor_001_basecolor.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::FloorTexture, "floorTexture");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubeObject, "cube");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneObject, "plane");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);
