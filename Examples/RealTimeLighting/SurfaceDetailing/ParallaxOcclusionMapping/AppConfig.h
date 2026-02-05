@@ -12,35 +12,45 @@
 
 namespace examples::real_time_lighting::surface_detailing::parallax_occlusion_mapping
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto SceneObjectsFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "blinn_phong_directional.vert.spv";
+    inline constexpr auto kSceneObjectsFragmentShaderFile = "blinn_phong_directional.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kSceneObjectsFragmentShaderKey = "fragScene";
 
-    // Resources
-    constexpr auto LightUniformBuffer = "AppConstants.LightUniformBuffer";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto MainDescSet = "AppConstants.MainDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto PebblesTexturePath = "AppConstants.PebblesTexturePath";
-    constexpr auto PebblesTexture = "AppConstants.PebblesTexture";
-    constexpr auto PebblesNormalTexturePath = "AppConstants.PebblesNormalTexturePath";
-    constexpr auto PebblesNormalTexture = "AppConstants.PebblesNormalTexture";
-    constexpr auto PebblesHeightTexturePath = "AppConstants.PebblesHeightTexturePath";
-    constexpr auto PebblesHeightTexture = "AppConstants.PebblesHeightTexture";
-    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
+    // Buffers
+    inline constexpr auto kLightUniformBuffer = "lightUniformBuffer";
 
-    // Objects
-    constexpr auto CameraObject = "AppConstants.CameraObject";
-    constexpr auto CubeObject = "AppConstants.CubeObject";
-    constexpr auto PlaneObjectBottom = "AppConstants.PlaneObjectBottom";
-    constexpr auto PlaneObjectBack = "AppConstants.PlaneObjectBack";
-} // namespace AppConstants
+    // Images and Image Views
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSet = "mainDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kPebblesTexturePath = "Textures/Pebbles_027_BaseColor.jpg";
+    inline constexpr auto kPebblesTexture = "pebblesTexture";
+    inline constexpr auto kPebblesNormalTexturePath = "Textures/Pebbles_027_Normal.jpg";
+    inline constexpr auto kPebblesNormalTexture = "pebblesNormalTexture";
+    inline constexpr auto kPebblesHeightTexturePath = "Textures/Pebbles_027_Height.png";
+    inline constexpr auto kPebblesHeightTexture = "pebblesHeightTexture";
+
+    // Materials
+    inline constexpr auto kDefaultMaterial = "defaultMaterial";
+
+    // Scene Objects
+    inline constexpr auto kCameraObject = "camera";
+    inline constexpr auto kCubeObject = "cube";
+    inline constexpr auto kPlaneObjectBottom = "planeBottom";
+    inline constexpr auto kPlaneObjectBack = "planeBack";
+} // namespace constants
 
 namespace AppSettings
 {

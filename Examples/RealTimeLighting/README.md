@@ -82,3 +82,7 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 - Combining dynamic planar reflections with material system and shading model
 - Implementing dynamic cubemap reflections for spherical surfaces
 - Combining dynamic cubemap reflections with material system and shading model
+
+## [Lighting Architectures](/Examples/RealTimeLighting/LightingArchitectures)
+
+TBD

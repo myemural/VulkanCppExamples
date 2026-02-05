@@ -1,9 +1,9 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, displacement mapping technique is implemented on the vertex shader, and heightmap and
- *          normal map textures are applied to the objects.
+ * @brief   This example implements a simple deferred shading approach. First, the scene's position, albedo, and normal
+ *          information are stored in a G-Buffer, and then lighting calculations are performed using a separate pass.
  * @author  Mustafa Yemural (myemural)
- * @date    04.01.2026
+ * @date    04.02.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::real_time_lighting::surface_detailing::basic_displacement;
+using namespace examples::real_time_lighting::lighting_architectures::deferred_shading;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -30,11 +30,9 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);
     schema.RegisterParam<float>(AppSettings::CameraSpeed);
-    schema.RegisterParam<glm::vec3>(AppSettings::LightDirection);
-    schema.RegisterParam<glm::vec3>(AppSettings::LightColor);
-    schema.RegisterParam<float>(AppSettings::AmbientStrength);
-    schema.RegisterParam<float>(AppSettings::SpecularStrength);
-    schema.RegisterParam<float>(AppSettings::Shininess);
+    schema.RegisterParam<float>(AppSettings::ConstantFactor);
+    schema.RegisterParam<float>(AppSettings::LinearFactor);
+    schema.RegisterParam<float>(AppSettings::QuadraticFactor);
 
     return schema;
 }
@@ -52,14 +50,12 @@ bool SetParams(ParameterServer& params)
         params.Set<std::vector<std::string>>(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
 
         // Project customizable settings
-        params.Set(AppSettings::ClearColor, VkClearColorValue{0.175f, 0.175f, 0.175f, 1.0f});
+        params.Set(AppSettings::ClearColor, VkClearColorValue{0.175f, 0.175f, 0.175f, 0.0f});
         params.Set(AppSettings::MouseSensitivity, 3.0f);
         params.Set(AppSettings::CameraSpeed, 3.0f);
-        params.Set(AppSettings::LightDirection, glm::vec3(-0.4f, -0.4f, -0.7f));
-        params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
-        params.Set(AppSettings::AmbientStrength, 0.07f);
-        params.Set(AppSettings::SpecularStrength, 0.8f);
-        params.Set(AppSettings::Shininess, 128.0f);
+        params.Set(AppSettings::ConstantFactor, 1.0f);
+        params.Set(AppSettings::LinearFactor, 0.7f);
+        params.Set(AppSettings::QuadraticFactor, 1.8f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

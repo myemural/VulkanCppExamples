@@ -12,34 +12,44 @@
 
 namespace examples::real_time_lighting::surface_detailing::basic_displacement
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto SceneObjectsFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "blinn_phong_directional.vert.spv";
+    inline constexpr auto kSceneObjectsFragmentShaderFile = "blinn_phong_directional.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kSceneObjectsFragmentShaderKey = "fragScene";
 
-    // Resources
-    constexpr auto LightUniformBuffer = "AppConstants.LightUniformBuffer";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto MainDescSet = "AppConstants.MainDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto MetalPatternTexturePath = "AppConstants.MetalPatternTexturePath";
-    constexpr auto MetalPatternTexture = "AppConstants.MetalPatternTexture";
-    constexpr auto MetalPatternNormalTexturePath = "AppConstants.MetalPatternNormalTexturePath";
-    constexpr auto MetalPatternNormalTexture = "AppConstants.MetalPatternNormalTexture";
-    constexpr auto MetalPatternHeightTexturePath = "AppConstants.MetalPatternHeightTexturePath";
-    constexpr auto MetalPatternHeightTexture = "AppConstants.MetalPatternHeightTexture";
-    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
+    // Buffers
+    inline constexpr auto kLightUniformBuffer = "lightUniformBuffer";
 
-    // Objects
-    constexpr auto CameraObject = "AppConstants.CameraObject";
-    constexpr auto SphereObject1 = "AppConstants.SphereObject1";
-    constexpr auto SphereObject2 = "AppConstants.SphereObject2";
-} // namespace AppConstants
+    // Images and Image Views
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSet = "mainDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+
+    // Textures
+    inline constexpr auto kMetalPatternTexturePath = "Textures/Metal_Pattern_012_basecolor.png";
+    inline constexpr auto kMetalPatternTexture = "metalPatternTexture";
+    inline constexpr auto kMetalPatternNormalTexturePath = "Textures/Metal_Pattern_012_normal.png";
+    inline constexpr auto kMetalPatternNormalTexture = "metalPatternNormalTexture";
+    inline constexpr auto kMetalPatternHeightTexturePath = "Textures/Metal_Pattern_012_height.png";
+    inline constexpr auto kMetalPatternHeightTexture = "metalPatternHeightTexture";
+
+    // Materials
+    inline constexpr auto kDefaultMaterial = "defaultMaterial";
+
+    // Scene Objects
+    inline constexpr auto kCameraObject = "camera";
+    inline constexpr auto kSphereObject1 = "sphere1";
+    inline constexpr auto kSphereObject2 = "sphere2";
+} // namespace constants
 
 namespace AppSettings
 {

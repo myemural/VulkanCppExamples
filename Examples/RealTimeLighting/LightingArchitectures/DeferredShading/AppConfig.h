@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps example specific constants and settings.
  * @author  Mustafa Yemural (myemural)
- * @date    04.01.2026
+ * @date    04.02.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,20 +10,30 @@
  */
 #pragma once
 
-namespace examples::real_time_lighting::surface_detailing::normal_mapping
+namespace examples::real_time_lighting::lighting_architectures::deferred_shading
 {
 namespace constants
 {
     // Shaders
-    inline constexpr auto kMainVertexShaderFile = "blinn_phong_directional.vert.spv";
-    inline constexpr auto kSceneObjectsFragmentShaderFile = "blinn_phong_directional.frag.spv";
-    inline constexpr auto kMainVertexShaderKey = "vertMain";
-    inline constexpr auto kSceneObjectsFragmentShaderKey = "fragScene";
+    inline constexpr auto kGeometryVertexShaderFile = "geometry_pass.vert.spv";
+    inline constexpr auto kGeometryFragmentShaderFile = "geometry_pass.frag.spv";
+    inline constexpr auto kLightVertexShaderFile = "fullscreen_quad.vert.spv";
+    inline constexpr auto kLightFragmentShaderFile = "light_pass.frag.spv";
+    inline constexpr auto kGeometryVertexShaderKey = "vertGeometry";
+    inline constexpr auto kGeometryFragmentShaderKey = "fragGeometry";
+    inline constexpr auto kLightVertexShaderKey = "vertLight";
+    inline constexpr auto kLightFragmentShaderKey = "fragLight";
 
     // Buffers
-    inline constexpr auto kLightUniformBuffer = "lightUniformBuffer";
+    inline constexpr auto kLightStorageBuffer = "lightStorageBuffer";
 
     // Images and Image Views
+    inline constexpr auto kPositionImage = "positionImage";
+    inline constexpr auto kPositionImageView = "positionImageView";
+    inline constexpr auto kAlbedoImage = "albedoImage";
+    inline constexpr auto kAlbedoImageView = "albedoImageView";
+    inline constexpr auto kNormalImage = "normalImage";
+    inline constexpr auto kNormalImageView = "normalImageView";
     inline constexpr auto kDepthImage = "depthImage";
     inline constexpr auto kDepthImageView = "depthImageView";
 
@@ -33,6 +43,8 @@ namespace constants
     // Descriptor Sets and Layouts
     inline constexpr auto kMainDescSet = "mainDescSet";
     inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+    inline constexpr auto kLightDescSet = "lightDescSet";
+    inline constexpr auto kLightDescSetLayout = "lightDescSetLayout";
 
     // Textures
     inline constexpr auto kWallStoneTexturePath = "Textures/Wall_Stone_034_basecolor.png";
@@ -47,10 +59,7 @@ namespace constants
     inline constexpr auto kCameraObject = "camera";
     inline constexpr auto kCubeObject = "cube";
     inline constexpr auto kSphereObject = "sphere";
-    inline constexpr auto kConeObject = "cone";
-    inline constexpr auto kCylinderObject = "cylinder";
-    inline constexpr auto kPlaneObjectBottom = "planeBottom";
-    inline constexpr auto kPlaneObjectBack = "planeBack";
+    inline constexpr auto kLightObject = "light";
 } // namespace constants
 
 namespace AppSettings
@@ -58,10 +67,8 @@ namespace AppSettings
     constexpr auto ClearColor = "AppSettings.ClearColor";
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
-    constexpr auto LightDirection = "AppSettings.LightDirection";
-    constexpr auto LightColor = "AppSettings.LightColor";
-    constexpr auto AmbientStrength = "AppSettings.AmbientStrength";
-    constexpr auto SpecularStrength = "AppSettings.SpecularStrength";
-    constexpr auto Shininess = "AppSettings.Shininess";
+    constexpr auto ConstantFactor = "AppSettings.ConstantFactor";
+    constexpr auto LinearFactor = "AppSettings.LinearFactor";
+    constexpr auto QuadraticFactor = "AppSettings.QuadraticFactor";
 } // namespace AppSettings
-} // namespace examples::real_time_lighting::surface_detailing::normal_mapping
+} // namespace examples::real_time_lighting::lighting_architectures::deferred_shading

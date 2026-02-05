@@ -17,6 +17,7 @@
 
 namespace examples::real_time_lighting::surface_detailing::basic_displacement
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -40,8 +41,7 @@ bool VulkanApplication::Init()
 
         CreateRenderPass();
         CreatePipelines();
-        CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                           GetParamStr(AppConstants::DepthImageView)));
+        CreateDefaultFramebuffers(resources_->GetImageView(kDepthImage, kDepthImageView));
         CreateCommandBuffers();
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -90,25 +90,23 @@ void VulkanApplication::CreateInitialResources() const
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    resourceCreateInfo.buffers = {{GetParamStr(AppConstants::LightUniformBuffer), sizeof(LightUbo),
-                                   VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+    resourceCreateInfo.buffers = {{kLightUniformBuffer, sizeof(LightUbo), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::SceneObjectsFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kSceneObjectsFragmentShaderKey, .fileName = kSceneObjectsFragmentShaderFile}}};
 
     resourceCreateInfo.images = {ImageResourceCreateInfo{
-        .name = GetParamStr(AppConstants::DepthImage),
+        .name = kDepthImage,
         .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         .format = depthImageFormat_,
         .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
         .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+        .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
                                       .format = depthImageFormat_,
                                       .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                            .baseMipLevel = 0,
@@ -117,8 +115,7 @@ void VulkanApplication::CreateInitialResources() const
                                                            .layerCount = 1}}}}};
 
     resourceCreateInfo.samplers = {
-        {.name = GetParamStr(AppConstants::MainSampler),
-         .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
+        {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
 }
@@ -139,37 +136,33 @@ void VulkanApplication::BuildScene()
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
+    scene_->AddPerspectiveCamera(kCameraObject, glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
     // Materials
-    materialManager_->LoadTexture(GetParamStr(AppConstants::MetalPatternTexture),
-                                  GetParamStr(AppConstants::MainSampler),
-                                  GetParamStr(AppConstants::MetalPatternTexturePath));
-    materialManager_->LoadTexture(GetParamStr(AppConstants::MetalPatternNormalTexture),
-                                  GetParamStr(AppConstants::MainSampler),
-                                  GetParamStr(AppConstants::MetalPatternNormalTexturePath), VK_FORMAT_R8G8B8A8_UNORM);
-    materialManager_->LoadTexture(GetParamStr(AppConstants::MetalPatternHeightTexture),
-                                  GetParamStr(AppConstants::MainSampler),
-                                  GetParamStr(AppConstants::MetalPatternHeightTexturePath), VK_FORMAT_R8G8B8A8_UNORM);
+    materialManager_->LoadTexture(kMetalPatternTexture, kMainSampler, kMetalPatternTexturePath);
+    materialManager_->LoadTexture(kMetalPatternNormalTexture, kMainSampler, kMetalPatternNormalTexturePath,
+                                  VK_FORMAT_R8G8B8A8_UNORM);
+    materialManager_->LoadTexture(kMetalPatternHeightTexture, kMainSampler, kMetalPatternHeightTexturePath,
+                                  VK_FORMAT_R8G8B8A8_UNORM);
 
-    const auto defaultMatName = GetParamStr(AppConstants::DefaultMaterial);
+    const auto defaultMatName = kDefaultMaterial;
     materialManager_->CreatePhongTexturedMaterial(defaultMatName)
             .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
             .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
             .SetShininess(GetParamFloat(AppSettings::Shininess))
-            .SetDiffuseMap(GetParamStr(AppConstants::MetalPatternTexture))
-            .SetNormalMap(GetParamStr(AppConstants::MetalPatternNormalTexture))
-            .SetHeightMap(GetParamStr(AppConstants::MetalPatternHeightTexture))
+            .SetDiffuseMap(kMetalPatternTexture)
+            .SetNormalMap(kMetalPatternNormalTexture)
+            .SetHeightMap(kMetalPatternHeightTexture)
             .Build();
 
     // Add scene objects
-    scene_->AddSphere(GetParamStr(AppConstants::SphereObject1), glm::vec3{-2.0f, -0.5f, 0.0f});
-    scene_->SetMaterial(GetParamStr(AppConstants::SphereObject1), defaultMatName);
-    scene_->ScaleObject(GetParamStr(AppConstants::SphereObject1), glm::vec3{2.0f});
-    scene_->AddSphere(GetParamStr(AppConstants::SphereObject2), glm::vec3{2.0f, -0.5f, 0.0f});
-    scene_->SetMaterial(GetParamStr(AppConstants::SphereObject2), defaultMatName);
-    scene_->ScaleObject(GetParamStr(AppConstants::SphereObject2), glm::vec3{2.0f});
+    scene_->AddSphere(kSphereObject1, glm::vec3{-2.0f, -0.5f, 0.0f});
+    scene_->SetMaterial(kSphereObject1, defaultMatName);
+    scene_->ScaleObject(kSphereObject1, glm::vec3{2.0f});
+    scene_->AddSphere(kSphereObject2, glm::vec3{2.0f, -0.5f, 0.0f});
+    scene_->SetMaterial(kSphereObject2, defaultMatName);
+    scene_->ScaleObject(kSphereObject2, glm::vec3{2.0f});
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
@@ -181,14 +174,13 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount}},
-        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+        .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
                                    VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
                                    VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
-        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSet),
-                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)}}};
+        .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout}}};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
 
@@ -196,25 +188,24 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     storageBufferInfos.emplace_back(scene_->GetStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
-    lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
-                               VK_WHOLE_SIZE);
+    lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
     auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageBufferRequest;
-    objectStorageBufferRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    objectStorageBufferRequest.descriptorSetName = kMainDescSet;
     objectStorageBufferRequest.bindingIndex = 0;
     objectStorageBufferRequest.buffers = storageBufferInfos;
     objectStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     BufferWriteRequest lightUboRequest;
-    lightUboRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    lightUboRequest.descriptorSetName = kMainDescSet;
     lightUboRequest.bindingIndex = 1;
     lightUboRequest.buffers = lightUboInfos;
     lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
     ImageWriteRequest textureUpdateRequest;
-    textureUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    textureUpdateRequest.descriptorSetName = kMainDescSet;
     textureUpdateRequest.bindingIndex = 2;
     textureUpdateRequest.images = descriptorImageInfos;
     textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -303,8 +294,8 @@ void VulkanApplication::CreatePipelines()
     mvpPushConstant.size = sizeof(MeshPushConstantsGpu);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    pipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))}, {mvpPushConstant});
+    pipelineLayout_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kMainDescSetLayout)}, {mvpPushConstant});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -331,13 +322,11 @@ void VulkanApplication::CreatePipelines()
     scenePipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::SceneObjectsFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kSceneObjectsFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -399,7 +388,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             },
             VK_SUBPASS_CONTENTS_INLINE);
 
-    const std::vector cubeDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSet))};
+    const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
     const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
 
@@ -429,7 +418,7 @@ void VulkanApplication::UpdateSceneTransforms() const
     LightUbo lightUbo{};
     lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
     lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    resources_->SetBuffer(GetParamStr(AppConstants::LightUniformBuffer), &lightUbo, sizeof(lightUbo));
+    resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 
 void VulkanApplication::ProcessInput() const
