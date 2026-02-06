@@ -12,47 +12,59 @@
 
 namespace examples::real_time_lighting::environment_mapping::cubemap_skybox
 {
-namespace AppConstants
+namespace constants
 {
     // Shaders
-    constexpr auto MainVertexShaderFile = "AppConstants.MainVertexShaderFile";
-    constexpr auto SceneObjectsFragmentShaderFile = "AppConstants.SceneFragmentShaderFile";
-    constexpr auto MainVertexShaderKey = "AppConstants.MainVertexShaderKey";
-    constexpr auto SceneObjectsFragmentShaderKey = "AppConstants.SceneFragmentShaderKey";
-    constexpr auto SkyboxVertexShaderFile = "AppConstants.SkyboxVertexShaderFile";
-    constexpr auto SkyboxFragmentShaderFile = "AppConstants.SkyboxFragmentShaderFile";
-    constexpr auto SkyboxVertexShaderKey = "AppConstants.SkyboxVertexShaderKey";
-    constexpr auto SkyboxFragmentShaderKey = "AppConstants.SkyboxFragmentShaderKey";
+    inline constexpr auto kMainVertexShaderFile = "blinn_phong_directional.vert.spv";
+    inline constexpr auto kSceneObjectsFragmentShaderFile = "blinn_phong_directional.frag.spv";
+    inline constexpr auto kSkyboxVertexShaderFile = "skybox.vert.spv";
+    inline constexpr auto kSkyboxFragmentShaderFile = "skybox.frag.spv";
+    inline constexpr auto kMainVertexShaderKey = "vertMain";
+    inline constexpr auto kSceneObjectsFragmentShaderKey = "fragScene";
+    inline constexpr auto kSkyboxVertexShaderKey = "vertSkybox";
+    inline constexpr auto kSkyboxFragmentShaderKey = "fragSkybox";
 
-    // Resources
-    constexpr auto LightUniformBuffer = "AppConstants.LightUniformBuffer";
-    constexpr auto DepthImage = "AppConstants.DepthImage";
-    constexpr auto DepthImageView = "AppConstants.DepthImageView";
-    constexpr auto MainSampler = "AppConstants.MainSampler";
-    constexpr auto SkyboxSampler = "AppConstants.SkyboxSampler";
-    constexpr auto MainDescSet = "AppConstants.MainDescSet";
-    constexpr auto SkyboxDescSet = "AppConstants.SkyboxDescSet";
-    constexpr auto MainDescSetLayout = "AppConstants.MainDescSetLayout";
-    constexpr auto SkyboxDescSetLayout = "AppConstants.SkyboxDescSetLayout";
-    constexpr auto WallStoneTexturePath = "AppConstants.WallStoneTexturePath";
-    constexpr auto WallStoneTexture = "AppConstants.WallStoneTexture";
-    constexpr auto WallStoneNormalTexturePath = "AppConstants.WallStoneNormalTexturePath";
-    constexpr auto WallStoneNormalTexture = "AppConstants.WallStoneNormalTexture";
-    constexpr auto CubemapTexture = "AppConstants.CubemapTexture";
-    constexpr auto CubemapRightTexturePath = "AppConstants.CubemapRightTexturePath";
-    constexpr auto CubemapLeftTexturePath = "AppConstants.CubemapLeftTexturePath";
-    constexpr auto CubemapTopTexturePath = "AppConstants.CubemapTopTexturePath";
-    constexpr auto CubemapBottomTexturePath = "AppConstants.CubemapBottomTexturePath";
-    constexpr auto CubemapBackTexturePath = "AppConstants.CubemapBackTexturePath";
-    constexpr auto CubemapFrontTexturePath = "AppConstants.CubemapFrontTexturePath";
-    constexpr auto DefaultMaterial = "AppConstants.DefaultMaterial";
-    constexpr auto SkyboxObjectGroup = "AppConstants.SkyboxObjectGroup";
+    // Buffers
+    inline constexpr auto kLightUniformBuffer = "lightUniformBuffer";
 
-    // Objects
-    constexpr auto CameraObject = "AppConstants.CameraObject";
-    constexpr auto SphereObject = "AppConstants.SphereObject";
-    constexpr auto SkyboxCubeObject = "AppConstants.SkyboxCubeObject";
-} // namespace AppConstants
+    // Images and Image Views
+    inline constexpr auto kDepthImage = "depthImage";
+    inline constexpr auto kDepthImageView = "depthImageView";
+
+    // Samplers
+    inline constexpr auto kMainSampler = "mainSampler";
+    inline constexpr auto kSkyboxSampler = "skyboxSampler";
+
+    // Descriptor Sets and Layouts
+    inline constexpr auto kMainDescSet = "mainDescSet";
+    inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
+    inline constexpr auto kSkyboxDescSet = "skyboxDescSet";
+    inline constexpr auto kSkyboxDescSetLayout = "skyboxDescSetLayout";
+
+    // Textures
+    inline constexpr auto kWallStoneTexturePath = "Textures/Wall_Stone_034_basecolor.png";
+    inline constexpr auto kWallStoneTexture = "wallStoneTexture";
+    inline constexpr auto kWallStoneNormalTexturePath = "Textures/Wall_Stone_034_normal.png";
+    inline constexpr auto kWallStoneNormalTexture = "wallStoneNormalTexture";
+    inline constexpr auto kCubemapRightTexturePath = "Textures/calm_sea_cubemap/calm_sea_right.jpg";
+    inline constexpr auto kCubemapLeftTexturePath = "Textures/calm_sea_cubemap/calm_sea_left.jpg";
+    inline constexpr auto kCubemapTopTexturePath = "Textures/calm_sea_cubemap/calm_sea_up.jpg";
+    inline constexpr auto kCubemapBottomTexturePath = "Textures/calm_sea_cubemap/calm_sea_down.jpg";
+    inline constexpr auto kCubemapBackTexturePath = "Textures/calm_sea_cubemap/calm_sea_back.jpg";
+    inline constexpr auto kCubemapFrontTexturePath = "Textures/calm_sea_cubemap/calm_sea_front.jpg";
+    inline constexpr auto kCubemapTexture = "cubemapTexture";
+
+    // Materials
+    inline constexpr auto kDefaultMaterial = "defaultMaterial";
+
+    // Scene Objects
+    inline constexpr auto kCameraObject = "camera";
+    inline constexpr auto kSphereObject = "sphere";
+    inline constexpr auto kSkyboxCubeObject = "skyboxCube";
+
+    // Object Groups
+    inline constexpr auto kSkyboxObjectGroup = "skyboxObjectGroup";
+} // namespace constants
 
 namespace AppSettings
 {

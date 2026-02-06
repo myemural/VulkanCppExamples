@@ -17,6 +17,7 @@
 
 namespace examples::real_time_lighting::environment_mapping::cubemap_reflections
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -40,8 +41,7 @@ bool VulkanApplication::Init()
 
         CreateRenderPass();
         CreatePipelines();
-        CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                           GetParamStr(AppConstants::DepthImageView)));
+        CreateDefaultFramebuffers(resources_->GetImageView(kDepthImage, kDepthImageView));
         CreateCommandBuffers();
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -81,29 +81,25 @@ void VulkanApplication::CreateInitialResources() const
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    resourceCreateInfo.buffers = {{GetParamStr(AppConstants::LightUniformBuffer), sizeof(LightUbo),
-                                   VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+    resourceCreateInfo.buffers = {{kLightUniformBuffer, sizeof(LightUbo), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::SceneObjectsFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)},
-                                              {.name = GetParamStr(AppConstants::SkyboxVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::SkyboxVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::SkyboxFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::SkyboxFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kSceneObjectsFragmentShaderKey, .fileName = kSceneObjectsFragmentShaderFile},
+                    {.name = kSkyboxVertexShaderKey, .fileName = kSkyboxVertexShaderFile},
+                    {.name = kSkyboxFragmentShaderKey, .fileName = kSkyboxFragmentShaderFile}}};
 
     resourceCreateInfo.images = {ImageResourceCreateInfo{
-        .name = GetParamStr(AppConstants::DepthImage),
+        .name = kDepthImage,
         .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         .format = depthImageFormat_,
         .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
         .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
+        .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
                                       .format = depthImageFormat_,
                                       .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                            .baseMipLevel = 0,
@@ -112,9 +108,9 @@ void VulkanApplication::CreateInitialResources() const
                                                            .layerCount = 1}}}}};
 
     resourceCreateInfo.samplers = {
-        SamplerResourceCreateInfo{.name = GetParamStr(AppConstants::MainSampler),
+        SamplerResourceCreateInfo{.name = kMainSampler,
                                   .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}},
-        SamplerResourceCreateInfo{.name = GetParamStr(AppConstants::SkyboxSampler),
+        SamplerResourceCreateInfo{.name = kSkyboxSampler,
                                   .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR},
                                   .addressModes = {VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
                                                    VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
@@ -139,18 +135,15 @@ void VulkanApplication::BuildScene()
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 0.0f, orbitDistance_),
-                                 aspectRatio);
+    scene_->AddPerspectiveCamera(kCameraObject, glm::vec3(0.0f, 0.0f, orbitDistance_), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
 
     // Materials
-    materialManager_->LoadCubemapTexture(
-            GetParamStr(AppConstants::CubemapTexture), GetParamStr(AppConstants::SkyboxSampler),
-            GetParamStr(AppConstants::CubemapRightTexturePath), GetParamStr(AppConstants::CubemapLeftTexturePath),
-            GetParamStr(AppConstants::CubemapTopTexturePath), GetParamStr(AppConstants::CubemapBottomTexturePath),
-            GetParamStr(AppConstants::CubemapBackTexturePath), GetParamStr(AppConstants::CubemapFrontTexturePath));
+    materialManager_->LoadCubemapTexture(kCubemapTexture, kSkyboxSampler, kCubemapRightTexturePath,
+                                         kCubemapLeftTexturePath, kCubemapTopTexturePath, kCubemapBottomTexturePath,
+                                         kCubemapBackTexturePath, kCubemapFrontTexturePath);
 
-    const auto defaultMatName = GetParamStr(AppConstants::DefaultMaterial);
+    const auto defaultMatName = kDefaultMaterial;
     materialManager_->CreatePhongTexturedMaterial(defaultMatName)
             .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
             .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
@@ -159,13 +152,13 @@ void VulkanApplication::BuildScene()
             .Build();
 
     // Add scene objects
-    scene_->AddSphere(GetParamStr(AppConstants::SphereObject), glm::vec3{0.0f, 0.0f, 0.0f});
-    scene_->SetMaterial(GetParamStr(AppConstants::SphereObject), defaultMatName);
-    scene_->ScaleObject(GetParamStr(AppConstants::SphereObject), glm::vec3{2.0f});
+    scene_->AddSphere(kSphereObject, glm::vec3{0.0f, 0.0f, 0.0f});
+    scene_->SetMaterial(kSphereObject, defaultMatName);
+    scene_->ScaleObject(kSphereObject, glm::vec3{2.0f});
 
     // Add skybox cube
-    scene_->AddCube(GetParamStr(AppConstants::SkyboxCubeObject));
-    scene_->AddToGroup(GetParamStr(AppConstants::SkyboxObjectGroup), {GetParamStr(AppConstants::SkyboxCubeObject)});
+    scene_->AddCube(kSkyboxCubeObject);
+    scene_->AddToGroup(kSkyboxObjectGroup, {kSkyboxCubeObject});
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
@@ -177,7 +170,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2 * cubemapCount}},
-        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+        .layouts = {{.name = kMainDescSetLayout,
                      .bindings =
                              {
                                  {0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
@@ -186,13 +179,11 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
                                  {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                   nullptr},
                              }},
-                    {.name = GetParamStr(AppConstants::SkyboxDescSetLayout),
+                    {.name = kSkyboxDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}}},
-        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSet),
-                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)},
-                           {.name = GetParamStr(AppConstants::SkyboxDescSet),
-                            .layoutName = GetParamStr(AppConstants::SkyboxDescSetLayout)}}};
+        .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout},
+                           {.name = kSkyboxDescSet, .layoutName = kSkyboxDescSetLayout}}};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
 
@@ -200,31 +191,30 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     storageBufferInfos.emplace_back(scene_->GetStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
-    lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
-                               VK_WHOLE_SIZE);
+    lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto cubemapImageInfos = materialManager_->GetCubemapDescriptorImageInfo(GetParamStr(AppConstants::CubemapTexture));
+    auto cubemapImageInfos = materialManager_->GetCubemapDescriptorImageInfo(kCubemapTexture);
 
     BufferWriteRequest objectStorageBufferRequest;
-    objectStorageBufferRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    objectStorageBufferRequest.descriptorSetName = kMainDescSet;
     objectStorageBufferRequest.bindingIndex = 0;
     objectStorageBufferRequest.buffers = storageBufferInfos;
     objectStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     BufferWriteRequest lightUboRequest;
-    lightUboRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    lightUboRequest.descriptorSetName = kMainDescSet;
     lightUboRequest.bindingIndex = 1;
     lightUboRequest.buffers = lightUboInfos;
     lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
     ImageWriteRequest cubemapReflectionUpdateRequest;
-    cubemapReflectionUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    cubemapReflectionUpdateRequest.descriptorSetName = kMainDescSet;
     cubemapReflectionUpdateRequest.bindingIndex = 3;
     cubemapReflectionUpdateRequest.images = cubemapImageInfos;
     cubemapReflectionUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest cubemapSkyboxUpdateRequest;
-    cubemapSkyboxUpdateRequest.descriptorSetName = GetParamStr(AppConstants::SkyboxDescSet);
+    cubemapSkyboxUpdateRequest.descriptorSetName = kSkyboxDescSet;
     cubemapSkyboxUpdateRequest.bindingIndex = 0;
     cubemapSkyboxUpdateRequest.images = cubemapImageInfos;
     cubemapSkyboxUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -356,8 +346,8 @@ void VulkanApplication::CreatePipelines()
     mvpPushConstant.size = sizeof(MeshPushConstantsGpu);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    pipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))}, {mvpPushConstant});
+    pipelineLayout_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kMainDescSetLayout)}, {mvpPushConstant});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -384,13 +374,11 @@ void VulkanApplication::CreatePipelines()
     scenePipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::SceneObjectsFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kSceneObjectsFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -419,8 +407,8 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create graphics pipeline (for scene objects)!");
     }
 
-    pipelineLayoutSkybox_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::SkyboxDescSetLayout))}, {mvpPushConstant});
+    pipelineLayoutSkybox_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kSkyboxDescSetLayout)}, {mvpPushConstant});
 
     if (!pipelineLayoutSkybox_) {
         throw std::runtime_error("Failed to create pipeline layout (for skybox)!");
@@ -429,13 +417,11 @@ void VulkanApplication::CreatePipelines()
     skyboxPipeline_ = device_->CreateGraphicsPipeline(pipelineLayoutSkybox_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::SkyboxVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kSkyboxVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::SkyboxFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kSkyboxFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -503,13 +489,13 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     {
         currentCmdBuffer->BindPipeline(skyboxPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
-        const auto& meshInfo = scene_->GetMesh(GetParamStr(AppConstants::SkyboxCubeObject));
+        const auto& meshInfo = scene_->GetMesh(kSkyboxCubeObject);
 
         const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const std::vector skyboxDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::SkyboxDescSet))};
+        const std::vector skyboxDescSets{resources_->GetDescriptorSet(kSkyboxDescSet)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutSkybox_, 0, skyboxDescSets);
 
         const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
@@ -523,7 +509,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Draw only scene objects
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
     for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-        if (scene_->IsInGroup(meshName, GetParamStr(AppConstants::SkyboxObjectGroup))) {
+        if (scene_->IsInGroup(meshName, kSkyboxObjectGroup)) {
             continue;
         }
 
@@ -531,7 +517,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const std::vector cubeDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSet))};
+        const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
 
         const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
@@ -552,6 +538,6 @@ void VulkanApplication::UpdateSceneTransforms() const
     LightUbo lightUbo{};
     lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
     lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    resources_->SetBuffer(GetParamStr(AppConstants::LightUniformBuffer), &lightUbo, sizeof(lightUbo));
+    resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 } // namespace examples::real_time_lighting::environment_mapping::cubemap_reflections

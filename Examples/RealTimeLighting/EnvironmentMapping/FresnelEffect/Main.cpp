@@ -27,52 +27,6 @@ inline ParameterSchema CreateParameterSchema()
     ParameterSchema schema;
     SetCommonParamSchema(schema);
 
-    // Register Constants
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderFile, "blinn_phong_directional.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderFile,
-                                               "blinn_phong_directional.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxVertexShaderFile, "skybox.vert.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxFragmentShaderFile, "skybox.frag.spv");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainVertexShaderKey, "vertMain");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SceneObjectsFragmentShaderKey, "fragScene");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxVertexShaderKey, "vertSkybox");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxFragmentShaderKey, "fragSkybox");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::LightUniformBuffer, "lightUniformBuffer");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImage, "depthImage");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DepthImageView, "depthImageView");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainSampler, "mainSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxSampler, "skyboxSampler");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSet, "mainDescSet");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxDescSet, "skyboxDescSet");
-    schema.RegisterImmutableParam<std::string>(AppConstants::MainDescSetLayout, "mainDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxDescSetLayout, "skyboxDescSetLayout");
-    schema.RegisterImmutableParam<std::string>(AppConstants::FloorTexturePath,
-                                               "Textures/Terracotta_Floor_Tiles_003_basecolor.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::FloorTexture, "floorTexture");
-    schema.RegisterImmutableParam<std::string>(AppConstants::FloorNormalTexturePath,
-                                               "Textures/Terracotta_Floor_Tiles_003_normal.png");
-    schema.RegisterImmutableParam<std::string>(AppConstants::FloorNormalTexture, "floorNormalTexture");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubemapTexture, "cubemapTexture");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubemapRightTexturePath,
-                                               "Textures/calm_sea_cubemap/calm_sea_right.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubemapLeftTexturePath,
-                                               "Textures/calm_sea_cubemap/calm_sea_left.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubemapTopTexturePath,
-                                               "Textures/calm_sea_cubemap/calm_sea_up.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubemapBottomTexturePath,
-                                               "Textures/calm_sea_cubemap/calm_sea_down.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubemapBackTexturePath,
-                                               "Textures/calm_sea_cubemap/calm_sea_back.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::CubemapFrontTexturePath,
-                                               "Textures/calm_sea_cubemap/calm_sea_front.jpg");
-    schema.RegisterImmutableParam<std::string>(AppConstants::DefaultMaterial, "defaultMaterial");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxObjectGroup, "skyboxObjectGroup");
-
-    schema.RegisterImmutableParam<std::string>(AppConstants::CameraObject, "camera");
-    schema.RegisterImmutableParam<std::string>(AppConstants::PlaneObject, "plane");
-    schema.RegisterImmutableParam<std::string>(AppConstants::SkyboxCubeObject, "skyboxCube");
-
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);

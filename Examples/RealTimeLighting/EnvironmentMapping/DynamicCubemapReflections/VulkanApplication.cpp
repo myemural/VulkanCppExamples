@@ -18,6 +18,7 @@
 
 namespace examples::real_time_lighting::environment_mapping::dynamic_cubemap_reflections
 {
+using namespace constants;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -41,8 +42,7 @@ bool VulkanApplication::Init()
 
         CreateRenderPass();
         CreatePipelines();
-        CreateDefaultFramebuffers(resources_->GetImageView(GetParamStr(AppConstants::DepthImage),
-                                                           GetParamStr(AppConstants::DepthImageView)));
+        CreateDefaultFramebuffers(resources_->GetImageView(kDepthImage, kDepthImageView));
         CreateFramebuffers();
         CreateCommandBuffers();
     } catch (const std::exception& e) {
@@ -92,96 +92,94 @@ void VulkanApplication::CreateInitialResources() const
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    resourceCreateInfo.buffers = {{GetParamStr(AppConstants::LightUniformBuffer), sizeof(LightUbo),
-                                   VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+    resourceCreateInfo.buffers = {{kLightUniformBuffer, sizeof(LightUbo), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = GetParamStr(AppConstants::MainVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::MainVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::SceneObjectsFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::SceneObjectsFragmentShaderFile)},
-                                              {.name = GetParamStr(AppConstants::SkyboxVertexShaderKey),
-                                               .fileName = GetParamStr(AppConstants::SkyboxVertexShaderFile)},
-                                              {.name = GetParamStr(AppConstants::SkyboxFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::SkyboxFragmentShaderFile)},
-                                              {.name = GetParamStr(AppConstants::ReflectionFragmentShaderKey),
-                                               .fileName = GetParamStr(AppConstants::ReflectionFragmentShaderFile)}}};
+    resourceCreateInfo.shaders = {
+        .basePath = SHADERS_DIR,
+        .shaderType = SHADER_TYPE,
+        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
+                    {.name = kSceneObjectsFragmentShaderKey, .fileName = kSceneObjectsFragmentShaderFile},
+                    {.name = kSkyboxVertexShaderKey, .fileName = kSkyboxVertexShaderFile},
+                    {.name = kSkyboxFragmentShaderKey, .fileName = kSkyboxFragmentShaderFile},
+                    {.name = kReflectionFragmentShaderKey, .fileName = kReflectionFragmentShaderFile}}};
 
-    resourceCreateInfo.images =
-            {ImageResourceCreateInfo{
-                 .name = GetParamStr(AppConstants::DepthImage),
-                 .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                 .format = depthImageFormat_,
-                 .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-                 .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                 .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::DepthImageView),
-                                               .format = depthImageFormat_,
-                                               .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                                    .baseMipLevel = 0,
-                                                                    .levelCount = 1,
-                                                                    .baseArrayLayer = 0,
-                                                                    .layerCount = 1}}}},
-             ImageResourceCreateInfo{
-                 .name = GetParamStr(AppConstants::ReflectionCubemapImage),
-                 .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                 .createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
-                 .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                 .dimensions = {CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1},
-                 .arrayLayers = 6,
-                 .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                 .views =
-                         {
-                             ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::ReflectionCubemapImageView),
-                                                 .viewType = VK_IMAGE_VIEW_TYPE_CUBE,
-                                                 .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                 .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 6}},
-                             ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::ReflectionCubemapImageViewRight),
-                                                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                 .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                 .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}},
-                             ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::ReflectionCubemapImageViewLeft),
-                                                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                 .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                 .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 1, 1}},
-                             ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::ReflectionCubemapImageViewTop),
-                                                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                 .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                 .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 2, 1}},
-                             ImageViewCreateInfo{.viewName =
-                                                         GetParamStr(AppConstants::ReflectionCubemapImageViewBottom),
-                                                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                 .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                 .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 3, 1}},
-                             ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::ReflectionCubemapImageViewBack),
-                                                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                 .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                 .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 4, 1}},
-                             ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::ReflectionCubemapImageViewFront),
-                                                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                 .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                 .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 5, 1}},
-                         }},
-             ImageResourceCreateInfo{
-                 .name = GetParamStr(AppConstants::ReflectionDepthImage),
-                 .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                 .format = depthImageFormat_,
-                 .dimensions = {CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1},
-                 .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                 .views = {ImageViewCreateInfo{.viewName = GetParamStr(AppConstants::ReflectionDepthImageView),
-                                               .format = depthImageFormat_,
-                                               .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                                    .baseMipLevel = 0,
-                                                                    .levelCount = 1,
-                                                                    .baseArrayLayer = 0,
-                                                                    .layerCount = 1}}}}};
+    resourceCreateInfo
+            .images = {ImageResourceCreateInfo{
+                           .name = kDepthImage,
+                           .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                           .format = depthImageFormat_,
+                           .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+                           .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                           .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
+                                                         .format = depthImageFormat_,
+                                                         .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                                              .baseMipLevel = 0,
+                                                                              .levelCount = 1,
+                                                                              .baseArrayLayer = 0,
+                                                                              .layerCount = 1}}}},
+                       ImageResourceCreateInfo{
+                           .name = kReflectionCubemapImage,
+                           .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                           .createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
+                           .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                           .dimensions = {CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1},
+                           .arrayLayers = 6,
+                           .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                           .views =
+                                   {
+                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageView,
+                                                           .viewType = VK_IMAGE_VIEW_TYPE_CUBE,
+                                                           .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 6}},
+                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewRight,
+                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                                           .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}},
+                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewLeft,
+                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                                           .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 1, 1}},
+                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewTop,
+                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                                           .format =
+                                                                   VK_FORMAT_R16G16B16A16_SFLOAT,
+                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 2, 1}},
+                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewBottom,
+                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                                           .format =
+                                                                   VK_FORMAT_R16G16B16A16_SFLOAT,
+                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 3, 1}},
+                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewBack,
+                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                                           .format =
+                                                                   VK_FORMAT_R16G16B16A16_SFLOAT,
+                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 4, 1}},
+                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewFront,
+                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                                           .format =
+                                                                   VK_FORMAT_R16G16B16A16_SFLOAT,
+                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 5, 1}},
+                                   }},
+                       ImageResourceCreateInfo{
+                           .name = kReflectionDepthImage,
+                           .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                           .format = depthImageFormat_,
+                           .dimensions = {CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1},
+                           .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                           .views = {ImageViewCreateInfo{.viewName = kReflectionDepthImageView,
+                                                         .format = depthImageFormat_,
+                                                         .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                                              .baseMipLevel = 0,
+                                                                              .levelCount = 1,
+                                                                              .baseArrayLayer = 0,
+                                                                              .layerCount = 1}}}}};
 
     resourceCreateInfo.samplers = {
-        SamplerResourceCreateInfo{.name = GetParamStr(AppConstants::MainSampler),
+        SamplerResourceCreateInfo{.name = kMainSampler,
                                   .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}},
-        SamplerResourceCreateInfo{.name = GetParamStr(AppConstants::SkyboxSampler),
+        SamplerResourceCreateInfo{.name = kSkyboxSampler,
                                   .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR},
                                   .addressModes = {VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
                                                    VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
@@ -204,33 +202,29 @@ void VulkanApplication::BuildScene()
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    scene_->AddPerspectiveCamera(GetParamStr(AppConstants::CameraObject), glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
+    scene_->AddPerspectiveCamera(kCameraObject, glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
     camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
     cubemapCamera_ = std::make_unique<PerspectiveCamera>(kReflectiveObjectPosition, 1.0f, 90.0f);
 
     // Materials
-    materialManager_->LoadTexture(GetParamStr(AppConstants::WallStoneTexture), GetParamStr(AppConstants::MainSampler),
-                                  GetParamStr(AppConstants::WallStoneTexturePath));
-    materialManager_->LoadTexture(GetParamStr(AppConstants::WallStoneNormalTexture),
-                                  GetParamStr(AppConstants::MainSampler),
-                                  GetParamStr(AppConstants::WallStoneNormalTexturePath), VK_FORMAT_R8G8B8A8_UNORM);
-    materialManager_->LoadCubemapTexture(
-            GetParamStr(AppConstants::CubemapTexture), GetParamStr(AppConstants::SkyboxSampler),
-            GetParamStr(AppConstants::CubemapRightTexturePath), GetParamStr(AppConstants::CubemapLeftTexturePath),
-            GetParamStr(AppConstants::CubemapTopTexturePath), GetParamStr(AppConstants::CubemapBottomTexturePath),
-            GetParamStr(AppConstants::CubemapBackTexturePath), GetParamStr(AppConstants::CubemapFrontTexturePath));
+    materialManager_->LoadTexture(kWallStoneTexture, kMainSampler, kWallStoneTexturePath);
+    materialManager_->LoadTexture(kWallStoneNormalTexture, kMainSampler, kWallStoneNormalTexturePath,
+                                  VK_FORMAT_R8G8B8A8_UNORM);
+    materialManager_->LoadCubemapTexture(kCubemapTexture, kSkyboxSampler, kCubemapRightTexturePath,
+                                         kCubemapLeftTexturePath, kCubemapTopTexturePath, kCubemapBottomTexturePath,
+                                         kCubemapBackTexturePath, kCubemapFrontTexturePath);
 
-    const auto defaultMatName = GetParamStr(AppConstants::DefaultMaterial);
+    const auto defaultMatName = kDefaultMaterial;
     materialManager_->CreatePhongTexturedMaterial(defaultMatName)
             .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
             .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
             .SetShininess(GetParamFloat(AppSettings::Shininess))
-            .SetDiffuseMap(GetParamStr(AppConstants::WallStoneTexture))
-            .SetNormalMap(GetParamStr(AppConstants::WallStoneNormalTexture))
+            .SetDiffuseMap(kWallStoneTexture)
+            .SetNormalMap(kWallStoneNormalTexture)
             .SetReflectivity(0.0f) // No reflection
             .Build();
 
-    const auto reflectiveMatName = GetParamStr(AppConstants::ReflectiveMaterial);
+    const auto reflectiveMatName = kReflectiveMaterial;
     materialManager_->CreatePhongTexturedMaterial(reflectiveMatName)
             .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
             .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
@@ -241,22 +235,21 @@ void VulkanApplication::BuildScene()
 
     // Add moving object
     for (auto i = 0U; i < MOVING_OBJECT_COUNT; ++i) {
-        scene_->AddCube(GetParamStr(AppConstants::CubeObject) + std::to_string(i), glm::vec3{-1.5f, -0.5f, 0.0f});
-        scene_->SetMaterial(GetParamStr(AppConstants::CubeObject) + std::to_string(i), defaultMatName);
+        scene_->AddCube(kCubeObject + std::to_string(i), glm::vec3{-1.5f, -0.5f, 0.0f});
+        scene_->SetMaterial(kCubeObject + std::to_string(i), defaultMatName);
     }
 
     // Add stationary objects
-    scene_->AddPlane(GetParamStr(AppConstants::PlaneObject), glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f),
-                     glm::vec3{3.0f});
-    scene_->SetMaterial(GetParamStr(AppConstants::PlaneObject), defaultMatName);
+    scene_->AddPlane(kPlaneObject, glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f), glm::vec3{3.0f});
+    scene_->SetMaterial(kPlaneObject, defaultMatName);
 
     // Add reflective object
-    scene_->AddSphere(GetParamStr(AppConstants::SphereObject), kReflectiveObjectPosition);
-    scene_->SetMaterial(GetParamStr(AppConstants::SphereObject), reflectiveMatName);
+    scene_->AddSphere(kSphereObject, kReflectiveObjectPosition);
+    scene_->SetMaterial(kSphereObject, reflectiveMatName);
 
     // Add skybox cube
-    scene_->AddCube(GetParamStr(AppConstants::SkyboxCubeObject));
-    scene_->AddToGroup(GetParamStr(AppConstants::SkyboxObjectGroup), {GetParamStr(AppConstants::SkyboxCubeObject)});
+    scene_->AddCube(kSkyboxCubeObject);
+    scene_->AddToGroup(kSkyboxObjectGroup, {kSkyboxCubeObject});
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
@@ -269,7 +262,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + cubemapCount + 1}},
-        .layouts = {{.name = GetParamStr(AppConstants::MainDescSetLayout),
+        .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
                                    VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
@@ -277,13 +270,11 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
                                    VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}},
-                    {.name = GetParamStr(AppConstants::SkyboxDescSetLayout),
+                    {.name = kSkyboxDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}}},
-        .descriptorSets = {{.name = GetParamStr(AppConstants::MainDescSet),
-                            .layoutName = GetParamStr(AppConstants::MainDescSetLayout)},
-                           {.name = GetParamStr(AppConstants::SkyboxDescSet),
-                            .layoutName = GetParamStr(AppConstants::SkyboxDescSetLayout)}}};
+        .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout},
+                           {.name = kSkyboxDescSet, .layoutName = kSkyboxDescSetLayout}}};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
 
@@ -291,47 +282,44 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     storageBufferInfos.emplace_back(scene_->GetStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
-    lightUboInfos.emplace_back(resources_->GetBuffer(GetParamStr(AppConstants::LightUniformBuffer))->GetHandle(), 0,
-                               VK_WHOLE_SIZE);
+    lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
     auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
-    auto cubemapImageInfos = materialManager_->GetCubemapDescriptorImageInfo(GetParamStr(AppConstants::CubemapTexture));
+    auto cubemapImageInfos = materialManager_->GetCubemapDescriptorImageInfo(kCubemapTexture);
 
     std::vector<VkDescriptorImageInfo> reflectionImageInfos;
-    reflectionImageInfos.emplace_back(resources_->GetSampler(GetParamStr(AppConstants::MainSampler))->GetHandle(),
-                                      resources_
-                                              ->GetImageView(GetParamStr(AppConstants::ReflectionCubemapImage),
-                                                             GetParamStr(AppConstants::ReflectionCubemapImageView))
-                                              ->GetHandle(),
-                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    reflectionImageInfos.emplace_back(
+            resources_->GetSampler(kMainSampler)->GetHandle(),
+            resources_->GetImageView(kReflectionCubemapImage, kReflectionCubemapImageView)->GetHandle(),
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     BufferWriteRequest objectStorageBufferRequest;
-    objectStorageBufferRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    objectStorageBufferRequest.descriptorSetName = kMainDescSet;
     objectStorageBufferRequest.bindingIndex = 0;
     objectStorageBufferRequest.buffers = storageBufferInfos;
     objectStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     BufferWriteRequest lightUboRequest;
-    lightUboRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    lightUboRequest.descriptorSetName = kMainDescSet;
     lightUboRequest.bindingIndex = 1;
     lightUboRequest.buffers = lightUboInfos;
     lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
     ImageWriteRequest textureUpdateRequest;
-    textureUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    textureUpdateRequest.descriptorSetName = kMainDescSet;
     textureUpdateRequest.bindingIndex = 2;
     textureUpdateRequest.images = descriptorImageInfos;
     textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest reflectionTextureUpdateRequest;
-    reflectionTextureUpdateRequest.descriptorSetName = GetParamStr(AppConstants::MainDescSet);
+    reflectionTextureUpdateRequest.descriptorSetName = kMainDescSet;
     reflectionTextureUpdateRequest.bindingIndex = 3;
     reflectionTextureUpdateRequest.images = reflectionImageInfos;
     reflectionTextureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest cubemapUpdateRequest;
-    cubemapUpdateRequest.descriptorSetName = GetParamStr(AppConstants::SkyboxDescSet);
+    cubemapUpdateRequest.descriptorSetName = kSkyboxDescSet;
     cubemapUpdateRequest.bindingIndex = 0;
     cubemapUpdateRequest.images = cubemapImageInfos;
     cubemapUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -453,15 +441,15 @@ void VulkanApplication::CreatePipelines()
     mvpPushConstant.size = sizeof(MeshPushConstantsGpu);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    pipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::MainDescSetLayout))}, {mvpPushConstant});
+    pipelineLayout_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kMainDescSetLayout)}, {mvpPushConstant});
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
     }
 
-    pipelineLayoutSkybox_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(GetParamStr(AppConstants::SkyboxDescSetLayout))}, {mvpPushConstant});
+    pipelineLayoutSkybox_ =
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kSkyboxDescSetLayout)}, {mvpPushConstant});
 
     if (!pipelineLayoutSkybox_) {
         throw std::runtime_error("Failed to create pipeline layout (for skybox)!");
@@ -488,13 +476,11 @@ void VulkanApplication::CreatePipelines()
     scenePipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::SceneObjectsFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kSceneObjectsFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -526,13 +512,11 @@ void VulkanApplication::CreatePipelines()
     skyboxPipeline_ = device_->CreateGraphicsPipeline(pipelineLayoutSkybox_, renderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::SkyboxVertexShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kSkyboxVertexShaderKey)->GetHandle();
         });
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module =
-                    resources_->GetShaderModule(GetParamStr(AppConstants::SkyboxFragmentShaderKey))->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kSkyboxFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -569,14 +553,12 @@ void VulkanApplication::CreatePipelines()
             device_->CreateGraphicsPipeline(pipelineLayout_, reflectionRenderPass_, [&](auto& builder) {
                 builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                     shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-                    shaderStageCreateInfo.module =
-                            resources_->GetShaderModule(GetParamStr(AppConstants::MainVertexShaderKey))->GetHandle();
+                    shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
                 });
                 builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                     shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
                     shaderStageCreateInfo.module =
-                            resources_->GetShaderModule(GetParamStr(AppConstants::ReflectionFragmentShaderKey))
-                                    ->GetHandle();
+                            resources_->GetShaderModule(kReflectionFragmentShaderKey)->GetHandle();
                 });
                 builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
                     vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -609,14 +591,11 @@ void VulkanApplication::CreatePipelines()
             device_->CreateGraphicsPipeline(pipelineLayoutSkybox_, reflectionRenderPass_, [&](auto& builder) {
                 builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                     shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-                    shaderStageCreateInfo.module =
-                            resources_->GetShaderModule(GetParamStr(AppConstants::SkyboxVertexShaderKey))->GetHandle();
+                    shaderStageCreateInfo.module = resources_->GetShaderModule(kSkyboxVertexShaderKey)->GetHandle();
                 });
                 builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                     shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-                    shaderStageCreateInfo.module =
-                            resources_->GetShaderModule(GetParamStr(AppConstants::SkyboxFragmentShaderKey))
-                                    ->GetHandle();
+                    shaderStageCreateInfo.module = resources_->GetShaderModule(kSkyboxFragmentShaderKey)->GetHandle();
                 });
                 builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
                     vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -648,19 +627,15 @@ void VulkanApplication::CreatePipelines()
 
 void VulkanApplication::CreateFramebuffers()
 {
-    const auto& reflectionDepthImageView = resources_->GetImageView(
-            GetParamStr(AppConstants::ReflectionDepthImage), GetParamStr(AppConstants::ReflectionDepthImageView));
+    const auto& reflectionDepthImageView = resources_->GetImageView(kReflectionDepthImage, kReflectionDepthImageView);
 
-    const std::vector cubemapImageViewKeys = {GetParamStr(AppConstants::ReflectionCubemapImageViewRight),
-                                              GetParamStr(AppConstants::ReflectionCubemapImageViewLeft),
-                                              GetParamStr(AppConstants::ReflectionCubemapImageViewTop),
-                                              GetParamStr(AppConstants::ReflectionCubemapImageViewBottom),
-                                              GetParamStr(AppConstants::ReflectionCubemapImageViewBack),
-                                              GetParamStr(AppConstants::ReflectionCubemapImageViewFront)};
+    const std::vector<std::string> cubemapImageViewKeys = {
+        kReflectionCubemapImageViewRight,  kReflectionCubemapImageViewLeft, kReflectionCubemapImageViewTop,
+        kReflectionCubemapImageViewBottom, kReflectionCubemapImageViewBack, kReflectionCubemapImageViewFront};
 
     for (auto i = 0U; i < cubemapImageViewKeys.size(); ++i) {
         const auto& reflectionCubemapImageView =
-                resources_->GetImageView(GetParamStr(AppConstants::ReflectionCubemapImage), cubemapImageViewKeys[i]);
+                resources_->GetImageView(kReflectionCubemapImage, cubemapImageViewKeys[i]);
 
         cubemapReflectionFramebuffers_[i] = device_->CreateFramebuffer(
                 reflectionRenderPass_, {reflectionCubemapImageView, reflectionDepthImageView},
@@ -716,13 +691,13 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         {
             currentCmdBuffer->BindPipeline(reflectionSkyboxPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
-            const auto& meshInfo = scene_->GetMesh(GetParamStr(AppConstants::SkyboxCubeObject));
+            const auto& meshInfo = scene_->GetMesh(kSkyboxCubeObject);
 
             const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
             currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
             currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-            const std::vector skyboxDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::SkyboxDescSet))};
+            const std::vector skyboxDescSets{resources_->GetDescriptorSet(kSkyboxDescSet)};
             currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutSkybox_, 0,
                                                  skyboxDescSets);
 
@@ -737,8 +712,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         // Draw reflected scene
         currentCmdBuffer->BindPipeline(reflectionScenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-            if (scene_->IsInGroup(meshName, GetParamStr(AppConstants::SkyboxObjectGroup)) ||
-                meshName == GetParamStr(AppConstants::SphereObject)) {
+            if (scene_->IsInGroup(meshName, kSkyboxObjectGroup) || meshName == kSphereObject) {
                 continue;
             }
 
@@ -746,7 +720,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
             currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-            const std::vector cubeDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSet))};
+            const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
             currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
 
             const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
@@ -774,13 +748,13 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     {
         currentCmdBuffer->BindPipeline(skyboxPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
-        const auto& meshInfo = scene_->GetMesh(GetParamStr(AppConstants::SkyboxCubeObject));
+        const auto& meshInfo = scene_->GetMesh(kSkyboxCubeObject);
 
         const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const std::vector skyboxDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::SkyboxDescSet))};
+        const std::vector skyboxDescSets{resources_->GetDescriptorSet(kSkyboxDescSet)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutSkybox_, 0, skyboxDescSets);
 
         const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
@@ -794,7 +768,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Draw only scene objects
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
     for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-        if (scene_->IsInGroup(meshName, GetParamStr(AppConstants::SkyboxObjectGroup))) {
+        if (scene_->IsInGroup(meshName, kSkyboxObjectGroup)) {
             continue;
         }
 
@@ -802,7 +776,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const std::vector cubeDescSets{resources_->GetDescriptorSet(GetParamStr(AppConstants::MainDescSet))};
+        const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
 
         auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
@@ -829,20 +803,20 @@ void VulkanApplication::UpdateSceneTransforms() const
         constexpr glm::vec3 center = kReflectiveObjectPosition;
         constexpr float angleStep = glm::two_pi<float>() / static_cast<float>(MOVING_OBJECT_COUNT);
 
-        const float angle = time * speed + angleStep * i;
+        const float angle = time * speed + angleStep * static_cast<float>(i);
 
         glm::vec3 pos;
         pos.x = center.x + radius * std::cos(angle);
         pos.y = center.y;
         pos.z = center.z + radius * std::sin(angle);
 
-        scene_->MoveObject(GetParamStr(AppConstants::CubeObject) + std::to_string(i), pos);
+        scene_->MoveObject(kCubeObject + std::to_string(i), pos);
     }
 
     LightUbo lightUbo{};
     lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
     lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    resources_->SetBuffer(GetParamStr(AppConstants::LightUniformBuffer), &lightUbo, sizeof(lightUbo));
+    resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 
 void VulkanApplication::ProcessInput() const
