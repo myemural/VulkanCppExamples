@@ -11,6 +11,7 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "ShaderLoader.h"
 #include "VulkanBuffer.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanDescriptorPool.h"
@@ -20,6 +21,7 @@
 namespace examples::fundamentals::descriptor_sets::changing_color_with_ub
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -40,6 +42,7 @@ bool VulkanApplication::Init()
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects();
 
+        InitAssetManager();
         CreateResources();
         InitResources();
 
@@ -80,6 +83,12 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+}
+
 void VulkanApplication::CreateResources()
 {
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2);
@@ -92,11 +101,12 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
+    const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
+    const auto mainFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kMainFragmentShaderFile);
+
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
-        .basePath = SHADERS_DIR,
-        .shaderType = SHADER_TYPE,
-        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
-                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
+        .modules = {{.name = kMainVertexShaderKey, .asset = assetManager_->Get(mainVertexShaderAsset)},
+                    {.name = kMainFragmentShaderKey, .asset = assetManager_->Get(mainFragmentShaderAsset)}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     CreateDescriptorPool();

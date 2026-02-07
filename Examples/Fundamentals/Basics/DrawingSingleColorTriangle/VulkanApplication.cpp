@@ -13,6 +13,7 @@
 namespace examples::fundamentals::basics::drawing_single_color_triangle
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -33,6 +34,7 @@ bool VulkanApplication::Init()
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects();
 
+        InitAssetManager();
         CreateShaderModules();
 
         CreateDefaultRenderPass();
@@ -71,11 +73,17 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+}
+
 void VulkanApplication::CreateShaderModules()
 {
-    const ShaderLoader shaderLoader{SHADERS_DIR, SHADER_TYPE};
     // Vertex Shader
-    const auto vertexShaderCode = shaderLoader.LoadSpirV(kMainVertexShaderFile);
+    const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
+    const auto vertexShaderCode = assetManager_->Get(mainVertexShaderAsset).data;
     const auto vertexShaderModule = device_->CreateShaderModule(vertexShaderCode);
     if (!vertexShaderModule) {
         throw std::runtime_error("Failed to create vertex shader module!");
@@ -83,7 +91,8 @@ void VulkanApplication::CreateShaderModules()
     shaderModules_[kMainVertexShaderKey] = vertexShaderModule;
 
     // Fragment Shader
-    const auto fragmentShaderCode = shaderLoader.LoadSpirV(kMainFragmentShaderFile);
+    const auto mainFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kMainFragmentShaderFile);
+    const auto fragmentShaderCode = assetManager_->Get(mainFragmentShaderAsset).data;
     const auto fragmentShaderModule = device_->CreateShaderModule(fragmentShaderCode);
     if (!fragmentShaderModule) {
         throw std::runtime_error("Failed to create fragment shader module!");

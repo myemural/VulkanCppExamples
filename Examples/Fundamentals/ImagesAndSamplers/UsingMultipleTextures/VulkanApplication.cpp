@@ -10,6 +10,8 @@
 
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
+#include "ShaderLoader.h"
+#include "TextureLoader.h"
 #include "VulkanHelpers.h"
 #include "VulkanImage.h"
 #include "VulkanImageView.h"
@@ -19,6 +21,7 @@
 namespace examples::fundamentals::images_and_samplers::using_multiple_textures
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -39,6 +42,7 @@ bool VulkanApplication::Init()
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects();
 
+        InitAssetManager();
         CreateResources();
         InitResources();
 
@@ -79,12 +83,20 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+    assetManager_->RegisterLoader<TextureAsset>(std::make_unique<TextureLoader>(ASSETS_DIR));
+}
+
 void VulkanApplication::CreateResources()
 {
     // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    bricksTextureHandler_ = textureLoader.Load(kBricksTexturePath);
-    wallTextureHandler_ = textureLoader.Load(kWallTexturePath);
+    const auto bricksTextureAssetHandler = assetManager_->Load<TextureAsset>(kBricksTexturePath);
+    bricksTextureAsset_ = assetManager_->Get(bricksTextureAssetHandler);
+    const auto wallTextureAssetHandler = assetManager_->Load<TextureAsset>(kWallTexturePath);
+    wallTextureAsset_ = assetManager_->Get(wallTextureAssetHandler);
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos2Uv2);
@@ -94,18 +106,19 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {kMainIndexBuffer, indexDataSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {kBricksStagingBuffer, static_cast<std::uint32_t>(bricksTextureHandler_.data.size()),
+        {kBricksStagingBuffer, static_cast<std::uint32_t>(bricksTextureAsset_.data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {kWallStagingBuffer, static_cast<std::uint32_t>(wallTextureHandler_.data.size()),
+        {kWallStagingBuffer, static_cast<std::uint32_t>(wallTextureAsset_.data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
     // Fill shader module create infos
+    const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
+    const auto mainFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kMainFragmentShaderFile);
+
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
-        .basePath = SHADERS_DIR,
-        .shaderType = SHADER_TYPE,
-        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
-                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
+        .modules = {{.name = kMainVertexShaderKey, .asset = assetManager_->Get(mainVertexShaderAsset)},
+                    {.name = kMainFragmentShaderKey, .asset = assetManager_->Get(mainFragmentShaderAsset)}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     // Fill descriptor set create infos
@@ -132,8 +145,8 @@ void VulkanApplication::InitResources()
 
     SetBuffer(kMainVertexBuffer, vertices.data(), vertices.size() * sizeof(VertexPos2Uv2));
     SetBuffer(kMainIndexBuffer, indices.data(), indices.size() * sizeof(indices[0]));
-    SetBuffer(kBricksStagingBuffer, bricksTextureHandler_.data.data(), bricksTextureHandler_.data.size());
-    SetBuffer(kWallStagingBuffer, wallTextureHandler_.data.data(), wallTextureHandler_.data.size());
+    SetBuffer(kBricksStagingBuffer, bricksTextureAsset_.data.data(), bricksTextureAsset_.data.size());
+    SetBuffer(kWallStagingBuffer, wallTextureAsset_.data.data(), wallTextureAsset_.data.size());
 
     UpdateDescriptorSets();
 
@@ -233,7 +246,7 @@ void VulkanApplication::CreateTextureImages()
 {
     bricksTexImage_ = device_->CreateImage([&](auto& builder) {
         builder.SetFormat(VK_FORMAT_R8G8B8A8_SRGB);
-        builder.SetDimensions(bricksTextureHandler_.width, bricksTextureHandler_.height);
+        builder.SetDimensions(bricksTextureAsset_.width, bricksTextureAsset_.height);
     });
 
     if (!bricksTexImage_) {
@@ -255,7 +268,7 @@ void VulkanApplication::CreateTextureImages()
 
     wallTexImage_ = device_->CreateImage([&](auto& builder) {
         builder.SetFormat(VK_FORMAT_R8G8B8A8_SRGB);
-        builder.SetDimensions(wallTextureHandler_.width, wallTextureHandler_.height);
+        builder.SetDimensions(wallTextureAsset_.width, wallTextureAsset_.height);
     });
 
     if (!wallTexImage_) {
@@ -367,11 +380,11 @@ void VulkanApplication::CopyStagingBuffers()
                     .layerCount = 1,
                 },
         .imageOffset = {0, 0, 0},
-        .imageExtent = {bricksTextureHandler_.width, bricksTextureHandler_.height, 1},
+        .imageExtent = {bricksTextureAsset_.width, bricksTextureAsset_.height, 1},
     };
 
     VkBufferImageCopy copyRegionWall = copyRegionBricks;
-    copyRegionWall.imageExtent = {wallTextureHandler_.width, wallTextureHandler_.height, 1};
+    copyRegionWall.imageExtent = {wallTextureAsset_.width, wallTextureAsset_.height, 1};
 
     cmdBufferTransfer->CopyBufferToImage(buffers_[kBricksStagingBuffer]->GetBuffer(), bricksTexImage_,
                                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, {copyRegionBricks});

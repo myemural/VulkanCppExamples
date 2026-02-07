@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "ApplicationModelLoading.h"
+#include "AssetManager.h"
 #include "ModelLoader.h"
 #include "PerspectiveCamera.h"
 #include "VulkanCommandBuffer.h"
@@ -40,6 +41,8 @@ protected:
 private:
     void InitInputSystem();
 
+    void InitAssetManager();
+
     void CreateResources();
 
     void InitResources() const;
@@ -65,7 +68,7 @@ private:
     std::shared_ptr<common::utility::GltfModelHandler> lanternModel_;
 
     // Textures
-    common::utility::TextureHandler lanternMeshTextureHandler_;
+    common::asset_manager::TextureAsset lanternMeshTextureAsset_{};
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
@@ -73,6 +76,9 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Mouse related values
     bool firstMouseTriggered_ = true;

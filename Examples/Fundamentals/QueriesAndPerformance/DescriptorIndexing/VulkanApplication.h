@@ -16,8 +16,9 @@
 
 #include "ApplicationData.h"
 #include "ApplicationQueriesAndPerformance.h"
+#include "AssetManager.h"
 #include "PerspectiveCamera.h"
-#include "TextureLoader.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -42,6 +43,8 @@ private:
     void InitInputSystem();
 
     void PrepareBufferInfos();
+
+    void InitAssetManager();
 
     void CreateResources();
 
@@ -74,8 +77,8 @@ private:
     std::uint32_t totalBufferSize_ = UINT32_MAX;
 
     // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
-    common::utility::TextureHandler wallStoneTextureHandler_{};
+    common::asset_manager::TextureAsset crateTextureAsset_{};
+    common::asset_manager::TextureAsset wallStoneTextureAsset_{};
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
@@ -83,6 +86,9 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Mouse related values
     bool firstMouseTriggered_ = true;

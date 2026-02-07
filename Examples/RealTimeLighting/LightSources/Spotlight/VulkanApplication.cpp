@@ -8,17 +8,19 @@
 
 #include <algorithm>
 #include <array>
-#include <chrono>
 
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "MathUtils.h"
+#include "ShaderLoader.h"
+#include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::real_time_lighting::light_sources::spotlight
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -34,6 +36,7 @@ bool VulkanApplication::Init()
     }
 
     try {
+        InitAssetManager();
         CreateInitialResources();
         BuildScene();
         UpdateDescriptorSets();
@@ -86,6 +89,13 @@ void VulkanApplication::PreUpdate()
     ProcessInput();
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+    assetManager_->RegisterLoader<TextureAsset>(std::make_unique<TextureLoader>(ASSETS_DIR));
+}
+
 void VulkanApplication::CreateInitialResources() const
 {
     ResourceDescriptor resourceCreateInfo;
@@ -95,12 +105,15 @@ void VulkanApplication::CreateInitialResources() const
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
+    const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
+    const auto sceneObjectsFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kSceneObjectsFragmentShaderFile);
+    const auto lightObjectsFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kLightObjectsFragmentShaderFile);
+
     resourceCreateInfo.shaders = {
-        .basePath = SHADERS_DIR,
-        .shaderType = SHADER_TYPE,
-        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
-                    {.name = kSceneObjectsFragmentShaderKey, .fileName = kSceneObjectsFragmentShaderFile},
-                    {.name = kLightObjectsFragmentShaderKey, .fileName = kLightObjectsFragmentShaderFile}}};
+        .modules = {
+            {.name = kMainVertexShaderKey, .asset = assetManager_->Get(mainVertexShaderAsset)},
+            {.name = kSceneObjectsFragmentShaderKey, .asset = assetManager_->Get(sceneObjectsFragmentShaderAsset)},
+            {.name = kLightObjectsFragmentShaderKey, .asset = assetManager_->Get(lightObjectsFragmentShaderAsset)}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
@@ -135,7 +148,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_, ASSETS_DIR);
+    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
 
     // Add camera

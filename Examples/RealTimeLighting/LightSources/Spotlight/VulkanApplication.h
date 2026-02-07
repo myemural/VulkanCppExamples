@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "ApplicationLightSoruces.h"
+#include "AssetManager.h"
 #include "PerspectiveCamera.h"
 #include "SceneManager.h"
 #include "VulkanCommandBuffer.h"
@@ -38,6 +39,8 @@ protected:
     void PreUpdate() override;
 
 private:
+    void InitAssetManager();
+
     void CreateInitialResources() const;
 
     void BuildScene();
@@ -77,5 +80,8 @@ private:
     // Scene manager
     std::unique_ptr<common::vulkan_framework::SceneManager> scene_;
     std::unique_ptr<common::vulkan_framework::MaterialManager> materialManager_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 };
 } // namespace examples::real_time_lighting::light_sources::spotlight

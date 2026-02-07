@@ -7,7 +7,6 @@
 #include "VulkanApplication.h"
 
 #include <algorithm>
-#include <chrono>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -15,6 +14,8 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "ShaderLoader.h"
+#include "TextureLoader.h"
 #include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
@@ -23,6 +24,7 @@
 namespace examples::fundamentals::drawing_3d::instanced_rendering
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -46,6 +48,7 @@ bool VulkanApplication::Init()
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects();
 
+        InitAssetManager();
         CreateResources();
         InitResources();
 
@@ -141,6 +144,13 @@ void VulkanApplication::InitInputSystem()
     });
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+    assetManager_->RegisterLoader<TextureAsset>(std::make_unique<TextureLoader>(ASSETS_DIR));
+}
+
 void VulkanApplication::CreateResources()
 {
     depthImageFormat_ = physicalDevice_->FindSupportedFormat(
@@ -148,8 +158,8 @@ void VulkanApplication::CreateResources()
             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    crateTextureHandler_ = textureLoader.Load(kCrateTexturePath);
+    const auto crateTextureAssetHandler = assetManager_->Load<TextureAsset>(kCrateTexturePath);
+    crateTextureAsset_ = assetManager_->Get(crateTextureAssetHandler);
 
     // Fill buffer create infos
     const std::uint32_t vertexBufferSize = vertices.size() * sizeof(VertexPos3Uv2);
@@ -161,16 +171,17 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {kMainUniformBuffer, sizeof(mvpData_), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {kImageStagingBuffer, static_cast<std::uint32_t>(crateTextureHandler_.data.size()),
+        {kImageStagingBuffer, static_cast<std::uint32_t>(crateTextureAsset_.data.size()),
          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
     CreateBuffers(bufferCreateInfos);
 
     // Fill shader module create infos
+    const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
+    const auto mainFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kMainFragmentShaderFile);
+
     const ShaderModulesCreateInfo shaderModuleCreateInfo = {
-        .basePath = SHADERS_DIR,
-        .shaderType = SHADER_TYPE,
-        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
-                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
+        .modules = {{.name = kMainVertexShaderKey, .asset = assetManager_->Get(mainVertexShaderAsset)},
+                    {.name = kMainFragmentShaderKey, .asset = assetManager_->Get(mainFragmentShaderAsset)}}};
     CreateShaderModules(shaderModuleCreateInfo);
 
     // Fill descriptor set create infos
@@ -188,7 +199,7 @@ void VulkanApplication::CreateResources()
         {.name = kCrateImage,
          .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
          .format = VK_FORMAT_R8G8B8A8_SRGB,
-         .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+         .dimensions = {crateTextureAsset_.width, crateTextureAsset_.height, 1},
          .views = {ImageViewCreateInfo{.viewName = kCrateImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         {.name = kDepthImage,
          .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -213,10 +224,10 @@ void VulkanApplication::InitResources()
 {
     SetBuffer(kMainVertexBuffer, vertices.data(), vertices.size() * sizeof(VertexPos3Uv2));
     SetBuffer(kMainIndexBuffer, indices.data(), indices.size() * sizeof(indices[0]));
-    SetBuffer(kImageStagingBuffer, crateTextureHandler_.data.data(), crateTextureHandler_.data.size());
+    SetBuffer(kImageStagingBuffer, crateTextureAsset_.data.data(), crateTextureAsset_.data.size());
 
     SetImageFromBuffer(kCrateImage, buffers_[kImageStagingBuffer]->GetBuffer(),
-                       {crateTextureHandler_.width, crateTextureHandler_.height, 1});
+                       {crateTextureAsset_.width, crateTextureAsset_.height, 1});
 
     UpdateDescriptorSets();
 }

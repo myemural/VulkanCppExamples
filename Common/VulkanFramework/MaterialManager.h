@@ -11,7 +11,7 @@
 #pragma once
 #include "ResourceManager.h"
 #include "SceneUtils.h"
-#include "TextureLoader.h"
+#include "TextureAsset.h"
 
 namespace common::vulkan_framework
 {
@@ -103,30 +103,23 @@ class COMMON_API MaterialManager
 public:
     explicit MaterialManager(ResourceManager& resourceManager,
                              const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
-                             const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
-                             const std::string& basePath);
+                             const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue);
     ~MaterialManager() = default;
 
     void LoadTexture(const std::string& textureName,
                      const std::string& samplerName,
-                     const std::string& filePath,
-                     const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB,
-                     bool mipmappingEnabled = false);
-
-    void LoadTexture(const std::string& textureName,
-                     const std::string& samplerName,
-                     const utility::TextureHandler& textureHandler,
+                     const asset_manager::TextureAsset& textureAsset,
                      const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB,
                      bool mipmappingEnabled = false);
 
     void LoadCubemapTexture(const std::string& textureName,
                             const std::string& samplerName,
-                            const std::string& rightTextureFilePath,
-                            const std::string& leftTextureFilePath,
-                            const std::string& topTextureFilePath,
-                            const std::string& bottomTextureFilePath,
-                            const std::string& backTextureFilePath,
-                            const std::string& frontTextureFilePath,
+                            const asset_manager::TextureAsset& rightTextureAsset,
+                            const asset_manager::TextureAsset& leftTextureAsset,
+                            const asset_manager::TextureAsset& topTextureAsset,
+                            const asset_manager::TextureAsset& bottomTextureAsset,
+                            const asset_manager::TextureAsset& backTextureAsset,
+                            const asset_manager::TextureAsset& frontTextureAsset,
                             const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB);
 
     TextureId GetTextureId(const std::string& textureName);
@@ -156,7 +149,6 @@ private:
     ResourceManager& resourceManager_;
     std::shared_ptr<vulkan_wrapper::VulkanCommandPool> cmdPool_;
     std::shared_ptr<vulkan_wrapper::VulkanQueue> queue_;
-    utility::TextureLoader textureLoader_;
 
     std::int32_t globalTextureId_ = 0;
     std::unordered_map<std::string, InternalTextureHandler> textureHandlers_;

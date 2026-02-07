@@ -8,6 +8,7 @@
 
 #include <cstring>
 
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanCommandPool.h"
 #include "VulkanQueue.h"
@@ -151,7 +152,7 @@ void ResourceManager::SetBufferAlignedWithoutUnmap(const std::string& name,
 void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                                           const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                           const std::string& imageName,
-                                          const utility::TextureHandler& textureHandler,
+                                          const asset_manager::TextureAsset& textureAsset,
                                           const std::uint32_t mipLevels,
                                           const std::uint32_t currentLayer)
 {
@@ -160,13 +161,13 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
             VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, currentLayer, 1});
 
     const BufferResourceCreateInfo stagingBufferCreateInfo{
-        imageName + "_tempStagingBuffer", static_cast<std::uint32_t>(textureHandler.data.size()),
+        imageName + "_tempStagingBuffer", static_cast<std::uint32_t>(textureAsset.data.size()),
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
 
     buffers_[stagingBufferCreateInfo.name] = std::make_unique<BufferResource>(physicalDevice_, device_);
     buffers_[stagingBufferCreateInfo.name]->CreateBuffer(stagingBufferCreateInfo);
 
-    SetBuffer(stagingBufferCreateInfo.name, textureHandler.data.data(), textureHandler.data.size());
+    SetBuffer(stagingBufferCreateInfo.name, textureAsset.data.data(), textureAsset.data.size());
 
     const VkBufferImageCopy copyRegion = {.bufferOffset = 0,
                                           .bufferRowLength = 0,
@@ -179,7 +180,7 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
                                                       .layerCount = 1,
                                                   },
                                           .imageOffset = {0, 0, 0},
-                                          .imageExtent = {textureHandler.width, textureHandler.height, 1}};
+                                          .imageExtent = {textureAsset.width, textureAsset.height, 1}};
     images_[imageName]->CopyDataFromBuffer(cmdPool, queue, buffers_[stagingBufferCreateInfo.name]->GetBuffer(),
                                            {copyRegion});
     images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -190,7 +191,7 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
 void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                                       const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                       const std::string& imageName,
-                                      const utility::TextureHandler& textureHandler,
+                                      const asset_manager::TextureAsset& textureAsset,
                                       const std::uint32_t mipLevels) const
 {
     const auto cmdBufferMipmap = cmdPool->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
@@ -211,8 +212,8 @@ void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::Vulk
                                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceRange);
 
-    auto mipWidth = static_cast<int32_t>(textureHandler.width);
-    auto mipHeight = static_cast<int32_t>(textureHandler.height);
+    auto mipWidth = static_cast<int32_t>(textureAsset.width);
+    auto mipHeight = static_cast<int32_t>(textureAsset.height);
 
     for (uint32_t i = 1; i < mipLevels; ++i) {
         barrier.subresourceRange.baseMipLevel = i - 1;

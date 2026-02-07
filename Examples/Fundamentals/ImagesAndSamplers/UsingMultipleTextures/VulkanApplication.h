@@ -16,7 +16,8 @@
 
 #include "ApplicationData.h"
 #include "ApplicationImagesAndSamplers.h"
-#include "TextureLoader.h"
+#include "AssetManager.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -37,6 +38,8 @@ protected:
     void DrawFrame() override;
 
 private:
+    void InitAssetManager();
+
     void CreateResources();
 
     void InitResources();
@@ -63,8 +66,8 @@ private:
     std::array<PushConstantData, NUM_QUADS> pushConstantData_{};
 
     // Texture resource
-    common::utility::TextureHandler bricksTextureHandler_{};
-    common::utility::TextureHandler wallTextureHandler_{};
+    common::asset_manager::TextureAsset bricksTextureAsset_{};
+    common::asset_manager::TextureAsset wallTextureAsset_{};
     std::shared_ptr<common::vulkan_wrapper::VulkanImage> bricksTexImage_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDeviceMemory> bricksTexDeviceMemory_;
     std::shared_ptr<common::vulkan_wrapper::VulkanImageView> bricksTexImageView_;
@@ -79,5 +82,8 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 };
 } // namespace examples::fundamentals::images_and_samplers::using_multiple_textures

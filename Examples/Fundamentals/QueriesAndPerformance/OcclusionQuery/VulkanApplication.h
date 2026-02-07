@@ -15,8 +15,9 @@
 
 #include "ApplicationData.h"
 #include "ApplicationQueriesAndPerformance.h"
+#include "AssetManager.h"
 #include "PerspectiveCamera.h"
-#include "TextureLoader.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -40,6 +41,8 @@ protected:
 
 private:
     void InitInputSystem();
+
+    void InitAssetManager();
 
     void CreateResources();
 
@@ -71,8 +74,8 @@ private:
     MvpData sphereMvp = {glm::mat4(1.0)};
 
     // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
-    common::utility::TextureHandler marbleTextureHandler_{};
+    common::asset_manager::TextureAsset crateTextureAsset_{};
+    common::asset_manager::TextureAsset marbleTextureAsset_{};
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
@@ -80,6 +83,9 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Query pools
     std::shared_ptr<common::vulkan_wrapper::VulkanQueryPool> occlusionQueryPool_;

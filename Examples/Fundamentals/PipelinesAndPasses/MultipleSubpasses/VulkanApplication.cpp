@@ -7,7 +7,6 @@
 #include "VulkanApplication.h"
 
 #include <algorithm>
-#include <chrono>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -15,6 +14,8 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "ShaderLoader.h"
+#include "TextureLoader.h"
 #include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
@@ -23,6 +24,7 @@
 namespace examples::fundamentals::pipelines_and_passes::multiple_subpasses
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -47,6 +49,7 @@ bool VulkanApplication::Init()
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects();
 
+        InitAssetManager();
         CreateResources();
         InitResources();
 
@@ -87,6 +90,13 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+    assetManager_->RegisterLoader<TextureAsset>(std::make_unique<TextureLoader>(ASSETS_DIR));
+}
+
 void VulkanApplication::CreateResources()
 {
     depthImageFormat_ = physicalDevice_->FindSupportedFormat(
@@ -94,8 +104,8 @@ void VulkanApplication::CreateResources()
             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    crateTextureHandler_ = textureLoader.Load(kCrateTexturePath);
+    const auto crateTextureAssetHandler = assetManager_->Load<TextureAsset>(kCrateTexturePath);
+    crateTextureAsset_ = assetManager_->Get(crateTextureAssetHandler);
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -109,12 +119,15 @@ void VulkanApplication::CreateResources()
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
+    const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
+    const auto objectFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kObjectFragmentShaderFile);
+    const auto depthObjectFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kDepthObjectFragmentShaderFile);
+
     resourceCreateInfo.shaders = {
-        .basePath = SHADERS_DIR,
-        .shaderType = SHADER_TYPE,
-        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
-                    {.name = kObjectFragmentShaderKey, .fileName = kObjectFragmentShaderFile},
-                    {.name = kDepthObjectFragmentShaderKey, .fileName = kDepthObjectFragmentShaderFile}}};
+        .modules = {
+            {.name = kMainVertexShaderKey, .asset = assetManager_->Get(mainVertexShaderAsset)},
+            {.name = kObjectFragmentShaderKey, .asset = assetManager_->Get(objectFragmentShaderAsset)},
+            {.name = kDepthObjectFragmentShaderKey, .asset = assetManager_->Get(depthObjectFragmentShaderAsset)}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
@@ -133,7 +146,7 @@ void VulkanApplication::CreateResources()
             .name = kCrateImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = VK_FORMAT_R8G8B8A8_SRGB,
-            .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+            .dimensions = {crateTextureAsset_.width, crateTextureAsset_.height, 1},
             .views = {ImageViewCreateInfo{.viewName = kCrateImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
             .name = kDepthImage,
@@ -160,7 +173,7 @@ void VulkanApplication::InitResources() const
     resources_->SetBuffer(kMainVertexBuffer, vertices.data(), vertices.size() * sizeof(VertexPos3Uv2));
     resources_->SetBuffer(kMainIndexBuffer, indices.data(), indices.size() * sizeof(indices[0]));
 
-    resources_->SetImageFromTexture(cmdPool_, queue_, kCrateImage, crateTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, kCrateImage, crateTextureAsset_);
 
     UpdateDescriptorSets();
 }

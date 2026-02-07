@@ -16,9 +16,10 @@
 
 #include "ApplicationData.h"
 #include "ApplicationSwapChainsAndViewports.h"
+#include "AssetManager.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
-#include "TextureLoader.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanFramebuffer.h"
 #include "VulkanPipeline.h"
@@ -44,6 +45,8 @@ protected:
 
 private:
     void InitInputSystem();
+
+    void InitAssetManager();
 
     void CreateResources();
 
@@ -75,7 +78,7 @@ private:
     std::array<MvpData, NUM_CUBES> mvpDataOrtho_ = {glm::mat4(1.0)};
 
     // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
+    common::asset_manager::TextureAsset crateTextureAsset_{};
 
     // Swap chain related
     std::shared_ptr<common::vulkan_wrapper::VulkanSwapChain> swapChain_;
@@ -90,6 +93,9 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Mouse related values
     bool firstMouseTriggered_ = true;

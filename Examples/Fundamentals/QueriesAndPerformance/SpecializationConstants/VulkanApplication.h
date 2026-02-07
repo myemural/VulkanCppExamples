@@ -16,12 +16,12 @@
 
 #include "ApplicationData.h"
 #include "ApplicationQueriesAndPerformance.h"
+#include "AssetManager.h"
 #include "PerspectiveCamera.h"
-#include "TextureLoader.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
-#include "Window.h"
 
 namespace examples::fundamentals::queries_and_performance::specialization_constants
 {
@@ -43,6 +43,8 @@ private:
     void InitInputSystem();
 
     void PrepareBufferInfos();
+
+    void InitAssetManager();
 
     void CreateResources();
 
@@ -78,7 +80,7 @@ private:
     std::array<ShaderColoringMode, 3> shaderColoringMode_{FLAT_COLOR, TEXTURE, MIXTURE};
 
     // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
+    common::asset_manager::TextureAsset crateTextureAsset_{};
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
@@ -86,6 +88,9 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Mouse related values
     bool firstMouseTriggered_ = true;

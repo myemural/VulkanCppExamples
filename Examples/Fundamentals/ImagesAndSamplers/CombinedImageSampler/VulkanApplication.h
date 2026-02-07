@@ -14,7 +14,8 @@
 #include <memory>
 
 #include "ApplicationImagesAndSamplers.h"
-#include "TextureLoader.h"
+#include "AssetManager.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -35,6 +36,8 @@ protected:
     void DrawFrame() override;
 
 private:
+    void InitAssetManager();
+
     void CreateResources();
 
     void InitResources();
@@ -60,7 +63,7 @@ private:
     std::uint32_t currentWindowHeight_ = UINT32_MAX;
 
     // Texture resource
-    common::utility::TextureHandler bricksTextureHandler_{};
+    common::asset_manager::TextureAsset bricksTextureAsset_{};
     std::shared_ptr<common::vulkan_wrapper::VulkanImage> quadTextureImage_;
     std::shared_ptr<common::vulkan_wrapper::VulkanDeviceMemory> textureDeviceMemory_;
     std::shared_ptr<common::vulkan_wrapper::VulkanImageView> quadTextureImageView_;
@@ -72,5 +75,8 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 };
 } // namespace examples::fundamentals::images_and_samplers::combined_image_sampler

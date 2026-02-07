@@ -8,8 +8,7 @@
 
 #include <cmath>
 #include <numbers>
-
-#include <glm/detail/func_geometric.inl>
+#include <stdexcept>
 
 namespace common::vulkan_framework
 {
@@ -170,6 +169,19 @@ std::vector<std::uint16_t> CreateCubeIndices()
     };
 }
 
+utility::GltfMesh CreateCubeMesh(const float size)
+{
+    utility::GltfMesh mesh;
+    mesh.name = kCubeMeshName;
+    mesh.indices = CreateCubeIndices();
+    mesh.attributes.positions = CreateCubePositions(size);
+    mesh.attributes.texCoords0 = CreateCubeUVs();
+    mesh.attributes.normals = CreateCubeNormals();
+    mesh.attributes.tangents = CreateCubeTangents();
+    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    return mesh;
+}
+
 std::vector<glm::vec3>
 CreateSpherePositions(const float size, const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
@@ -283,6 +295,19 @@ std::vector<std::uint16_t> CreateSphereIndices(const std::uint32_t stackCount, c
     }
 
     return indices;
+}
+
+utility::GltfMesh CreateSphereMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+{
+    utility::GltfMesh mesh;
+    mesh.name = kSphereMeshName;
+    mesh.indices = CreateSphereIndices(stackCount, sectorCount);
+    mesh.attributes.positions = CreateSpherePositions(1.0f, stackCount, sectorCount);
+    mesh.attributes.texCoords0 = CreateSphereUVs(stackCount, sectorCount);
+    mesh.attributes.normals = CreateSphereNormals(stackCount, sectorCount);
+    mesh.attributes.tangents = CreateSphereTangents(stackCount, sectorCount);
+    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    return mesh;
 }
 
 std::vector<glm::vec3>
@@ -452,6 +477,19 @@ std::vector<uint16_t> CreateConeIndices(const std::uint32_t stackCount, const st
     }
 
     return indices;
+}
+
+utility::GltfMesh CreateConeMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+{
+    utility::GltfMesh mesh;
+    mesh.name = kConeMeshName;
+    mesh.indices = CreateConeIndices(stackCount, sectorCount);
+    mesh.attributes.positions = CreateConePositions(1.0f, stackCount, sectorCount);
+    mesh.attributes.texCoords0 = CreateConeUVs(stackCount, sectorCount);
+    mesh.attributes.normals = CreateConeNormals(stackCount, sectorCount);
+    mesh.attributes.tangents = CreateConeTangents(stackCount, sectorCount);
+    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    return mesh;
 }
 
 std::vector<glm::vec3>
@@ -628,6 +666,19 @@ std::vector<uint16_t> CreateCylinderIndices(const std::uint32_t stackCount, cons
     return indices;
 }
 
+utility::GltfMesh CreateCylinderMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+{
+    utility::GltfMesh mesh;
+    mesh.name = kCylinderMeshName;
+    mesh.indices = CreateCylinderIndices(stackCount, sectorCount);
+    mesh.attributes.positions = CreateCylinderPositions(1.0f, stackCount, sectorCount);
+    mesh.attributes.texCoords0 = CreateCylinderUVs(stackCount, sectorCount);
+    mesh.attributes.normals = CreateCylinderNormals(stackCount, sectorCount);
+    mesh.attributes.tangents = CreateCylinderTangents(stackCount, sectorCount);
+    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    return mesh;
+}
+
 std::vector<glm::vec3> CreatePlanePositions(const float size)
 {
     std::vector<glm::vec3> positions;
@@ -680,5 +731,36 @@ std::vector<glm::vec4> CreatePlaneTangents()
 }
 
 std::vector<std::uint16_t> CreatePlaneIndices() { return {0, 1, 2, 2, 3, 0}; }
+
+utility::GltfMesh CreatePlaneMesh(const float size)
+{
+    utility::GltfMesh mesh;
+    mesh.name = kPlaneMeshName;
+    mesh.indices = CreatePlaneIndices();
+    mesh.attributes.positions = CreatePlanePositions(size);
+    mesh.attributes.texCoords0 = CreatePlaneUVs();
+    mesh.attributes.normals = CreatePlaneNormals();
+    mesh.attributes.tangents = CreatePlaneTangents();
+    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    return mesh;
+}
+
+std::string GetBuiltinMeshName(const BuiltinMeshType& builtinMeshType)
+{
+    switch (builtinMeshType) {
+        case BuiltinMeshType::CUBE:
+            return kCubeMeshName;
+        case BuiltinMeshType::SPHERE:
+            return kSphereMeshName;
+        case BuiltinMeshType::CONE:
+            return kConeMeshName;
+        case BuiltinMeshType::CYLINDER:
+            return kCylinderMeshName;
+        case BuiltinMeshType::PLANE:
+            return kPlaneMeshName;
+    }
+
+    throw std::invalid_argument("Invalid builtin mesh type!");
+}
 
 } // namespace common::vulkan_framework

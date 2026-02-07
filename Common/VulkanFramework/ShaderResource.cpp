@@ -19,13 +19,8 @@ void ShaderResource::CreateShaders(const ShaderModulesCreateInfo& createInfo)
         throw std::runtime_error("Device object not found!");
     }
 
-    const std::string basePath = createInfo.basePath;
-    const std::string shaderType = createInfo.shaderType;
-
-    for (const auto& [name, fileName]: createInfo.modules) {
-        const utility::ShaderLoader shaderLoader{basePath, shaderType};
-        const auto shaderCode = shaderLoader.LoadSpirV(fileName);
-        const auto shaderModule = devicePtr->CreateShaderModule(shaderCode);
+    for (const auto& [name, asset]: createInfo.modules) {
+        const auto shaderModule = devicePtr->CreateShaderModule(asset.data);
         if (!shaderModule) {
             throw std::runtime_error("Failed to create vertex shader module!");
         }

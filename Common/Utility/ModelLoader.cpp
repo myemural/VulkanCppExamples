@@ -14,7 +14,6 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "TextureHandler.h"
 #include "TextureLoader.h"
 
 namespace common::utility
@@ -158,18 +157,18 @@ bool ModelLoader::ProcessTextures(const std::shared_ptr<GltfModelHandler>& handl
 {
     for (const auto& tex: gltfModel_.textures) {
         if (const int texIndex = tex.source; texIndex >= 0 && texIndex < gltfModel_.images.size()) {
-            TextureHandler textureHandler;
+            asset_manager::TextureAsset textureAsset;
             if (const auto& image = gltfModel_.images[texIndex]; image.uri.empty()) {
-                textureHandler.width = image.width;
-                textureHandler.height = image.height;
-                textureHandler.channels = image.component;
-                textureHandler.data = image.image;
+                textureAsset.width = image.width;
+                textureAsset.height = image.height;
+                textureAsset.channels = image.component;
+                textureAsset.data = image.image;
             } else {
-                TextureLoader textureLoader{""};
-                textureHandler = textureLoader.Load(parentPath + image.uri);
+                asset_manager::TextureLoader textureLoader{""};
+                textureAsset = *textureLoader.Load(parentPath + image.uri);
             }
 
-            handler->textures.push_back(textureHandler);
+            handler->textures.push_back(textureAsset);
         } else {
             std::cerr << "GLTF texture index is wrong!" << std::endl;
             return false;

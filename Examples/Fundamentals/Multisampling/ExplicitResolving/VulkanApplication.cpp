@@ -7,7 +7,6 @@
 #include "VulkanApplication.h"
 
 #include <algorithm>
-#include <chrono>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -15,6 +14,8 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "ShaderLoader.h"
+#include "TextureLoader.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
 #include "VulkanShaderModule.h"
@@ -22,6 +23,7 @@
 namespace examples::fundamentals::multisampling::explicit_resolving
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -48,6 +50,7 @@ bool VulkanApplication::Init()
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects();
 
+        InitAssetManager();
         CreateResources();
         InitResources();
 
@@ -128,6 +131,13 @@ void VulkanApplication::InitInputSystem()
     });
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+    assetManager_->RegisterLoader<TextureAsset>(std::make_unique<TextureLoader>(ASSETS_DIR));
+}
+
 void VulkanApplication::CreateResources()
 {
     depthImageFormat_ = physicalDevice_->FindSupportedFormat(
@@ -137,8 +147,8 @@ void VulkanApplication::CreateResources()
     maxSampleCount_ = physicalDevice_->GetMaxUsableSampleCount();
 
     // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    marbleTextureHandler_ = textureLoader.Load(kMarbleTexturePath);
+    const auto marbleTextureAssetHandler = assetManager_->Load<TextureAsset>(kMarbleTexturePath);
+    marbleTextureAsset_ = assetManager_->Get(marbleTextureAssetHandler);
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -161,11 +171,14 @@ void VulkanApplication::CreateResources()
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = kQuadVertexShaderKey, .fileName = kQuadVertexShaderFile},
-                                              {.name = kSceneVertexShaderKey, .fileName = kSceneVertexShaderFile},
-                                              {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
+    const auto quadVertexShaderAsset = assetManager_->Load<ShaderAsset>(kQuadVertexShaderFile);
+    const auto sceneVertexShaderAsset = assetManager_->Load<ShaderAsset>(kSceneVertexShaderFile);
+    const auto mainFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kMainFragmentShaderFile);
+
+    resourceCreateInfo.shaders = {
+        .modules = {{.name = kQuadVertexShaderKey, .asset = assetManager_->Get(quadVertexShaderAsset)},
+                    {.name = kSceneVertexShaderKey, .asset = assetManager_->Get(sceneVertexShaderAsset)},
+                    {.name = kMainFragmentShaderKey, .asset = assetManager_->Get(mainFragmentShaderAsset)}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
@@ -185,7 +198,7 @@ void VulkanApplication::CreateResources()
             .name = kMarbleImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = VK_FORMAT_R8G8B8A8_SRGB,
-            .dimensions = {marbleTextureHandler_.width, marbleTextureHandler_.height, 1},
+            .dimensions = {marbleTextureAsset_.width, marbleTextureAsset_.height, 1},
             .views = {ImageViewCreateInfo{.viewName = kMarbleImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
             .name = kMultisampledImage,
@@ -245,7 +258,7 @@ void VulkanApplication::InitResources() const
     resources_->SetBuffer(kPlaneVertexBuffer, planeVertices.data(), planeVertices.size() * sizeof(VertexPos3Uv2));
     resources_->SetBuffer(kPlaneIndexBuffer, planeIndices.data(), planeIndices.size() * sizeof(planeIndices[0]));
 
-    resources_->SetImageFromTexture(cmdPool_, queue_, kMarbleImage, marbleTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, kMarbleImage, marbleTextureAsset_);
 
     UpdateDescriptorSets();
 }

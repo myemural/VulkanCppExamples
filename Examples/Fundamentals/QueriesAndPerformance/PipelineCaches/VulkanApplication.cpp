@@ -16,6 +16,8 @@
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "ScopedTimer.h"
+#include "ShaderLoader.h"
+#include "TextureLoader.h"
 #include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanPipelineCache.h"
@@ -25,6 +27,7 @@
 namespace examples::fundamentals::queries_and_performance::pipeline_caches
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -51,6 +54,7 @@ bool VulkanApplication::Init()
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects();
 
+        InitAssetManager();
         CreateResources();
         InitResources();
 
@@ -177,6 +181,13 @@ void VulkanApplication::PrepareBufferInfos()
     totalBufferSize_ = totalVertexBufferSize + iOffset;
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+    assetManager_->RegisterLoader<TextureAsset>(std::make_unique<TextureLoader>(ASSETS_DIR));
+}
+
 void VulkanApplication::CreateResources()
 {
     depthImageFormat_ = physicalDevice_->FindSupportedFormat(
@@ -184,8 +195,8 @@ void VulkanApplication::CreateResources()
             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     // Pre-load textures
-    const TextureLoader textureLoader{ASSETS_DIR};
-    crateTextureHandler_ = textureLoader.Load(kCrateTexturePath);
+    const auto crateTextureAssetHandler = assetManager_->Load<TextureAsset>(kCrateTexturePath);
+    crateTextureAsset_ = assetManager_->Get(crateTextureAssetHandler);
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -206,10 +217,12 @@ void VulkanApplication::CreateResources()
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
-                                              {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
+    const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
+    const auto mainFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kMainFragmentShaderFile);
+
+    resourceCreateInfo.shaders = {
+        .modules = {{.name = kMainVertexShaderKey, .asset = assetManager_->Get(mainVertexShaderAsset)},
+                    {.name = kMainFragmentShaderKey, .asset = assetManager_->Get(mainFragmentShaderAsset)}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
@@ -227,7 +240,7 @@ void VulkanApplication::CreateResources()
             .name = kCrateImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = VK_FORMAT_R8G8B8A8_SRGB,
-            .dimensions = {crateTextureHandler_.width, crateTextureHandler_.height, 1},
+            .dimensions = {crateTextureAsset_.width, crateTextureAsset_.height, 1},
             .views = {ImageViewCreateInfo{.viewName = kCrateImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
             .name = kDepthImage,
@@ -263,7 +276,7 @@ void VulkanApplication::InitResources() const
                               bufferAllocInfos_[i].indexOffset, false);
     }
 
-    resources_->SetImageFromTexture(cmdPool_, queue_, kCrateImage, crateTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, kCrateImage, crateTextureAsset_);
 
     UpdateDescriptorSets();
 }

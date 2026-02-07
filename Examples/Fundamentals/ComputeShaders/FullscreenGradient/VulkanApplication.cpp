@@ -8,12 +8,12 @@
 
 #include <algorithm>
 #include <array>
-#include <chrono>
 
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "MathUtils.h"
+#include "ShaderLoader.h"
 #include "TimeUtils.h"
 #include "VulkanHelpers.h"
 #include "VulkanSampler.h"
@@ -22,6 +22,7 @@
 namespace examples::fundamentals::compute_shaders::fullscreen_gradient
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -43,6 +44,7 @@ bool VulkanApplication::Init()
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects();
 
+        InitAssetManager();
         CreateResources();
         InitResources();
 
@@ -83,6 +85,12 @@ void VulkanApplication::DrawFrame()
     currentIndex_ = (currentIndex_ + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+}
+
 void VulkanApplication::CreateResources()
 {
     ResourceDescriptor resourceCreateInfo;
@@ -97,12 +105,14 @@ void VulkanApplication::CreateResources()
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
+    const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
+    const auto mainFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kMainFragmentShaderFile);
+    const auto gradientComputeShaderAsset = assetManager_->Load<ShaderAsset>(kGradientComputeShaderFile);
+
     resourceCreateInfo.shaders = {
-        .basePath = SHADERS_DIR,
-        .shaderType = SHADER_TYPE,
-        .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
-                    {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile},
-                    {.name = kGradientComputeShaderKey, .fileName = kGradientComputeShaderFile}}};
+        .modules = {{.name = kMainVertexShaderKey, .asset = assetManager_->Get(mainVertexShaderAsset)},
+                    {.name = kMainFragmentShaderKey, .asset = assetManager_->Get(mainFragmentShaderAsset)},
+                    {.name = kGradientComputeShaderKey, .asset = assetManager_->Get(gradientComputeShaderAsset)}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {

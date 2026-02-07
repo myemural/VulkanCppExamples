@@ -15,8 +15,8 @@
 #include <glm/glm.hpp>
 
 #include "CoreDefines.h"
-#include "TextureHandler.h"
 #include "Vertex.h"
+#include "TextureAsset.h"
 
 namespace common::utility
 {
@@ -129,7 +129,7 @@ struct COMMON_API GltfModelHandler
     std::vector<GltfNode> nodes;
     std::vector<GltfMesh> meshes;
     std::vector<GltfMaterial> materials;
-    std::vector<TextureHandler> textures;
+    std::vector<asset_manager::TextureAsset> textures;
 };
 
 template<>

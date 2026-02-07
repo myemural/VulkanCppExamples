@@ -15,7 +15,8 @@
 
 #include "ApplicationData.h"
 #include "ApplicationDrawing3D.h"
-#include "TextureLoader.h"
+#include "AssetManager.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -36,6 +37,8 @@ protected:
     void DrawFrame() override;
 
 private:
+    void InitAssetManager();
+
     void CreateResources();
 
     void InitResources();
@@ -59,7 +62,7 @@ private:
     MvpData mvpUbObject_{glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0)};
 
     // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
+    common::asset_manager::TextureAsset crateTextureAsset_{};
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
@@ -67,5 +70,8 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 };
 } // namespace examples::fundamentals::drawing_3d::drawing_cube

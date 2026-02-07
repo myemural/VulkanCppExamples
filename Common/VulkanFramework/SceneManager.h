@@ -75,13 +75,6 @@ public:
                   const glm::vec3& initialRotation = glm::vec3{0.0f},
                   const glm::vec3& initialScale = glm::vec3{1.0f});
 
-    void AddModel(const std::string& modelName,
-                  const std::string& modelPath,
-                  const std::string& defaultSamplerName,
-                  const glm::vec3& initialPosition = glm::vec3{0.0f},
-                  const glm::vec3& initialRotation = glm::vec3{0.0f},
-                  const glm::vec3& initialScale = glm::vec3{1.0f});
-
     // Group logic
     void AddToGroup(const std::string& groupName, const std::initializer_list<std::string>& objectNames);
 

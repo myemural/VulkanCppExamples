@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <array>
-#include <chrono>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -16,12 +15,15 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "ShaderLoader.h"
+#include "TextureLoader.h"
 #include "VulkanHelpers.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::fundamentals::model_loading::gltf_multiple_meshes
 {
 using namespace constants;
+using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
@@ -48,6 +50,7 @@ bool VulkanApplication::Init()
         CreateDefaultCommandPool();
         CreateDefaultSyncObjects();
 
+        InitAssetManager();
         CreateResources();
         InitResources();
 
@@ -126,6 +129,13 @@ void VulkanApplication::InitInputSystem()
     });
 }
 
+void VulkanApplication::InitAssetManager()
+{
+    assetManager_ = std::make_unique<AssetManager>();
+    assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+    assetManager_->RegisterLoader<TextureAsset>(std::make_unique<TextureLoader>(ASSETS_DIR));
+}
+
 void VulkanApplication::CreateResources()
 {
     depthImageFormat_ = physicalDevice_->FindSupportedFormat(
@@ -139,7 +149,7 @@ void VulkanApplication::CreateResources()
     // Load model textures
     const auto meshMatIndex = lanternModel_->meshes[0].materialIndex;
     const auto meshTexIndex = lanternModel_->materials[meshMatIndex].pbrMetallicRoughness.baseColorTextureIndex;
-    lanternMeshTextureHandler_ = lanternModel_->textures[meshTexIndex];
+    lanternMeshTextureAsset_ = lanternModel_->textures[meshTexIndex];
 
     ResourceDescriptor resourceCreateInfo;
 
@@ -157,10 +167,12 @@ void VulkanApplication::CreateResources()
     resourceCreateInfo.buffers = bufferCreateInfos;
 
     // Fill shader module create infos
-    resourceCreateInfo.shaders = {.basePath = SHADERS_DIR,
-                                  .shaderType = SHADER_TYPE,
-                                  .modules = {{.name = kMainVertexShaderKey, .fileName = kMainVertexShaderFile},
-                                              {.name = kMainFragmentShaderKey, .fileName = kMainFragmentShaderFile}}};
+    const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
+    const auto mainFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kMainFragmentShaderFile);
+
+    resourceCreateInfo.shaders = {
+        .modules = {{.name = kMainVertexShaderKey, .asset = assetManager_->Get(mainVertexShaderAsset)},
+                    {.name = kMainFragmentShaderKey, .asset = assetManager_->Get(mainFragmentShaderAsset)}}};
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
@@ -176,7 +188,7 @@ void VulkanApplication::CreateResources()
             .name = kMeshImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = VK_FORMAT_R8G8B8A8_SRGB,
-            .dimensions = {lanternMeshTextureHandler_.width, lanternMeshTextureHandler_.height, 1},
+            .dimensions = {lanternMeshTextureAsset_.width, lanternMeshTextureAsset_.height, 1},
             .views = {ImageViewCreateInfo{.viewName = kMeshImageView, .format = VK_FORMAT_R8G8B8A8_SRGB}}},
         ImageResourceCreateInfo{
             .name = kDepthImage,
@@ -210,7 +222,7 @@ void VulkanApplication::InitResources() const
         resources_->SetBuffer(mesh.GetIndexBufferName(), indexBufferData.data(), indexBufferSize);
     }
 
-    resources_->SetImageFromTexture(cmdPool_, queue_, kMeshImage, lanternMeshTextureHandler_);
+    resources_->SetImageFromTexture(cmdPool_, queue_, kMeshImage, lanternMeshTextureAsset_);
 
     UpdateDescriptorSets();
 }

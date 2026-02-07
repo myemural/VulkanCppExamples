@@ -40,6 +40,8 @@ set(TINYGLTF_BUILD_LOADER_EXAMPLE OFF CACHE INTERNAL "" FORCE)
 add_subdirectory(ThirdParty/tinygltf)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tinygltf")
 
+include_directories("Common/AssetManager")
+include_directories("Common/Scene")
 include_directories("Common/Utility")
 include_directories("Common/VulkanFramework")
 include_directories("Common/VulkanWrapper")

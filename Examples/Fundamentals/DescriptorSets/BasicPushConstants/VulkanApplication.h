@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "ApplicationDescriptorSets.h"
+#include "AssetManager.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanDescriptorSet.h"
 #include "VulkanDevice.h"
@@ -36,6 +37,8 @@ protected:
 private:
     void InitInputSystem() const;
 
+    void InitAssetManager();
+
     void CreateResources();
 
     void InitResources();
@@ -56,5 +59,7 @@ private:
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> pipeline_;
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffers_;
+
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 };
 } // namespace examples::fundamentals::descriptor_sets::basic_push_constants

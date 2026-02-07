@@ -16,8 +16,9 @@
 
 #include "ApplicationData.h"
 #include "ApplicationPipelinesAndPasses.h"
+#include "AssetManager.h"
 #include "PerspectiveCamera.h"
-#include "TextureLoader.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -38,6 +39,8 @@ protected:
     void DrawFrame() override;
 
 private:
+    void InitAssetManager();
+
     void CreateResources();
 
     void InitResources() const;
@@ -61,7 +64,7 @@ private:
     std::array<MvpData, NUM_CUBES> mvpData_ = {glm::mat4(1.0)};
 
     // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
+    common::asset_manager::TextureAsset crateTextureAsset_{};
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayoutObject_;
@@ -71,6 +74,9 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Camera
     std::unique_ptr<common::utility::PerspectiveCamera> camera_;

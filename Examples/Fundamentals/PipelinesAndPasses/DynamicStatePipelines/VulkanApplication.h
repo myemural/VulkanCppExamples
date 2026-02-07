@@ -16,8 +16,9 @@
 
 #include "ApplicationData.h"
 #include "ApplicationPipelinesAndPasses.h"
+#include "AssetManager.h"
 #include "PerspectiveCamera.h"
-#include "TextureLoader.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -41,6 +42,8 @@ protected:
 
 private:
     void InitInputSystem();
+
+    void InitAssetManager();
 
     void CreateResources();
 
@@ -70,7 +73,7 @@ private:
     glm::vec4 currentBlendConstants_{1.0f, 1.0f, 1.0f, 1.0f};
 
     // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
+    common::asset_manager::TextureAsset crateTextureAsset_{};
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
@@ -78,6 +81,9 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Mouse related values
     bool firstMouseTriggered_ = true;

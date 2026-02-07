@@ -13,6 +13,7 @@
 #include <string>
 
 #include "CoreDefines.h"
+#include "ShaderAsset.h"
 #include "VulkanDevice.h"
 
 namespace common::vulkan_framework
@@ -22,11 +23,9 @@ struct COMMON_API ShaderModulesCreateInfo
     struct Module
     {
         std::string name;
-        std::string fileName;
+        asset_manager::ShaderAsset asset;
     };
 
-    std::string basePath;
-    std::string shaderType;
     std::vector<Module> modules;
 };
 

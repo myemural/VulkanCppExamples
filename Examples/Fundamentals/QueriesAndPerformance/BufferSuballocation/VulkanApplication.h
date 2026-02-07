@@ -16,12 +16,12 @@
 
 #include "ApplicationData.h"
 #include "ApplicationQueriesAndPerformance.h"
+#include "AssetManager.h"
 #include "PerspectiveCamera.h"
-#include "TextureLoader.h"
+#include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
-#include "Window.h"
 
 namespace examples::fundamentals::queries_and_performance::buffer_suballocation
 {
@@ -43,6 +43,8 @@ private:
     void InitInputSystem();
 
     void PrepareBufferInfos();
+
+    void InitAssetManager();
 
     void CreateResources();
 
@@ -70,12 +72,12 @@ private:
     std::uint32_t uboAlignedSize_ = UINT32_MAX;
 
     // Buffer (vertex/index) related data
-    std::array<PrimitiveData, PRIMITIVE_TYPE_COUNT> primitivesData_= {};
-    std::array<BufferAllocInfo, PRIMITIVE_TYPE_COUNT> bufferAllocInfos_= {};
+    std::array<PrimitiveData, PRIMITIVE_TYPE_COUNT> primitivesData_ = {};
+    std::array<BufferAllocInfo, PRIMITIVE_TYPE_COUNT> bufferAllocInfos_ = {};
     std::uint32_t totalBufferSize_ = UINT32_MAX;
 
     // Texture resource
-    common::utility::TextureHandler crateTextureHandler_{};
+    common::asset_manager::TextureAsset crateTextureAsset_{};
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
@@ -83,6 +85,9 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Mouse related values
     bool firstMouseTriggered_ = true;

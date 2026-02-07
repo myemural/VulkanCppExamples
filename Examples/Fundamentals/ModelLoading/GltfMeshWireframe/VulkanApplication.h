@@ -16,6 +16,7 @@
 
 #include "ApplicationData.h"
 #include "ApplicationModelLoading.h"
+#include "AssetManager.h"
 #include "ModelLoader.h"
 #include "PerspectiveCamera.h"
 #include "VulkanCommandBuffer.h"
@@ -41,6 +42,8 @@ protected:
 
 private:
     void InitInputSystem();
+
+    void InitAssetManager();
 
     void CreateResources();
 
@@ -73,6 +76,9 @@ private:
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Mouse related values
     bool firstMouseTriggered_ = true;
