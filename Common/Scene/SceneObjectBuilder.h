@@ -17,40 +17,17 @@ namespace common::scene
 class SceneObjectBuilder
 {
 public:
-    COMMON_API explicit SceneObjectBuilder(Scene& scene, const std::string& name) : scene_{scene}
-    {
-        sceneObject_ = scene_.CreateObject(name);
-    }
+    COMMON_API explicit SceneObjectBuilder(Scene& scene, const std::string& name);
 
-    COMMON_API SceneObjectBuilder& WithPosition(const glm::vec3& pos)
-    {
-        sceneObject_->SetPosition(pos);
-        return *this;
-    }
+    COMMON_API SceneObjectBuilder& WithPosition(const glm::vec3& pos);
 
-    COMMON_API SceneObjectBuilder& WithEulerAngles(const glm::vec3& eulerAngles)
-    {
-        sceneObject_->SetEulerAngles(eulerAngles);
-        return *this;
-    }
+    COMMON_API SceneObjectBuilder& WithEulerAngles(const glm::vec3& eulerAngles);
 
-    COMMON_API SceneObjectBuilder& WithScale(const glm::vec3& scale)
-    {
-        sceneObject_->SetScale(scale);
-        return *this;
-    }
+    COMMON_API SceneObjectBuilder& WithScale(const glm::vec3& scale);
 
-    COMMON_API SceneObjectBuilder& WithMesh(const utility::GltfMesh& mesh)
-    {
-        sceneObject_->SetMesh(mesh);
-        return *this;
-    }
+    COMMON_API SceneObjectBuilder& WithMesh(const utility::GltfMesh& mesh);
 
-    COMMON_API SceneObjectBuilder& WithBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType)
-    {
-        sceneObject_->SetBuiltinMesh(builtinMeshType);
-        return *this;
-    }
+    COMMON_API SceneObjectBuilder& WithBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType);
 
     template <typename MaterialType>
     SceneObjectBuilder& WithMaterial(const MaterialType& material)
@@ -59,22 +36,9 @@ public:
         return *this;
     }
 
-    COMMON_API SceneObjectBuilder& AddChild(const SceneObjectBuilder& childBuilder)
-    {
-        childBuilders_.emplace_back(childBuilder);
-        return *this;
-    }
+    COMMON_API SceneObjectBuilder& AddChild(const SceneObjectBuilder& childBuilder);
 
-    [[nodiscard]] COMMON_API std::shared_ptr<SceneObject> Build()
-    {
-        for (auto& childBuilder : childBuilders_)
-        {
-            auto child = childBuilder.Build();
-            sceneObject_->AddChild(child);
-        }
-
-        return sceneObject_;
-    }
+    [[nodiscard]] COMMON_API std::shared_ptr<SceneObject> Build();
 
 private:
     Scene& scene_;

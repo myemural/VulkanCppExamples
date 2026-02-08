@@ -1,6 +1,6 @@
 /**
  * @file    Scene.h
- * @brief   Contains scene implementation.
+ * @brief   Contains scene hierarchy management.
  * @author  Mustafa Yemural (myemural)
  * @date    07.02.2026
  *
@@ -23,54 +23,57 @@
 namespace common::scene
 {
 
+class SceneGpuStorage;
+
+using TraverseFunc = std::function<void(const SceneObject&)>;
+
 class COMMON_API Scene
 {
 public:
-    Scene(vulkan_framework::ResourceManager& resourceManager, vulkan_framework::SceneConfig config);
+    /**
+     * @param resourceManager Reference to Vulkan resource manager.
+     * @param config Scene configuration (attribute layout, primitive counts etc.).
+     */
+    Scene(vulkan_framework::ResourceManager& resourceManager, const vulkan_framework::SceneConfig& config);
 
     ~Scene() = default;
 
+    /**
+     * @brief Create a root-level scene object.
+     * @param objectName Unique name for the object.
+     * @return Shared pointer to newly created SceneObject.
+     */
     std::shared_ptr<SceneObject> CreateObject(const std::string& objectName);
 
-    void Traverse(const std::function<void(SceneObject&)>& func);
 
-    // Attributes and bindings getters
+    /**
+     * @brief Traverse (depth-first) entire scene tree and apply function to each object.
+     * @param func Function/lambda to apply to each object.
+     */
+    void Traverse(const TraverseFunc& func) const;
+
     [[nodiscard]] std::uint32_t GetAttributeCount() const;
+
     [[nodiscard]] std::vector<VkVertexInputBindingDescription> GetBindingDescriptions() const;
+
     [[nodiscard]] std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions() const;
 
-    // Buffer getters
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanBuffer> GetGeometryBuffer() const;
+
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanBuffer> GetTransformStorageBuffer() const;
+
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanBuffer> GetMaterialStorageBuffer() const;
 
+    [[nodiscard]] SceneGpuStorage& GetGpuStorage() const;
+
 private:
-    std::uint32_t GenerateObjectId() { return currentObjectId_++; }
+    static void TraverseRecursive(const SceneObject& object, const TraverseFunc& func);
 
-    void TraverseRecursive(SceneObject& object, const std::function<void(SceneObject&)>& func);
+    std::uint32_t GenerateObjectId();
 
-    MeshGpu AllocateMeshGpu(const utility::GltfMesh& mesh);
-
-    MeshGpu AllocateBuiltinMeshGpu(const vulkan_framework::BuiltinMeshType& builtinMeshType);
-
-    void UpdateSceneObjectTransformGpu(std::uint32_t objectId, const TransformGpu& transformGpu) const;
-
-    void UpdateSceneObjectMaterialGpu(std::uint32_t objectId, const std::vector<uint8_t>& materialData) const;
-
-    static constexpr auto kSceneGeometryBufferName = "SceneGeometryBuffer";
-    static constexpr auto kSceneTransformStorageBufferName = "SceneTransformStorageBuffer";
-    static constexpr auto kSceneMaterialStorageBufferName = "SceneMaterialStorageBuffer";
-    static constexpr auto kBufferSizeInBytes = 1'000'000UL; // 16 MB
-
-    vulkan_framework::ResourceManager& resourceManager_;
-    vulkan_framework::SceneConfig sceneConfig_;
     std::uint32_t currentObjectId_ = 0;
-    std::uint32_t globalBufferPos_ = 0;
-    std::unordered_map<std::string, MeshGpu> meshCache_;
-
     std::vector<std::shared_ptr<SceneObject>> rootObjects_;
-
-    friend class SceneObject;
+    std::unique_ptr<SceneGpuStorage> gpuStorage_;
 };
 
 } // namespace common::scene

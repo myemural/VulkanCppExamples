@@ -40,11 +40,8 @@ namespace constants
     inline constexpr auto kWallStoneNormalTexturePath = "Textures/Wall_Stone_034_normal.png";
     inline constexpr auto kWallStoneNormalTexture = "wallStoneNormalTexture";
 
-    // Materials
-    inline constexpr auto kDefaultMaterial = "defaultMaterial";
-
     // Scene Objects
-    inline constexpr auto kCameraObject = "camera";
+    inline constexpr auto kRootObject = "root";
     inline constexpr auto kCubeObject = "cube";
     inline constexpr auto kSphereObject = "sphere";
     inline constexpr auto kConeObject = "cone";

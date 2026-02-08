@@ -11,9 +11,9 @@
 namespace common::scene
 {
 
-SceneObject::SceneObject(Scene& scene, std::string name) : scene_{scene}, name_{std::move(name)}
+SceneObject::SceneObject(Scene& scene, std::string name, const std::uint32_t objectId)
+    : scene_{scene}, name_{std::move(name)}, objectId_{objectId}
 {
-    objectId_ = scene_.GenerateObjectId();
     UpdateTransformGpu();
 }
 
@@ -40,23 +40,14 @@ void SceneObject::SetScale(const glm::vec3& scale)
     UpdateTransformGpu();
 }
 
-void SceneObject::SetMesh(const utility::GltfMesh& mesh) { mesh_ = scene_.AllocateMeshGpu(mesh); }
+void SceneObject::SetMesh(const utility::GltfMesh& mesh) { mesh_ = scene_.GetGpuStorage().AllocateMesh(mesh); }
 
 void SceneObject::SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType)
 {
-    mesh_ = scene_.AllocateBuiltinMeshGpu(builtinMeshType);
+    mesh_ = scene_.GetGpuStorage().AllocateBuiltinMesh(builtinMeshType);
 }
 
 void SceneObject::SetParent(const std::shared_ptr<SceneObject>& parent) { parent_ = parent; }
-
-std::shared_ptr<SceneObject> SceneObject::AddChild(const std::string& name)
-{
-    const auto child = scene_.CreateObject(name);
-    child->SetParent(shared_from_this());
-    children_.push_back(child);
-    child->MarkWorldDirty();
-    return children_.back();
-}
 
 void SceneObject::AddChild(const std::shared_ptr<SceneObject>& childObject)
 {
@@ -101,7 +92,7 @@ void SceneObject::UpdateTransformGpu()
     TransformGpu transformGpu{};
     transformGpu.modelMatrix = GetWorldMatrix();
     transformGpu.normalMatrix = glm::mat4(glm::transpose(glm::inverse(glm::mat3(transformGpu.modelMatrix))));
-    scene_.UpdateSceneObjectTransformGpu(objectId_, transformGpu);
+    scene_.GetGpuStorage().UpdateTransform(objectId_, transformGpu);
     for (const auto& child: children_) {
         child->UpdateTransformGpu();
     }
@@ -113,14 +104,14 @@ void SceneObject::UpdateMaterialGpu(const std::vector<std::uint8_t>& materialDat
     const std::uint32_t alignedSize = utility::Align16(dataSize);
 
     if (alignedSize == dataSize) {
-        scene_.UpdateSceneObjectMaterialGpu(objectId_, materialData);
+        scene_.GetGpuStorage().UpdateMaterial(objectId_, materialData);
         return;
     }
 
     // Needs padding for alignment
     std::vector<std::uint8_t> paddedData(alignedSize, 0);
     std::ranges::copy(materialData, paddedData.begin());
-    scene_.UpdateSceneObjectMaterialGpu(objectId_, paddedData);
+    scene_.GetGpuStorage().UpdateMaterial(objectId_, paddedData);
 }
 
 } // namespace common::scene

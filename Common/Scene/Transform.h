@@ -30,11 +30,11 @@ public:
 
     void SetScale(const glm::vec3& scale);
 
+    const glm::mat4& GetLocalMatrix();
+
     [[nodiscard]] glm::vec3 GetPosition() const { return position_; }
     [[nodiscard]] glm::vec3 GetEulerAngles() const { return eulerAngles_; }
     [[nodiscard]] glm::vec3 GetScale() const { return scale_; }
-
-    const glm::mat4& GetLocalMatrix();
 
     [[nodiscard]] bool IsDirty() const { return dirty_; }
     void ClearDirty() { dirty_ = false; }

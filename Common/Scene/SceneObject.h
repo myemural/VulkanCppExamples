@@ -15,28 +15,21 @@
 #include <vector>
 
 #include <glm/glm.hpp>
-#include <vulkan/vulkan.hpp>
 
 #include "CoreDefines.h"
 #include "MemoryUtils.h"
-#include "ScenePrimitives.h"
+#include "SceneGpuStorage.h"
 #include "Transform.h"
 
 namespace common::scene
 {
 class Scene;
 
-struct MeshGpu
-{
-    std::vector<VkDeviceSize> vertexOffsets;
-    std::uint32_t indexOffset = UINT32_MAX;
-    std::uint32_t indexCount = UINT32_MAX;
-};
 
 class SceneObject : public std::enable_shared_from_this<SceneObject>
 {
 public:
-    COMMON_API SceneObject(Scene& scene, std::string name);
+    COMMON_API SceneObject(Scene& scene, std::string name, std::uint32_t objectId);
 
     COMMON_API void SetTag(const std::string& tag);
 
@@ -60,17 +53,15 @@ public:
 
     COMMON_API void SetParent(const std::shared_ptr<SceneObject>& parent);
 
-    COMMON_API std::shared_ptr<SceneObject> AddChild(const std::string& name);
-
     COMMON_API void AddChild(const std::shared_ptr<SceneObject>& childObject);
 
-    COMMON_API std::string GetName() const { return name_; }
+    [[nodiscard]] COMMON_API std::string GetName() const { return name_; }
 
-    COMMON_API std::uint32_t GetObjectId() const { return objectId_; }
+    [[nodiscard]] COMMON_API std::uint32_t GetObjectId() const { return objectId_; }
 
-    COMMON_API std::string GetTag() const { return tag_; }
+    [[nodiscard]] COMMON_API std::string GetTag() const { return tag_; }
 
-    COMMON_API MeshGpu GetMeshGpu() const { return mesh_.value(); }
+    [[nodiscard]] COMMON_API std::optional<MeshGpu> GetMeshGpu() const { return mesh_; }
 
     [[nodiscard]] COMMON_API const std::vector<std::shared_ptr<SceneObject>>& GetChildren() const { return children_; }
 
@@ -83,7 +74,7 @@ private:
 
     void MarkWorldDirty();
 
-    COMMON_API void UpdateTransformGpu();
+    void UpdateTransformGpu();
 
     COMMON_API void UpdateMaterialGpu(const std::vector<std::uint8_t>& materialData) const;
 
