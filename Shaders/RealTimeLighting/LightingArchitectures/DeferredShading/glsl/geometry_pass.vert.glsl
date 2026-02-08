@@ -17,50 +17,34 @@ layout(location = 0) out vec3 fragPosView;
 layout(location = 1) out vec2 fragUv;
 layout(location = 2) out mat3 fragTbnView;
 
-struct MeshData {
+struct MeshTransformData
+{
     mat4 model;
     mat4 normalMatrix;
-    vec4 diffuseColor;
-    vec4 specularColor;
-    float ambientStrength;
-    float shininess;
-    float specularStrength;
-    float opacity;
-    float reflectivity;
-    int diffuseMap;
-    int specularMap;
-    int normalMap;
-    int emissiveMap;
-    int shininessMap;
-    int opacityMap;
-    int aoMap;
-    int heightMap;
 };
 
-layout(std430, binding = 0) readonly buffer MeshDataBuffer {
-    MeshData meshes[];
+layout(std430, binding = 0) readonly buffer MeshTransformDataBuffer {
+    MeshTransformData meshTransforms[];
 };
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
-    mat4 reflectionViewProj;
-    vec4 cameraPosition;
     uint objectId;
 } pc;
 
 void main()
 {
     // Get mesh data
-    MeshData mesh = meshes[pc.objectId];
+    MeshTransformData meshTransform = meshTransforms[pc.objectId];
 
     // World-space position and UV
-    vec4 worldPos = mesh.model * vec4(inPosition, 1.0);
+    vec4 worldPos = meshTransform.model * vec4(inPosition, 1.0);
     fragPosView = vec3(pc.view * worldPos);
     fragUv = inUV;
 
     // Normal matrix in view-space
-    mat3 normalMatrixView = mat3(pc.view) * mat3(mesh.normalMatrix);
+    mat3 normalMatrixView = mat3(pc.view) * mat3(meshTransform.normalMatrix);
 
     // View-space normal and tangent
     vec3 N = normalize(normalMatrixView * inNormal);

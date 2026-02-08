@@ -54,8 +54,8 @@ bool SetParams(ParameterServer& params)
         params.Set(AppSettings::MouseSensitivity, 3.0f);
         params.Set(AppSettings::CameraSpeed, 3.0f);
         params.Set(AppSettings::ConstantFactor, 1.0f);
-        params.Set(AppSettings::LinearFactor, 0.7f);
-        params.Set(AppSettings::QuadraticFactor, 1.8f);
+        params.Set(AppSettings::LinearFactor, 0.14f);
+        params.Set(AppSettings::QuadraticFactor, 0.07f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

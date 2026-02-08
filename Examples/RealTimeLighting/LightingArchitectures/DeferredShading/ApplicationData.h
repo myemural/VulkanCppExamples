@@ -20,11 +20,25 @@ namespace examples::real_time_lighting::lighting_architectures::deferred_shading
 #define NUM_OBJECTS 250
 #define MAX_LIGHT_COUNT 50
 
+struct alignas(16) MeshMaterialData
+{
+    glm::vec4 diffuseColor = glm::vec4(1.0f);
+    int diffuseMap;
+    int normalMap;
+};
+
 struct alignas(16) PointLightData
 {
     glm::vec4 lightPosition;    // xyz = Light Position (View-Space)
     glm::vec4 lightColor;       // xyz = Light Color
     glm::vec4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
+};
+
+struct MeshPushConstants
+{
+    glm::mat4 view;
+    glm::mat4 projection;
+    std::uint32_t objectId;
 };
 
 // Scene object and light position vectors

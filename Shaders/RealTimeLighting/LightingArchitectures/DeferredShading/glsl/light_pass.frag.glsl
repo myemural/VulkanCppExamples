@@ -33,8 +33,8 @@ layout(std430, set = 0, binding = 3) readonly buffer PointLightBuffer
 vec3 calculateLight(PointLightData light, vec3 albedo, vec3 normalView, vec3 fragPosView, vec3 viewDir)
 {
     // Constants
-    const float specularStrength = 0.4;
-    const float shininess = 128.0;
+    const float specularStrength = 1.0;
+    const float shininess = 64.0;
 
     float dist = length(light.lightPosition.xyz - fragPosView);
     float attenuation = 1.0 / (light.pointLightParams.x + light.pointLightParams.y * dist + light.pointLightParams.z * dist * dist);;
@@ -50,8 +50,8 @@ vec3 calculateLight(PointLightData light, vec3 albedo, vec3 normalView, vec3 fra
     float spec = pow(max(dot(normalView, halfDir), 0.0), shininess);
     vec3 specular = specularStrength * spec * light.lightColor.rgb;
 
-    // Final color
-    vec3 finalColor = attenuation * diffuse + specular;
+    // Final color (attenuation has less effect on specular)
+    vec3 finalColor = (diffuse * attenuation) + (specular * sqrt(attenuation));
     return finalColor;
 }
 
@@ -72,7 +72,7 @@ void main()
     }
 
     vec3 normalView = texture(gNormal, fragUv).rgb;
-    normalView = normalize(normalView * 2.0 - 1.0);
+    normalView = normalize(normalView);
 
     // Lighting vectors in view space
     vec3 viewDir = normalize(-fragPosView);

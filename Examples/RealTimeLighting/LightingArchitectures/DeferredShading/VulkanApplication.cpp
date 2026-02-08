@@ -12,6 +12,7 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
@@ -19,6 +20,7 @@
 namespace examples::real_time_lighting::lighting_architectures::deferred_shading
 {
 using namespace constants;
+using namespace common::scene;
 using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -168,12 +170,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.currentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
-    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
+    scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    scene_->AddPerspectiveCamera(kCameraObject, glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
-    camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
+    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
 
     // Materials
     const auto wallStoneTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneTexturePath);
@@ -182,14 +183,13 @@ void VulkanApplication::BuildScene()
     materialManager_->LoadTexture(kWallStoneNormalTexture, kMainSampler,
                                   assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
-    const auto defaultMatName = kDefaultMaterial;
-    materialManager_->CreatePhongTexturedMaterial(defaultMatName)
-            .SetDiffuseMap(kWallStoneTexture)
-            .SetNormalMap(kWallStoneNormalTexture)
-            .Build();
+    MeshMaterialData defaultMaterial{};
+    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
+    defaultMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
 
     // Add scene objects and lights
     std::uint32_t index = 0;
+    auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (const auto& modelPos: modelPositions) {
         // Lights
         if (lightPositions_.size() < MAX_LIGHT_COUNT) {
@@ -199,18 +199,18 @@ void VulkanApplication::BuildScene()
         }
 
         // Objects
-        if (const auto value = GenerateRandomValue(0U, 1U); value == 0) {
-            scene_->AddCube(kCubeObject + std::to_string(index), modelPos);
-            scene_->SetMaterial(kCubeObject + std::to_string(index), defaultMatName);
-            scene_->ScaleObject(kCubeObject + std::to_string(index), glm::vec3{2.0f});
-        } else if (value == 1) {
-            scene_->AddSphere(kSphereObject + std::to_string(index), modelPos);
-            scene_->SetMaterial(kSphereObject + std::to_string(index), defaultMatName);
-            scene_->ScaleObject(kSphereObject + std::to_string(index), glm::vec3{2.0f});
-        }
+        const auto value = GenerateRandomValue(0U, 1U);
+        rootObjectBuilder.AddChild(
+                SceneObjectBuilder(*scene_, kCubeObject + std::to_string(index))
+                        .WithBuiltinMesh(value == 0 ? BuiltinMeshType::CUBE : BuiltinMeshType::SPHERE)
+                        .WithMaterial(defaultMaterial)
+                        .WithPosition(modelPos)
+                        .WithScale(glm::vec3{2.0f}));
 
         index++;
     }
+
+    [[maybe_unused]] const auto& rootObject = rootObjectBuilder.Build();
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
@@ -218,16 +218,16 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     // Create descriptor sets
     const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 7 + combinedImageSamplerCount,
-        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
+        .maxSets = 8 + combinedImageSamplerCount,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + 4}},
         .layouts =
                 {
                     {.name = kMainDescSetLayout,
-                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
-                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
+                                  {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
                                    VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
                     {.name = kLightDescSetLayout,
                      .bindings =
@@ -241,11 +241,14 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
 
-    std::vector<VkDescriptorBufferInfo> storageBufferInfos;
-    storageBufferInfos.emplace_back(scene_->GetStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+    std::vector<VkDescriptorBufferInfo> storageTransformBufferInfos;
+    storageTransformBufferInfos.emplace_back(scene_->GetTransformStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    std::vector<VkDescriptorBufferInfo> lightUboInfos;
-    lightUboInfos.emplace_back(resources_->GetBuffer(kLightStorageBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
+    std::vector<VkDescriptorBufferInfo> storageMaterialBufferInfos;
+    storageMaterialBufferInfos.emplace_back(scene_->GetMaterialStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+
+    std::vector<VkDescriptorBufferInfo> storageLightBufferInfos;
+    storageLightBufferInfos.emplace_back(resources_->GetBuffer(kLightStorageBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
     auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
@@ -264,15 +267,21 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
                                   resources_->GetImageView(kNormalImage, kNormalImageView)->GetHandle(),
                                   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    BufferWriteRequest objectStorageBufferRequest;
-    objectStorageBufferRequest.descriptorSetName = kMainDescSet;
-    objectStorageBufferRequest.bindingIndex = 0;
-    objectStorageBufferRequest.buffers = storageBufferInfos;
-    objectStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    BufferWriteRequest transformStorageBufferRequest;
+    transformStorageBufferRequest.descriptorSetName = kMainDescSet;
+    transformStorageBufferRequest.bindingIndex = 0;
+    transformStorageBufferRequest.buffers = storageTransformBufferInfos;
+    transformStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+
+    BufferWriteRequest transformMaterialBufferRequest;
+    transformMaterialBufferRequest.descriptorSetName = kMainDescSet;
+    transformMaterialBufferRequest.bindingIndex = 1;
+    transformMaterialBufferRequest.buffers = storageMaterialBufferInfos;
+    transformMaterialBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     ImageWriteRequest textureUpdateRequest;
     textureUpdateRequest.descriptorSetName = kMainDescSet;
-    textureUpdateRequest.bindingIndex = 1;
+    textureUpdateRequest.bindingIndex = 2;
     textureUpdateRequest.images = descriptorImageInfos;
     textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
@@ -297,11 +306,11 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     BufferWriteRequest lightUpdateRequest;
     lightUpdateRequest.descriptorSetName = kLightDescSet;
     lightUpdateRequest.bindingIndex = 3;
-    lightUpdateRequest.buffers = lightUboInfos;
+    lightUpdateRequest.buffers = storageLightBufferInfos;
     lightUpdateRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .bufferWriteRequests = {objectStorageBufferRequest, lightUpdateRequest},
+        .bufferWriteRequests = {transformStorageBufferRequest, transformMaterialBufferRequest, lightUpdateRequest},
         .imageWriteRequests = {textureUpdateRequest, positionUpdateRequest, albedoUpdateRequest, normalUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
@@ -427,7 +436,7 @@ void VulkanApplication::CreatePipelines()
 {
     VkPushConstantRange mvpPushConstant;
     mvpPushConstant.offset = 0;
-    mvpPushConstant.size = sizeof(MeshPushConstantsGpu);
+    mvpPushConstant.size = sizeof(MeshPushConstants);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
     geometryPipelineLayout_ =
@@ -616,19 +625,22 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
         // Draw scene objects
         currentCmdBuffer->BindPipeline(geometryPassPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-            const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
+        scene_->Traverse([&](const SceneObject& sceneObject) {
+            if (sceneObject.HasRenderable()) {
+                const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
+                currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
+                currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-            currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-            currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-            const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
-                    scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
-            currentCmdBuffer->PushConstants(geometryPipelineLayout_,
-                                            VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                            sizeof(meshPushConstants), &meshPushConstants);
-            currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
-        }
+                MeshPushConstants meshPushConstants{};
+                meshPushConstants.objectId = sceneObject.GetObjectId();
+                meshPushConstants.view = camera_->GetViewMatrix();
+                meshPushConstants.projection = camera_->GetProjectionMatrix();
+                currentCmdBuffer->PushConstants(geometryPipelineLayout_,
+                                                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
+                                                sizeof(meshPushConstants), &meshPushConstants);
+                currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
+            }
+        });
 
         currentCmdBuffer->EndRenderPass();
     }
