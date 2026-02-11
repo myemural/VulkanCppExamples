@@ -189,6 +189,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Dynamic Cubemap Reflections](/Examples/RealTimeLighting/EnvironmentMapping/DynamicCubemapReflections)
 - **[Lighting Architectures](/Examples/RealTimeLighting/LightingArchitectures)**
   - [Simple Deferred Shading](/Examples/RealTimeLighting/LightingArchitectures/DeferredShading)
+  - [Tiled Forward Shading (Forward+)](/Examples/RealTimeLighting/LightingArchitectures/TiledForwardShading)
 
 ## Environment Support
 
