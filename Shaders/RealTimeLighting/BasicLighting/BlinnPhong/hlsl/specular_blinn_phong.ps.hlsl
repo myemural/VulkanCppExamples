@@ -12,18 +12,15 @@ struct PSInput
     [[vk::location(1)]] float3 fragNormal : TEXCOORD1;
 };
 
-struct MeshData
+struct MeshMaterialData
 {
-    float4x4 model;
-    float4x4 normalMatrix;
     float4 diffuseColor;
     float4 specularColor;
     float  ambientStrength;
     float  shininess;
     float  specularStrength;
-    float  opacity;
 };
-[[vk::binding(0, 0)]] StructuredBuffer<MeshData> meshes : register(t0);
+[[vk::binding(1, 0)]] StructuredBuffer<MeshMaterialData> meshMaterials : register(t0);
 
 struct MeshPushConstants
 {
@@ -40,7 +37,7 @@ struct LightUBO
     float4 lightColor;    // rgb = light color
 };
 
-[[vk::binding(1, 0)]]
+[[vk::binding(2, 0)]]
 cbuffer Light : register(b1)
 {
     LightUBO light;
@@ -49,7 +46,7 @@ cbuffer Light : register(b1)
 float4 main(PSInput input) : SV_Target
 {
     // Get mesh info
-    MeshData meshInfo = meshes[pc.objectId];
+    MeshMaterialData meshInfo = meshMaterials[pc.objectId];
 
     // Normalizing normal
     float3 normalizedNormal = normalize(input.fragNormal);
@@ -74,5 +71,5 @@ float4 main(PSInput input) : SV_Target
 
     // Final color
     float3 finalColor = ambient + diffuse + specular;
-    return float4(finalColor, meshInfo.opacity);
+    return float4(finalColor, 1.0);
 }

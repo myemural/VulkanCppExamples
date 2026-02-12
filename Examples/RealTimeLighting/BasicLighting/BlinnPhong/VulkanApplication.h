@@ -16,7 +16,7 @@
 #include "ApplicationBasicLighting.h"
 #include "MaterialManager.h"
 #include "PerspectiveCamera.h"
-#include "SceneManager.h"
+#include "Scene.h"
 #include "AssetManager.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -78,8 +78,8 @@ private:
     // Camera
     std::shared_ptr<common::utility::PerspectiveCamera> camera_ = nullptr;
 
-    // Scene manager
-    std::unique_ptr<common::vulkan_framework::SceneManager> scene_;
+    // Scene
+    std::unique_ptr<common::scene::Scene> scene_;
     std::unique_ptr<common::vulkan_framework::MaterialManager> materialManager_;
 
     // Asset manager

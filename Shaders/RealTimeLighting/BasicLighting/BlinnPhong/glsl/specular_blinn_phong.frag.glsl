@@ -13,22 +13,20 @@ layout(location = 0) out vec4 outColor;
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec3 fragNormal;
 
-struct MeshData {
-    mat4 model;
-    mat4 normalMatrix;
+struct MeshMaterialData
+{
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
     float shininess;
     float specularStrength;
-    float opacity;
 };
 
-layout(std430, binding = 0) readonly buffer MeshDataBuffer {
-    MeshData meshes[];
+layout(std430, binding = 1) readonly buffer MeshMaterialDataBuffer {
+    MeshMaterialData meshMaterials[];
 };
 
-layout(std140, set = 0, binding = 1) uniform LightUBO
+layout(std140, set = 0, binding = 2) uniform LightUBO
 {
     vec4 lightPosition;  // xyz = Light Position
     vec4 lightColor;     // rgb = Light Color
@@ -37,7 +35,6 @@ layout(std140, set = 0, binding = 1) uniform LightUBO
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
-    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;
@@ -45,7 +42,7 @@ layout(push_constant) uniform MeshPushConstants {
 void main()
 {
     // Get mesh info
-    const MeshData meshInfo = meshes[pc.objectId];
+    const MeshMaterialData meshInfo = meshMaterials[pc.objectId];
 
     // Normalizing normal
     vec3 normalizedNormal = normalize(fragNormal);
@@ -70,5 +67,5 @@ void main()
 
     // Final color
     vec3 finalColor = ambient + diffuse + specular;
-    outColor = vec4(finalColor, meshInfo.opacity);
+    outColor = vec4(finalColor, 1.0);
 }

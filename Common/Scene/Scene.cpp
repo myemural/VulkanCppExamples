@@ -30,6 +30,18 @@ void Scene::Traverse(const TraverseFunc& func) const
     }
 }
 
+std::shared_ptr<SceneObject> Scene::FindObjectByName(const std::string& name) const
+{
+    /// TODO: Object lookup will be added later.
+    for (const auto& root: rootObjects_) {
+        if (auto result = FindRecursive(root, name)) {
+            return result;
+        }
+    }
+
+    return nullptr;
+}
+
 std::uint32_t Scene::GetAttributeCount() const { return gpuStorage_->GetAttributeCount(); }
 
 std::vector<VkVertexInputBindingDescription> Scene::GetBindingDescriptions() const
@@ -65,6 +77,21 @@ void Scene::TraverseRecursive(const SceneObject& object, const TraverseFunc& fun
     for (auto& childObject: object.GetChildren()) {
         TraverseRecursive(*childObject, func);
     }
+}
+
+std::shared_ptr<SceneObject> Scene::FindRecursive(const std::shared_ptr<SceneObject>& object, const std::string& name)
+{
+    if (object->GetName() == name) {
+        return object;
+    }
+
+    for (const auto& child: object->GetChildren()) {
+        if (auto result = FindRecursive(child, name)) {
+            return result;
+        }
+    }
+
+    return nullptr;
 }
 
 std::uint32_t Scene::GenerateObjectId() { return currentObjectId_++; }

@@ -52,6 +52,8 @@ public:
      */
     void Traverse(const TraverseFunc& func) const;
 
+    std::shared_ptr<SceneObject> FindObjectByName(const std::string& name) const;
+
     [[nodiscard]] std::uint32_t GetAttributeCount() const;
 
     [[nodiscard]] std::vector<VkVertexInputBindingDescription> GetBindingDescriptions() const;
@@ -68,6 +70,8 @@ public:
 
 private:
     static void TraverseRecursive(const SceneObject& object, const TraverseFunc& func);
+
+    static std::shared_ptr<SceneObject> FindRecursive(const std::shared_ptr<SceneObject>& object, const std::string& name);
 
     std::uint32_t GenerateObjectId();
 

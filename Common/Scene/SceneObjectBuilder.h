@@ -19,6 +19,8 @@ class SceneObjectBuilder
 public:
     COMMON_API explicit SceneObjectBuilder(Scene& scene, const std::string& name);
 
+    COMMON_API SceneObjectBuilder& WithTag(const std::string& tag);
+
     COMMON_API SceneObjectBuilder& WithPosition(const glm::vec3& pos);
 
     COMMON_API SceneObjectBuilder& WithEulerAngles(const glm::vec3& eulerAngles);
@@ -29,7 +31,7 @@ public:
 
     COMMON_API SceneObjectBuilder& WithBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType);
 
-    template <typename MaterialType>
+    template<typename MaterialType>
     SceneObjectBuilder& WithMaterial(const MaterialType& material)
     {
         sceneObject_->SetMaterial(material);

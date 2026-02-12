@@ -47,6 +47,8 @@ void SceneObject::SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builti
     mesh_ = scene_.GetGpuStorage().AllocateBuiltinMesh(builtinMeshType);
 }
 
+glm::vec3 SceneObject::GetPosition() const { return transform_.GetPosition(); }
+
 void SceneObject::SetParent(const std::shared_ptr<SceneObject>& parent) { parent_ = parent; }
 
 void SceneObject::AddChild(const std::shared_ptr<SceneObject>& childObject)

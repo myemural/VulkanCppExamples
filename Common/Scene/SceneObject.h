@@ -43,6 +43,8 @@ public:
 
     COMMON_API void SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType);
 
+    COMMON_API glm::vec3 GetPosition() const;
+
     template<typename MaterialType>
     void SetMaterial(const MaterialType& material)
     {

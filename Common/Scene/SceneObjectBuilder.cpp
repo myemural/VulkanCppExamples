@@ -9,10 +9,15 @@
 namespace common::scene
 {
 
-SceneObjectBuilder::SceneObjectBuilder(Scene& scene, const std::string& name)
-: scene_{scene}
+SceneObjectBuilder::SceneObjectBuilder(Scene& scene, const std::string& name) : scene_{scene}
 {
     sceneObject_ = scene_.CreateObject(name);
+}
+
+SceneObjectBuilder& SceneObjectBuilder::WithTag(const std::string& tag)
+{
+    sceneObject_->SetTag(tag);
+    return *this;
 }
 
 SceneObjectBuilder& SceneObjectBuilder::WithPosition(const glm::vec3& pos)
@@ -53,8 +58,7 @@ SceneObjectBuilder& SceneObjectBuilder::AddChild(const SceneObjectBuilder& child
 
 std::shared_ptr<SceneObject> SceneObjectBuilder::Build()
 {
-    for (auto& childBuilder : childBuilders_)
-    {
+    for (auto& childBuilder: childBuilders_) {
         auto child = childBuilder.Build();
         sceneObject_->AddChild(child);
     }
