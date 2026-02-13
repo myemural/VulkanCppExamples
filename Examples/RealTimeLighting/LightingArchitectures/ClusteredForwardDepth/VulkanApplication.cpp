@@ -18,7 +18,7 @@
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_lighting::lighting_architectures::tiled_forward_shading
+namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth
 {
 using namespace constants;
 using namespace common::scene;
@@ -107,54 +107,41 @@ void VulkanApplication::CreateInitialResources() const
     // Fill buffer create infos
     const auto tilesX = CeilDiv(currentWindowWidth_, TILE_SIZE_X);
     const auto tilesY = CeilDiv(currentWindowHeight_, TILE_SIZE_Y);
-    const std::uint32_t totalTileCount = tilesX * tilesY;
-    const std::uint32_t tileLightListStorageBufferSize = totalTileCount * sizeof(TileLightList);
+    const std::uint32_t totalClusterCount = tilesX * tilesY * Z_SLICE_COUNT;
+    const std::uint32_t clusterLightListStorageBufferSize = totalClusterCount * sizeof(ClusterLightList);
     resourceCreateInfo.buffers = {
         {kPointLightStorageBuffer, sizeof(PointLightData) * MAX_LIGHT_COUNT, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {kTileLightListStorageBuffer, tileLightListStorageBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+        {kClusterLightListStorageBuffer, clusterLightListStorageBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
 
     // Fill shader module create infos
-    const auto depthPrePassVertexShaderAsset = assetManager_->Load<ShaderAsset>(kDepthPrePassVertexShaderFile);
-    const auto tiledForwardVertexShaderAsset = assetManager_->Load<ShaderAsset>(kTiledForwardVertexShaderFile);
-    const auto tiledForwardFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kTiledForwardFragmentShaderFile);
-    const auto tileLightCullComputeShaderAsset = assetManager_->Load<ShaderAsset>(kTileLightCullComputeShaderFile);
+    const auto clusteredForwardVertexShaderAsset = assetManager_->Load<ShaderAsset>(kClusteredForwardVertexShaderFile);
+    const auto clusteredForwardFragmentShaderAsset =
+            assetManager_->Load<ShaderAsset>(kClusteredForwardFragmentShaderFile);
+    const auto clusterLightCullComputeShaderAsset =
+            assetManager_->Load<ShaderAsset>(kClusterLightCullComputeShaderFile);
 
-    resourceCreateInfo.shaders = {
-        .modules = {
-            {.name = kDepthPrePassVertexShaderKey, .asset = assetManager_->Get(depthPrePassVertexShaderAsset)},
-            {.name = kTiledForwardVertexShaderKey, .asset = assetManager_->Get(tiledForwardVertexShaderAsset)},
-            {.name = kTiledForwardFragmentShaderKey, .asset = assetManager_->Get(tiledForwardFragmentShaderAsset)},
-            {.name = kTileLightCullComputeShaderKey, .asset = assetManager_->Get(tileLightCullComputeShaderAsset)}}};
+    resourceCreateInfo.shaders = {.modules = {{.name = kClusteredForwardVertexShaderKey,
+                                               .asset = assetManager_->Get(clusteredForwardVertexShaderAsset)},
+                                              {.name = kClusteredForwardFragmentShaderKey,
+                                               .asset = assetManager_->Get(clusteredForwardFragmentShaderAsset)},
+                                              {.name = kClusterLightCullComputeShaderKey,
+                                               .asset = assetManager_->Get(clusterLightCullComputeShaderAsset)}}};
 
-    resourceCreateInfo.images = {
-        ImageResourceCreateInfo{
-            .name = kDepthImage,
-            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = depthImageFormat_,
-            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
-                                          .format = depthImageFormat_,
-                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}},
-        ImageResourceCreateInfo{
-            .name = kDepthPrePassImage,
-            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = depthImageFormat_,
-            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kDepthPrePassImageView,
-                                          .format = depthImageFormat_,
-                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}}};
+    resourceCreateInfo.images = {ImageResourceCreateInfo{
+        .name = kDepthImage,
+        .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .format = depthImageFormat_,
+        .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
+                                      .format = depthImageFormat_,
+                                      .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                           .baseMipLevel = 0,
+                                                           .levelCount = 1,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 1}}}}};
 
     resourceCreateInfo.samplers = {
         {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
@@ -176,7 +163,9 @@ void VulkanApplication::BuildScene()
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
+    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio, 45.0f,
+                                                  GetParamFloat(AppSettings::CameraNearPlane),
+                                                  GetParamFloat(AppSettings::CameraFarPlane));
 
     // Materials
     const auto wallStoneTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneTexturePath);
@@ -220,12 +209,10 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     // Create descriptor sets
     const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 5 + combinedImageSamplerCount + 1,
+        .maxSets = 5 + combinedImageSamplerCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 5},
-                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + 1}},
-        .layouts = {{.name = kDepthPrePassDescSetLayout,
-                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr}}},
-                    {.name = kMainDescSetLayout,
+                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount}},
+        .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
@@ -233,11 +220,8 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
                                   {3, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
                                    VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT, nullptr},
                                   {4, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
-                                   VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT, nullptr},
-                                  {5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_COMPUTE_BIT,
-                                   nullptr}}}},
-        .descriptorSets = {{.name = kDepthPrePassDescSet, .layoutName = kDepthPrePassDescSetLayout},
-                           {.name = kMainDescSet, .layoutName = kMainDescSetLayout}}};
+                                   VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT, nullptr}}}},
+        .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout}}};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
 
@@ -253,20 +237,9 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     storagePointLightBufferInfos.emplace_back(resources_->GetBuffer(kPointLightStorageBuffer)->GetHandle(), 0,
                                               VK_WHOLE_SIZE);
 
-    std::vector<VkDescriptorBufferInfo> storageTileLightListBufferInfos;
-    storageTileLightListBufferInfos.emplace_back(resources_->GetBuffer(kTileLightListStorageBuffer)->GetHandle(), 0,
-                                                 VK_WHOLE_SIZE);
-
-    std::vector<VkDescriptorImageInfo> depthImageInfos;
-    depthImageInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
-                                 resources_->GetImageView(kDepthPrePassImage, kDepthPrePassImageView)->GetHandle(),
-                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    BufferWriteRequest transformStorageBufferDepthPrePassRequest;
-    transformStorageBufferDepthPrePassRequest.descriptorSetName = kDepthPrePassDescSet;
-    transformStorageBufferDepthPrePassRequest.bindingIndex = 0;
-    transformStorageBufferDepthPrePassRequest.buffers = storageTransformBufferInfos;
-    transformStorageBufferDepthPrePassRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    std::vector<VkDescriptorBufferInfo> storageClusterLightListBufferInfos;
+    storageClusterLightListBufferInfos.emplace_back(resources_->GetBuffer(kClusterLightListStorageBuffer)->GetHandle(),
+                                                    0, VK_WHOLE_SIZE);
 
     BufferWriteRequest transformStorageBufferRequest;
     transformStorageBufferRequest.descriptorSetName = kMainDescSet;
@@ -292,22 +265,16 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     pointLightBufferRequest.buffers = storagePointLightBufferInfos;
     pointLightBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
-    BufferWriteRequest tileLightListBufferRequest;
-    tileLightListBufferRequest.descriptorSetName = kMainDescSet;
-    tileLightListBufferRequest.bindingIndex = 4;
-    tileLightListBufferRequest.buffers = storageTileLightListBufferInfos;
-    tileLightListBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-
-    ImageWriteRequest depthImageUpdateRequest;
-    depthImageUpdateRequest.descriptorSetName = kMainDescSet;
-    depthImageUpdateRequest.bindingIndex = 5;
-    depthImageUpdateRequest.images = depthImageInfos;
-    depthImageUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    BufferWriteRequest clusterLightListBufferRequest;
+    clusterLightListBufferRequest.descriptorSetName = kMainDescSet;
+    clusterLightListBufferRequest.bindingIndex = 4;
+    clusterLightListBufferRequest.buffers = storageClusterLightListBufferInfos;
+    clusterLightListBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .bufferWriteRequests = {transformStorageBufferDepthPrePassRequest, transformStorageBufferRequest,
-                                transformMaterialBufferRequest, pointLightBufferRequest, tileLightListBufferRequest},
-        .imageWriteRequests = {textureUpdateRequest, depthImageUpdateRequest}};
+        .bufferWriteRequests = {transformStorageBufferRequest, transformMaterialBufferRequest, pointLightBufferRequest,
+                                clusterLightListBufferRequest},
+        .imageWriteRequests = {textureUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -344,31 +311,6 @@ void VulkanApplication::InitInputSystem()
 
 void VulkanApplication::CreateRenderPass()
 {
-    VkAttachmentReference depthPrePassAttachmentRef{0, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
-
-    depthPrePassRenderPass_ = device_->CreateRenderPass([&](auto& builder) {
-        builder.AddAttachment([&](auto& attachmentCreateInfo) {
-                   attachmentCreateInfo.format = depthImageFormat_;
-                   attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-                   attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-                   attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-                   attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-                   attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-                   attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-                   attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-               })
-                .AddSubpass([&](auto& subpassCreateInfo) {
-                    subpassCreateInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-                    subpassCreateInfo.colorAttachmentCount = 0;
-                    subpassCreateInfo.pColorAttachments = nullptr;
-                    subpassCreateInfo.pDepthStencilAttachment = &depthPrePassAttachmentRef;
-                });
-    });
-
-    if (!depthPrePassRenderPass_) {
-        throw std::runtime_error("Failed to create render pass (for depth pre-pass)!");
-    }
-
     VkAttachmentReference colorAttachmentRef{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
     VkAttachmentReference depthAttachmentRef{1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
@@ -428,47 +370,6 @@ void VulkanApplication::CreatePipelines()
     const auto bindings = scene_->GetBindingDescriptions();
     const auto attributes = scene_->GetAttributeDescriptions();
 
-    depthPrePassPipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(kDepthPrePassDescSetLayout)}, {mvpForwardPushConstant});
-
-    if (!depthPrePassPipelineLayout_) {
-        throw std::runtime_error("Failed to create pipeline layout (depth pre-pass)!");
-    }
-
-    depthPrePassPipeline_ =
-            device_->CreateGraphicsPipeline(depthPrePassPipelineLayout_, depthPrePassRenderPass_, [&](auto& builder) {
-                builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
-                    shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-                    shaderStageCreateInfo.module =
-                            resources_->GetShaderModule(kDepthPrePassVertexShaderKey)->GetHandle();
-                });
-                builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
-                    vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
-                    vertexInputStateCreateInfo.pVertexBindingDescriptions = bindings.data();
-                    vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributes.size();
-                    vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributes.data();
-                });
-                builder.SetViewportState([&](auto& viewportStateCreateInfo) {
-                    viewportStateCreateInfo.viewportCount = 1;
-                    viewportStateCreateInfo.pViewports = &viewport;
-                    viewportStateCreateInfo.scissorCount = 1;
-                    viewportStateCreateInfo.pScissors = &scissor;
-                });
-                builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
-                    blendStateCreateInfo.attachmentCount = 0;
-                    blendStateCreateInfo.pAttachments = nullptr;
-                });
-                builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
-                    depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
-                    depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
-                    depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
-                });
-            });
-
-    if (!depthPrePassPipeline_) {
-        throw std::runtime_error("Failed to create graphics pipeline (for depth pre-pass)!");
-    }
-
     forwardPipelineLayout_ = device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kMainDescSetLayout)},
                                                            {mvpForwardPushConstant});
 
@@ -476,17 +377,17 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create pipeline layout (for forward pipeline)!");
     }
 
-    tiledForwardPassPipeline_ =
+    forwardPassPipeline_ =
             device_->CreateGraphicsPipeline(forwardPipelineLayout_, forwardRenderPass_, [&](auto& builder) {
                 builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                     shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
                     shaderStageCreateInfo.module =
-                            resources_->GetShaderModule(kTiledForwardVertexShaderKey)->GetHandle();
+                            resources_->GetShaderModule(kClusteredForwardVertexShaderKey)->GetHandle();
                 });
                 builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
                     shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
                     shaderStageCreateInfo.module =
-                            resources_->GetShaderModule(kTiledForwardFragmentShaderKey)->GetHandle();
+                            resources_->GetShaderModule(kClusteredForwardFragmentShaderKey)->GetHandle();
                 });
                 builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
                     vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -511,7 +412,7 @@ void VulkanApplication::CreatePipelines()
                 });
             });
 
-    if (!tiledForwardPassPipeline_) {
+    if (!forwardPassPipeline_) {
         throw std::runtime_error("Failed to create graphics pipeline (for forward pipeline)!");
     }
 
@@ -528,14 +429,14 @@ void VulkanApplication::CreatePipelines()
     }
 
 
-    tileLightCullPipeline_ = device_->CreateComputePipeline(lightCullPipelineLayout_, [&](auto& builder) {
+    lightCullPipeline_ = device_->CreateComputePipeline(lightCullPipelineLayout_, [&](auto& builder) {
         builder.SetShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-            shaderStageCreateInfo.module = resources_->GetShaderModule(kTileLightCullComputeShaderKey)->GetHandle();
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kClusterLightCullComputeShaderKey)->GetHandle();
         });
     });
 
-    if (!tileLightCullPipeline_) {
+    if (!lightCullPipeline_) {
         throw std::runtime_error("Failed to create compute pipeline (for light cull pipeline)!");
     }
 }
@@ -554,16 +455,6 @@ void VulkanApplication::CreateFramebuffers()
         }
 
         presentFramebuffers_.push_back(framebuffer);
-    }
-
-    const auto& depthPrePassImageView = resources_->GetImageView(kDepthPrePassImage, kDepthPrePassImageView);
-    depthPrePassFramebuffer_ =
-            device_->CreateFramebuffer(depthPrePassRenderPass_, {depthPrePassImageView}, [&](auto& builder) {
-                builder.SetDimensions(currentWindowWidth_, currentWindowHeight_);
-            });
-
-    if (!depthPrePassFramebuffer_) {
-        throw std::runtime_error("Failed to create framebuffer (for depth pre-pass)!");
     }
 }
 
@@ -588,65 +479,9 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
-    // Depth Pre-Pass
-    {
-        currentCmdBuffer->BeginRenderPass(
-                [&](auto& beginInfo) {
-                    beginInfo.renderPass = depthPrePassRenderPass_->GetHandle();
-                    beginInfo.framebuffer = depthPrePassFramebuffer_->GetHandle();
-                    beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(currentWindowWidth_, currentWindowHeight_);
-                    beginInfo.clearValueCount = 1;
-                    beginInfo.pClearValues = &clearValues[1];
-                },
-                VK_SUBPASS_CONTENTS_INLINE);
-
-        const std::vector cubeDescSets{resources_->GetDescriptorSet(kDepthPrePassDescSet)};
-        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, depthPrePassPipelineLayout_, 0,
-                                             cubeDescSets);
-        const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
-
-        // Draw scene objects
-        currentCmdBuffer->BindPipeline(depthPrePassPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-        scene_->Traverse([&](const SceneObject& sceneObject) {
-            if (sceneObject.HasRenderable()) {
-                const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
-                currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-                currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-                ForwardPipelinePushConstants meshPushConstants{};
-                meshPushConstants.objectId = sceneObject.GetObjectId();
-                meshPushConstants.tilesX = 0; // No need for this pass
-                meshPushConstants.view = camera_->GetViewMatrix();
-                meshPushConstants.projection = camera_->GetProjectionMatrix();
-                currentCmdBuffer->PushConstants(depthPrePassPipelineLayout_,
-                                                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                                sizeof(meshPushConstants), &meshPushConstants);
-                currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
-            }
-        });
-
-        currentCmdBuffer->EndRenderPass();
-    }
-
-    // Barrier for using depth pre-pass image in shaders
-    {
-        const auto depthPrePassImage = resources_->GetImage(kDepthPrePassImage);
-        const auto barrier = depthPrePassImage->CreateImageMemoryBarrier(
-                VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT,
-                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                VkImageSubresourceRange{.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                        .baseMipLevel = 0,
-                                        .levelCount = 1,
-                                        .baseArrayLayer = 0,
-                                        .layerCount = 1});
-        currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-                                          VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, {barrier}, {});
-    }
-
     // Compute Pass: Tile Light Culling
     {
-        currentCmdBuffer->BindPipeline(tileLightCullPipeline_, VK_PIPELINE_BIND_POINT_COMPUTE);
+        currentCmdBuffer->BindPipeline(lightCullPipeline_, VK_PIPELINE_BIND_POINT_COMPUTE);
         const std::vector descSets{resources_->GetDescriptorSet(kMainDescSet)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_COMPUTE, lightCullPipelineLayout_, 0, descSets);
 
@@ -654,16 +489,18 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         lightCullPushConstants.proj = camera_->GetProjectionMatrix();
         lightCullPushConstants.screenSize = glm::vec4(currentWindowWidth_, currentWindowHeight_, 0.0f, 0.0f);
         lightCullPushConstants.lightCount = lightPositions_.size();
+        lightCullPushConstants.nearPlane = GetParamFloat(AppSettings::CameraNearPlane);
+        lightCullPushConstants.farPlane = GetParamFloat(AppSettings::CameraFarPlane);
         currentCmdBuffer->PushConstants(lightCullPipelineLayout_, VK_SHADER_STAGE_COMPUTE_BIT, 0,
                                         sizeof(lightCullPushConstants), &lightCullPushConstants);
         const auto tilesX = CeilDiv(currentWindowWidth_, TILE_SIZE_X);
         const auto tilesY = CeilDiv(currentWindowHeight_, TILE_SIZE_Y);
-        currentCmdBuffer->Dispatch(tilesX, tilesY, 1);
+        currentCmdBuffer->Dispatch(tilesX, tilesY, Z_SLICE_COUNT);
     }
 
     // Before start render pass, put memory barrier for tile light list storage buffer
     {
-        const auto lightListStorageBuffer = resources_->GetBuffer(kTileLightListStorageBuffer);
+        const auto lightListStorageBuffer = resources_->GetBuffer(kClusterLightListStorageBuffer);
         const auto barrier = lightListStorageBuffer->CreateBufferMemoryBarrier(VK_ACCESS_SHADER_WRITE_BIT,
                                                                                VK_ACCESS_SHADER_READ_BIT);
         currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
@@ -688,7 +525,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
 
         // Draw scene objects
-        currentCmdBuffer->BindPipeline(tiledForwardPassPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        currentCmdBuffer->BindPipeline(forwardPassPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
         scene_->Traverse([&](const SceneObject& sceneObject) {
             if (sceneObject.HasRenderable()) {
                 const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
@@ -700,6 +537,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 meshPushConstants.tilesX = CeilDiv(currentWindowWidth_, TILE_SIZE_X);
                 meshPushConstants.view = camera_->GetViewMatrix();
                 meshPushConstants.projection = camera_->GetProjectionMatrix();
+                meshPushConstants.nearPlane = GetParamFloat(AppSettings::CameraNearPlane);
+                meshPushConstants.farPlane = GetParamFloat(AppSettings::CameraFarPlane);
                 currentCmdBuffer->PushConstants(forwardPipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                 sizeof(meshPushConstants), &meshPushConstants);
@@ -744,4 +583,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_lighting::lighting_architectures::tiled_forward_shading
+} // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth

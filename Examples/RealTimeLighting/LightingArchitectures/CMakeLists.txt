@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(DeferredShading)
 add_subdirectory(TiledForwardShading)
+add_subdirectory(ClusteredForwardDepth)

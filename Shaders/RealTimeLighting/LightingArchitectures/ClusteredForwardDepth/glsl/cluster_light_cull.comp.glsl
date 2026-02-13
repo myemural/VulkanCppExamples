@@ -1,0 +1,131 @@
+#version 450
+
+// ------------------------------------------------------------------------
+// Author: Mustafa Yemural
+// Description:
+// ------------------------------------------------------------------------
+// Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
+// Licensed under the MIT License.
+// ------------------------------------------------------------------------
+
+layout(local_size_x = 16, local_size_y = 16) in;
+
+#define TILE_SIZE 16
+#define MAX_LIGHTS_PER_CLUSTER 32
+#define Z_SLICE_COUNT 16
+
+struct PointLightData
+{
+    vec4 lightPosition;    // xyz = View-space Position
+    vec4 lightColorRadius; // rgb = Light Color, a = Radius
+};
+
+layout(std430, set = 0, binding = 3) readonly buffer PointLightBuffer
+{
+    PointLightData lights[];
+};
+
+struct ClusterLightList
+{
+    uint count;
+    uint indices[MAX_LIGHTS_PER_CLUSTER];
+};
+
+layout(std430, set = 0, binding = 4) buffer ClusterLightListBuffer
+{
+    ClusterLightList clusterLights[];
+};
+
+layout(push_constant) uniform PushConstants
+{
+    mat4 proj;
+    vec4 screenSize;
+    uint lightCount;
+    float nearPlane;
+    float farPlane;
+} pc;
+
+// Shared variables
+shared uint lightCountPerCluster;
+
+bool sphereAabbTest(vec3 center, float radius, vec3 minB, vec3 maxB)
+{
+    vec3 clamped = clamp(center, minB, maxB);
+    vec3 delta = center - clamped;
+    return dot(delta, delta) <= radius * radius;
+}
+
+void main()
+{
+    uvec3 clusterCoord = gl_WorkGroupID.xyz;
+
+    uint tilesX = uint((pc.screenSize.x + TILE_SIZE - 1) / TILE_SIZE);
+    uint clusterIndex = clusterCoord.z + Z_SLICE_COUNT * (clusterCoord.y * tilesX + clusterCoord.x);
+
+    uint localThreadIndex = gl_LocalInvocationIndex;
+    uint localThreadCount = gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z;
+
+    // Init cluster data
+    if (localThreadIndex == 0)
+    {
+        clusterLights[clusterIndex].count = 0;
+        lightCountPerCluster = 0;
+    }
+
+    barrier();
+
+    // Compute cluster bounds in view space
+    vec2 invScreen = 1.0 / pc.screenSize.xy;
+
+    vec2 tileMin = vec2(clusterCoord.xy) * TILE_SIZE;
+    vec2 tileMax = tileMin + TILE_SIZE;
+
+    float xMinNDC = -1.0 + 2.0 * tileMin.x * invScreen.x;
+    float xMaxNDC = -1.0 + 2.0 * tileMax.x * invScreen.x;
+
+    float yMinNDC =  1.0 - 2.0 * tileMax.y * invScreen.y;
+    float yMaxNDC =  1.0 - 2.0 * tileMin.y * invScreen.y;
+
+    float zSlice = float(clusterCoord.z);
+
+    float sliceNear = pc.nearPlane * pow(pc.farPlane / pc.nearPlane, zSlice / float(Z_SLICE_COUNT));
+    float sliceFar = pc.nearPlane * pow(pc.farPlane / pc.nearPlane, (zSlice + 1.0) / float(Z_SLICE_COUNT));
+
+    // View-space Z is negative forward
+    float zMinVS = -sliceFar;
+    float zMaxVS = -sliceNear;
+
+    float P00 = pc.proj[0][0];
+    float P11 = pc.proj[1][1];
+
+    // Convert NDC to view space extents
+    float xMinVS = xMinNDC * (-zMaxVS) / P00;
+    float xMaxVS = xMaxNDC * (-zMaxVS) / P00;
+
+    float yMinVS = yMinNDC * (-zMaxVS) / P11;
+    float yMaxVS = yMaxNDC * (-zMaxVS) / P11;
+
+    vec3 clusterMin = vec3(xMinVS, yMinVS, zMinVS);
+    vec3 clusterMax = vec3(xMaxVS, yMaxVS, zMaxVS);
+
+    // Light culling
+    for (uint i = localThreadIndex; i < pc.lightCount && lightCountPerCluster < MAX_LIGHTS_PER_CLUSTER; i += localThreadCount)
+    {
+        vec3 center = lights[i].lightPosition.xyz;
+        float radius = lights[i].lightColorRadius.a;
+
+        if (sphereAabbTest(center, radius, clusterMin, clusterMax)) {
+            uint index = atomicAdd(lightCountPerCluster, 1);
+            if (index < MAX_LIGHTS_PER_CLUSTER) {
+                clusterLights[clusterIndex].indices[index] = i;
+            }
+        }
+    }
+
+    barrier();
+
+    // Write total light counts per cluster
+    if (localThreadIndex == 0) {
+        clusterLights[clusterIndex].count = min(lightCountPerCluster, MAX_LIGHTS_PER_CLUSTER);
+    }
+}
