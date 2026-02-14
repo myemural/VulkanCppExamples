@@ -97,6 +97,12 @@ std::vector<std::string> Window::GetVulkanInstanceExtensions()
     return extensions;
 }
 
+void Window::SetWindowTitle(const std::string& newTitle)
+{
+    windowName_ = newTitle;
+    glfwSetWindowTitle(window_, windowName_.c_str());
+}
+
 VkSurfaceKHR Window::CreateVulkanSurface(VkInstance instance) const
 {
     VkSurfaceKHR surface;

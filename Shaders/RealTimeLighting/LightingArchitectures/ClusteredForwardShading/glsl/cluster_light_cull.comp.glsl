@@ -8,7 +8,7 @@
 // Licensed under the MIT License.
 // ------------------------------------------------------------------------
 
-layout(local_size_x = 16, local_size_y = 16) in;
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 #define TILE_SIZE 16
 #define MAX_LIGHTS_PER_CLUSTER 32
@@ -45,9 +45,6 @@ layout(push_constant) uniform PushConstants
     float farPlane;
 } pc;
 
-// Shared variables
-shared uint lightCountPerCluster;
-
 bool sphereAabbTest(vec3 center, float radius, vec3 minB, vec3 maxB)
 {
     vec3 clamped = clamp(center, minB, maxB);
@@ -61,18 +58,6 @@ void main()
 
     uint tilesX = uint((pc.screenSize.x + TILE_SIZE - 1) / TILE_SIZE);
     uint clusterIndex = clusterCoord.z + Z_SLICE_COUNT * (clusterCoord.y * tilesX + clusterCoord.x);
-
-    uint localThreadIndex = gl_LocalInvocationIndex;
-    uint localThreadCount = gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z;
-
-    // Init cluster data
-    if (localThreadIndex == 0)
-    {
-        clusterLights[clusterIndex].count = 0;
-        lightCountPerCluster = 0;
-    }
-
-    barrier();
 
     // Compute cluster bounds in view space
     vec2 invScreen = 1.0 / pc.screenSize.xy;
@@ -109,23 +94,20 @@ void main()
     vec3 clusterMax = vec3(xMaxVS, yMaxVS, zMaxVS);
 
     // Light culling
-    for (uint i = localThreadIndex; i < pc.lightCount && lightCountPerCluster < MAX_LIGHTS_PER_CLUSTER; i += localThreadCount)
-    {
+    uint count = 0;
+    for (uint i = 0; i < pc.lightCount; ++i) {
         vec3 center = lights[i].lightPosition.xyz;
         float radius = lights[i].lightColorRadius.a;
 
         if (sphereAabbTest(center, radius, clusterMin, clusterMax)) {
-            uint index = atomicAdd(lightCountPerCluster, 1);
-            if (index < MAX_LIGHTS_PER_CLUSTER) {
-                clusterLights[clusterIndex].indices[index] = i;
+            if (count < MAX_LIGHTS_PER_CLUSTER) {
+                clusterLights[clusterIndex].indices[count] = i;
+                count++;
+            } else {
+                break;
             }
         }
     }
 
-    barrier();
-
-    // Write total light counts per cluster
-    if (localThreadIndex == 0) {
-        clusterLights[clusterIndex].count = min(lightCountPerCluster, MAX_LIGHTS_PER_CLUSTER);
-    }
+    clusterLights[clusterIndex].count = count;
 }

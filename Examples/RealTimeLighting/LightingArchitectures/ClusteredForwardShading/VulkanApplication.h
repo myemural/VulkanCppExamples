@@ -19,11 +19,12 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "VulkanCommandBuffer.h"
+#include "VulkanFramebuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 
-namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth
+namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading
 {
 class VulkanApplication final : public base::ApplicationLightingArchitectures
 {
@@ -98,4 +99,4 @@ private:
     std::vector<glm::vec4> lightPositions_;
     std::vector<glm::vec3> lightColors_;
 };
-} // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth
+} // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading

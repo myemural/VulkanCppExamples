@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth;
+using namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading;
 
 inline ParameterSchema CreateParameterSchema()
 {

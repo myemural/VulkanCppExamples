@@ -1,5 +1,5 @@
-set(CURRENT_TARGET_NAME ClusteredForwardDepth)
-set(CURRENT_EXAMPLE_NAME "Clustered Forward Shading with Depth Binning")
+set(CURRENT_TARGET_NAME ClusteredForwardShading)
+set(CURRENT_EXAMPLE_NAME "Clustered Forward Shading")
 set(CURRENT_LIB_NAMES Common LightingArchitecturesBase)
 
 include(BuildTarget)

@@ -6,6 +6,7 @@
 
 #include "VulkanPhysicalDevice.h"
 
+#include <algorithm>
 #include <iostream>
 #include <utility>
 
@@ -263,6 +264,25 @@ VulkanPhysicalDeviceSelector::Select(const std::shared_ptr<VulkanInstance>& inst
             return true;
         });
     }
+
+    // Prefer discrete GPUs
+    std::ranges::stable_sort(devices, [](const VkPhysicalDevice& a, const VkPhysicalDevice& b) {
+        VkPhysicalDeviceProperties propA{};
+        VkPhysicalDeviceProperties propB{};
+
+        vkGetPhysicalDeviceProperties(a, &propA);
+        vkGetPhysicalDeviceProperties(b, &propB);
+
+        const bool aDiscrete = propA.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+        const bool bDiscrete = propB.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+
+        // Discrete first
+        if (aDiscrete != bDiscrete) {
+            return aDiscrete;
+        }
+
+        return false; // Otherwise keep original order
+    });
 
     if (devices.empty()) {
         std::cerr << "Failed to find Vulkan supported devices!" << '\n';

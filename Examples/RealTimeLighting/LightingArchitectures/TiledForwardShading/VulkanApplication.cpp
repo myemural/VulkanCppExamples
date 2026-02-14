@@ -13,7 +13,6 @@
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "SceneObjectBuilder.h"
-#include "ScopedTimer.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
@@ -59,8 +58,6 @@ bool VulkanApplication::Init()
 
 void VulkanApplication::DrawFrame()
 {
-    PROFILE_FUNCTION_EVERY(1000);
-
     inFlightFences_[currentFrameIndex_]->WaitForFence(true, UINT64_MAX);
 
     uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentFrameIndex_], nullptr);

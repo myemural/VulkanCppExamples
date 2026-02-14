@@ -10,8 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `DeferredShading`
 2. [Tiled Forward Shading (Forward+)](/Examples/RealTimeLighting/LightingArchitectures/TiledForwardShading)
    - `TiledForwardShading`
-3. [Clustered Forward Shading with Depth Binning](/Examples/RealTimeLighting/LightingArchitectures/ClusteredForwardDepth)
-   - `ClusteredForwardDepth`
+3. [Clustered Forward Shading](/Examples/RealTimeLighting/LightingArchitectures/ClusteredForwardShading)
+   - `ClusteredForwardShading`
 
 ## Architecture of the Subsection
 

@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth
+namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading
 {
 namespace constants
 {
@@ -61,4 +61,4 @@ namespace AppSettings
     constexpr auto CameraFarPlane = "AppSettings.CameraFarPlane";
     constexpr auto LightRadius = "AppSettings.LightRadius";
 } // namespace AppSettings
-} // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth
+} // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading

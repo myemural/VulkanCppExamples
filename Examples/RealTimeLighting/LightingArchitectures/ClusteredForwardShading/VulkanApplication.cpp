@@ -13,12 +13,11 @@
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "SceneObjectBuilder.h"
-#include "ScopedTimer.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth
+namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading
 {
 using namespace constants;
 using namespace common::scene;
@@ -59,8 +58,6 @@ bool VulkanApplication::Init()
 
 void VulkanApplication::DrawFrame()
 {
-    PROFILE_FUNCTION_EVERY(1000);
-
     inFlightFences_[currentFrameIndex_]->WaitForFence(true, UINT64_MAX);
 
     uint32_t imageIndex = swapChain_->AcquireNextImage(imageAvailableSemaphores_[currentFrameIndex_], nullptr);
@@ -583,4 +580,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth
+} // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading

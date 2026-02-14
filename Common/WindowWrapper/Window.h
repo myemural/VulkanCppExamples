@@ -55,6 +55,12 @@ public:
     [[nodiscard]] static std::vector<std::string> GetVulkanInstanceExtensions();
 
     /**
+     * @brief Update title of the window.
+     * @param newTitle New title.
+     */
+    void SetWindowTitle(const std::string& newTitle);
+
+    /**
      * @return Returns title of the window.
      */
     [[nodiscard]] std::string GetWindowTitle() const { return windowName_; }

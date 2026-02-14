@@ -14,7 +14,7 @@
 
 #include "MathUtils.h"
 
-namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth
+namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading
 {
 
 #define NUM_OBJECTS 250
@@ -66,4 +66,4 @@ struct ForwardPipelinePushConstants
 inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
         NUM_OBJECTS, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
 
-} // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_depth
+} // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading
