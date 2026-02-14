@@ -158,13 +158,6 @@ void VulkanApplication::BuildScene()
     camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 6.0f), aspectRatio);
 
     // Materials
-    const auto defaultMatName = kDefaultMaterial;
-    materialManager_->CreatePhongMaterial(defaultMatName)
-            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
-            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
-            .SetShininess(GetParamFloat(AppSettings::Shininess))
-            .Build();
-
     MeshMaterialData defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
@@ -455,8 +448,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             },
             VK_SUBPASS_CONTENTS_INLINE);
 
-    const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
-    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
+    const std::vector mainDescSets{resources_->GetDescriptorSet(kMainDescSet)};
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, mainDescSets);
     const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
 
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);

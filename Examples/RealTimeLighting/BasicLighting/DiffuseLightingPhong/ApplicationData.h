@@ -12,15 +12,26 @@
 
 #include <glm/glm.hpp>
 
-#include "Vertex.h"
-
 namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_phong
 {
+
+struct alignas(16) MeshMaterialData
+{
+    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    float ambientStrength;
+};
 
 struct alignas(16) LightUbo
 {
     glm::vec4 lightPosition;  // xyz = Light Position
     glm::vec4 lightColor;     // xyz = Light Color
+};
+
+struct MeshPushConstants
+{
+    glm::mat4 view;
+    glm::mat4 projection;
+    std::uint32_t objectId;
 };
 
 } // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_phong
