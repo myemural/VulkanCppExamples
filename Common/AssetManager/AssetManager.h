@@ -27,6 +27,11 @@ public:
     AssetManager() = default;
     ~AssetManager() = default;
 
+    /**
+     * @brief Registers new asset loader to asset manager.
+     * @tparam T Asset loader type.
+     * @param loader Asset loader.
+     */
     template<typename T>
     void RegisterLoader(std::unique_ptr<AssetLoader<T>> loader)
     {
@@ -36,8 +41,13 @@ public:
         storages_[type] = std::make_unique<AssetStorage<T>>();
     }
 
+    /**
+     * @brief Loads new asset into the asset manager.
+     * @tparam T Asset type.
+     * @param relativePath Relative path of the asset.
+     */
     template<typename T>
-    AssetHandle<T> Load(const std::string& logicalPath)
+    AssetHandle<T> Load(const std::string& relativePath)
     {
         const std::type_index type = typeid(T);
 
@@ -45,23 +55,28 @@ public:
         auto* loader = GetLoader<T>(type);
 
         // Check cache
-        auto it = storage->pathToId.find(logicalPath);
+        auto it = storage->pathToId.find(relativePath);
         if (it != storage->pathToId.end()) {
             return {it->second};
         }
 
-        auto asset = loader->Load(logicalPath);
+        auto asset = loader->Load(relativePath);
         if (!asset) {
             throw std::runtime_error("Asset loader error!");
         }
 
         AssetID id = nextId_++;
         storage->assets[id] = std::move(asset);
-        storage->pathToId[logicalPath] = id;
+        storage->pathToId[relativePath] = id;
 
         return {id};
     }
 
+    /**
+     * @brief Gets an asset from asset manager.
+     * @tparam T Asset type.
+     * @param handle Asset handle.
+     */
     template<typename T>
     const T& Get(const AssetHandle<T>& handle) const
     {

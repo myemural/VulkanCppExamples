@@ -148,5 +148,10 @@ public:
                               const VkImageLayout& dstImageLayout,
                               const std::vector<VkImageBlit>& imageBlits,
                               const VkFilter& filter = VK_FILTER_LINEAR) const;
+
+    COMMON_API void FillBuffer(const std::shared_ptr<VulkanBuffer>& dstBuffer,
+                               VkDeviceSize dstOffset,
+                               VkDeviceSize size,
+                               std::uint32_t data) const;
 };
 } // namespace common::vulkan_wrapper

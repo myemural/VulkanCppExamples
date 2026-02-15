@@ -22,8 +22,17 @@ namespace common::asset_manager
 class COMMON_API ShaderLoader : public AssetLoader<ShaderAsset>
 {
 public:
+    /**
+     * @param basePath Base path of the shaders.
+     * @param shaderType Shaders type: GLSL, HLSL or Slang.
+     */
     explicit ShaderLoader(const std::filesystem::path& basePath, std::string shaderType);
 
+    /**
+     * @brief Loads shader from file and returns it as an asset.
+     * @param relativePath Relative path of the shader file.
+     * @return Shader asset.
+     */
     std::unique_ptr<ShaderAsset> Load(const std::string& relativePath) override;
 
 private:

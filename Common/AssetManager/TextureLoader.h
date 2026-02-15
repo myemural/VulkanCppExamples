@@ -21,8 +21,16 @@ namespace common::asset_manager
 class COMMON_API TextureLoader : public AssetLoader<TextureAsset>
 {
 public:
+    /**
+     * @param basePath Base path of the textures.
+     */
     explicit TextureLoader(std::filesystem::path basePath);
 
+    /**
+     * @brief Loads texture from file and returns it as an asset.
+     * @param relativePath Relative path of the texture file.
+     * @return Texture asset.
+     */
     std::unique_ptr<TextureAsset> Load(const std::string& relativePath) override;
 
 private:

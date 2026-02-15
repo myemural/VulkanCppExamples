@@ -191,6 +191,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Simple Deferred Shading](/Examples/RealTimeLighting/LightingArchitectures/DeferredShading)
   - [Tiled Forward Shading (Forward+)](/Examples/RealTimeLighting/LightingArchitectures/TiledForwardShading)
   - [Clustered Forward Shading](/Examples/RealTimeLighting/LightingArchitectures/ClusteredForwardShading)
+  - [Clustered Forward Shading with Unlimited Lights per Cluster](/Examples/RealTimeLighting/LightingArchitectures/ClusteredForwardUnlimited)
 
 ## Environment Support
 

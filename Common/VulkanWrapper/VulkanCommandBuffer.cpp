@@ -280,4 +280,12 @@ void VulkanCommandBuffer::BlitImage(const std::shared_ptr<VulkanImage>& srcImage
     vkCmdBlitImage(handle_, srcImage->GetHandle(), srcImageLayout, dstImage->GetHandle(), dstImageLayout,
                    imageBlits.size(), imageBlits.empty() ? nullptr : imageBlits.data(), filter);
 }
+
+void VulkanCommandBuffer::FillBuffer(const std::shared_ptr<VulkanBuffer>& dstBuffer,
+                                     const VkDeviceSize dstOffset,
+                                     const VkDeviceSize size,
+                                     const std::uint32_t data) const
+{
+    vkCmdFillBuffer(handle_, dstBuffer->GetHandle(), dstOffset, size, data);
+}
 } // namespace common::vulkan_wrapper

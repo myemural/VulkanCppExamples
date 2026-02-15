@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `TiledForwardShading`
 3. [Clustered Forward Shading](/Examples/RealTimeLighting/LightingArchitectures/ClusteredForwardShading)
    - `ClusteredForwardShading`
+4. [Clustered Forward Shading with Unlimited Lights per Cluster](/Examples/RealTimeLighting/LightingArchitectures/ClusteredForwardUnlimited)
+   - `ClusteredForwardUnlimited`
 
 ## Architecture of the Subsection
 

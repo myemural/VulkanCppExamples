@@ -52,7 +52,12 @@ public:
      */
     void Traverse(const TraverseFunc& func) const;
 
-    std::shared_ptr<SceneObject> FindObjectByName(const std::string& name) const;
+    /**
+     * Searches and returns scene object by name in the scene.
+     * @param name Name of the scene object.
+     * @return Returns related scene objects, otherwise nullptr.
+     */
+    [[nodiscard]] std::shared_ptr<SceneObject> FindObjectByName(const std::string& name) const;
 
     [[nodiscard]] std::uint32_t GetAttributeCount() const;
 
