@@ -588,7 +588,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->Dispatch(totalClusterCount_, 1, 1);
     }
 
-    // Barrier: For using global şight index buffer from fragment shader
+    // Barrier: For using global light index buffer from fragment shader
     {
         const auto globalLightIndexBuffer = resources_->GetBuffer(kGlobalLightIndexStorageBuffer);
         const auto barrier = globalLightIndexBuffer->CreateBufferMemoryBarrier(VK_ACCESS_SHADER_WRITE_BIT,
