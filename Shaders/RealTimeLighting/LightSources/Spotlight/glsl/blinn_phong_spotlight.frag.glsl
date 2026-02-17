@@ -15,19 +15,17 @@ layout(location = 0) out vec4 outColor;
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec3 fragNormal;
 
-struct MeshData {
-    mat4 model;
-    mat4 normalMatrix;
+struct MeshMaterialData
+{
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
     float shininess;
     float specularStrength;
-    float opacity;
 };
 
-layout(std430, binding = 0) readonly buffer MeshDataBuffer {
-    MeshData meshes[];
+layout(std430, binding = 1) readonly buffer MeshMaterialDataBuffer {
+    MeshMaterialData meshMaterials[];
 };
 
 struct LightUBO
@@ -38,7 +36,7 @@ struct LightUBO
     vec4 spotlightParams;  // x = cos(cutoffAngle)
 };
 
-layout(std140, set = 0, binding = 1) uniform LightBlock
+layout(std140, set = 0, binding = 2) uniform LightBlock
 {
     LightUBO lights[MAX_LIGHTS];
 } lightBlock;
@@ -46,7 +44,6 @@ layout(std140, set = 0, binding = 1) uniform LightBlock
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
-    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;
@@ -54,7 +51,7 @@ layout(push_constant) uniform MeshPushConstants {
 vec3 calculateLight(LightUBO light, vec3 normalizedNormal, vec3 fragmentPosition)
 {
     // Get mesh info
-    const MeshData meshInfo = meshes[pc.objectId];
+    const MeshMaterialData meshMatInfo = meshMaterials[pc.objectId];
 
     // Normalizing light direction
     vec3 normalizedLightDir = normalize(light.lightPosition.xyz - fragmentPosition);
@@ -63,16 +60,16 @@ vec3 calculateLight(LightUBO light, vec3 normalizedNormal, vec3 fragmentPosition
     vec3 normalizedView = normalize(pc.cameraPosition.xyz - fragmentPosition);
 
     // Ambient calculation
-    vec3 ambient = meshInfo.ambientStrength * meshInfo.diffuseColor.rgb;
+    vec3 ambient = meshMatInfo.ambientStrength * meshMatInfo.diffuseColor.rgb;
 
     // Diffuse (Lambert) calculation
     float diff = max(dot(normalizedNormal, normalizedLightDir), 0.0);
-    vec3 diffuse = diff * light.lightColor.rgb * meshInfo.diffuseColor.rgb;
+    vec3 diffuse = diff * light.lightColor.rgb * meshMatInfo.diffuseColor.rgb;
 
     // Specular calculation
     vec3 halfDir = normalize(normalizedLightDir + normalizedView);
-    float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), meshInfo.shininess);
-    vec3 specular = meshInfo.specularStrength * spec * light.lightColor.rgb * meshInfo.specularColor.rgb;
+    float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), meshMatInfo.shininess);
+    vec3 specular = meshMatInfo.specularStrength * spec * light.lightColor.rgb * meshMatInfo.specularColor.rgb;
 
     // Spotlight contribution calculation (hard-cutoff)
     vec3 spotDir = normalize(-light.lightDirection.xyz);
@@ -94,5 +91,5 @@ void main()
         resultColor += calculateLight(lightBlock.lights[i], normalizedNormal, fragPos);
     }
 
-    outColor = vec4(resultColor, meshes[pc.objectId].opacity);
+    outColor = vec4(resultColor, 1.0);
 }

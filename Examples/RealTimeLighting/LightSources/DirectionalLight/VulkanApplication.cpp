@@ -13,6 +13,7 @@
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "MathUtils.h"
+#include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
@@ -20,6 +21,7 @@
 namespace examples::real_time_lighting::light_sources::directional_light
 {
 using namespace constants;
+using namespace common::scene;
 using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -115,12 +117,12 @@ void VulkanApplication::CreateInitialResources() const
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
-        .maxSets = 2,
-        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1}, {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}},
+        .maxSets = 3,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2}, {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}},
         .layouts = {{.name = kMainDescSetLayout,
-                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
-                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
+                                  {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
         .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout}}};
 
     resourceCreateInfo.images = {ImageResourceCreateInfo{
@@ -147,66 +149,94 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
-    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
+    scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    scene_->AddPerspectiveCamera(kCameraObject, glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
-    camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
+    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
 
-    // Materials
-    const auto defaultMatName = kDefaultMaterial;
-    materialManager_->CreatePhongMaterial(defaultMatName)
-            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
-            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
-            .SetShininess(GetParamFloat(AppSettings::Shininess))
-            .Build();
+    // Default material
+    MeshMaterialData defaultMaterial;
+    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
 
-    auto& defaultMaterial = materialManager_->GetPhongMaterial(defaultMatName);
-
-    // Add scene objects
+    auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (auto i = 0; i < 3; ++i) {
+        MeshMaterialData cubeMaterial = defaultMaterial;
+        cubeMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.2f), 1.0f);
+
+        MeshMaterialData sphereMaterial = defaultMaterial;
+        sphereMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.2f), 1.0f);
+
+        MeshMaterialData coneMaterial = defaultMaterial;
+        coneMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.2f), 1.0f);
+
+        MeshMaterialData cylinderMaterial = defaultMaterial;
+        cylinderMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.2f), 1.0f);
+
         const std::string rowStr = std::to_string(i);
         const auto zShift = static_cast<float>(i * 2 - 1);
-        scene_->AddCube(kCubeObject + rowStr, glm::vec3{-2.0f, -1.0f, zShift});
-        defaultMaterial.diffuseColor = GenerateRandomColor(0.2f);
-        scene_->SetMaterial(kCubeObject + rowStr, defaultMatName);
-        scene_->AddSphere(kSphereObject + rowStr, glm::vec3{-0.5f, -1.0f, zShift});
-        defaultMaterial.diffuseColor = GenerateRandomColor(0.2f);
-        scene_->SetMaterial(kSphereObject + rowStr, defaultMatName);
-        scene_->AddCone(kConeObject + rowStr, glm::vec3{1.0f, -1.0f, zShift});
-        defaultMaterial.diffuseColor = GenerateRandomColor(0.2f);
-        scene_->SetMaterial(kConeObject + rowStr, defaultMatName);
-        scene_->AddCylinder(kCylinderObject + rowStr, glm::vec3{2.5f, -1.0f, zShift});
-        defaultMaterial.diffuseColor = GenerateRandomColor(0.2f);
-        scene_->SetMaterial(kCylinderObject + rowStr, defaultMatName);
+        rootObjectBuilder
+                .AddChild(SceneObjectBuilder(*scene_, kCubeObject + rowStr)
+                                  .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                  .WithMaterial(cubeMaterial)
+                                  .WithPosition(glm::vec3{-2.0f, -1.0f, zShift}))
+                .AddChild(SceneObjectBuilder(*scene_, kSphereObject + rowStr)
+                                  .WithBuiltinMesh(BuiltinMeshType::SPHERE)
+                                  .WithMaterial(sphereMaterial)
+                                  .WithPosition(glm::vec3{-0.5f, -1.0f, zShift}))
+                .AddChild(SceneObjectBuilder(*scene_, kConeObject + rowStr)
+                                  .WithBuiltinMesh(BuiltinMeshType::CONE)
+                                  .WithMaterial(coneMaterial)
+                                  .WithPosition(glm::vec3{1.0f, -1.0f, zShift}))
+                .AddChild(SceneObjectBuilder(*scene_, kCylinderObject + rowStr)
+                                  .WithBuiltinMesh(BuiltinMeshType::CYLINDER)
+                                  .WithMaterial(cylinderMaterial)
+                                  .WithPosition(glm::vec3{2.5f, -1.0f, zShift}));
     }
 
-    scene_->AddPlane(kPlaneObject, glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f), glm::vec3{4.0f});
+    [[maybe_unused]] const auto& rootObject = rootObjectBuilder
+                                                      .AddChild(SceneObjectBuilder(*scene_, kPlaneObject)
+                                                                        .WithBuiltinMesh(BuiltinMeshType::PLANE)
+                                                                        .WithMaterial(defaultMaterial)
+                                                                        .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
+                                                                        .WithScale(glm::vec3{8.0f}))
+                                                      .Build();
 }
 
 void VulkanApplication::UpdateDescriptorSets() const
 {
-    std::vector<VkDescriptorBufferInfo> storageBufferInfos;
-    storageBufferInfos.emplace_back(scene_->GetStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+    std::vector<VkDescriptorBufferInfo> storageTransformBufferInfos;
+    storageTransformBufferInfos.emplace_back(scene_->GetTransformStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+
+    std::vector<VkDescriptorBufferInfo> storageMaterialBufferInfos;
+    storageMaterialBufferInfos.emplace_back(scene_->GetMaterialStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    BufferWriteRequest objectStorageBufferRequest;
-    objectStorageBufferRequest.descriptorSetName = kMainDescSet;
-    objectStorageBufferRequest.bindingIndex = 0;
-    objectStorageBufferRequest.buffers = storageBufferInfos;
-    objectStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    BufferWriteRequest objectStorageTransformBufferRequest;
+    objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;
+    objectStorageTransformBufferRequest.bindingIndex = 0;
+    objectStorageTransformBufferRequest.buffers = storageTransformBufferInfos;
+    objectStorageTransformBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+
+    BufferWriteRequest objectStorageMaterialBufferRequest;
+    objectStorageMaterialBufferRequest.descriptorSetName = kMainDescSet;
+    objectStorageMaterialBufferRequest.bindingIndex = 1;
+    objectStorageMaterialBufferRequest.buffers = storageMaterialBufferInfos;
+    objectStorageMaterialBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     BufferWriteRequest lightUboRequest;
     lightUboRequest.descriptorSetName = kMainDescSet;
-    lightUboRequest.bindingIndex = 1;
+    lightUboRequest.bindingIndex = 2;
     lightUboRequest.buffers = lightUboInfos;
     lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .bufferWriteRequests = {objectStorageBufferRequest, lightUboRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.bufferWriteRequests = {objectStorageTransformBufferRequest,
+                                                                                  objectStorageMaterialBufferRequest,
+                                                                                  lightUboRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -382,24 +412,27 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             },
             VK_SUBPASS_CONTENTS_INLINE);
 
-    const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
-    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
+    const std::vector mainDescSets{resources_->GetDescriptorSet(kMainDescSet)};
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, mainDescSets);
     const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
 
-    // Draw only scene objects
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-        const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
+    scene_->Traverse([&](const SceneObject& sceneObject) {
+        if (sceneObject.HasRenderable()) {
+            const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
+            currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
+            currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-        currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-        const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
-                scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
-        currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(meshPushConstants), &meshPushConstants);
-        currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
-    }
+            MeshPushConstants meshPushConstants{};
+            meshPushConstants.objectId = sceneObject.GetObjectId();
+            meshPushConstants.view = camera_->GetViewMatrix();
+            meshPushConstants.projection = camera_->GetProjectionMatrix();
+            meshPushConstants.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                                            0, sizeof(meshPushConstants), &meshPushConstants);
+            currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
+        }
+    });
 
     currentCmdBuffer->EndRenderPass();
     if (!currentCmdBuffer->EndCommandBuffer()) {

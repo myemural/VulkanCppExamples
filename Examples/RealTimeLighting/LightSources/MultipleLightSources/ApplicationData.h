@@ -12,8 +12,6 @@
 
 #include <glm/glm.hpp>
 
-#include "Vertex.h"
-
 namespace examples::real_time_lighting::light_sources::multiple_light_sources
 {
 #define LIGHT_COUNT 4
@@ -21,6 +19,15 @@ namespace examples::real_time_lighting::light_sources::multiple_light_sources
 #define LIGHT_TYPE_DIRECTIONAL 0
 #define LIGHT_TYPE_POINT 1
 #define LIGHT_TYPE_SPOT 2
+
+struct alignas(16) MeshMaterialData
+{
+    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+};
 
 struct alignas(16) LightData
 {
@@ -36,6 +43,14 @@ struct alignas(16) LightData
 struct LightBuffer
 {
     LightData lights[LIGHT_COUNT];
+};
+
+struct MeshPushConstants
+{
+    glm::mat4 view;
+    glm::mat4 projection;
+    glm::vec4 cameraPosition;
+    std::uint32_t objectId;
 };
 
 } // namespace examples::real_time_lighting::light_sources::multiple_light_sources

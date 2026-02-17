@@ -18,22 +18,20 @@ layout(location = 0) out vec4 outColor;
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec3 fragNormal;
 
-struct MeshData {
-    mat4 model;
-    mat4 normalMatrix;
+struct MeshMaterialData
+{
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
     float shininess;
     float specularStrength;
-    float opacity;
+};
+
+layout(std430, binding = 1) readonly buffer MeshMaterialDataBuffer {
+    MeshMaterialData meshMaterials[];
 };
 
 layout(constant_id = 0) const uint LIGHT_COUNT = 0;
-
-layout(std430, binding = 0) readonly buffer MeshDataBuffer {
-    MeshData meshes[];
-};
 
 struct LightData
 {
@@ -46,7 +44,7 @@ struct LightData
     vec4 spotlightParams;  // x = cos(innerCutoffAngle), y = cos(outerCutoffAngle)
 };
 
-layout(std430, set = 0, binding = 1) readonly buffer LightBuffer
+layout(std430, set = 0, binding = 2) readonly buffer LightBuffer
 {
     LightData lights[];
 };
@@ -54,7 +52,6 @@ layout(std430, set = 0, binding = 1) readonly buffer LightBuffer
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
-    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;
@@ -62,7 +59,7 @@ layout(push_constant) uniform MeshPushConstants {
 vec3 calculateLight(LightData light, vec3 normalizedNormal, vec3 fragmentPosition, vec3 normalizedView)
 {
     // Get mesh info
-    const MeshData meshInfo = meshes[pc.objectId];
+    const MeshMaterialData meshMatInfo = meshMaterials[pc.objectId];
 
     // Get light type
     int type = int(light.lightTypeParams.x);
@@ -101,12 +98,12 @@ vec3 calculateLight(LightData light, vec3 normalizedNormal, vec3 fragmentPositio
 
     // Diffuse (Lambert) calculation
     float diff = max(dot(normalizedNormal, normalizedLightDir), 0.0);
-    vec3 diffuse = diff * light.lightColor.rgb * meshInfo.diffuseColor.rgb;
+    vec3 diffuse = diff * light.lightColor.rgb * meshMatInfo.diffuseColor.rgb;
 
     // Specular calculation
     vec3 halfDir = normalize(normalizedLightDir + normalizedView);
-    float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), meshInfo.shininess);
-    vec3 specular = meshInfo.specularStrength * spec * light.lightColor.rgb * meshInfo.specularColor.rgb;
+    float spec = pow(max(dot(normalizedNormal, halfDir), 0.0), meshMatInfo.shininess);
+    vec3 specular = meshMatInfo.specularStrength * spec * light.lightColor.rgb * meshMatInfo.specularColor.rgb;
 
     // Final color
     vec3 finalColor = attenuation * light.lightColor.a * (diffuse + specular);
@@ -127,8 +124,8 @@ void main()
     }
 
     // Ambient calculation
-    vec3 ambient = meshes[pc.objectId].ambientStrength * meshes[pc.objectId].diffuseColor.rgb;
+    vec3 ambient = meshMaterials[pc.objectId].ambientStrength * meshMaterials[pc.objectId].diffuseColor.rgb;
     resultColor += ambient;
 
-    outColor = vec4(resultColor, meshes[pc.objectId].opacity);
+    outColor = vec4(resultColor, 1.0);
 }

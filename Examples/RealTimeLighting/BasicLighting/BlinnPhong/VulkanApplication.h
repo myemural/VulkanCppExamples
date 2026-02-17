@@ -14,10 +14,10 @@
 #include <memory>
 
 #include "ApplicationBasicLighting.h"
+#include "AssetManager.h"
 #include "MaterialManager.h"
 #include "PerspectiveCamera.h"
 #include "Scene.h"
-#include "AssetManager.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
