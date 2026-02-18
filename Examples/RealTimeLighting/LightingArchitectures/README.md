@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ClusteredForwardUnlimited`
 5. [Tiled Deferred Shading](/Examples/RealTimeLighting/LightingArchitectures/TiledDeferredShading)
    - `TiledDeferredShading`
+6. [Clustered Deferred Shading](/Examples/RealTimeLighting/LightingArchitectures/ClusteredDeferredShading)
+   - `ClusteredDeferredShading`
 
 ## Architecture of the Subsection
 
