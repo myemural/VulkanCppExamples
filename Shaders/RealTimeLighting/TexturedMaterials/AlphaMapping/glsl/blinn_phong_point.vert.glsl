@@ -16,46 +16,31 @@ layout(location = 0) out vec3 fragPos;
 layout(location = 1) out vec2 fragUv;
 layout(location = 2) out vec3 fragNormal;
 
-struct MeshData {
+struct MeshTransformData
+{
     mat4 model;
     mat4 normalMatrix;
-    vec4 diffuseColor;
-    vec4 specularColor;
-    float ambientStrength;
-    float shininess;
-    float specularStrength;
-    float opacity;
-    float reflectivity;
-    int diffuseMap;
-    int specularMap;
-    int normalMap;
-    int emissiveMap;
-    int shininessMap;
-    int opacityMap;
-    int aoMap;
-    int heightMap;
 };
 
-layout(std430, binding = 0) readonly buffer MeshDataBuffer {
-    MeshData meshes[];
+layout(std430, binding = 0) readonly buffer MeshTransformDataBuffer {
+    MeshTransformData meshTransforms[];
 };
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
-    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;
 
 void main()
 {
-    mat4 model = meshes[pc.objectId].model;
+    mat4 model = meshTransforms[pc.objectId].model;
 
     fragPos = vec3(model * vec4(inPosition, 1.0));
     fragUv = inUV;
 
-    mat3 normalMatrix = mat3(meshes[pc.objectId].normalMatrix);
+    mat3 normalMatrix = mat3(meshTransforms[pc.objectId].normalMatrix);
     fragNormal = normalMatrix * inNormal;
 
     gl_Position = pc.proj * pc.view * vec4(fragPos, 1.0);
