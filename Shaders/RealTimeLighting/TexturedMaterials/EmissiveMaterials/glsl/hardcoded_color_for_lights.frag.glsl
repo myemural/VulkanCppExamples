@@ -14,34 +14,24 @@ layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec2 fragUv;
 layout(location = 2) in vec3 fragNormal;
 
-struct MeshData {
-    mat4 model;
-    mat4 normalMatrix;
+struct MeshMaterialData
+{
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
     float shininess;
     float specularStrength;
-    float opacity;
-    float reflectivity;
     int diffuseMap;
-    int specularMap;
-    int normalMap;
     int emissiveMap;
-    int shininessMap;
-    int opacityMap;
-    int aoMap;
-    int heightMap;
 };
 
-layout(std430, binding = 0) readonly buffer MeshDataBuffer {
-    MeshData meshes[];
+layout(std430, binding = 1) readonly buffer MeshMaterialDataBuffer {
+    MeshMaterialData meshMaterials[];
 };
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
-    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;

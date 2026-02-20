@@ -12,16 +12,33 @@
 
 #include <glm/glm.hpp>
 
-#include "Vertex.h"
-
 namespace examples::real_time_lighting::textured_materials::specular_mapping
 {
+
+struct alignas(16) MeshMaterialData
+{
+    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    float ambientStrength = 0.1f;
+    float shininess = 32.0f;
+    float specularStrength = 1.0f;
+    std::int32_t diffuseMap = -1;
+    std::int32_t specularMap = -1;
+};
 
 struct alignas(16) LightUbo
 {
     glm::vec4 lightPosition;    // xyz = Light Position
     glm::vec4 lightColor;       // xyz = Light Color
     glm::vec4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
+};
+
+struct MeshPushConstants
+{
+    glm::mat4 view;
+    glm::mat4 projection;
+    glm::vec4 cameraPosition;
+    std::uint32_t objectId;
 };
 
 } // namespace examples::real_time_lighting::textured_materials::specular_mapping
