@@ -12,27 +12,11 @@ struct PSInput
     [[vk::location(1)]] nointerpolation float3 fragNormal : TEXCOORD1;
 };
 
-struct MeshData
+struct MeshMaterialData
 {
-    float4x4 model;
-    float4x4 normalMatrix;
     float4 diffuseColor;
-    float4 specularColor;
-    float  ambientStrength;
-    float  shininess;
-    float  specularStrength;
-    float  opacity;
 };
-[[vk::binding(0, 0)]] StructuredBuffer<MeshData> meshes : register(t0);
-
-struct MeshPushConstants
-{
-    float4x4 view;
-    float4x4 proj;
-    float4 cameraPosition;
-    uint objectId;
-};
-[[vk::push_constant]] MeshPushConstants pc;
+[[vk::binding(1, 0)]] StructuredBuffer<MeshMaterialData> meshMaterials;
 
 struct LightUBO
 {
@@ -40,16 +24,23 @@ struct LightUBO
     float4 lightColor;    // rgb = light color
 };
 
-[[vk::binding(1, 0)]]
-cbuffer Light : register(b1)
+[[vk::binding(2, 0)]] cbuffer Light
 {
     LightUBO light;
 };
 
+struct MeshPushConstants
+{
+    float4x4 view;
+    float4x4 proj;
+    uint objectId;
+};
+[[vk::push_constant]] MeshPushConstants pc;
+
 float4 main(PSInput input) : SV_Target
 {
     // Get mesh info
-    MeshData meshInfo = meshes[pc.objectId];
+    const MeshMaterialData meshInfo = meshMaterials[pc.objectId];
 
     // Normalizing light direction
     float3 normalizedLightDir = normalize(light.lightPosition.xyz - input.fragPos);
@@ -58,5 +49,5 @@ float4 main(PSInput input) : SV_Target
     float diff = max(dot(input.fragNormal, normalizedLightDir), 0.0);
     float3 diffuse = diff * light.lightColor.rgb * meshInfo.diffuseColor.rgb;
 
-    return float4(diffuse, meshInfo.opacity);
+    return float4(diffuse, 1.0);
 }

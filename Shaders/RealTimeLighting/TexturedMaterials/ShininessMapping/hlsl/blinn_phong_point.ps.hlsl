@@ -13,27 +13,34 @@ struct PSInput
     [[vk::location(2)]] float3 fragNormal : NORMAL;
 };
 
-struct MeshData
+struct MeshMaterialData
 {
-    float4x4 model;
-    float4x4 normalMatrix;
     float4 diffuseColor;
     float4 specularColor;
-    float ambientStrength;
-    float shininess;
-    float specularStrength;
-    float opacity;
-    float reflectivity;
+    float  ambientStrength;
+    float  shininess;
+    float  specularStrength;
     int diffuseMap;
     int specularMap;
-    int normalMap;
-    int emissiveMap;
-    int shininessMap;
-    int opacityMap;
-    int aoMap;
-    int heightMap;
+    int roughnessMap;
 };
-[[vk::binding(0, 0)]] StructuredBuffer<MeshData> meshes : register(t0);
+[[vk::binding(1, 0)]] StructuredBuffer<MeshMaterialData> meshMaterials;
+
+struct LightUBO
+{
+    float4 lightPosition;    // xyz = Light Position
+    float4 lightColor;       // rgb = Light Color
+    float4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
+};
+
+[[vk::binding(2, 0)]]
+cbuffer Light : register(b1)
+{
+    LightUBO light;
+};
+
+[[vk::binding(3, 0)]] SamplerState uSamplers[];
+[[vk::binding(3, 0)]] Texture2D uImages[];
 
 struct MeshPushConstants
 {
@@ -44,26 +51,10 @@ struct MeshPushConstants
 };
 [[vk::push_constant]] MeshPushConstants pc;
 
-struct LightUBO
-{
-    float4 lightPosition;    // xyz = Light Position
-    float4 lightColor;       // rgb = Light Color
-    float4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
-};
-
-[[vk::binding(1, 0)]]
-cbuffer Light : register(b1)
-{
-    LightUBO light;
-};
-
-[[vk::binding(2, 0)]] SamplerState uSamplers[];
-[[vk::binding(2, 0)]] Texture2D uImages[];
-
 float4 main(PSInput input) : SV_Target
 {
     // Get mesh info
-    MeshData meshInfo = meshes[pc.objectId];
+    const MeshMaterialData meshInfo = meshMaterials[pc.objectId];
 
     float3 diffuseColor = meshInfo.diffuseColor.rgb;
     if (meshInfo.diffuseMap != -1) {
@@ -90,17 +81,17 @@ float4 main(PSInput input) : SV_Target
     float3 ambient = meshInfo.ambientStrength * diffuseColor;
 
     // Diffuse (Lambert) calculation
-    float diff = max(dot(input.fragNormal, normalizedLightDir), 0.0);
+    float diff = max(dot(normalizedNormal, normalizedLightDir), 0.0);
     float3 diffuse = diff * light.lightColor.rgb * diffuseColor;
 
     // Shininess calculation
     float shininess = meshInfo.shininess;
     float energyComp = 1.0; // Fake energy compensation for better visualization of shininess mapping
-    if (meshInfo.shininessMap != -1) {
+    if (meshInfo.roughnessMap != -1) {
         float minShine = 8.0;
         float maxShine = 1024.0;
 
-        float roughness = uImages[meshInfo.shininessMap].Sample(uSamplers[meshInfo.shininessMap], input.fragUv).r;
+        float roughness = uImages[meshInfo.roughnessMap].Sample(uSamplers[meshInfo.roughnessMap], input.fragUv).r;
         float perceptualRoughness = roughness * roughness;
         shininess = lerp(maxShine, minShine, perceptualRoughness);
         energyComp = lerp(1.0, 0.1, perceptualRoughness);
@@ -122,5 +113,5 @@ float4 main(PSInput input) : SV_Target
 
     // Final color
     float3 finalColor = ambient + diffuse + specular;
-    return float4(finalColor, meshInfo.opacity);
+    return float4(finalColor, 1.0);
 }

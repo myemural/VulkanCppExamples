@@ -17,7 +17,7 @@ struct MeshTransformData
     float4x4 model;
     float4x4 normalMatrix;
 };
-[[vk::binding(0, 0)]] StructuredBuffer<MeshTransformData> meshTransforms : register(t0);
+[[vk::binding(0, 0)]] StructuredBuffer<MeshTransformData> meshTransforms;
 
 struct MeshPushConstants
 {

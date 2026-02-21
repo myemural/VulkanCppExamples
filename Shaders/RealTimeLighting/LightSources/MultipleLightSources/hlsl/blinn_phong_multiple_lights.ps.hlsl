@@ -19,27 +19,15 @@ struct PSInput
 
 [[vk::constant_id(0)]] const uint LIGHT_COUNT = 1;
 
-struct MeshData
+struct MeshMaterialData
 {
-    float4x4 model;
-    float4x4 normalMatrix;
     float4 diffuseColor;
     float4 specularColor;
     float  ambientStrength;
     float  shininess;
     float  specularStrength;
-    float  opacity;
 };
-[[vk::binding(0, 0)]] StructuredBuffer<MeshData> meshes : register(t0);
-
-struct MeshPushConstants
-{
-    float4x4 view;
-    float4x4 proj;
-    float4 cameraPosition;
-    uint objectId;
-};
-[[vk::push_constant]] MeshPushConstants pc;
+[[vk::binding(1, 0)]] StructuredBuffer<MeshMaterialData> meshMaterials;
 
 struct LightData
 {
@@ -51,12 +39,21 @@ struct LightData
     float4 pointLightParams; // x = Constant Factor, y = Linear Factor, z = Quadratic Factor
     float4 spotlightParams;  // x = cos(innerCutoffAngle), y = cos(outerCutoffAngle)
 };
-[[vk::binding(1, 0)]] StructuredBuffer<LightData> lights : register(t1);
+[[vk::binding(2, 0)]] StructuredBuffer<LightData> lights;
+
+struct MeshPushConstants
+{
+    float4x4 view;
+    float4x4 proj;
+    float4 cameraPosition;
+    uint objectId;
+};
+[[vk::push_constant]] MeshPushConstants pc;
 
 float3 calculateLight(LightData light, float3 normalizedNormal, float3 fragmentPosition, float3 normalizedView)
 {
     // Get mesh info
-    MeshData meshInfo = meshes[pc.objectId];
+    const MeshMaterialData meshInfo = meshMaterials[pc.objectId];
 
     // Get light type
     int type = int(light.lightTypeParams.x);
@@ -120,5 +117,5 @@ float4 main(PSInput input) : SV_Target
         resultColor += calculateLight(lights[i], normalizedNormal, input.fragPos, normalizedView);
     }
 
-    return float4(resultColor, meshes[pc.objectId].opacity);
+    return float4(resultColor, 1.0);
 }

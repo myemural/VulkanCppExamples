@@ -13,27 +13,18 @@ struct PSInput
     [[vk::location(2)]] float3 fragNormal : NORMAL;
 };
 
-struct MeshData
+struct MeshMaterialData
 {
-    float4x4 model;
-    float4x4 normalMatrix;
     float4 diffuseColor;
     float4 specularColor;
-    float ambientStrength;
-    float shininess;
-    float specularStrength;
+    float  ambientStrength;
+    float  shininess;
+    float  specularStrength;
     float opacity;
-    float reflectivity;
     int diffuseMap;
-    int specularMap;
-    int normalMap;
-    int emissiveMap;
-    int shininessMap;
     int opacityMap;
-    int aoMap;
-    int heightMap;
 };
-[[vk::binding(0, 0)]] StructuredBuffer<MeshData> Meshes : register(t0);
+[[vk::binding(1, 0)]] StructuredBuffer<MeshMaterialData> meshMaterials;
 
 struct MeshPushConstants
 {

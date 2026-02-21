@@ -20,7 +20,7 @@ struct MeshMaterialData
     float  shininess;
     float  specularStrength;
 };
-[[vk::binding(1, 0)]] StructuredBuffer<MeshMaterialData> meshMaterials : register(t0);
+[[vk::binding(1, 0)]] StructuredBuffer<MeshMaterialData> meshMaterials;
 
 struct MeshPushConstants
 {

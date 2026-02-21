@@ -20,7 +20,18 @@ struct MeshMaterialData
     float  shininess;
     float  specularStrength;
 };
-[[vk::binding(1, 0)]] StructuredBuffer<MeshMaterialData> meshMaterials : register(t0);
+[[vk::binding(1, 0)]] StructuredBuffer<MeshMaterialData> meshMaterials;
+
+struct LightUBO
+{
+    float4 lightPosition; // xyz = light position
+    float4 lightColor;    // rgb = light color
+};
+
+[[vk::binding(2, 0)]] cbuffer Light
+{
+    LightUBO light;
+};
 
 struct MeshPushConstants
 {
@@ -31,22 +42,10 @@ struct MeshPushConstants
 };
 [[vk::push_constant]] MeshPushConstants pc;
 
-struct LightUBO
-{
-    float4 lightPosition; // xyz = light position
-    float4 lightColor;    // rgb = light color
-};
-
-[[vk::binding(2, 0)]]
-cbuffer Light : register(b1)
-{
-    LightUBO light;
-};
-
 float4 main(PSInput input) : SV_Target
 {
     // Get mesh info
-    MeshMaterialData meshInfo = meshMaterials[pc.objectId];
+    const MeshMaterialData meshInfo = meshMaterials[pc.objectId];
 
     // Normalizing normal
     float3 normalizedNormal = normalize(input.fragNormal);
@@ -61,7 +60,7 @@ float4 main(PSInput input) : SV_Target
     float3 ambient = meshInfo.ambientStrength * meshInfo.diffuseColor.rgb;
 
     // Diffuse (Lambert) calculation
-    float diff = max(dot(input.fragNormal, normalizedLightDir), 0.0);
+    float diff = max(dot(normalizedNormal, normalizedLightDir), 0.0);
     float3 diffuse = diff * light.lightColor.rgb * meshInfo.diffuseColor.rgb;
 
     // Specular calculation

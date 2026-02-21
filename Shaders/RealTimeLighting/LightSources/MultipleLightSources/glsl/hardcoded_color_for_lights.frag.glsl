@@ -13,14 +13,17 @@ layout(location = 0) out vec4 outColor;
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) flat in vec3 fragNormal;
 
-struct MeshTransformData
+struct MeshMaterialData
 {
-    mat4 model;
-    mat4 normalMatrix;
+    vec4 diffuseColor;
+    vec4 specularColor;
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
 };
 
-layout(std430, binding = 0) readonly buffer MeshTransformDataBuffer {
-    MeshTransformData meshTransforms[];
+layout(std430, binding = 1) readonly buffer MeshMaterialDataBuffer {
+    MeshMaterialData meshMaterials[];
 };
 
 layout(push_constant) uniform MeshPushConstants {
