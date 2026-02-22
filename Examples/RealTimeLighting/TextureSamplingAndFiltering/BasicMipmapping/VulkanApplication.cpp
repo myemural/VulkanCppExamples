@@ -12,6 +12,7 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
@@ -19,6 +20,7 @@
 namespace examples::real_time_lighting::texture_sampling_and_filtering::basic_mipmapping
 {
 using namespace constants;
+using namespace common::scene;
 using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -149,35 +151,40 @@ void VulkanApplication::BuildScene()
     sceneConfig.currentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
-    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
+    scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    scene_->AddPerspectiveCamera(kCameraObject, glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
-    camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
+    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
 
     // Materials
     const auto woodFloorTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorTexturePath);
     materialManager_->LoadTexture(kWoodFloorTexture, kMainSampler, assetManager_->Get(woodFloorTextureAsset),
                                   VK_FORMAT_R8G8B8A8_SRGB, true);
 
-    const auto defaultMatName = kDefaultMaterial;
-    materialManager_->CreatePhongTexturedMaterial(defaultMatName)
-            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
-            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
-            .SetShininess(GetParamFloat(AppSettings::Shininess))
-            .SetDiffuseMap(kWoodFloorTexture)
-            .Build();
+    MeshMaterialData defaultMaterial;
+    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWoodFloorTexture);
 
     // Add scene objects
+    auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (auto i = 0; i < modelPositions.size(); ++i) {
         const std::string indexStr = std::to_string(i);
-        scene_->AddCube(kCubeObject + indexStr, modelPositions[i]);
-        scene_->SetMaterial(kCubeObject + indexStr, defaultMatName);
+        rootObjectBuilder.AddChild(SceneObjectBuilder(*scene_, kCubeObject + indexStr)
+                                           .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                           .WithMaterial(defaultMaterial)
+                                           .WithPosition(modelPositions[i]));
     }
 
-    scene_->AddPlane(kPlaneObject, glm::vec3{0.0f, -7.0f, -8.0f}, glm::vec3(0.0f), glm::vec3{6.0f});
-    scene_->SetMaterial(kPlaneObject, defaultMatName);
+    [[maybe_unused]] const auto& rootObject = rootObjectBuilder
+                                                      .AddChild(SceneObjectBuilder(*scene_, kPlaneObject)
+                                                                        .WithBuiltinMesh(BuiltinMeshType::PLANE)
+                                                                        .WithMaterial(defaultMaterial)
+                                                                        .WithPosition(glm::vec3{0.0f, -7.0f, -8.0f})
+                                                                        .WithScale(glm::vec3{12.0f}))
+                                                      .Build();
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
@@ -185,49 +192,59 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     // Create descriptor sets
     const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 2 + combinedImageSamplerCount,
-        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
+        .maxSets = 3 + combinedImageSamplerCount,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount}},
         .layouts = {{.name = kMainDescSetLayout,
-                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
-                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
+                                  {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
                                    VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
         .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout}}};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
 
-    std::vector<VkDescriptorBufferInfo> storageBufferInfos;
-    storageBufferInfos.emplace_back(scene_->GetStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+    std::vector<VkDescriptorBufferInfo> storageTransformBufferInfos;
+    storageTransformBufferInfos.emplace_back(scene_->GetTransformStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+
+    std::vector<VkDescriptorBufferInfo> storageMaterialBufferInfos;
+    storageMaterialBufferInfos.emplace_back(scene_->GetMaterialStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
     auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
 
-    BufferWriteRequest objectStorageBufferRequest;
-    objectStorageBufferRequest.descriptorSetName = kMainDescSet;
-    objectStorageBufferRequest.bindingIndex = 0;
-    objectStorageBufferRequest.buffers = storageBufferInfos;
-    objectStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    BufferWriteRequest objectStorageTransformBufferRequest;
+    objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;
+    objectStorageTransformBufferRequest.bindingIndex = 0;
+    objectStorageTransformBufferRequest.buffers = storageTransformBufferInfos;
+    objectStorageTransformBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+
+    BufferWriteRequest objectStorageMaterialBufferRequest;
+    objectStorageMaterialBufferRequest.descriptorSetName = kMainDescSet;
+    objectStorageMaterialBufferRequest.bindingIndex = 1;
+    objectStorageMaterialBufferRequest.buffers = storageMaterialBufferInfos;
+    objectStorageMaterialBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     BufferWriteRequest lightUboRequest;
     lightUboRequest.descriptorSetName = kMainDescSet;
-    lightUboRequest.bindingIndex = 1;
+    lightUboRequest.bindingIndex = 2;
     lightUboRequest.buffers = lightUboInfos;
     lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
     ImageWriteRequest textureUpdateRequest;
     textureUpdateRequest.descriptorSetName = kMainDescSet;
-    textureUpdateRequest.bindingIndex = 2;
+    textureUpdateRequest.bindingIndex = 3;
     textureUpdateRequest.images = descriptorImageInfos;
     textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .bufferWriteRequests = {objectStorageBufferRequest, lightUboRequest},
-        .imageWriteRequests = {textureUpdateRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.bufferWriteRequests = {objectStorageTransformBufferRequest,
+                                                                                  objectStorageMaterialBufferRequest,
+                                                                                  lightUboRequest},
+                                                          .imageWriteRequests = {textureUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -403,24 +420,27 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             },
             VK_SUBPASS_CONTENTS_INLINE);
 
-    const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
-    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
+    const std::vector descSets{resources_->GetDescriptorSet(kMainDescSet)};
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
     const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
 
-    // Draw only scene objects
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-        const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
+    scene_->Traverse([&](const SceneObject& sceneObject) {
+        if (sceneObject.HasRenderable()) {
+            const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
+            currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
+            currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-        currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-        const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
-                scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
-        currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(meshPushConstants), &meshPushConstants);
-        currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
-    }
+            MeshPushConstants meshPushConstants{};
+            meshPushConstants.objectId = sceneObject.GetObjectId();
+            meshPushConstants.view = camera_->GetViewMatrix();
+            meshPushConstants.projection = camera_->GetProjectionMatrix();
+            meshPushConstants.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                                            0, sizeof(meshPushConstants), &meshPushConstants);
+            currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
+        }
+    });
 
     currentCmdBuffer->EndRenderPass();
     if (!currentCmdBuffer->EndCommandBuffer()) {

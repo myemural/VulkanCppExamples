@@ -45,7 +45,7 @@ In this example, a mipmap level is manually applied to the diffuse textures of t
 | Shader Type | Status             | Notes                |
 |-------------|--------------------|----------------------|
 | GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
+| HLSL        | :white_check_mark: |                      |
 | Slang       | :x:                | Will be implemented. |
 
 ## Theoretical Background

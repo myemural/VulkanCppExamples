@@ -72,6 +72,7 @@ void ApplicationPipelinesAndPasses::CreateDefaultLogicalDevice()
     VkPhysicalDeviceFeatures deviceFeatures{};
     deviceFeatures.fillModeNonSolid = VK_TRUE;
     deviceFeatures.wideLines = VK_TRUE;
+    deviceFeatures.shaderStorageImageReadWithoutFormat = VK_TRUE;
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
         builder.AddLayer("VK_LAYER_KHRONOS_validation")

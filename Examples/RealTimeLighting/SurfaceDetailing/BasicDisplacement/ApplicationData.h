@@ -12,15 +12,33 @@
 
 #include <glm/glm.hpp>
 
-#include "Vertex.h"
-
 namespace examples::real_time_lighting::surface_detailing::basic_displacement
 {
+
+struct alignas(16) MeshMaterialData
+{
+    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    float ambientStrength;
+    float shininess;
+    float specularStrength;
+    int diffuseMap;
+    int normalMap;
+    int heightMap;
+};
 
 struct alignas(16) LightUbo
 {
     glm::vec4 lightDirection; // xyz = Light Direction
     glm::vec4 lightColor;     // xyz = Light Color
+};
+
+struct MeshPushConstants
+{
+    glm::mat4 view;
+    glm::mat4 projection;
+    glm::vec4 cameraPosition;
+    std::uint32_t objectId;
 };
 
 } // namespace examples::real_time_lighting::surface_detailing::basic_displacement

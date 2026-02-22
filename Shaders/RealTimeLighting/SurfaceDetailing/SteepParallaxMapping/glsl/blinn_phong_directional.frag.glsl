@@ -15,42 +15,33 @@ layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec2 fragUv;
 layout(location = 2) in mat3 fragTBN;
 
-struct MeshData {
-    mat4 model;
-    mat4 normalMatrix;
+struct MeshMaterialData
+{
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
     float shininess;
     float specularStrength;
-    float opacity;
-    float reflectivity;
     int diffuseMap;
-    int specularMap;
     int normalMap;
-    int emissiveMap;
-    int shininessMap;
-    int opacityMap;
-    int aoMap;
     int heightMap;
 };
 
-layout(std430, binding = 0) readonly buffer MeshDataBuffer {
-    MeshData meshes[];
+layout(std430, binding = 1) readonly buffer MeshMaterialDataBuffer {
+    MeshMaterialData meshMaterials[];
 };
 
-layout(std140, set = 0, binding = 1) uniform LightUBO
+layout(std140, set = 0, binding = 2) uniform LightUBO
 {
     vec4 lightDirection; // xyz = Light Direction
     vec4 lightColor;     // rgb = Light Color
 } light;
 
-layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[];
+layout(set = 0, binding = 3) uniform sampler2D uCombinedSamplers[];
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
-    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;
@@ -89,11 +80,11 @@ vec2 SteepParallaxMapping(vec2 texCoords, vec3 viewDirTS, sampler2D heightMap, f
 void main()
 {
     // Get mesh info
-    const MeshData meshInfo = meshes[pc.objectId];
+    const MeshMaterialData meshMatInfo = meshMaterials[pc.objectId];
 
     // Parallax mapping calculation
     vec2 uv = fragUv;
-    if (meshInfo.heightMap != -1) {
+    if (meshMatInfo.heightMap != -1) {
         vec3 viewDirWorldSpace = normalize(pc.cameraPosition.xyz - fragPos);
         vec3 viewDirTangentSpace = normalize(transpose(fragTBN) * viewDirWorldSpace);
 
@@ -101,20 +92,20 @@ void main()
         const float parallaxScale = 0.05;
 
         // UV offset
-        uv = SteepParallaxMapping(fragUv, viewDirTangentSpace, uCombinedSamplers[nonuniformEXT(meshInfo.heightMap)], parallaxScale);
+        uv = SteepParallaxMapping(fragUv, viewDirTangentSpace, uCombinedSamplers[nonuniformEXT(meshMatInfo.heightMap)], parallaxScale);
     }
 
-    vec3 diffuseColor = meshInfo.diffuseColor.rgb;
-    if (meshInfo.diffuseMap != -1) {
-        vec4 diffuseTextureColor = texture(uCombinedSamplers[nonuniformEXT(meshInfo.diffuseMap)], uv);
+    vec3 diffuseColor = meshMatInfo.diffuseColor.rgb;
+    if (meshMatInfo.diffuseMap != -1) {
+        vec4 diffuseTextureColor = texture(uCombinedSamplers[nonuniformEXT(meshMatInfo.diffuseMap)], uv);
         diffuseColor = diffuseTextureColor.rgb;
     }
 
     // Normal map calculation
     vec3 normalWorldSpace;
-    if (meshInfo.normalMap != -1) {
+    if (meshMatInfo.normalMap != -1) {
         // Normal map sample (tangent space)
-        vec3 normalTangent = texture(uCombinedSamplers[nonuniformEXT(meshInfo.normalMap)], uv).rgb;
+        vec3 normalTangent = texture(uCombinedSamplers[nonuniformEXT(meshMatInfo.normalMap)], uv).rgb;
 
         // Transform from [0,1] to [-1,1] range
         normalTangent = normalize(normalTangent * 2.0 - 1.0);
@@ -135,7 +126,7 @@ void main()
     vec3 normalizedView = normalize(pc.cameraPosition.xyz - fragPos);
 
     // Ambient calculation
-    vec3 ambient = meshInfo.ambientStrength * diffuseColor;
+    vec3 ambient = meshMatInfo.ambientStrength * diffuseColor;
 
     // Diffuse (Lambert) calculation
     float diff = max(dot(normalWorldSpace, normalizedLightDir), 0.0);
@@ -143,10 +134,10 @@ void main()
 
     // Specular calculation
     vec3 halfDir = normalize(normalizedLightDir + normalizedView);
-    float spec = pow(max(dot(normalWorldSpace, halfDir), 0.0), meshInfo.shininess);
-    vec3 specular = meshInfo.specularStrength * spec * light.lightColor.rgb * meshInfo.specularColor.rgb;
+    float spec = pow(max(dot(normalWorldSpace, halfDir), 0.0), meshMatInfo.shininess);
+    vec3 specular = meshMatInfo.specularStrength * spec * light.lightColor.rgb * meshMatInfo.specularColor.rgb;
 
     // Final color
     vec3 finalColor = ambient + diffuse + specular;
-    outColor = vec4(finalColor, meshInfo.opacity);
+    outColor = vec4(finalColor, 1.0);
 }

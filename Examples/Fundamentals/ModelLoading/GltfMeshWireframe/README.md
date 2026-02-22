@@ -36,11 +36,11 @@ In this example, a glTF 3D mesh rendered on the screen as wireframe without any 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type | Status             | Notes |
+|-------------|--------------------|-------|
+| GLSL        | :white_check_mark: |       |
+| HLSL        | :white_check_mark: |       |
+| Slang       | :white_check_mark: |       |
 
 ## Theoretical Background
 

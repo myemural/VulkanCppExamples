@@ -72,8 +72,14 @@ void ApplicationModelLoading::CreateDefaultLogicalDevice()
     VkPhysicalDeviceFeatures deviceFeatures{};
     deviceFeatures.fillModeNonSolid = VK_TRUE;
 
+    // For using SV_VertexID in Slang
+    VkPhysicalDeviceVulkan11Features features11{};
+    features11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+    features11.shaderDrawParameters = VK_TRUE;
+
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
-        builder.AddLayer("VK_LAYER_KHRONOS_validation")
+        builder.AddExtendingStructure(&features11)
+                .AddLayer("VK_LAYER_KHRONOS_validation")
                 .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;

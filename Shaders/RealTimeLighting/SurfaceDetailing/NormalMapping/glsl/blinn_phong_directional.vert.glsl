@@ -37,7 +37,7 @@ layout(push_constant) uniform MeshPushConstants {
 void main()
 {
     // Get mesh data
-    MeshTransformData meshTransform = meshTransforms[pc.objectId];
+    const MeshTransformData meshTransform = meshTransforms[pc.objectId];
 
     // World-space position and UV
     fragPos = vec3(meshTransform.model * vec4(inPosition, 1.0));

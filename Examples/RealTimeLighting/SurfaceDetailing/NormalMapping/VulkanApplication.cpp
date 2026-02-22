@@ -433,11 +433,10 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             },
             VK_SUBPASS_CONTENTS_INLINE);
 
-    const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
-    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
+    const std::vector descSets{resources_->GetDescriptorSet(kMainDescSet)};
+    currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
     const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
 
-    // Draw only scene objects
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
     scene_->Traverse([&](const SceneObject& sceneObject) {
         if (sceneObject.HasRenderable()) {

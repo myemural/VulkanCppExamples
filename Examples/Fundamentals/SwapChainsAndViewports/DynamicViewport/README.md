@@ -40,7 +40,7 @@ In this example, two viewports are placed on the left and right of the screen. T
 |-------------|--------------------|----------------------------------------------------------------|
 | GLSL        | :white_check_mark: |                                                                |
 | HLSL        | :x:                | Cannot be implemented because of missing vertex shader feature |
-| Slang       | :x:                | Will be implemented. (Maybe)                                   |
+| Slang       | :x:                | Cannot be implemented because of missing vertex shader feature |
 
 ## Theoretical Background
 

@@ -45,7 +45,7 @@ In this example, gradient-based manual LOD control is applied via shader to obje
 | Shader Type | Status             | Notes                |
 |-------------|--------------------|----------------------|
 | GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
+| HLSL        | :white_check_mark: |                      |
 | Slang       | :x:                | Will be implemented. |
 
 ## Theoretical Background

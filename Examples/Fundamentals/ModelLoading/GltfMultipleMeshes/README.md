@@ -36,11 +36,11 @@ In this example, a glTF model that contains multiple meshes rendered on the scre
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type | Status             | Notes |
+|-------------|--------------------|-------|
+| GLSL        | :white_check_mark: |       |
+| HLSL        | :white_check_mark: |       |
+| Slang       | :white_check_mark: |       |
 
 ## Theoretical Background
 
