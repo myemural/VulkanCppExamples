@@ -12,14 +12,6 @@ layout(location = 0) out vec4 outColor;
 
 layout(location = 0) in vec3 directionVector;
 
-layout(push_constant) uniform MeshPushConstants {
-    mat4 view;
-    mat4 proj;
-    mat4 reflectionViewProj;
-    vec4 cameraPosition;
-    uint objectId;
-} pc;
-
 layout(set = 0, binding = 0) uniform samplerCube skybox;
 
 void main()

@@ -12,6 +12,7 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
@@ -19,6 +20,7 @@
 namespace examples::real_time_lighting::environment_mapping::cubemap_refractions
 {
 using namespace constants;
+using namespace common::scene;
 using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -145,12 +147,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.primitiveSectorCount = 64U;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
-    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
+    scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    scene_->AddPerspectiveCamera(kCameraObject, glm::vec3(0.0f, 0.0f, orbitDistance_), aspectRatio);
-    camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
+    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, orbitDistance_), aspectRatio);
 
     // Materials
     const auto cubemapRightTextureAsset = assetManager_->Load<TextureAsset>(kCubemapRightTexturePath);
@@ -165,22 +166,23 @@ void VulkanApplication::BuildScene()
             assetManager_->Get(cubemapBottomTextureAsset), assetManager_->Get(cubemapBackTextureAsset),
             assetManager_->Get(cubemapFrontTextureAsset));
 
-    const auto defaultMatName = kDefaultMaterial;
-    materialManager_->CreatePhongTexturedMaterial(defaultMatName)
-            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
-            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
-            .SetShininess(GetParamFloat(AppSettings::Shininess))
-            .SetDiffuseColor(params_.Get<glm::vec3>(AppSettings::DiffuseColor))
-            .Build();
+    MeshMaterialData defaultMaterial;
+    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    defaultMaterial.diffuseColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::DiffuseColor), 1.0f);
 
-    // Add scene objects
-    scene_->AddSphere(kSphereObject, glm::vec3{0.0f, 0.0f, 0.0f});
-    scene_->SetMaterial(kSphereObject, defaultMatName);
-    scene_->ScaleObject(kSphereObject, glm::vec3{2.0f});
-
-    // Add skybox cube
-    scene_->AddCube(kSkyboxCubeObject);
-    scene_->AddToGroup(kSkyboxObjectGroup, {kSkyboxCubeObject});
+    const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
+                                    .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
+                                    .AddChild(SceneObjectBuilder(*scene_, kSphereObject)
+                                                      .WithBuiltinMesh(BuiltinMeshType::SPHERE)
+                                                      .WithMaterial(defaultMaterial)
+                                                      .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
+                                                      .WithScale(glm::vec3{2.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kSkyboxCubeObject)
+                                                      .WithTag(kSkyboxObjectGroup)
+                                                      .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                                      .WithMaterial(MeshMaterialData{})
+                                                      .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f}))
+                                    .Build();
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
@@ -188,16 +190,16 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     // Create descriptor sets
     const auto cubemapCount = materialManager_->GetCubemapTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 2 + 2 * cubemapCount,
-        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
+        .maxSets = 3 + 2 * cubemapCount,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2 * cubemapCount}},
         .layouts = {{.name = kMainDescSetLayout,
                      .bindings =
                              {
-                                 {0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
-                                  VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                 {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                 {0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
+                                 {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                 {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                  {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                   nullptr},
                              }},
@@ -209,23 +211,32 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
 
-    std::vector<VkDescriptorBufferInfo> storageBufferInfos;
-    storageBufferInfos.emplace_back(scene_->GetStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+    std::vector<VkDescriptorBufferInfo> storageTransformBufferInfos;
+    storageTransformBufferInfos.emplace_back(scene_->GetTransformStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+
+    std::vector<VkDescriptorBufferInfo> storageMaterialBufferInfos;
+    storageMaterialBufferInfos.emplace_back(scene_->GetMaterialStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
     auto cubemapImageInfos = materialManager_->GetCubemapDescriptorImageInfo(kCubemapTexture);
 
-    BufferWriteRequest objectStorageBufferRequest;
-    objectStorageBufferRequest.descriptorSetName = kMainDescSet;
-    objectStorageBufferRequest.bindingIndex = 0;
-    objectStorageBufferRequest.buffers = storageBufferInfos;
-    objectStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    BufferWriteRequest objectStorageTransformBufferRequest;
+    objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;
+    objectStorageTransformBufferRequest.bindingIndex = 0;
+    objectStorageTransformBufferRequest.buffers = storageTransformBufferInfos;
+    objectStorageTransformBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+
+    BufferWriteRequest objectStorageMaterialBufferRequest;
+    objectStorageMaterialBufferRequest.descriptorSetName = kMainDescSet;
+    objectStorageMaterialBufferRequest.bindingIndex = 1;
+    objectStorageMaterialBufferRequest.buffers = storageMaterialBufferInfos;
+    objectStorageMaterialBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     BufferWriteRequest lightUboRequest;
     lightUboRequest.descriptorSetName = kMainDescSet;
-    lightUboRequest.bindingIndex = 1;
+    lightUboRequest.bindingIndex = 2;
     lightUboRequest.buffers = lightUboInfos;
     lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
@@ -242,7 +253,8 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     cubemapSkyboxUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .bufferWriteRequests = {objectStorageBufferRequest, lightUboRequest},
+        .bufferWriteRequests = {objectStorageTransformBufferRequest, objectStorageMaterialBufferRequest,
+                                lightUboRequest},
         .imageWriteRequests = {cubemapReflectionUpdateRequest, cubemapSkyboxUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
@@ -365,7 +377,7 @@ void VulkanApplication::CreatePipelines()
 {
     VkPushConstantRange mvpPushConstant;
     mvpPushConstant.offset = 0;
-    mvpPushConstant.size = sizeof(MeshPushConstantsGpu);
+    mvpPushConstant.size = sizeof(ScenePushConstants);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
     pipelineLayout_ =
@@ -429,8 +441,13 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create graphics pipeline (for scene objects)!");
     }
 
+    VkPushConstantRange skyboxPushConstant;
+    skyboxPushConstant.offset = 0;
+    skyboxPushConstant.size = sizeof(SkyboxPushConstants);
+    skyboxPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
     pipelineLayoutSkybox_ =
-            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kSkyboxDescSetLayout)}, {mvpPushConstant});
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kSkyboxDescSetLayout)}, {skyboxPushConstant});
 
     if (!pipelineLayoutSkybox_) {
         throw std::runtime_error("Failed to create pipeline layout (for skybox)!");
@@ -510,44 +527,47 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Draw skybox
     {
         currentCmdBuffer->BindPipeline(skyboxPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        scene_->Traverse([&](const SceneObject& sceneObject) {
+            if (sceneObject.HasRenderable() && sceneObject.GetTag() == kSkyboxObjectGroup) {
+                const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
+                currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
+                currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const auto& meshInfo = scene_->GetMesh(kSkyboxCubeObject);
+                const std::vector skyboxDescSets{resources_->GetDescriptorSet(kSkyboxDescSet)};
+                currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutSkybox_, 0,
+                                                     skyboxDescSets);
 
-        const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
-        currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-        currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-        const std::vector skyboxDescSets{resources_->GetDescriptorSet(kSkyboxDescSet)};
-        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutSkybox_, 0, skyboxDescSets);
-
-        const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
-                scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
-        currentCmdBuffer->PushConstants(pipelineLayoutSkybox_,
-                                        VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(meshPushConstants), &meshPushConstants);
-        currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
+                SkyboxPushConstants skyboxPushConstants{};
+                skyboxPushConstants.view = camera_->GetViewMatrix();
+                skyboxPushConstants.projection = camera_->GetProjectionMatrix();
+                currentCmdBuffer->PushConstants(pipelineLayoutSkybox_, VK_SHADER_STAGE_VERTEX_BIT, 0,
+                                                sizeof(skyboxPushConstants), &skyboxPushConstants);
+                currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
+            }
+        });
     }
 
     // Draw only scene objects
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-        if (scene_->IsInGroup(meshName, kSkyboxObjectGroup)) {
-            continue;
+    scene_->Traverse([&](const SceneObject& sceneObject) {
+        if (sceneObject.HasRenderable() && sceneObject.GetTag() != kSkyboxObjectGroup) {
+            const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
+            currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
+            currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
+
+            const std::vector descSets{resources_->GetDescriptorSet(kMainDescSet)};
+        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
+
+            ScenePushConstants scenePushConstants{};
+            scenePushConstants.objectId = sceneObject.GetObjectId();
+            scenePushConstants.view = camera_->GetViewMatrix();
+            scenePushConstants.projection = camera_->GetProjectionMatrix();
+            scenePushConstants.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                                            0, sizeof(scenePushConstants), &scenePushConstants);
+            currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
         }
-
-        const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
-        currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-        currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-        const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
-        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
-
-        const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
-                scene_->GetViewMatrix(), scene_->GetProjectionMatrix(), glm::vec4(camera_->GetPosition(), 1.0f));
-        currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(meshPushConstants), &meshPushConstants);
-        currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
-    }
+    });
 
     currentCmdBuffer->EndRenderPass();
     if (!currentCmdBuffer->EndCommandBuffer()) {

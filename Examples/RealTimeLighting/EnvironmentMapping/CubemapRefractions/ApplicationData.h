@@ -15,10 +15,30 @@
 namespace examples::real_time_lighting::environment_mapping::cubemap_refractions
 {
 
+struct alignas(16) MeshMaterialData
+{
+    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    float ambientStrength;
+};
+
 struct alignas(16) LightUbo
 {
     glm::vec4 lightDirection; // xyz = Light Direction
     glm::vec4 lightColor;     // xyz = Light Color
+};
+
+struct SkyboxPushConstants
+{
+    glm::mat4 view;
+    glm::mat4 projection;
+};
+
+struct ScenePushConstants
+{
+    glm::mat4 view;
+    glm::mat4 projection;
+    glm::vec4 cameraPosition;
+    std::uint32_t objectId;
 };
 
 } // namespace examples::real_time_lighting::environment_mapping::cubemap_refractions
