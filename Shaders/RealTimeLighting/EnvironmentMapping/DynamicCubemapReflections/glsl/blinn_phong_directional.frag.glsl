@@ -15,44 +15,35 @@ layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec2 fragUv;
 layout(location = 2) in mat3 fragTBN;
 
-struct MeshData {
-    mat4 model;
-    mat4 normalMatrix;
+struct MeshMaterialData
+{
     vec4 diffuseColor;
     vec4 specularColor;
     float ambientStrength;
     float shininess;
     float specularStrength;
-    float opacity;
     float reflectivity;
     int diffuseMap;
-    int specularMap;
     int normalMap;
-    int emissiveMap;
-    int shininessMap;
-    int opacityMap;
-    int aoMap;
-    int heightMap;
 };
 
-layout(std430, binding = 0) readonly buffer MeshDataBuffer {
-    MeshData meshes[];
+layout(std430, binding = 1) readonly buffer MeshMaterialDataBuffer {
+    MeshMaterialData meshMaterials[];
 };
 
-layout(std140, set = 0, binding = 1) uniform LightUBO
+layout(std140, set = 0, binding = 2) uniform LightUBO
 {
     vec4 lightDirection; // xyz = Light Direction
     vec4 lightColor;     // rgb = Light Color
 } light;
 
-layout(set = 0, binding = 2) uniform sampler2D uCombinedSamplers[];
+layout(set = 0, binding = 3) uniform sampler2D uCombinedSamplers[];
 
-layout(set = 0, binding = 3) uniform samplerCube uCubemapReflectionMap;
+layout(set = 0, binding = 4) uniform samplerCube uCubemapReflectionMap;
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
     mat4 proj;
-    mat4 reflectionViewProj;
     vec4 cameraPosition;
     uint objectId;
 } pc;
@@ -60,19 +51,19 @@ layout(push_constant) uniform MeshPushConstants {
 void main()
 {
     // Get mesh info
-    const MeshData meshInfo = meshes[pc.objectId];
+    const MeshMaterialData meshMat = meshMaterials[pc.objectId];
 
-    vec3 diffuseColor = meshInfo.diffuseColor.rgb;
-    if (meshInfo.diffuseMap != -1) {
-        vec4 diffuseTextureColor = texture(uCombinedSamplers[nonuniformEXT(meshInfo.diffuseMap)], fragUv);
+    vec3 diffuseColor = meshMat.diffuseColor.rgb;
+    if (meshMat.diffuseMap != -1) {
+        vec4 diffuseTextureColor = texture(uCombinedSamplers[nonuniformEXT(meshMat.diffuseMap)], fragUv);
         diffuseColor = diffuseTextureColor.rgb;
     }
 
     // Normal map calculation
     vec3 normalWorldSpace;
-    if (meshInfo.normalMap != -1) {
+    if (meshMat.normalMap != -1) {
         // Normal map sample (tangent space)
-        vec3 normalTangent = texture(uCombinedSamplers[nonuniformEXT(meshInfo.normalMap)], fragUv).rgb;
+        vec3 normalTangent = texture(uCombinedSamplers[nonuniformEXT(meshMat.normalMap)], fragUv).rgb;
 
         // Transform from [0,1] to [-1,1] range
         normalTangent = normalize(normalTangent * 2.0 - 1.0);
@@ -99,7 +90,7 @@ void main()
     vec3 reflectionColor = texture(uCubemapReflectionMap, reflectDir).rgb;
 
     // Ambient calculation
-    vec3 ambient = meshInfo.ambientStrength * diffuseColor;
+    vec3 ambient = meshMat.ambientStrength * diffuseColor;
 
     // Diffuse (Lambert) calculation
     float diff = max(dot(normalWorldSpace, normalizedLightDir), 0.0);
@@ -107,8 +98,8 @@ void main()
 
     // Specular calculation
     vec3 halfDir = normalize(normalizedLightDir + normalizedView);
-    float spec = pow(max(dot(normalWorldSpace, halfDir), 0.0), meshInfo.shininess);
-    vec3 specular = meshInfo.specularStrength * spec * light.lightColor.rgb * meshInfo.specularColor.rgb;
+    float spec = pow(max(dot(normalWorldSpace, halfDir), 0.0), meshMat.shininess);
+    vec3 specular = meshMat.specularStrength * spec * light.lightColor.rgb * meshMat.specularColor.rgb;
 
     // Final color
     vec3 finalColor = ambient + diffuse + specular;
@@ -116,8 +107,8 @@ void main()
     // Adjust reflection
     const float shadowReflectionVisibility = 0.10;
     float shadowMask = clamp(diff + shadowReflectionVisibility, 0.0, 1.0); // Adjust reflection for the dark side of the object
-    float reflectionFactor = meshInfo.reflectivity * shadowMask;
+    float reflectionFactor = meshMat.reflectivity * shadowMask;
     finalColor = mix(finalColor, reflectionColor, reflectionFactor);
 
-    outColor = vec4(finalColor, meshInfo.opacity);
+    outColor = vec4(finalColor, 1.0);
 }

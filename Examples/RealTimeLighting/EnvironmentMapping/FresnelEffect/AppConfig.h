@@ -58,8 +58,7 @@ namespace constants
     inline constexpr auto kDefaultMaterial = "defaultMaterial";
 
     // Scene Objects
-    inline constexpr auto kCameraObject = "camera";
-    inline constexpr auto kSphereObject = "sphere";
+    inline constexpr auto kRootObject = "root";
     inline constexpr auto kPlaneObject = "plane";
     inline constexpr auto kSkyboxCubeObject = "skyboxCube";
 

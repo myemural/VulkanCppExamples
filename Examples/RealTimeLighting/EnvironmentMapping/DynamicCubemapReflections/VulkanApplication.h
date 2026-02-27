@@ -17,6 +17,7 @@
 #include "ApplicationEnvironmentMapping.h"
 #include "AssetManager.h"
 #include "PerspectiveCamera.h"
+#include "Scene.h"
 #include "SceneManager.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -91,7 +92,7 @@ private:
     std::shared_ptr<common::utility::PerspectiveCamera> cubemapCamera_ = nullptr;
 
     // Scene manager
-    std::unique_ptr<common::vulkan_framework::SceneManager> scene_;
+    std::unique_ptr<common::scene::Scene> scene_;
     std::unique_ptr<common::vulkan_framework::MaterialManager> materialManager_;
 
     // Asset manager

@@ -563,7 +563,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
             const std::vector descSets{resources_->GetDescriptorSet(kMainDescSet)};
-        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
+            currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
 
             ScenePushConstants scenePushConstants{};
             scenePushConstants.objectId = sceneObject.GetObjectId();
