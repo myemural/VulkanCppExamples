@@ -86,3 +86,7 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 ## [Lighting Architectures](/Examples/RealTimeLighting/LightingArchitectures)
 
 TBD
+
+## [Transparency Techniques](/Examples/RealTimeLighting/TransparencyTechniques)
+
+TBD

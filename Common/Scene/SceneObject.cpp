@@ -49,6 +49,12 @@ void SceneObject::SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builti
 
 glm::vec3 SceneObject::GetPosition() const { return transform_.GetPosition(); }
 
+glm::vec3 SceneObject::GetWorldPosition()
+{
+    const auto& world = GetWorldMatrix();
+    return glm::vec3{world[3]};
+}
+
 void SceneObject::SetParent(const std::shared_ptr<SceneObject>& parent) { parent_ = parent; }
 
 void SceneObject::AddChild(const std::shared_ptr<SceneObject>& childObject)

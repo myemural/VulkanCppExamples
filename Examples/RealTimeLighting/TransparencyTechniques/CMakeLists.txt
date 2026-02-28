@@ -1,0 +1,6 @@
+set(SUBCATEGORY_NAME TransparencyTechniques)
+
+add_subdirectory(Base)
+include_directories(Base)
+
+add_subdirectory(AlphaBlendingTransparency)

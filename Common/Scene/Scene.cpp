@@ -6,6 +6,8 @@
 
 #include "Scene.h"
 
+#include <algorithm>
+
 #include "SceneGpuStorage.h"
 
 namespace common::scene
@@ -27,6 +29,35 @@ void Scene::Traverse(const TraverseFunc& func) const
 {
     for (auto& object: rootObjects_) {
         TraverseRecursive(*object, func);
+    }
+}
+void Scene::TraverseOrdered(const glm::vec3& cameraPosition, const TraverseFunc& func, const bool backToFront) const
+{
+    std::vector<std::shared_ptr<SceneObject>> objects;
+
+    // Flatten hierarchy
+    for (auto& root: rootObjects_) {
+        CollectObjects(root, objects);
+    }
+
+    // Sort
+    std::ranges::sort(objects, [&](const std::shared_ptr<SceneObject>& a, const std::shared_ptr<SceneObject>& b) {
+        const glm::vec3 da = a->GetWorldPosition() - cameraPosition;
+        const glm::vec3 db = b->GetWorldPosition() - cameraPosition;
+
+        const float distA = glm::dot(da, da);
+        const float distB = glm::dot(db, db);
+
+        if (backToFront) {
+            return distA > distB; // Far first
+        }
+
+        return distA < distB;     // Near first
+    });
+
+    // Traverse in sorted order
+    for (auto& object: objects) {
+        func(*object);
     }
 }
 
@@ -92,6 +123,16 @@ std::shared_ptr<SceneObject> Scene::FindRecursive(const std::shared_ptr<SceneObj
     }
 
     return nullptr;
+}
+
+void Scene::CollectObjects(const std::shared_ptr<SceneObject>& object,
+                           std::vector<std::shared_ptr<SceneObject>>& orderedObjects)
+{
+    orderedObjects.push_back(object);
+
+    for (auto& child: object->GetChildren()) {
+        CollectObjects(child, orderedObjects);
+    }
 }
 
 std::uint32_t Scene::GenerateObjectId() { return currentObjectId_++; }

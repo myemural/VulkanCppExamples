@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include <glm/glm.hpp>
+
 #include "CoreDefines.h"
 
 namespace common::scene

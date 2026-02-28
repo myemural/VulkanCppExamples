@@ -45,6 +45,8 @@ public:
 
     COMMON_API glm::vec3 GetPosition() const;
 
+    COMMON_API glm::vec3 GetWorldPosition();
+
     template<typename MaterialType>
     void SetMaterial(const MaterialType& material)
     {

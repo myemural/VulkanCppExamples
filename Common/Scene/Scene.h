@@ -17,8 +17,8 @@
 
 #include "CoreDefines.h"
 #include "ResourceManager.h"
-#include "SceneObject.h"
 #include "SceneConfig.h"
+#include "SceneObject.h"
 
 namespace common::scene
 {
@@ -53,6 +53,14 @@ public:
     void Traverse(const TraverseFunc& func) const;
 
     /**
+     * @brief Traverse the entire scene tree, arranging it according to the camera position.
+     * @param cameraPosition Camera world position.
+     * @param func Function/lambda to apply to each object.
+     * @param backToFront Chooses between back-to-front sorting or front-to-back sorting.
+     */
+    void TraverseOrdered(const glm::vec3& cameraPosition, const TraverseFunc& func, bool backToFront = true) const;
+
+    /**
      * Searches and returns scene object by name in the scene.
      * @param name Name of the scene object.
      * @return Returns related scene objects, otherwise nullptr.
@@ -78,6 +86,9 @@ private:
 
     static std::shared_ptr<SceneObject> FindRecursive(const std::shared_ptr<SceneObject>& object,
                                                       const std::string& name);
+
+    static void CollectObjects(const std::shared_ptr<SceneObject>& object,
+                               std::vector<std::shared_ptr<SceneObject>>& orderedObjects);
 
     std::uint32_t GenerateObjectId();
 
