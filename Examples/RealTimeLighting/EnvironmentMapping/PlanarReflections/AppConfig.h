@@ -65,7 +65,7 @@ namespace constants
     inline constexpr auto kMirrorMaterial = "mirrorMaterial";
 
     // Scene Objects
-    inline constexpr auto kCameraObject = "camera";
+    inline constexpr auto kRootObject = "root";
     inline constexpr auto kCubeObject = "cube";
     inline constexpr auto kSphereObject = "sphere";
     inline constexpr auto kPlaneObject = "plane";

@@ -12,6 +12,7 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "TimeUtils.h"
@@ -20,6 +21,7 @@
 namespace examples::real_time_lighting::environment_mapping::planar_reflections
 {
 using namespace constants;
+using namespace common::scene;
 using namespace common::asset_manager;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
@@ -174,15 +176,13 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
-    sceneConfig.currentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
-    scene_ = std::make_unique<SceneManager>(*resources_, *materialManager_, sceneConfig);
+    scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    scene_->AddPerspectiveCamera(kCameraObject, glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
-    camera_ = std::dynamic_pointer_cast<PerspectiveCamera>(scene_->GetActiveCamera());
+    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 1.0f, 7.0f), aspectRatio);
 
     // Materials
     const auto wallStoneTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneTexturePath);
@@ -203,40 +203,48 @@ void VulkanApplication::BuildScene()
             assetManager_->Get(cubemapBottomTextureAsset), assetManager_->Get(cubemapBackTextureAsset),
             assetManager_->Get(cubemapFrontTextureAsset));
 
-    const auto defaultMatName = kDefaultMaterial;
-    materialManager_->CreatePhongTexturedMaterial(defaultMatName)
-            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
-            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
-            .SetShininess(GetParamFloat(AppSettings::Shininess))
-            .SetDiffuseMap(kWallStoneTexture)
-            .SetNormalMap(kWallStoneNormalTexture)
-            .SetReflectivity(0.0f) // No reflection
-            .Build();
+    MeshMaterialData defaultMaterial;
+    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    defaultMaterial.reflectivity = 0.0f; // No reflection
+    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
+    defaultMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
 
-    const auto mirrorMatName = kMirrorMaterial;
-    materialManager_->CreatePhongTexturedMaterial(mirrorMatName)
-            .SetAmbientStrength(GetParamFloat(AppSettings::AmbientStrength))
-            .SetSpecularStrength(GetParamFloat(AppSettings::SpecularStrength))
-            .SetShininess(GetParamFloat(AppSettings::Shininess))
-            .SetDiffuseColor(glm::vec3(1.0f, 0.0f, 0.0f)) // Red diffuse color
-            .SetReflectivity(0.9f)                        // High reflection
-            .Build();
+    MeshMaterialData mirrorMaterial;
+    mirrorMaterial.diffuseColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
+    mirrorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    mirrorMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    mirrorMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    mirrorMaterial.reflectivity = 0.9f; // High reflection
 
-    // Add scene objects
-    scene_->AddCube(kCubeObject, glm::vec3{-1.5f, -0.5f, 0.0f});
-    scene_->SetMaterial(kCubeObject, defaultMatName);
-    scene_->AddSphere(kSphereObject, glm::vec3{1.5f, -0.5f, 0.0f});
-    scene_->SetMaterial(kSphereObject, defaultMatName);
-    scene_->AddPlane(kPlaneObject, glm::vec3{0.0f, -2.0f, 0.0f}, glm::vec3(0.0f), glm::vec3{4.0f});
-    scene_->SetMaterial(kPlaneObject, defaultMatName);
-
-    // Add mirror object
-    scene_->AddPlane(kMirrorObject, kMirrorObjectPosition, glm::vec3(90.0f, 0.0f, 0.0f), glm::vec3{4.0f});
-    scene_->SetMaterial(kMirrorObject, mirrorMatName);
-
-    // Add skybox cube
-    scene_->AddCube(kSkyboxCubeObject);
-    scene_->AddToGroup(kSkyboxObjectGroup, {kSkyboxCubeObject});
+    const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
+                                    .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
+                                    .AddChild(SceneObjectBuilder(*scene_, kCubeObject)
+                                                      .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                                      .WithMaterial(defaultMaterial)
+                                                      .WithPosition(glm::vec3{-1.5f, -0.5f, 0.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kSphereObject)
+                                                      .WithBuiltinMesh(BuiltinMeshType::SPHERE)
+                                                      .WithMaterial(defaultMaterial)
+                                                      .WithPosition(glm::vec3{1.5f, -0.5f, 0.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kPlaneObject)
+                                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
+                                                      .WithMaterial(defaultMaterial)
+                                                      .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
+                                                      .WithScale(glm::vec3{8.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kMirrorObject)
+                                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
+                                                      .WithMaterial(mirrorMaterial)
+                                                      .WithPosition(kMirrorObjectPosition)
+                                                      .WithEulerAngles(glm::vec3(90.0f, 0.0f, 0.0f))
+                                                      .WithScale(glm::vec3{8.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kSkyboxCubeObject)
+                                                      .WithTag(kSkyboxObjectGroup)
+                                                      .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                                      .WithMaterial(MeshMaterialData{})
+                                                      .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f}))
+                                    .Build();
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
@@ -245,17 +253,17 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
     const auto cubemapCount = materialManager_->GetCubemapTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 2 + combinedImageSamplerCount + cubemapCount + 1,
-        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1},
+        .maxSets = 3 + combinedImageSamplerCount + cubemapCount + 1,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + cubemapCount + 1}},
         .layouts = {{.name = kMainDescSetLayout,
-                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1,
-                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
+                                  {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
                                    VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
+                                  {4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr}}},
                     {.name = kSkyboxDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
@@ -265,8 +273,11 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
 
-    std::vector<VkDescriptorBufferInfo> storageBufferInfos;
-    storageBufferInfos.emplace_back(scene_->GetStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+    std::vector<VkDescriptorBufferInfo> storageTransformBufferInfos;
+    storageTransformBufferInfos.emplace_back(scene_->GetTransformStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+
+    std::vector<VkDescriptorBufferInfo> storageMaterialBufferInfos;
+    storageMaterialBufferInfos.emplace_back(scene_->GetMaterialStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
@@ -281,27 +292,33 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
             resources_->GetImageView(kReflectionColorImage, kReflectionColorImageView)->GetHandle(),
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    BufferWriteRequest objectStorageBufferRequest;
-    objectStorageBufferRequest.descriptorSetName = kMainDescSet;
-    objectStorageBufferRequest.bindingIndex = 0;
-    objectStorageBufferRequest.buffers = storageBufferInfos;
-    objectStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    BufferWriteRequest objectStorageTransformBufferRequest;
+    objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;
+    objectStorageTransformBufferRequest.bindingIndex = 0;
+    objectStorageTransformBufferRequest.buffers = storageTransformBufferInfos;
+    objectStorageTransformBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+
+    BufferWriteRequest objectStorageMaterialBufferRequest;
+    objectStorageMaterialBufferRequest.descriptorSetName = kMainDescSet;
+    objectStorageMaterialBufferRequest.bindingIndex = 1;
+    objectStorageMaterialBufferRequest.buffers = storageMaterialBufferInfos;
+    objectStorageMaterialBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
     BufferWriteRequest lightUboRequest;
     lightUboRequest.descriptorSetName = kMainDescSet;
-    lightUboRequest.bindingIndex = 1;
+    lightUboRequest.bindingIndex = 2;
     lightUboRequest.buffers = lightUboInfos;
     lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
     ImageWriteRequest textureUpdateRequest;
     textureUpdateRequest.descriptorSetName = kMainDescSet;
-    textureUpdateRequest.bindingIndex = 2;
+    textureUpdateRequest.bindingIndex = 3;
     textureUpdateRequest.images = descriptorImageInfos;
     textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     ImageWriteRequest reflectionTextureUpdateRequest;
     reflectionTextureUpdateRequest.descriptorSetName = kMainDescSet;
-    reflectionTextureUpdateRequest.bindingIndex = 3;
+    reflectionTextureUpdateRequest.bindingIndex = 4;
     reflectionTextureUpdateRequest.images = reflectionImageInfos;
     reflectionTextureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
@@ -312,7 +329,8 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     cubemapUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .bufferWriteRequests = {objectStorageBufferRequest, lightUboRequest},
+        .bufferWriteRequests = {objectStorageTransformBufferRequest, objectStorageMaterialBufferRequest,
+                                lightUboRequest},
         .imageWriteRequests = {textureUpdateRequest, reflectionTextureUpdateRequest, cubemapUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
@@ -425,7 +443,7 @@ void VulkanApplication::CreatePipelines()
 {
     VkPushConstantRange mvpPushConstant;
     mvpPushConstant.offset = 0;
-    mvpPushConstant.size = sizeof(MeshPushConstantsGpu);
+    mvpPushConstant.size = sizeof(ScenePushConstants);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
     pipelineLayout_ =
@@ -433,13 +451,6 @@ void VulkanApplication::CreatePipelines()
 
     if (!pipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
-    }
-
-    pipelineLayoutSkybox_ =
-            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kSkyboxDescSetLayout)}, {mvpPushConstant});
-
-    if (!pipelineLayoutSkybox_) {
-        throw std::runtime_error("Failed to create pipeline layout (for skybox)!");
     }
 
     VkViewport viewport{0,    0,   static_cast<float>(currentWindowWidth_), static_cast<float>(currentWindowHeight_),
@@ -494,6 +505,18 @@ void VulkanApplication::CreatePipelines()
 
     if (!scenePipeline_) {
         throw std::runtime_error("Failed to create graphics pipeline (for scene objects)!");
+    }
+
+    VkPushConstantRange skyboxPushConstants;
+    skyboxPushConstants.offset = 0;
+    skyboxPushConstants.size = sizeof(SkyboxPushConstants);
+    skyboxPushConstants.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+    pipelineLayoutSkybox_ = device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kSkyboxDescSetLayout)},
+                                                          {skyboxPushConstants});
+
+    if (!pipelineLayoutSkybox_) {
+        throw std::runtime_error("Failed to create pipeline layout (for skybox)!");
     }
 
     skyboxPipeline_ = device_->CreateGraphicsPipeline(pipelineLayoutSkybox_, renderPass_, [&](auto& builder) {
@@ -647,10 +670,10 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
     // Calculate related reflection view and reflection view projection matrices
     constexpr Plane reflectionPlane{kMirrorObjectPosition, kMirrorObjectNormal};
-    glm::mat4 view = camera_->GetViewMatrix();
-    glm::mat4 reflectedView = camera_->GetReflectedViewMatrix(reflectionPlane);
-    glm::mat4 proj = camera_->GetProjectionMatrix();
-    glm::mat4 reflectionViewProj = camera_->GetReflectionViewProjMatrix(reflectionPlane);
+    const glm::mat4 view = camera_->GetViewMatrix();
+    const glm::mat4 reflectedView = camera_->GetReflectedViewMatrix(reflectionPlane);
+    const glm::mat4 proj = camera_->GetProjectionMatrix();
+    const glm::mat4 reflectionViewProj = camera_->GetReflectionViewProjMatrix(reflectionPlane);
 
     // RENDER PASS: Creating reflection image
     currentCmdBuffer->BeginRenderPass(
@@ -668,43 +691,46 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     {
         currentCmdBuffer->BindPipeline(reflectionSkyboxPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
-        const auto& meshInfo = scene_->GetMesh(kSkyboxCubeObject);
+        const auto [vertexOffsets, indexOffset, indexCount] =
+                scene_->FindObjectByName(kSkyboxCubeObject)->GetMeshGpu().value();
 
-        const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
         currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
         const std::vector skyboxDescSets{resources_->GetDescriptorSet(kSkyboxDescSet)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutSkybox_, 0, skyboxDescSets);
 
-        const auto meshPushConstants =
-                meshInfo.GenerateMeshPushConstantsGpu(reflectedView, proj, glm::vec4(camera_->GetPosition(), 1.0f));
-        currentCmdBuffer->PushConstants(pipelineLayoutSkybox_,
-                                        VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(meshPushConstants), &meshPushConstants);
+        SkyboxPushConstants skyboxPushConstants{};
+        skyboxPushConstants.view = reflectedView;
+        skyboxPushConstants.projection = proj;
+        currentCmdBuffer->PushConstants(pipelineLayoutSkybox_, VK_SHADER_STAGE_VERTEX_BIT, 0,
+                                        sizeof(skyboxPushConstants), &skyboxPushConstants);
         currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
     }
 
     // Draw reflected scene
     currentCmdBuffer->BindPipeline(reflectionScenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-        if (scene_->IsInGroup(meshName, kSkyboxObjectGroup) || meshName == kMirrorObject) {
-            continue;
+    scene_->Traverse([&](const SceneObject& sceneObject) {
+        if (sceneObject.HasRenderable() && sceneObject.GetTag() != kSkyboxObjectGroup &&
+            sceneObject.GetName() != kMirrorObject) {
+            const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
+            currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
+            currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
+
+            const std::vector descSets{resources_->GetDescriptorSet(kMainDescSet)};
+            currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
+
+            ScenePushConstants scenePushConstants{};
+            scenePushConstants.objectId = sceneObject.GetObjectId();
+            scenePushConstants.view = reflectedView;
+            scenePushConstants.projection = proj;
+            scenePushConstants.reflectionViewProj = 1.0f;
+            scenePushConstants.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                                            0, sizeof(scenePushConstants), &scenePushConstants);
+            currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
         }
-
-        const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
-        currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-        currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-        const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
-        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
-
-        const auto meshPushConstants =
-                meshInfo.GenerateMeshPushConstantsGpu(reflectedView, proj, glm::vec4(camera_->GetPosition(), 1.0f));
-        currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(meshPushConstants), &meshPushConstants);
-        currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
-    }
+    });
 
     currentCmdBuffer->EndRenderPass();
 
@@ -722,45 +748,48 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     // Draw skybox
     {
         currentCmdBuffer->BindPipeline(skyboxPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
+        scene_->Traverse([&](const SceneObject& sceneObject) {
+            if (sceneObject.HasRenderable() && sceneObject.GetTag() == kSkyboxObjectGroup) {
+                const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
+                currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
+                currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-        const auto& meshInfo = scene_->GetMesh(kSkyboxCubeObject);
+                const std::vector skyboxDescSets{resources_->GetDescriptorSet(kSkyboxDescSet)};
+                currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutSkybox_, 0,
+                                                     skyboxDescSets);
 
-        const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
-        currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-        currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-        const std::vector skyboxDescSets{resources_->GetDescriptorSet(kSkyboxDescSet)};
-        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutSkybox_, 0, skyboxDescSets);
-
-        const auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
-                view, proj, glm::vec4(camera_->GetPosition(), 1.0f), reflectionViewProj);
-        currentCmdBuffer->PushConstants(pipelineLayoutSkybox_,
-                                        VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(meshPushConstants), &meshPushConstants);
-        currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
+                SkyboxPushConstants skyboxPushConstants{};
+                skyboxPushConstants.view = view;
+                skyboxPushConstants.projection = proj;
+                currentCmdBuffer->PushConstants(pipelineLayoutSkybox_, VK_SHADER_STAGE_VERTEX_BIT, 0,
+                                                sizeof(skyboxPushConstants), &skyboxPushConstants);
+                currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
+            }
+        });
     }
 
     // Draw only scene objects
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    for (const auto& [meshName, meshInfo]: scene_->GetAllMeshes()) {
-        if (scene_->IsInGroup(meshName, kSkyboxObjectGroup)) {
-            continue;
+    scene_->Traverse([&](const SceneObject& sceneObject) {
+        if (sceneObject.HasRenderable() && sceneObject.GetTag() != kSkyboxObjectGroup) {
+            const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
+            currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
+            currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
+
+            const std::vector descSets{resources_->GetDescriptorSet(kMainDescSet)};
+            currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
+
+            ScenePushConstants scenePushConstants{};
+            scenePushConstants.objectId = sceneObject.GetObjectId();
+            scenePushConstants.view = view;
+            scenePushConstants.projection = proj;
+            scenePushConstants.reflectionViewProj = reflectionViewProj;
+            scenePushConstants.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                                            0, sizeof(scenePushConstants), &scenePushConstants);
+            currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
         }
-
-        const auto [vertexOffsets, indexOffset, indexCount] = meshInfo.geometry;
-        currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
-        currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
-
-        const std::vector cubeDescSets{resources_->GetDescriptorSet(kMainDescSet)};
-        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, cubeDescSets);
-
-        auto meshPushConstants = meshInfo.GenerateMeshPushConstantsGpu(
-                view, proj, glm::vec4(camera_->GetPosition(), 1.0f), reflectionViewProj);
-        meshPushConstants.reflectionViewProjection = reflectionViewProj;
-        currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(meshPushConstants), &meshPushConstants);
-        currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
-    }
+    });
 
     currentCmdBuffer->EndRenderPass();
     if (!currentCmdBuffer->EndCommandBuffer()) {
@@ -776,8 +805,8 @@ void VulkanApplication::UpdateSceneTransforms() const
     constexpr float speed = 1.2f;
     constexpr float shift = 0.5f;
     const float newY = shift + amplitude * sin(speed * time);
-    scene_->MoveObject(kCubeObject, glm::vec3(-1.5f, newY, 0.0f));
-    scene_->MoveObject(kSphereObject, glm::vec3(1.5f, newY, 0.0f));
+    scene_->FindObjectByName(kCubeObject)->SetPosition(glm::vec3(-1.5f, newY, 0.0f));
+    scene_->FindObjectByName(kSphereObject)->SetPosition(glm::vec3(1.5f, newY, 0.0f));
 
     LightUbo lightUbo{};
     lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);

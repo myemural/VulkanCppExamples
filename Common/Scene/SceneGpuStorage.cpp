@@ -8,14 +8,11 @@
 
 #include <utility>
 
-#include "SceneUtils.h"
-
 namespace common::scene
 {
 
-SceneGpuStorage::SceneGpuStorage(vulkan_framework::ResourceManager& resourceManager,
-                                 vulkan_framework::SceneConfig sceneConfig)
-    : resourceManager_{resourceManager}, sceneConfig_(std::move(sceneConfig))
+SceneGpuStorage::SceneGpuStorage(vulkan_framework::ResourceManager& resourceManager, const SceneConfig& sceneConfig)
+    : resourceManager_{resourceManager}, sceneConfig_(sceneConfig)
 {
     vulkan_framework::ResourceDescriptor resourceCreateInfo;
 
@@ -100,7 +97,7 @@ std::vector<VkVertexInputBindingDescription> SceneGpuStorage::GetBindingDescript
     for (uint32_t bindingIndex = 0; const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
         VkVertexInputBindingDescription bindingDescription = {};
         bindingDescription.binding = bindingIndex++;
-        bindingDescription.stride = vulkan_framework::GetAccessorSize(accessorType);
+        bindingDescription.stride = GetAccessorSize(accessorType);
         bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
         result.push_back(bindingDescription);
     }
@@ -115,7 +112,7 @@ std::vector<VkVertexInputAttributeDescription> SceneGpuStorage::GetAttributeDesc
         VkVertexInputAttributeDescription attributeDescription = {};
         attributeDescription.binding = bindingIndex;
         attributeDescription.location = bindingIndex++;
-        attributeDescription.format = vulkan_framework::ConvertAccessorTypeToFormat(accessorType);
+        attributeDescription.format = ConvertAccessorTypeToFormat(accessorType);
         attributeDescription.offset = 0;
         result.push_back(attributeDescription);
     }
@@ -133,27 +130,27 @@ MeshGpu SceneGpuStorage::AllocateMeshGpuInternal(const utility::GltfMesh& mesh)
     MeshGpu meshGpu;
     for (const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
         const std::uint32_t offset = globalBufferPos_;
-        const auto accessorSize = vulkan_framework::GetAccessorSize(accessorType);
+        const auto accessorSize = GetAccessorSize(accessorType);
 
-        if (attributeType == vulkan_framework::AttributeType::POSITION) {
+        if (attributeType == AttributeType::POSITION) {
             const auto vertexPositons = mesh.attributes.positions;
             const auto vertexPositonsSize = vertexPositons.size() * accessorSize;
             globalBufferPos_ += vertexPositonsSize;
 
             resourceManager_.SetBuffer(kGeometryBufferName, vertexPositons.data(), vertexPositonsSize, offset, false);
-        } else if (attributeType == vulkan_framework::AttributeType::TEXCOORD) {
+        } else if (attributeType == AttributeType::TEXCOORD) {
             const auto vertexUVs = mesh.attributes.texCoords0;
             const auto vertexUVsSize = vertexUVs.size() * accessorSize;
             globalBufferPos_ += vertexUVsSize;
 
             resourceManager_.SetBuffer(kGeometryBufferName, vertexUVs.data(), vertexUVsSize, offset, false);
-        } else if (attributeType == vulkan_framework::AttributeType::NORMAL) {
+        } else if (attributeType == AttributeType::NORMAL) {
             const auto vertexNormals = mesh.attributes.normals;
             const auto vertexNormalsSize = vertexNormals.size() * accessorSize;
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kGeometryBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
-        } else if (attributeType == vulkan_framework::AttributeType::TANGENT) {
+        } else if (attributeType == AttributeType::TANGENT) {
             const auto vertexTangents = mesh.attributes.tangents;
             const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
             globalBufferPos_ += vertexTangentsSize;

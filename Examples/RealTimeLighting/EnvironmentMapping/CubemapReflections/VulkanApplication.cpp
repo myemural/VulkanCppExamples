@@ -142,7 +142,6 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
-    sceneConfig.currentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
     sceneConfig.primitiveStackCount = 64U;
     sceneConfig.primitiveSectorCount = 64U;
 

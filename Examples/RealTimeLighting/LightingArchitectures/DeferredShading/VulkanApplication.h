@@ -15,9 +15,9 @@
 
 #include "ApplicationLightingArchitectures.h"
 #include "AssetManager.h"
+#include "MaterialManager.h"
 #include "PerspectiveCamera.h"
 #include "Scene.h"
-#include "SceneManager.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanFramebuffer.h"
 #include "VulkanPipeline.h"

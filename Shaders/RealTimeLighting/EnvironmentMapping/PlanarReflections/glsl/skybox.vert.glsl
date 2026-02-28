@@ -15,12 +15,9 @@ layout(location = 3) in vec4 inTangent;
 
 layout(location = 0) out vec3 directionVector;
 
-layout(push_constant) uniform MeshPushConstants {
+layout(push_constant) uniform SkyboxPushConstants {
     mat4 view;
     mat4 proj;
-    mat4 reflectionViewProj;
-    vec4 cameraPosition;
-    uint objectId;
 } pc;
 
 void main()

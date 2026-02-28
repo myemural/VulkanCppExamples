@@ -18,13 +18,14 @@
 #include "CoreDefines.h"
 #include "GltfModelHandler.h"
 #include "ResourceManager.h"
-#include "SceneManager.h"
 #include "ScenePrimitives.h"
 #include "Transform.h"
 #include "VulkanBuffer.h"
+#include "SceneConfig.h"
 
 namespace common::scene
 {
+struct SceneConfig;
 
 /**
  * @struct MeshGpu
@@ -44,7 +45,7 @@ public:
      * @param resourceManager Resource manager reference.
      * @param sceneConfig Scene config.
      */
-    SceneGpuStorage(vulkan_framework::ResourceManager& resourceManager, vulkan_framework::SceneConfig sceneConfig);
+    SceneGpuStorage(vulkan_framework::ResourceManager& resourceManager, const SceneConfig& sceneConfig);
 
     ~SceneGpuStorage() = default;
 
@@ -121,7 +122,7 @@ private:
     static constexpr auto kBufferSizeInBytes = 1'000'000UL;
 
     vulkan_framework::ResourceManager& resourceManager_;
-    vulkan_framework::SceneConfig sceneConfig_;
+    SceneConfig sceneConfig_;
 
     std::uint32_t globalBufferPos_ = 0;
     std::unordered_map<std::string, MeshGpu> meshCache_;

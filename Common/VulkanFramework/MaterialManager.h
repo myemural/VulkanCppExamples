@@ -10,7 +10,6 @@
  */
 #pragma once
 #include "ResourceManager.h"
-#include "SceneUtils.h"
 #include "TextureAsset.h"
 
 namespace common::vulkan_framework
@@ -18,8 +17,8 @@ namespace common::vulkan_framework
 
 class MaterialManager;
 
+using TextureId = std::int32_t;
 using SamplerId = uint32_t;
-using MaterialId = uint32_t;
 
 struct InternalTextureHandler
 {
@@ -28,74 +27,6 @@ struct InternalTextureHandler
     std::string imageResourceName;
     std::string imageViewResourceName;
     std::string samplerResourceName;
-};
-
-class COMMON_API PhongMaterialBuilder
-{
-public:
-    PhongMaterialBuilder(MaterialManager& materialManager, std::string materialName);
-
-    PhongMaterialBuilder& SetDiffuseColor(const glm::vec3& diffuseColor);
-
-    PhongMaterialBuilder& SetSpecularColor(const glm::vec3& specularColor);
-
-    PhongMaterialBuilder& SetAmbientStrength(float ambientStrength);
-
-    PhongMaterialBuilder& SetShininess(float shininess);
-
-    PhongMaterialBuilder& SetSpecularStrength(float specularStrength);
-
-    PhongMaterialBuilder& SetOpacity(float opacity);
-
-    void Build();
-
-private:
-    MaterialManager& materialManager_;
-    std::string materialName_;
-    PhongMaterial phongMaterial_{};
-};
-
-class COMMON_API PhongTexturedMaterialBuilder
-{
-public:
-    PhongTexturedMaterialBuilder(MaterialManager& materialManager, std::string materialName);
-
-    PhongTexturedMaterialBuilder& SetDiffuseColor(const glm::vec3& diffuseColor);
-
-    PhongTexturedMaterialBuilder& SetSpecularColor(const glm::vec3& specularColor);
-
-    PhongTexturedMaterialBuilder& SetAmbientStrength(float ambientStrength);
-
-    PhongTexturedMaterialBuilder& SetShininess(float shininess);
-
-    PhongTexturedMaterialBuilder& SetSpecularStrength(float specularStrength);
-
-    PhongTexturedMaterialBuilder& SetOpacity(float opacity);
-
-    PhongTexturedMaterialBuilder& SetReflectivity(float reflectivity);
-
-    PhongTexturedMaterialBuilder& SetDiffuseMap(const std::string& diffuseTextureName);
-
-    PhongTexturedMaterialBuilder& SetSpecularMap(const std::string& specularTextureName);
-
-    PhongTexturedMaterialBuilder& SetNormalMap(const std::string& normalTextureName);
-
-    PhongTexturedMaterialBuilder& SetEmissiveMap(const std::string& emissiveTextureName);
-
-    PhongTexturedMaterialBuilder& SetShininessMap(const std::string& shininessTextureName);
-
-    PhongTexturedMaterialBuilder& SetOpacityMap(const std::string& opacityTextureName);
-
-    PhongTexturedMaterialBuilder& SetAmbientOcclusionMap(const std::string& aoTextureName);
-
-    PhongTexturedMaterialBuilder& SetHeightMap(const std::string& heightTextureName);
-
-    void Build();
-
-private:
-    MaterialManager& materialManager_;
-    std::string materialName_;
-    PhongTexturedMaterial phongTexturedMaterial_{};
 };
 
 class COMMON_API MaterialManager
@@ -132,16 +63,6 @@ public:
 
     [[nodiscard]] std::vector<VkDescriptorImageInfo> GetCubemapDescriptorImageInfo(const std::string& textureName);
 
-    PhongMaterialBuilder CreatePhongMaterial(const std::string& materialName);
-
-    PhongTexturedMaterialBuilder CreatePhongTexturedMaterial(const std::string& materialName);
-
-    PhongMaterial& GetPhongMaterial(const std::string& materialName);
-
-    PhongTexturedMaterial& GetPhongTexturedMaterial(const std::string& materialName);
-
-    void RegisterMaterial(const std::string& materialName, const MaterialVariant& material);
-
 private:
     static constexpr auto kVulkanImagePostfix = "_image";
     static constexpr auto kVulkanImageViewPostfix = "_imageView";
@@ -153,7 +74,6 @@ private:
     std::int32_t globalTextureId_ = 0;
     std::unordered_map<std::string, InternalTextureHandler> textureHandlers_;
     std::unordered_map<std::string, InternalTextureHandler> cubemapTextureHandlers_;
-    std::unordered_map<std::string, MaterialVariant> materialHandlers_;
 };
 
 } // namespace common::vulkan_framework

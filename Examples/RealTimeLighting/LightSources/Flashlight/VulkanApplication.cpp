@@ -315,7 +315,7 @@ void VulkanApplication::CreatePipelines()
 {
     VkPushConstantRange mvpPushConstant;
     mvpPushConstant.offset = 0;
-    mvpPushConstant.size = sizeof(MeshPushConstantsGpu);
+    mvpPushConstant.size = sizeof(MeshPushConstants);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
     pipelineLayout_ =

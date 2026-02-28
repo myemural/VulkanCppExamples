@@ -17,8 +17,8 @@
 
 #include "CoreDefines.h"
 #include "ResourceManager.h"
-#include "SceneManager.h"
 #include "SceneObject.h"
+#include "SceneConfig.h"
 
 namespace common::scene
 {
@@ -34,7 +34,7 @@ public:
      * @param resourceManager Reference to Vulkan resource manager.
      * @param config Scene configuration (attribute layout, primitive counts etc.).
      */
-    Scene(vulkan_framework::ResourceManager& resourceManager, const vulkan_framework::SceneConfig& config);
+    Scene(vulkan_framework::ResourceManager& resourceManager, const SceneConfig& config);
 
     ~Scene() = default;
 
@@ -76,7 +76,8 @@ public:
 private:
     static void TraverseRecursive(const SceneObject& object, const TraverseFunc& func);
 
-    static std::shared_ptr<SceneObject> FindRecursive(const std::shared_ptr<SceneObject>& object, const std::string& name);
+    static std::shared_ptr<SceneObject> FindRecursive(const std::shared_ptr<SceneObject>& object,
+                                                      const std::string& name);
 
     std::uint32_t GenerateObjectId();
 

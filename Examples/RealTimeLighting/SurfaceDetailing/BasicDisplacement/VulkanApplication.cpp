@@ -141,7 +141,6 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
-    sceneConfig.currentMaterialSystem = MaterialSystem::PHONG_TEXTURED;
     sceneConfig.primitiveStackCount = 128U;
     sceneConfig.primitiveSectorCount = 128U;
 
@@ -321,7 +320,7 @@ void VulkanApplication::CreatePipelines()
 {
     VkPushConstantRange mvpPushConstant;
     mvpPushConstant.offset = 0;
-    mvpPushConstant.size = sizeof(MeshPushConstantsGpu);
+    mvpPushConstant.size = sizeof(MeshPushConstants);
     mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
     pipelineLayout_ =

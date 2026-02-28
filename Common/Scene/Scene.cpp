@@ -11,7 +11,7 @@
 namespace common::scene
 {
 
-Scene::Scene(vulkan_framework::ResourceManager& resourceManager, const vulkan_framework::SceneConfig& config)
+Scene::Scene(vulkan_framework::ResourceManager& resourceManager, const SceneConfig& config)
 {
     gpuStorage_ = std::make_unique<SceneGpuStorage>(resourceManager, config);
 }
