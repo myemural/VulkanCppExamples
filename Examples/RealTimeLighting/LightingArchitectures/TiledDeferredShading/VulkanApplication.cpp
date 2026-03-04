@@ -15,6 +15,7 @@
 #include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
+#include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::real_time_lighting::lighting_architectures::tiled_deferred_shading
@@ -659,13 +660,13 @@ void VulkanApplication::CreateCommandBuffers()
 void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex)
 {
     std::array<VkClearValue, 4> geometryPassClearValues{};
-    geometryPassClearValues[0].color = {{0.0f, 0.0f, 0.0f, 0.0f}};                           // Position
+    geometryPassClearValues[0].color = {{0.0f, 0.0f, 0.0f, 0.0f}};                              // Position
     geometryPassClearValues[1].color = params_.Get<VkClearColorValue>(AppSettings::ClearColor); // Albedo
-    geometryPassClearValues[2].color = {{0.0f, 0.0f, 0.0f, 0.0f}};                           // Normal
-    geometryPassClearValues[3].depthStencil = {1.0f, 0};                               // Depth
+    geometryPassClearValues[2].color = {{0.0f, 0.0f, 0.0f, 0.0f}};                              // Normal
+    geometryPassClearValues[3].depthStencil = {1.0f, 0};                                        // Depth
 
     std::array<VkClearValue, 1> lightPassClearValues{};
-    lightPassClearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}}; // Not important
+    lightPassClearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};                                 // Not important
 
     const auto& currentCmdBuffer = cmdBuffersPresent_[currentImageIndex];
 
@@ -788,10 +789,23 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::UpdateSceneTransforms() const
 {
+    const auto currentTime = static_cast<float>(GetCurrentTime());
+    constexpr float minIntensity = 1.0f;
+    constexpr float maxIntensity = 15.0f;
+
+    constexpr float mid = (minIntensity + maxIntensity) * 0.5f;
+    constexpr float amp = (maxIntensity - minIntensity) * 0.5f;
+
+    const size_t lightCount = lightPositions_.size();
     std::vector<PointLightData> pointLightInfos;
-    for (auto i = 0U; i < lightPositions_.size(); ++i) {
+    for (auto i = 0U; i < lightCount; ++i) {
+        constexpr float frequency = 1.2f;
+        const float phase = glm::two_pi<float>() * (static_cast<float>(i) / static_cast<float>(lightCount));
+        const float intensity = mid + amp * std::sin(currentTime * frequency + phase);
+
         PointLightData pointLightData{};
-        pointLightData.lightPosition = camera_->GetViewMatrix() * lightPositions_[i];
+        pointLightData.lightPositionIntensity =
+                glm::vec4(glm::vec3(camera_->GetViewMatrix() * lightPositions_[i]), intensity);
         pointLightData.lightColorRadius = glm::vec4(lightColors_[i], GetParamFloat(AppSettings::LightRadius));
         pointLightInfos.push_back(pointLightData);
     }
