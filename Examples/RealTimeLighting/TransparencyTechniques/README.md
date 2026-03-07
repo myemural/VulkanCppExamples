@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `AlphaBlendingTransparency`
 2. [Cutout Transparency with Alpha to Coverage](/Examples/RealTimeLighting/TransparencyTechniques/AlphaToCoverageTransparency)
    - `AlphaToCoverageTransparency`
+3. [Using Alpha Blending in Hybrid Lighting Architectures](/Examples/RealTimeLighting/TransparencyTechniques/HybridAlphaBlending)
+   - `HybridAlphaBlending`
 
 ## Architecture of the Subsection
 

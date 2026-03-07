@@ -197,6 +197,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Transparency Techniques](/Examples/RealTimeLighting/TransparencyTechniques)**
   - [Order-Dependent Transparency with Alpha Blending](/Examples/RealTimeLighting/TransparencyTechniques/AlphaBlendingTransparency)
   - [Cutout Transparency with Alpha to Coverage](/Examples/RealTimeLighting/TransparencyTechniques/AlphaToCoverageTransparency)
+  - [Using Alpha Blending in Hybrid Lighting Architectures](/Examples/RealTimeLighting/TransparencyTechniques/HybridAlphaBlending)
 
 ## Environment Support
 

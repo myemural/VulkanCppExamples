@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(AlphaBlendingTransparency)
 add_subdirectory(AlphaToCoverageTransparency)
+add_subdirectory(HybridAlphaBlending)
