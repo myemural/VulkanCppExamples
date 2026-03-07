@@ -30,6 +30,15 @@ layout(std430, set = 0, binding = 3) readonly buffer PointLightBuffer
     PointLightData lights[];
 };
 
+layout(push_constant) uniform LightingPushConstants {
+    // Debug mode for output
+    // 0: Off
+    // 1: Albedo Output
+    // 2: Normalized View-Space Position Output
+    // 3: Normalized View-Space Normal Output
+    uint debugMode;
+} pc;
+
 vec3 calculateLight(PointLightData light, vec3 albedo, vec3 normalView, vec3 fragPosView, vec3 viewDir)
 {
     // Constants
@@ -86,5 +95,14 @@ void main()
     }
     resultColor += ambient;
 
-    outColor = vec4(resultColor, opacity);
+    if (pc.debugMode == 0) {
+        outColor = vec4(resultColor, opacity);
+    } else if (pc.debugMode == 1) {
+        outColor = vec4(albedo, opacity);
+    } else if (pc.debugMode == 2) {
+        outColor = vec4(abs(fragPosView) / 20.0, opacity);
+    } else if (pc.debugMode == 3) {
+        outColor = vec4(normalView * 0.5 + 0.5, opacity);
+    }
+
 }

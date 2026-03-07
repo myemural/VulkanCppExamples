@@ -433,13 +433,13 @@ void VulkanApplication::CreateRenderPass()
 
 void VulkanApplication::CreatePipelines()
 {
-    VkPushConstantRange mvpPushConstant;
-    mvpPushConstant.offset = 0;
-    mvpPushConstant.size = sizeof(MeshPushConstants);
-    mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    VkPushConstantRange meshPushConstant;
+    meshPushConstant.offset = 0;
+    meshPushConstant.size = sizeof(MeshPushConstants);
+    meshPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
     geometryPipelineLayout_ =
-            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kMainDescSetLayout)}, {mvpPushConstant});
+            device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kMainDescSetLayout)}, {meshPushConstant});
 
     if (!geometryPipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -496,7 +496,13 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create graphics pipeline (for geometry)!");
     }
 
-    lightPipelineLayout_ = device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kLightDescSetLayout)});
+    VkPushConstantRange lightingPushConstant;
+    lightingPushConstant.offset = 0;
+    lightingPushConstant.size = sizeof(LightingPushConstants);
+    lightingPushConstant.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    lightPipelineLayout_ = device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kLightDescSetLayout)},
+                                                         {lightingPushConstant});
 
     if (!lightPipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -661,6 +667,11 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, lightPipelineLayout_, 0, lightDescSets);
         currentCmdBuffer->BindPipeline(lightPassPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
+        LightingPushConstants lightingPushConstants{};
+        lightingPushConstants.debugMode = static_cast<std::uint32_t>(debugMode_);
+        currentCmdBuffer->PushConstants(lightPipelineLayout_, VK_SHADER_STAGE_FRAGMENT_BIT, 0,
+                                        sizeof(lightingPushConstants), &lightingPushConstants);
+
         // Draw fullscreen quad
         currentCmdBuffer->Draw(6, 1, 0, 0);
 
@@ -687,7 +698,7 @@ void VulkanApplication::UpdateSceneTransforms() const
     resources_->SetBuffer(kLightStorageBuffer, pointLightInfos.data(), pointLightInfos.size() * sizeof(PointLightData));
 }
 
-void VulkanApplication::ProcessInput() const
+void VulkanApplication::ProcessInput()
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {
@@ -701,6 +712,20 @@ void VulkanApplication::ProcessInput() const
     }
     if (window_->IsKeyPressed(GLFW_KEY_D)) {
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
+    }
+
+    // Set output debug mode via num keys
+    if (window_->IsKeyPressed(GLFW_KEY_0)) {
+        debugMode_ = DebugMode::OFF;
+    }
+    if (window_->IsKeyPressed(GLFW_KEY_1)) {
+        debugMode_ = DebugMode::ALBEDO;
+    }
+    if (window_->IsKeyPressed(GLFW_KEY_2)) {
+        debugMode_ = DebugMode::POSITION;
+    }
+    if (window_->IsKeyPressed(GLFW_KEY_3)) {
+        debugMode_ = DebugMode::NORMAL;
     }
 }
 } // namespace examples::real_time_lighting::lighting_architectures::deferred_shading

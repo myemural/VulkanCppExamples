@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include "ApplicationData.h"
 #include "ApplicationLightingArchitectures.h"
 #include "AssetManager.h"
 #include "MaterialManager.h"
@@ -63,7 +64,7 @@ private:
 
     void UpdateSceneTransforms() const;
 
-    void ProcessInput() const;
+    void ProcessInput();
 
     // Render Passes
     std::shared_ptr<common::vulkan_wrapper::VulkanRenderPass> geometryRenderPass_;
@@ -100,5 +101,8 @@ private:
     // Light
     std::vector<glm::vec4> lightPositions_;
     std::vector<glm::vec4> lightColors_;
+
+    // Debug values
+    DebugMode debugMode_ = DebugMode::OFF;
 };
 } // namespace examples::real_time_lighting::lighting_architectures::deferred_shading

@@ -20,6 +20,14 @@ namespace examples::real_time_lighting::lighting_architectures::deferred_shading
 #define NUM_OBJECTS 250
 #define MAX_LIGHT_COUNT 50
 
+enum class DebugMode : std::uint32_t
+{
+    OFF = 0U, // Off
+    ALBEDO,   // Albedo Output
+    POSITION, // Normalized View-Space Position Output
+    NORMAL    // Normalized View-Space Normal Output
+};
+
 struct alignas(16) MeshMaterialData
 {
     glm::vec4 diffuseColor = glm::vec4(1.0f);
@@ -39,6 +47,11 @@ struct MeshPushConstants
     glm::mat4 view;
     glm::mat4 projection;
     std::uint32_t objectId;
+};
+
+struct LightingPushConstants
+{
+    std::uint32_t debugMode;
 };
 
 // Scene object and light position vectors
