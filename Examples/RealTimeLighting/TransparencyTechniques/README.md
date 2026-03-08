@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `AlphaToCoverageTransparency`
 3. [Using Alpha Blending in Hybrid Lighting Architectures](/Examples/RealTimeLighting/TransparencyTechniques/HybridAlphaBlending)
    - `HybridAlphaBlending`
+4. [Weighted Blended Order-Independent Transparency](/Examples/RealTimeLighting/TransparencyTechniques/WeightedBlendedTransparency)
+   - `WeightedBlendedTransparency`
 
 ## Architecture of the Subsection
 
