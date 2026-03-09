@@ -106,11 +106,11 @@ void VulkanApplication::CreateInitialResources() const
     const auto tilesY = CeilDiv(currentWindowHeight_, TILE_SIZE_Y);
     const std::uint32_t totalTileCount = tilesX * tilesY;
     const std::uint32_t tileLightListStorageBufferSize = totalTileCount * sizeof(TileLightList);
-    resourceCreateInfo.buffers = {
-        {kPointLightStorageBuffer, sizeof(PointLightData) * MAX_LIGHT_COUNT, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {kTileLightListStorageBuffer, tileLightListStorageBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
+    resourceCreateInfo.buffers = {{kPointLightStorageBuffer, sizeof(PointLightData) * MAX_LIGHT_COUNT,
+                                   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kTileLightListStorageBuffer, tileLightListStorageBufferSize,
+                                   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
 
     // Fill shader module create infos
     const auto depthPrePassVertexShaderAsset = assetManager_->Load<ShaderAsset>(kDepthPrePassVertexShaderFile);

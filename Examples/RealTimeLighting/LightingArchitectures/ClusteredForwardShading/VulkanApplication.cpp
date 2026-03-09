@@ -106,11 +106,11 @@ void VulkanApplication::CreateInitialResources() const
     const auto tilesY = CeilDiv(currentWindowHeight_, TILE_SIZE_Y);
     const std::uint32_t totalClusterCount = tilesX * tilesY * Z_SLICE_COUNT;
     const std::uint32_t clusterLightListStorageBufferSize = totalClusterCount * sizeof(ClusterLightList);
-    resourceCreateInfo.buffers = {
-        {kPointLightStorageBuffer, sizeof(PointLightData) * MAX_LIGHT_COUNT, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {kClusterLightListStorageBuffer, clusterLightListStorageBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
+    resourceCreateInfo.buffers = {{kPointLightStorageBuffer, sizeof(PointLightData) * MAX_LIGHT_COUNT,
+                                   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kClusterLightListStorageBuffer, clusterLightListStorageBufferSize,
+                                   VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
 
     // Fill shader module create infos
     const auto clusteredForwardVertexShaderAsset = assetManager_->Load<ShaderAsset>(kClusteredForwardVertexShaderFile);

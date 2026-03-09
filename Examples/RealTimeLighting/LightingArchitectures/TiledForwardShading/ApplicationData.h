@@ -33,7 +33,7 @@ struct alignas(16) MeshMaterialData
 struct alignas(16) PointLightData
 {
     glm::vec4 lightPosition;    // xyz = Light Position (View-Space)
-    glm::vec4 lightColorRadius;       // xyz = Light Color, w = Radius
+    glm::vec4 lightColorRadius; // xyz = Light Color, w = Radius
 };
 
 struct alignas(16) TileLightList
@@ -44,8 +44,8 @@ struct alignas(16) TileLightList
 
 struct LightCullPipelinePushConstants
 {
-    glm::mat4 proj;        // Projection Matrix
-    glm::vec4 screenSize;  // x = Width, y = Height, zw = Unused
+    glm::mat4 proj;       // Projection Matrix
+    glm::vec4 screenSize; // x = Width, y = Height, zw = Unused
     std::uint32_t lightCount;
 };
 
