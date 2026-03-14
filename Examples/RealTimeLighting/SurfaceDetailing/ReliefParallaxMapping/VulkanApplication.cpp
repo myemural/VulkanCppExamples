@@ -186,6 +186,8 @@ void VulkanApplication::BuildScene()
                                                       .WithEulerAngles(glm::vec3(90.0f, 0.0f, 0.0f))
                                                       .WithScale(glm::vec3{8.0f}))
                                     .Build();
+
+    scene_->AddRootObject(rootObject);
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const

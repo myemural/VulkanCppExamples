@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `HybridAlphaBlending`
 4. [Weighted Blended Order-Independent Transparency](/Examples/RealTimeLighting/TransparencyTechniques/WeightedBlendedTransparency)
    - `WeightedBlendedTransparency`
+5. [Order-Independent Transparency with Depth Peeling](/Examples/RealTimeLighting/TransparencyTechniques/DepthPeelingTransparency)
+   - `DepthPeelingTransparency`
 
 ## Architecture of the Subsection
 

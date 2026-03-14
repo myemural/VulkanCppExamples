@@ -200,6 +200,8 @@ void VulkanApplication::BuildScene()
                                                       .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
                                                       .WithScale(glm::vec4{0.3f}))
                                     .Build();
+
+    scene_->AddRootObject(rootObject);
 }
 
 void VulkanApplication::UpdateDescriptorSets() const

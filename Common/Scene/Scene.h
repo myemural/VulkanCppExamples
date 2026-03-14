@@ -39,12 +39,17 @@ public:
     ~Scene() = default;
 
     /**
-     * @brief Create a root-level scene object.
+     * @brief Creates a scene object.
      * @param objectName Unique name for the object.
      * @return Shared pointer to newly created SceneObject.
      */
     std::shared_ptr<SceneObject> CreateObject(const std::string& objectName);
 
+    /**
+     * @brief Adds a root object to the scene.
+     * @param rootObject Root object.
+     */
+    void AddRootObject(const std::shared_ptr<SceneObject>& rootObject);
 
     /**
      * @brief Traverse (depth-first) entire scene tree and apply function to each object.

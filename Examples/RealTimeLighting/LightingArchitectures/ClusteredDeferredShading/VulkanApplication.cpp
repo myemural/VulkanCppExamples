@@ -232,7 +232,8 @@ void VulkanApplication::BuildScene()
         index++;
     }
 
-    [[maybe_unused]] const auto& rootObject = rootObjectBuilder.Build();
+    const auto& rootObject = rootObjectBuilder.Build();
+    scene_->AddRootObject(rootObject);
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const

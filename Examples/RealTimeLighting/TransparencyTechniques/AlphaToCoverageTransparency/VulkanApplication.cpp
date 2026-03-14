@@ -271,6 +271,8 @@ void VulkanApplication::BuildScene()
                                                       .WithMaterial(wallStoneMaterial)
                                                       .WithPosition(glm::vec3{0.0f, 2.5f, -14.0f}))
                                     .Build();
+
+    scene_->AddRootObject(rootObject);
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const

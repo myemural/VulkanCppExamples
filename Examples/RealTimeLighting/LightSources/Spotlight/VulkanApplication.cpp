@@ -198,25 +198,27 @@ void VulkanApplication::BuildScene()
                                   .WithPosition(glm::vec3{2.5f, -1.0f, zShift}));
     }
 
-    [[maybe_unused]] const auto& rootObject = rootObjectBuilder
-                                                      .AddChild(SceneObjectBuilder(*scene_, kPlaneObject)
-                                                                        .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                                                        .WithMaterial(defaultMaterial)
-                                                                        .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
-                                                                        .WithScale(glm::vec3{8.0f}))
-                                                      .AddChild(SceneObjectBuilder(*scene_, kLightObject1)
-                                                                        .WithTag(kLightGroup)
-                                                                        .WithBuiltinMesh(BuiltinMeshType::SPHERE)
-                                                                        .WithMaterial(defaultMaterial)
-                                                                        .WithPosition(glm::vec3{2.0f, 1.8f, -2.0f})
-                                                                        .WithScale(glm::vec3{0.3f}))
-                                                      .AddChild(SceneObjectBuilder(*scene_, kLightObject2)
-                                                                        .WithTag(kLightGroup)
-                                                                        .WithBuiltinMesh(BuiltinMeshType::SPHERE)
-                                                                        .WithMaterial(defaultMaterial)
-                                                                        .WithPosition(glm::vec3{-1.5f, 1.8f, 2.0f})
-                                                                        .WithScale(glm::vec3{0.3f}))
-                                                      .Build();
+    const auto& rootObject = rootObjectBuilder
+                                     .AddChild(SceneObjectBuilder(*scene_, kPlaneObject)
+                                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
+                                                       .WithMaterial(defaultMaterial)
+                                                       .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
+                                                       .WithScale(glm::vec3{8.0f}))
+                                     .AddChild(SceneObjectBuilder(*scene_, kLightObject1)
+                                                       .WithTag(kLightGroup)
+                                                       .WithBuiltinMesh(BuiltinMeshType::SPHERE)
+                                                       .WithMaterial(defaultMaterial)
+                                                       .WithPosition(glm::vec3{2.0f, 1.8f, -2.0f})
+                                                       .WithScale(glm::vec3{0.3f}))
+                                     .AddChild(SceneObjectBuilder(*scene_, kLightObject2)
+                                                       .WithTag(kLightGroup)
+                                                       .WithBuiltinMesh(BuiltinMeshType::SPHERE)
+                                                       .WithMaterial(defaultMaterial)
+                                                       .WithPosition(glm::vec3{-1.5f, 1.8f, 2.0f})
+                                                       .WithScale(glm::vec3{0.3f}))
+                                     .Build();
+
+    scene_->AddRootObject(rootObject);
 }
 
 void VulkanApplication::UpdateDescriptorSets() const

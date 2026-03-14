@@ -182,6 +182,8 @@ void VulkanApplication::BuildScene()
                                                       .WithMaterial(MeshMaterialData{})
                                                       .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f}))
                                     .Build();
+
+    scene_->AddRootObject(rootObject);
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const

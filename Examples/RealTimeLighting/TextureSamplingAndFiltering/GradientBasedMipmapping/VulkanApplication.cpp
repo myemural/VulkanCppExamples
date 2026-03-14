@@ -181,13 +181,15 @@ void VulkanApplication::BuildScene()
                                            .WithPosition(modelPositions[i]));
     }
 
-    [[maybe_unused]] const auto& rootObject = rootObjectBuilder
-                                                      .AddChild(SceneObjectBuilder(*scene_, kPlaneObject)
-                                                                        .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                                                        .WithMaterial(defaultMaterial)
-                                                                        .WithPosition(glm::vec3{0.0f, -7.0f, -8.0f})
-                                                                        .WithScale(glm::vec3{24.0f}))
-                                                      .Build();
+    const auto& rootObject = rootObjectBuilder
+                                     .AddChild(SceneObjectBuilder(*scene_, kPlaneObject)
+                                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
+                                                       .WithMaterial(defaultMaterial)
+                                                       .WithPosition(glm::vec3{0.0f, -7.0f, -8.0f})
+                                                       .WithScale(glm::vec3{24.0f}))
+                                     .Build();
+
+    scene_->AddRootObject(rootObject);
 }
 
 void VulkanApplication::CreateAndUpdateDescriptorSets() const

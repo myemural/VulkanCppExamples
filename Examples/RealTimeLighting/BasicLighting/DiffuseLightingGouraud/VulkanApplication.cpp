@@ -12,8 +12,8 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
-#include "ShaderLoader.h"
 #include "SceneObjectBuilder.h"
+#include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "TimeUtils.h"
 #include "VulkanShaderModule.h"
@@ -200,6 +200,8 @@ void VulkanApplication::BuildScene()
                                                       .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
                                                       .WithScale(glm::vec4{0.3f}))
                                     .Build();
+
+    scene_->AddRootObject(rootObject);
 }
 
 void VulkanApplication::UpdateDescriptorSets() const
@@ -464,8 +466,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             meshPushConstants.objectId = sceneObject.GetObjectId();
             meshPushConstants.view = camera_->GetViewMatrix();
             meshPushConstants.projection = camera_->GetProjectionMatrix();
-            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT,
-                                            0, sizeof(meshPushConstants), &meshPushConstants);
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(meshPushConstants),
+                                            &meshPushConstants);
             currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
         }
     });

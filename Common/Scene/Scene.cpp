@@ -21,8 +21,12 @@ Scene::Scene(vulkan_framework::ResourceManager& resourceManager, const SceneConf
 std::shared_ptr<SceneObject> Scene::CreateObject(const std::string& objectName)
 {
     auto object = std::make_shared<SceneObject>(*this, objectName, GenerateObjectId());
-    rootObjects_.push_back(object);
     return object;
+}
+
+void Scene::AddRootObject(const std::shared_ptr<SceneObject>& rootObject)
+{
+    rootObjects_.push_back(rootObject);
 }
 
 void Scene::Traverse(const TraverseFunc& func) const
