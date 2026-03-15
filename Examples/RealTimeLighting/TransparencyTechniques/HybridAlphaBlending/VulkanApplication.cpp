@@ -170,6 +170,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -185,7 +186,7 @@ void VulkanApplication::BuildScene()
     materialManager_->LoadTexture(kWallStoneNormalTexture, kMainSampler,
                                   assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
-    MeshMaterialData opaqueMaterial{};
+    Material opaqueMaterial{};
     opaqueMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
     opaqueMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
 
@@ -209,7 +210,7 @@ void VulkanApplication::BuildScene()
                                                .WithScale(glm::vec3{2.0f}));
 
         } else {
-            MeshMaterialData transparentMaterial{};
+            Material transparentMaterial{};
             transparentMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.1f, 1.0f), 1.0f);
             transparentMaterial.opacity = GenerateRandomValue(0.1f, 0.8f);
             rootObjectBuilder.AddChild(SceneObjectBuilder(*scene_, kTransparentPlane + std::to_string(index))

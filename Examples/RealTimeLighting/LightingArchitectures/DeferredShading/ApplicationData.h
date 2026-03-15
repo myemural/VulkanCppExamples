@@ -12,6 +12,7 @@
 
 #include <glm/glm.hpp>
 
+#include "Material.h"
 #include "MathUtils.h"
 
 namespace examples::real_time_lighting::lighting_architectures::deferred_shading
@@ -28,12 +29,9 @@ enum class DebugMode : std::uint32_t
     NORMAL    // Normalized View-Space Normal Output
 };
 
-struct alignas(16) MeshMaterialData
-{
-    glm::vec4 diffuseColor = glm::vec4(1.0f);
-    int diffuseMap;
-    int normalMap;
-};
+inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,
+                                                   common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,
+                                                   common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
 
 struct alignas(16) PointLightData
 {

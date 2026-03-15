@@ -151,6 +151,7 @@ void VulkanApplication::BuildScene()
     SceneConfig sceneConfig;
     sceneConfig.attributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -160,23 +161,23 @@ void VulkanApplication::BuildScene()
     camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 7.0f), aspectRatio);
 
     // Default material
-    MeshMaterialData defaultMaterial;
+    Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
 
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (auto i = 0; i < 4; ++i) {
-        MeshMaterialData cubeMaterial = defaultMaterial;
+        Material cubeMaterial = defaultMaterial;
         cubeMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.2f), 1.0f);
 
-        MeshMaterialData sphereMaterial = defaultMaterial;
+        Material sphereMaterial = defaultMaterial;
         sphereMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.2f), 1.0f);
 
-        MeshMaterialData coneMaterial = defaultMaterial;
+        Material coneMaterial = defaultMaterial;
         coneMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.2f), 1.0f);
 
-        MeshMaterialData cylinderMaterial = defaultMaterial;
+        Material cylinderMaterial = defaultMaterial;
         cylinderMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.2f), 1.0f);
 
         const std::string rowStr = std::to_string(i);

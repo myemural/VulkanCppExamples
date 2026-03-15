@@ -18,14 +18,13 @@
 #include "CoreDefines.h"
 #include "GltfModelHandler.h"
 #include "ResourceManager.h"
+#include "SceneConfig.h"
 #include "ScenePrimitives.h"
 #include "Transform.h"
 #include "VulkanBuffer.h"
-#include "SceneConfig.h"
 
 namespace common::scene
 {
-struct SceneConfig;
 
 /**
  * @struct MeshGpu
@@ -112,6 +111,12 @@ public:
      * @return Get Vulkan vertex input attribute descriptions.
      */
     [[nodiscard]] std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions() const;
+
+    /**
+     * @brief Get enabled material components for current scene's material system.
+     * @return Get enabled material components for current scene's material system.
+     */
+    [[nodiscard]] std::vector<MaterialComponent> GetEnabledMaterialComponents() const;
 
 private:
     MeshGpu AllocateMeshGpuInternal(const utility::GltfMesh& mesh);

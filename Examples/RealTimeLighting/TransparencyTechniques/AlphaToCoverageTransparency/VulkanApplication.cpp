@@ -172,6 +172,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -196,14 +197,14 @@ void VulkanApplication::BuildScene()
     materialManager_->LoadTexture(kMetalChainOpacityTexture, kMainSampler,
                                   assetManager_->Get(metalChainOpacityTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
-    MeshMaterialData wallStoneMaterial;
+    Material wallStoneMaterial;
     wallStoneMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     wallStoneMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     wallStoneMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     wallStoneMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
     wallStoneMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
 
-    MeshMaterialData metalChainMaterial;
+    Material metalChainMaterial;
     metalChainMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     metalChainMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     metalChainMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);

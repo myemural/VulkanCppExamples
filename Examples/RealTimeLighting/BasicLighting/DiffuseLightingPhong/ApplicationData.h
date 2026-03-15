@@ -15,16 +15,13 @@
 namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_phong
 {
 
-struct alignas(16) MeshMaterialData
-{
-    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    float ambientStrength;
-};
+inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,
+                                                   common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT};
 
 struct alignas(16) LightUbo
 {
-    glm::vec4 lightPosition;  // xyz = Light Position
-    glm::vec4 lightColor;     // xyz = Light Color
+    glm::vec4 lightPosition; // xyz = Light Position
+    glm::vec4 lightColor;    // xyz = Light Color
 };
 
 struct MeshPushConstants

@@ -17,7 +17,7 @@
 #include <glm/glm.hpp>
 
 #include "CoreDefines.h"
-#include "MemoryUtils.h"
+#include "Material.h"
 #include "SceneGpuStorage.h"
 #include "Transform.h"
 
@@ -47,13 +47,7 @@ public:
 
     COMMON_API glm::vec3 GetWorldPosition();
 
-    template<typename MaterialType>
-    void SetMaterial(const MaterialType& material)
-    {
-        const auto materialData = utility::StructToByteVector(&material);
-        UpdateMaterialGpu(materialData);
-        hasMaterial_ = true;
-    }
+    COMMON_API void SetMaterial(const Material& material);
 
     COMMON_API void SetParent(const std::shared_ptr<SceneObject>& parent);
 
@@ -69,7 +63,7 @@ public:
 
     [[nodiscard]] COMMON_API const std::vector<std::shared_ptr<SceneObject>>& GetChildren() const { return children_; }
 
-    [[nodiscard]] COMMON_API bool HasRenderable() const { return mesh_.has_value() && hasMaterial_; }
+    [[nodiscard]] COMMON_API bool HasRenderable() const { return mesh_.has_value() && material_.has_value(); }
 
 private:
     void RecalculateWorld();
@@ -89,7 +83,7 @@ private:
     std::string tag_;
     Transform transform_;
     std::optional<MeshGpu> mesh_ = std::nullopt;
-    bool hasMaterial_ = false;
+    std::optional<Material> material_ = std::nullopt;
 
     std::shared_ptr<SceneObject> parent_ = nullptr;
     std::vector<std::shared_ptr<SceneObject>> children_;

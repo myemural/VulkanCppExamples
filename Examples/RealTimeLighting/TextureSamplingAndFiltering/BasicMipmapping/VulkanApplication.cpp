@@ -148,6 +148,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -161,7 +162,7 @@ void VulkanApplication::BuildScene()
     materialManager_->LoadTexture(kWoodFloorTexture, kMainSampler, assetManager_->Get(woodFloorTextureAsset),
                                   VK_FORMAT_R8G8B8A8_SRGB, true);
 
-    MeshMaterialData defaultMaterial;
+    Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);

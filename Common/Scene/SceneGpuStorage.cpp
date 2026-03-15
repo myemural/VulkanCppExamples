@@ -120,6 +120,11 @@ std::vector<VkVertexInputAttributeDescription> SceneGpuStorage::GetAttributeDesc
     return result;
 }
 
+std::vector<MaterialComponent> SceneGpuStorage::GetEnabledMaterialComponents() const
+{
+    return sceneConfig_.enabledMaterialComponents;
+}
+
 MeshGpu SceneGpuStorage::AllocateMeshGpuInternal(const utility::GltfMesh& mesh)
 {
     // Check cache first for avoid duplicate GPU allocations

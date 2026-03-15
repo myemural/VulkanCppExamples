@@ -25,6 +25,13 @@ std::vector<std::uint8_t> StructToByteVector(const T* data)
     return bytes;
 }
 
+template<typename T>
+void AppendBytes(std::vector<std::uint8_t>& buffer, const T& value)
+{
+    const auto* ptr = reinterpret_cast<const std::uint8_t*>(&value);
+    buffer.insert(buffer.end(), ptr, ptr + sizeof(T));
+}
+
 constexpr std::uint32_t Align16(const std::uint32_t size) { return (size + 15u) & ~15u; }
 
 } // namespace common::utility

@@ -15,18 +15,12 @@
 namespace examples::real_time_lighting::transparency_techniques::alpha_to_coverage_transparency
 {
 
-struct alignas(16) MeshMaterialData
-{
-    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    float ambientStrength;
-    float shininess;
-    float specularStrength;
-    float opacity = 1.0f;
-    int diffuseMap = -1;
-    int normalMap = -1;
-    int opacityMap = -1;
-};
+inline const std::vector enabledMaterialComponents{
+    common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,      common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
+    common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
+    common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::OPACITY_FLOAT,
+    common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,     common::scene::MaterialComponent::NORMAL_MAP_TEXTURE,
+    common::scene::MaterialComponent::OPACITY_MAP_TEXTURE};
 
 struct alignas(16) LightUbo
 {

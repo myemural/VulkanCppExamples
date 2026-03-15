@@ -19,15 +19,10 @@ namespace examples::real_time_lighting::transparency_techniques::weighted_blende
 
 #define NUM_OBJECTS 250
 
-struct alignas(16) MeshMaterialData
-{
-    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    float ambientStrength;
-    float shininess;
-    float specularStrength;
-    float opacity = 1.0f;
-};
+inline const std::vector enabledMaterialComponents{
+    common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,      common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
+    common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
+    common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::OPACITY_FLOAT};
 
 struct alignas(16) LightUbo
 {

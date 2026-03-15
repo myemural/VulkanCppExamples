@@ -142,6 +142,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -157,28 +158,28 @@ void VulkanApplication::BuildScene()
     materialManager_->LoadTexture(kWallStoneNormalTexture, kMainSampler,
                                   assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
-    MeshMaterialData defaultMaterial;
+    Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
     defaultMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
 
-    MeshMaterialData redMaterial;
+    Material redMaterial;
     redMaterial.diffuseColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
     redMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     redMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     redMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     redMaterial.opacity = 0.5f;
 
-    MeshMaterialData greenMaterial;
+    Material greenMaterial;
     greenMaterial.diffuseColor = glm::vec4{0.0f, 1.0f, 0.0f, 1.0f};
     greenMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     greenMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     greenMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     greenMaterial.opacity = 0.5f;
 
-    MeshMaterialData blueMaterial;
+    Material blueMaterial;
     blueMaterial.diffuseColor = glm::vec4{0.0f, 0.0f, 1.0f, 1.0f};
     blueMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     blueMaterial.shininess = GetParamFloat(AppSettings::Shininess);

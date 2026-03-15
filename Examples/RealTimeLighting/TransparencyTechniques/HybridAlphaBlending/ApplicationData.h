@@ -20,6 +20,10 @@ namespace examples::real_time_lighting::transparency_techniques::hybrid_alpha_bl
 #define NUM_OBJECTS 250
 #define MAX_LIGHT_COUNT 50
 
+inline const std::vector enabledMaterialComponents{
+    common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4, common::scene::MaterialComponent::OPACITY_FLOAT,
+    common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE, common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
+
 struct alignas(16) MeshMaterialData
 {
     glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};

@@ -149,6 +149,7 @@ void VulkanApplication::BuildScene()
     SceneConfig sceneConfig;
     sceneConfig.attributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -158,16 +159,16 @@ void VulkanApplication::BuildScene()
     camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 6.0f), aspectRatio);
 
     // Materials
-    MeshMaterialData defaultMaterial;
+    Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
 
-    MeshMaterialData redMaterial = defaultMaterial;
+    Material redMaterial = defaultMaterial;
     redMaterial.diffuseColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
 
-    MeshMaterialData blueMaterial = defaultMaterial;
+    Material blueMaterial = defaultMaterial;
     blueMaterial.diffuseColor = glm::vec4{0.0f, 1.0f, 0.0f, 1.0f};
 
-    MeshMaterialData greenMaterial = defaultMaterial;
+    Material greenMaterial = defaultMaterial;
     greenMaterial.diffuseColor = glm::vec4{0.0f, 0.0f, 1.0f, 1.0f};
 
     // Add scene objects

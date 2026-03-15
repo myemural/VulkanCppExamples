@@ -212,6 +212,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -240,7 +241,7 @@ void VulkanApplication::BuildScene()
             assetManager_->Get(cubemapBottomTextureAsset), assetManager_->Get(cubemapBackTextureAsset),
             assetManager_->Get(cubemapFrontTextureAsset));
 
-    MeshMaterialData defaultMaterial;
+    Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
@@ -248,7 +249,7 @@ void VulkanApplication::BuildScene()
     defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
     defaultMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
 
-    MeshMaterialData reflectiveMaterial;
+    Material reflectiveMaterial;
     reflectiveMaterial.diffuseColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
     reflectiveMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     reflectiveMaterial.shininess = GetParamFloat(AppSettings::Shininess);
@@ -277,7 +278,7 @@ void VulkanApplication::BuildScene()
                                                       .AddChild(SceneObjectBuilder(*scene_, kSkyboxCubeObject)
                                                                         .WithTag(kSkyboxObjectGroup)
                                                                         .WithBuiltinMesh(BuiltinMeshType::CUBE)
-                                                                        .WithMaterial(MeshMaterialData{})
+                                                                        .WithMaterial(Material{})
                                                                         .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f}))
                                                       .Build();
 

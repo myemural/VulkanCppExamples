@@ -78,6 +78,8 @@ public:
 
     [[nodiscard]] std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions() const;
 
+    [[nodiscard]] std::vector<MaterialComponent> GetEnabledMaterialComponents() const;
+
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanBuffer> GetGeometryBuffer() const;
 
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanBuffer> GetTransformStorageBuffer() const;

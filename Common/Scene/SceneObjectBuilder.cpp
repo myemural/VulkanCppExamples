@@ -50,6 +50,12 @@ SceneObjectBuilder& SceneObjectBuilder::WithBuiltinMesh(const vulkan_framework::
     return *this;
 }
 
+SceneObjectBuilder& SceneObjectBuilder::WithMaterial(const Material& material)
+{
+    sceneObject_->SetMaterial(material);
+    return *this;
+}
+
 SceneObjectBuilder& SceneObjectBuilder::AddChild(const SceneObjectBuilder& childBuilder)
 {
     childBuilders_.emplace_back(childBuilder);

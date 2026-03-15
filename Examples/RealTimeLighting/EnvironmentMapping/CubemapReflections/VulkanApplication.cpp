@@ -142,6 +142,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
     sceneConfig.primitiveStackCount = 64U;
     sceneConfig.primitiveSectorCount = 64U;
 
@@ -165,7 +166,7 @@ void VulkanApplication::BuildScene()
             assetManager_->Get(cubemapBottomTextureAsset), assetManager_->Get(cubemapBackTextureAsset),
             assetManager_->Get(cubemapFrontTextureAsset));
 
-    MeshMaterialData defaultMaterial;
+    Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
@@ -181,7 +182,7 @@ void VulkanApplication::BuildScene()
                                     .AddChild(SceneObjectBuilder(*scene_, kSkyboxCubeObject)
                                                       .WithTag(kSkyboxObjectGroup)
                                                       .WithBuiltinMesh(BuiltinMeshType::CUBE)
-                                                      .WithMaterial(MeshMaterialData{})
+                                                      .WithMaterial(Material{})
                                                       .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f}))
                                     .Build();
 

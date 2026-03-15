@@ -141,6 +141,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -159,7 +160,7 @@ void VulkanApplication::BuildScene()
     materialManager_->LoadTexture(kPebblesHeightTexture, kMainSampler, assetManager_->Get(pebblesHeightTextureAsset),
                                   VK_FORMAT_R8G8B8A8_UNORM);
 
-    MeshMaterialData defaultMaterial;
+    Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);

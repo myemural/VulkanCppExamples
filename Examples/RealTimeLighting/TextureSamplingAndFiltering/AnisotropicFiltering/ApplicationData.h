@@ -13,22 +13,16 @@
 #include <glm/glm.hpp>
 
 #include "MathUtils.h"
-#include "Vertex.h"
 
 namespace examples::real_time_lighting::texture_sampling_and_filtering::anisotropic_filtering
 {
 
 #define NUM_OBJECTS 50
 
-struct alignas(16) MeshMaterialData
-{
-    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    float ambientStrength = 0.1f;
-    float shininess = 32.0f;
-    float specularStrength = 1.0f;
-    std::int32_t diffuseMap = -1;
-};
+inline const std::vector enabledMaterialComponents{
+    common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,      common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
+    common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
+    common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE};
 
 struct alignas(16) LightUbo
 {

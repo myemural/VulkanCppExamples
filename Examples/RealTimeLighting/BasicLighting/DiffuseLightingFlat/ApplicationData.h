@@ -15,10 +15,7 @@
 namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_flat
 {
 
-struct alignas(16) MeshMaterialData
-{
-    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-};
+inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4};
 
 struct alignas(16) LightUbo
 {

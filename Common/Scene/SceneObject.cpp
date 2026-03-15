@@ -55,6 +55,13 @@ glm::vec3 SceneObject::GetWorldPosition()
     return glm::vec3{world[3]};
 }
 
+void SceneObject::SetMaterial(const Material& material)
+{
+    material_ = material;
+    const auto materialData = SerializeMaterial(material, scene_.GetEnabledMaterialComponents());
+    UpdateMaterialGpu(materialData);
+}
+
 void SceneObject::SetParent(const std::shared_ptr<SceneObject>& parent) { parent_ = parent; }
 
 void SceneObject::AddChild(const std::shared_ptr<SceneObject>& childObject)

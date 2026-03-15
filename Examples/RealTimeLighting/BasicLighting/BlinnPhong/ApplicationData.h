@@ -15,14 +15,10 @@
 namespace examples::real_time_lighting::basic_lighting::blinn_phong
 {
 
-struct alignas(16) MeshMaterialData
-{
-    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    float ambientStrength;
-    float shininess;
-    float specularStrength;
-};
+inline const std::vector enabledMaterialComponents{
+    common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,      common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
+    common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
+    common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT};
 
 struct alignas(16) LightUbo
 {

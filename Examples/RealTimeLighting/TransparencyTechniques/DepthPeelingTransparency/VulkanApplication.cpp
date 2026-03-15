@@ -197,6 +197,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -209,7 +210,7 @@ void VulkanApplication::BuildScene()
     std::uint32_t index = 0;
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (const auto& modelPos: modelPositions) {
-        MeshMaterialData defaultMaterial{};
+        Material defaultMaterial{};
         defaultMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.1f, 1.0f), 1.0f);
         defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
         defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);

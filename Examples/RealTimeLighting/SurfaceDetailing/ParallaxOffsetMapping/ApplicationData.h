@@ -15,17 +15,11 @@
 namespace examples::real_time_lighting::surface_detailing::parallax_offset_mapping
 {
 
-struct alignas(16) MeshMaterialData
-{
-    glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    float ambientStrength;
-    float shininess;
-    float specularStrength;
-    int diffuseMap;
-    int normalMap;
-    int heightMap;
-};
+inline const std::vector enabledMaterialComponents{
+    common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,      common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
+    common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
+    common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,
+    common::scene::MaterialComponent::NORMAL_MAP_TEXTURE,      common::scene::MaterialComponent::HEIGHT_MAP_TEXTURE};
 
 struct alignas(16) LightUbo
 {

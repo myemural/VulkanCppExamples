@@ -31,12 +31,7 @@ public:
 
     COMMON_API SceneObjectBuilder& WithBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType);
 
-    template<typename MaterialType>
-    SceneObjectBuilder& WithMaterial(const MaterialType& material)
-    {
-        sceneObject_->SetMaterial(material);
-        return *this;
-    }
+    COMMON_API SceneObjectBuilder& WithMaterial(const Material& material);
 
     COMMON_API SceneObjectBuilder& AddChild(const SceneObjectBuilder& childBuilder);
 

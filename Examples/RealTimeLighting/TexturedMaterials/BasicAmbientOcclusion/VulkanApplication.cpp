@@ -140,6 +140,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
@@ -156,12 +157,12 @@ void VulkanApplication::BuildScene()
                                   VK_FORMAT_R8G8B8A8_UNORM);
 
     // Default material
-    MeshMaterialData defaultMaterial;
+    Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWoodRoofTexture);
-    defaultMaterial.aoMap = materialManager_->GetTextureId(kWoodRoofAoTexture);
+    defaultMaterial.ambientOcclusionMap = materialManager_->GetTextureId(kWoodRoofAoTexture);
 
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (auto i = 0; i < 3; ++i) {
@@ -189,7 +190,7 @@ void VulkanApplication::BuildScene()
     const auto& rootObject = rootObjectBuilder
                                      .AddChild(SceneObjectBuilder(*scene_, kPlaneObject)
                                                        .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                                       .WithMaterial(MeshMaterialData{})
+                                                       .WithMaterial(Material{})
                                                        .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
                                                        .WithScale(glm::vec3{8.0f}))
                                      .Build();

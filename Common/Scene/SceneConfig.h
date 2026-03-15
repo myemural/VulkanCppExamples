@@ -16,6 +16,7 @@
 #include <glm/glm.hpp>
 
 #include "CoreDefines.h"
+#include "Material.h"
 
 namespace common::scene
 {
@@ -41,6 +42,7 @@ enum class AccessorType
 struct COMMON_API SceneConfig
 {
     std::vector<std::pair<AttributeType, AccessorType>> attributeLayout;
+    std::vector<MaterialComponent> enabledMaterialComponents;
     std::uint32_t primitiveStackCount = 24U;
     std::uint32_t primitiveSectorCount = 24U;
     std::string modelBasePath;

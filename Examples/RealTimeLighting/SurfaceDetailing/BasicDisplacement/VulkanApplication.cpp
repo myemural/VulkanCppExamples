@@ -141,6 +141,7 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
     sceneConfig.primitiveStackCount = 128U;
     sceneConfig.primitiveSectorCount = 128U;
 
@@ -161,7 +162,7 @@ void VulkanApplication::BuildScene()
     materialManager_->LoadTexture(kMetalPatternHeightTexture, kMainSampler,
                                   assetManager_->Get(metalPatternHeightTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
-    MeshMaterialData defaultMaterial;
+    Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);

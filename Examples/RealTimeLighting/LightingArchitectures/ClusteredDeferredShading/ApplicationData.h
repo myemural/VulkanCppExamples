@@ -23,12 +23,9 @@ namespace examples::real_time_lighting::lighting_architectures::clustered_deferr
 #define TILE_SIZE_Y 16
 #define Z_SLICE_COUNT 16
 
-struct alignas(16) MeshMaterialData
-{
-    glm::vec4 diffuseColor = glm::vec4(1.0f);
-    int diffuseMap;
-    int normalMap;
-};
+inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,
+                                                   common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,
+                                                   common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
 
 struct alignas(16) PointLightData
 {

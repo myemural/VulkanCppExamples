@@ -24,10 +24,7 @@ std::shared_ptr<SceneObject> Scene::CreateObject(const std::string& objectName)
     return object;
 }
 
-void Scene::AddRootObject(const std::shared_ptr<SceneObject>& rootObject)
-{
-    rootObjects_.push_back(rootObject);
-}
+void Scene::AddRootObject(const std::shared_ptr<SceneObject>& rootObject) { rootObjects_.push_back(rootObject); }
 
 void Scene::Traverse(const TraverseFunc& func) const
 {
@@ -87,6 +84,11 @@ std::vector<VkVertexInputBindingDescription> Scene::GetBindingDescriptions() con
 std::vector<VkVertexInputAttributeDescription> Scene::GetAttributeDescriptions() const
 {
     return gpuStorage_->GetAttributeDescriptions();
+}
+
+std::vector<MaterialComponent> Scene::GetEnabledMaterialComponents() const
+{
+    return gpuStorage_->GetEnabledMaterialComponents();
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanBuffer> Scene::GetGeometryBuffer() const
