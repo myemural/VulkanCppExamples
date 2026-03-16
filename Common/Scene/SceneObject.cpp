@@ -47,19 +47,11 @@ void SceneObject::SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builti
     mesh_ = scene_.GetGpuStorage().AllocateBuiltinMesh(builtinMeshType);
 }
 
-glm::vec3 SceneObject::GetPosition() const { return transform_.GetPosition(); }
-
-glm::vec3 SceneObject::GetWorldPosition()
-{
-    const auto& world = GetWorldMatrix();
-    return glm::vec3{world[3]};
-}
-
 void SceneObject::SetMaterial(const Material& material)
 {
     material_ = material;
     const auto materialData = SerializeMaterial(material, scene_.GetEnabledMaterialComponents());
-    UpdateMaterialGpu(materialData);
+    scene_.GetGpuStorage().UpdateMaterial(objectId_, materialData);
 }
 
 void SceneObject::SetParent(const std::shared_ptr<SceneObject>& parent) { parent_ = parent; }
@@ -70,6 +62,16 @@ void SceneObject::AddChild(const std::shared_ptr<SceneObject>& childObject)
     children_.push_back(childObject);
     childObject->MarkWorldDirty();
 }
+
+glm::vec3 SceneObject::GetPosition() const { return transform_.GetPosition(); }
+
+glm::vec3 SceneObject::GetWorldPosition()
+{
+    const auto& world = GetWorldMatrix();
+    return glm::vec3{world[3]};
+}
+
+bool SceneObject::HasRenderable() const { return mesh_.has_value() && material_.has_value(); }
 
 void SceneObject::RecalculateWorld()
 {
@@ -111,22 +113,6 @@ void SceneObject::UpdateTransformGpu()
     for (const auto& child: children_) {
         child->UpdateTransformGpu();
     }
-}
-
-void SceneObject::UpdateMaterialGpu(const std::vector<std::uint8_t>& materialData) const
-{
-    const auto dataSize = static_cast<std::uint32_t>(materialData.size());
-    const std::uint32_t alignedSize = utility::Align16(dataSize);
-
-    if (alignedSize == dataSize) {
-        scene_.GetGpuStorage().UpdateMaterial(objectId_, materialData);
-        return;
-    }
-
-    // Needs padding for alignment
-    std::vector<std::uint8_t> paddedData(alignedSize, 0);
-    std::ranges::copy(materialData, paddedData.begin());
-    scene_.GetGpuStorage().UpdateMaterial(objectId_, paddedData);
 }
 
 } // namespace common::scene

@@ -43,10 +43,6 @@ public:
 
     COMMON_API void SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType);
 
-    COMMON_API glm::vec3 GetPosition() const;
-
-    COMMON_API glm::vec3 GetWorldPosition();
-
     COMMON_API void SetMaterial(const Material& material);
 
     COMMON_API void SetParent(const std::shared_ptr<SceneObject>& parent);
@@ -59,11 +55,15 @@ public:
 
     [[nodiscard]] COMMON_API std::string GetTag() const { return tag_; }
 
+    [[nodiscard]] COMMON_API glm::vec3 GetPosition() const;
+
+    [[nodiscard]] COMMON_API glm::vec3 GetWorldPosition();
+
     [[nodiscard]] COMMON_API std::optional<MeshGpu> GetMeshGpu() const { return mesh_; }
 
     [[nodiscard]] COMMON_API const std::vector<std::shared_ptr<SceneObject>>& GetChildren() const { return children_; }
 
-    [[nodiscard]] COMMON_API bool HasRenderable() const { return mesh_.has_value() && material_.has_value(); }
+    [[nodiscard]] COMMON_API bool HasRenderable() const;
 
 private:
     void RecalculateWorld();
@@ -73,8 +73,6 @@ private:
     void MarkWorldDirty();
 
     void UpdateTransformGpu();
-
-    COMMON_API void UpdateMaterialGpu(const std::vector<std::uint8_t>& materialData) const;
 
     Scene& scene_;
 
