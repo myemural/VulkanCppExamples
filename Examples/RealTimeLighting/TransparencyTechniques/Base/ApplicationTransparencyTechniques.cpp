@@ -99,6 +99,7 @@ void ApplicationTransparencyTechniques::CreateDefaultLogicalDevice()
 
     VkPhysicalDeviceFeatures deviceFeatures{};
     deviceFeatures.independentBlend = VK_TRUE;
+    deviceFeatures.fragmentStoresAndAtomics = VK_TRUE;
 
     VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};
     descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;

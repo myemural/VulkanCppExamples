@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `WeightedBlendedTransparency`
 5. [Order-Independent Transparency with Depth Peeling](/Examples/RealTimeLighting/TransparencyTechniques/DepthPeelingTransparency)
    - `DepthPeelingTransparency`
+6. [Order-Independent Transparency with Per-Pixel Linked Lists](/Examples/RealTimeLighting/TransparencyTechniques/PixelLinkedListsTransparency)
+   - `PixelLinkedListsTransparency`
 
 ## Architecture of the Subsection
 
