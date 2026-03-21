@@ -9,6 +9,7 @@
  * https://opensource.org/licenses/MIT
  */
 #pragma once
+#include <cstdint>
 #include <vector>
 
 #include "CoreDefines.h"
