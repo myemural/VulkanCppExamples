@@ -16,8 +16,8 @@ layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 struct PointLightData
 {
-    vec4 lightPosition;    // xyz = View-space Position
-    vec4 lightColorRadius; // rgb = Light Color, a = Radius
+    vec4 lightPositionIntensity;    // xyz = View-space Position, w = LightIntensity
+    vec4 lightColorRadius;          // rgb = Light Color, a = Radius
 };
 
 layout(std430, set = 0, binding = 3) readonly buffer PointLightBuffer
@@ -96,7 +96,7 @@ void main()
     // Light culling
     uint count = 0;
     for (uint i = 0; i < pc.lightCount; ++i) {
-        vec3 center = lights[i].lightPosition.xyz;
+        vec3 center = lights[i].lightPositionIntensity.xyz;
         float radius = lights[i].lightColorRadius.a;
 
         if (sphereAabbTest(center, radius, clusterMin, clusterMax)) {

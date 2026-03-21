@@ -23,7 +23,7 @@ layout(set = 0, binding = 2) uniform sampler2D gNormal;
 struct PointLightData
 {
     vec4 lightPositionIntensity;    // xyz = View-space Position, w = LightIntensity
-    vec4 lightColorRadius; // rgb = Light Color, a = Radius
+    vec4 lightColorRadius;          // rgb = Light Color, a = Radius
 };
 
 layout(std430, set = 0, binding = 3) readonly buffer PointLightBuffer

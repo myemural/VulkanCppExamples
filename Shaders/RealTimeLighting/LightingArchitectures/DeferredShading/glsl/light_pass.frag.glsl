@@ -10,8 +10,6 @@
 
 layout(location = 0) out vec4 outColor;
 
-layout(location = 0) in vec2 fragUv;
-
 layout(set = 0, binding = 0) uniform sampler2D gPosition;
 layout(set = 0, binding = 1) uniform sampler2D gAlbedo;
 layout(set = 0, binding = 2) uniform sampler2D gNormal;
@@ -70,8 +68,10 @@ void main()
     const float ambientStrength = 0.02;
 
     // Sampling G-Buffer
-    vec3 fragPosView = texture(gPosition, fragUv).xyz;
-    vec4 albedoSample = texture(gAlbedo, fragUv);
+    vec2 uv = gl_FragCoord.xy / vec2(textureSize(gPosition, 0));
+
+    vec3 fragPosView = texture(gPosition, uv).xyz;
+    vec4 albedoSample = texture(gAlbedo, uv);
     vec3 albedo = albedoSample.rgb;
     float opacity = albedoSample.a;
 
@@ -80,7 +80,7 @@ void main()
         return;
     }
 
-    vec3 normalView = texture(gNormal, fragUv).rgb;
+    vec3 normalView = texture(gNormal, uv).rgb;
     normalView = normalize(normalView);
 
     // Lighting vectors in view space

@@ -67,8 +67,7 @@ namespace constants
 
     // Scene Objects
     inline constexpr auto kRootObject = "root";
-    inline constexpr auto kCubeObject = "cube";
-    inline constexpr auto kSphereObject = "sphere";
+    inline constexpr auto kObject = "object";
 } // namespace constants
 
 namespace AppSettings

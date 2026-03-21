@@ -12,9 +12,12 @@
 
 #include <glm/glm.hpp>
 
+#include "MathUtils.h"
+
 namespace examples::real_time_lighting::transparency_techniques::pixel_linked_list_transparency
 {
 
+#define NUM_OBJECTS 250
 #define MAX_FRAGMENTS_PER_PIXEL 8
 
 inline constexpr std::uint32_t kNullNode = 0xFFFFFFFFu;
@@ -52,5 +55,9 @@ struct ResolvePassPushConstants
 {
     std::uint32_t screenWidth;
 };
+
+// Scene object and light position vectors
+inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
+        NUM_OBJECTS, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
 
 } // namespace examples::real_time_lighting::transparency_techniques::pixel_linked_list_transparency

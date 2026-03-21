@@ -8,8 +8,6 @@
 // Licensed under the MIT License.
 // ------------------------------------------------------------------------
 
-layout(location = 0) out vec2 fragUv;
-
 void main()
 {
     vec2 positions[6] = vec2[](
@@ -35,5 +33,4 @@ void main()
     );
 
     gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
-    fragUv = uvs[gl_VertexIndex];
 }

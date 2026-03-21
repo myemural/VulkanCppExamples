@@ -51,10 +51,9 @@ namespace constants
 
     // Scene Objects
     inline constexpr auto kRootObject = "root";
-    inline constexpr auto kRedPlane = "redPlane";
-    inline constexpr auto kBluePlane = "bluePlane";
-    inline constexpr auto kGreenPlane = "greenPlane";
     inline constexpr auto kCubeObject = "cube";
+    inline constexpr auto kSphereObject = "sphere";
+    inline constexpr auto kPlaneObject = "plane";
 } // namespace constants
 
 namespace AppSettings

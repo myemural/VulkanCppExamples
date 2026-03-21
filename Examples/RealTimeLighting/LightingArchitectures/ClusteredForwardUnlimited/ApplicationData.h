@@ -17,8 +17,8 @@
 namespace examples::real_time_lighting::lighting_architectures::clustered_forward_unlimited
 {
 
-#define NUM_OBJECTS 250
-#define MAX_LIGHT_COUNT 50
+#define NUM_OBJECTS 500
+#define MAX_LIGHT_COUNT 150
 #define TILE_SIZE_X 16
 #define TILE_SIZE_Y 16
 #define Z_SLICE_COUNT 16
@@ -29,8 +29,8 @@ inline const std::vector enabledMaterialComponents{common::scene::MaterialCompon
 
 struct alignas(16) PointLightData
 {
-    glm::vec4 lightPosition;    // xyz = Light Position (View-Space)
-    glm::vec4 lightColorRadius; // xyz = Light Color, w = Radius
+    glm::vec4 lightPositionIntensity; // xyz = Light Position (View-Space), w = Light Intensity
+    glm::vec4 lightColorRadius;       // xyz = Light Color, w = Radius
 };
 
 struct alignas(16) ClusterHeader
@@ -58,6 +58,6 @@ struct ForwardPipelinePushConstants
 
 // Scene object and light position vectors
 inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
-        NUM_OBJECTS, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
+        NUM_OBJECTS, glm::vec3(-25.0f, -20.0f, -30.0f), glm::vec3(25.0f, 20.0f, -2.0f), 3.0f);
 
 } // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_unlimited

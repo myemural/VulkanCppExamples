@@ -15,8 +15,8 @@ layout(local_size_x = 64) in;
 
 struct PointLightData
 {
-    vec4 lightPosition;    // xyz = View-space Position
-    vec4 lightColorRadius; // rgb = Light Color, a = Radius
+    vec4 lightPositionIntensity;    // xyz = View-space Position, w = LightIntensity
+    vec4 lightColorRadius;          // rgb = Light Color, a = Radius
 };
 
 layout(std430, set = 0, binding = 0) readonly buffer PointLightBuffer
@@ -108,7 +108,7 @@ void main()
     barrier();
 
     for(uint i = gl_LocalInvocationIndex; i < pc.lightCount; i += gl_WorkGroupSize.x) {
-        vec3 center = lights[i].lightPosition.xyz;
+        vec3 center = lights[i].lightPositionIntensity.xyz;
         float radius = lights[i].lightColorRadius.a;
 
         // Distance culling (optional)

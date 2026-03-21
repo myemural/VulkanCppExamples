@@ -85,8 +85,28 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 
 ## [Lighting Architectures](/Examples/RealTimeLighting/LightingArchitectures)
 
-TBD
+- Implementing deferred shading technique in Vulkan
+- Receive multiple color attachment outputs from shaders
+- Doing the lighting calculations late using G-Buffer
+- Render debug output for the G-Buffer
+- Implementing tiled forward shading (forward+) technique in Vulkan
+- Compute light list per tile with compute shaders (limited light count per tile)
+- Implementing clustered forward shading technique in Vulkan
+- Compute light list per cluster with compute shaders (limited light count per cluster)
+- Implementing clustered forward shading technique in Vulkan with unlimited light count per cluster
+- Implementing tiled deferred shading technique in Vulkan
+- Implementing clustered deferred shading technique in Vulkan without limiting the amount of light per cluster
 
 ## [Transparency Techniques](/Examples/RealTimeLighting/TransparencyTechniques)
 
-TBD
+- Implementing order-dependent transparency with ordinary alpha blending in Vulkan
+- Ordering objects in the scene to the camera distance
+- Understanding the blending coefficients and operations in the Vulkan pipelines
+- Implementing order-independent cutout transparency with Alpha-To-Coverage (A2C) technique in Vulkan
+- Using multisampling for cutout transparency
+- Implementing hybrid transparency for deferred shading architecture
+- Implementing transparency in forward shading and lighting calculations in deferred shading passes
+- Implementing order-independent transparency with using Weighted Blending technique in Vulkan
+- Implementing order-independent transparency with using Depth Peeling technique in Vulkan
+- Implementing order-independent transparency with using Per-Pixel Linked List technique in Vulkan
+- Implementing a per-pixel linked list to keep consecutive fragment alpha values with using compute shaders

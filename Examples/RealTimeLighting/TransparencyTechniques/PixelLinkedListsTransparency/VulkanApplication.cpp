@@ -11,6 +11,7 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "MathUtils.h"
 #include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
@@ -171,60 +172,56 @@ void VulkanApplication::BuildScene()
     materialManager_->LoadTexture(kWallStoneNormalTexture, kMainSampler,
                                   assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
-    Material defaultMaterial;
-    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
-    defaultMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
+    Material opaqueTexturedMaterial;
+    opaqueTexturedMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    opaqueTexturedMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    opaqueTexturedMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    opaqueTexturedMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
+    opaqueTexturedMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
+    opaqueTexturedMaterial.opacity = 1.0f;
 
-    Material redMaterial;
-    redMaterial.diffuseColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
-    redMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    redMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    redMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    redMaterial.opacity = 0.5f;
+    // Add scene objects
+    std::uint32_t index = 0;
+    auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
+    for (const auto& modelPos: modelPositions) {
+        Material transparentColoredMaterial;
+        transparentColoredMaterial.diffuseColor = glm::vec4{GenerateRandomColor(0.1f, 1.0f), 1.0f};
+        transparentColoredMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+        transparentColoredMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+        transparentColoredMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+        transparentColoredMaterial.opacity = GenerateRandomValue(0.1f, 0.6f);
 
-    Material greenMaterial;
-    greenMaterial.diffuseColor = glm::vec4{0.0f, 1.0f, 0.0f, 1.0f};
-    greenMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    greenMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    greenMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    greenMaterial.opacity = 0.5f;
+        // Select material
+        Material currentMaterial =
+                GenerateRandomValue(0U, 1U) == 0U ? opaqueTexturedMaterial : transparentColoredMaterial;
 
-    Material blueMaterial;
-    blueMaterial.diffuseColor = glm::vec4{0.0f, 0.0f, 1.0f, 1.0f};
-    blueMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    blueMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    blueMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    blueMaterial.opacity = 0.5f;
+        // Select shape
+        if (const auto value = GenerateRandomValue(0U, 2U); value == 0) {
+            rootObjectBuilder.AddChild(SceneObjectBuilder(*scene_, kCubeObject + std::to_string(index))
+                                               .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                               .WithMaterial(currentMaterial)
+                                               .WithPosition(modelPos)
+                                               .WithScale(glm::vec3{2.0f}));
 
-    const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
-                                    .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
-                                    .AddChild(SceneObjectBuilder(*scene_, kRedPlane)
-                                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                                      .WithMaterial(redMaterial)
-                                                      .WithPosition(glm::vec3{0.0f, 2.0f, -2.0f})
-                                                      .WithEulerAngles(glm::vec3(90.0f, 0.0f, 0.0f))
-                                                      .WithScale(glm::vec3{4.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kGreenPlane)
-                                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                                      .WithMaterial(greenMaterial)
-                                                      .WithPosition(glm::vec3{0.0f, 2.0f, -6.0f})
-                                                      .WithEulerAngles(glm::vec3(90.0f, 0.0f, 0.0f))
-                                                      .WithScale(glm::vec3{4.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kBluePlane)
-                                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                                      .WithMaterial(blueMaterial)
-                                                      .WithPosition(glm::vec3{0.0f, 2.0f, -10.0f})
-                                                      .WithEulerAngles(glm::vec3(90.0f, 0.0f, 0.0f))
-                                                      .WithScale(glm::vec3{4.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kCubeObject)
-                                                      .WithBuiltinMesh(BuiltinMeshType::CUBE)
-                                                      .WithMaterial(defaultMaterial)
-                                                      .WithPosition(glm::vec3{0.0f, 2.5f, -14.0f}))
-                                    .Build();
+        } else if (value == 1) {
+            rootObjectBuilder.AddChild(SceneObjectBuilder(*scene_, kSphereObject + std::to_string(index))
+                                               .WithBuiltinMesh(BuiltinMeshType::SPHERE)
+                                               .WithMaterial(currentMaterial)
+                                               .WithPosition(modelPos)
+                                               .WithScale(glm::vec3{2.0f}));
+        } else {
+            rootObjectBuilder.AddChild(SceneObjectBuilder(*scene_, kPlaneObject + std::to_string(index))
+                                               .WithBuiltinMesh(BuiltinMeshType::PLANE)
+                                               .WithMaterial(currentMaterial)
+                                               .WithPosition(modelPos)
+                                               .WithEulerAngles(glm::vec3(90.0f, 0.0f, 0.0f))
+                                               .WithScale(glm::vec3{2.0f}));
+        }
 
+        index++;
+    }
+
+    const auto& rootObject = rootObjectBuilder.Build();
     scene_->AddRootObject(rootObject);
 }
 
@@ -691,11 +688,6 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::UpdateSceneTransforms() const
 {
-    const auto time = static_cast<float>(GetCurrentTime());
-    constexpr float speed = 30.0f;
-    const auto angle = time * speed;
-    scene_->FindObjectByName(kCubeObject)->SetEulerAngles(glm::vec3(angle, 0.0f, 0.0f));
-
     LightUbo lightUbo{};
     lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
     lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);

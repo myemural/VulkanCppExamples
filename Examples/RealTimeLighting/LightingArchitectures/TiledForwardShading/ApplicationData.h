@@ -29,8 +29,8 @@ inline const std::vector enabledMaterialComponents{common::scene::MaterialCompon
 
 struct alignas(16) PointLightData
 {
-    glm::vec4 lightPosition;    // xyz = Light Position (View-Space)
-    glm::vec4 lightColorRadius; // xyz = Light Color, w = Radius
+    glm::vec4 lightPositionIntensity; // xyz = Light Position (View-Space), w = Light Intensity
+    glm::vec4 lightColorRadius;       // xyz = Light Color, w = Radius
 };
 
 struct alignas(16) TileLightList

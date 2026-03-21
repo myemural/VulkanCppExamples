@@ -15,6 +15,7 @@
 #include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
+#include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading
@@ -189,7 +190,7 @@ void VulkanApplication::BuildScene()
         // Objects
         const auto value = GenerateRandomValue(0U, 1U);
         rootObjectBuilder.AddChild(
-                SceneObjectBuilder(*scene_, kCubeObject + std::to_string(index))
+                SceneObjectBuilder(*scene_, kObject + std::to_string(index))
                         .WithBuiltinMesh(value == 0 ? BuiltinMeshType::CUBE : BuiltinMeshType::SPHERE)
                         .WithMaterial(defaultMaterial)
                         .WithPosition(modelPos)
@@ -554,13 +555,27 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::UpdateSceneTransforms() const
 {
+    const auto currentTime = static_cast<float>(GetCurrentTime());
+    constexpr float minIntensity = 1.0f;
+    constexpr float maxIntensity = 15.0f;
+
+    constexpr float mid = (minIntensity + maxIntensity) * 0.5f;
+    constexpr float amp = (maxIntensity - minIntensity) * 0.5f;
+
+    const size_t lightCount = lightPositions_.size();
     std::vector<PointLightData> pointLightInfos;
-    for (auto i = 0U; i < lightPositions_.size(); ++i) {
+    for (auto i = 0U; i < lightCount; ++i) {
+        constexpr float frequency = 1.2f;
+        const float phase = glm::two_pi<float>() * (static_cast<float>(i) / static_cast<float>(lightCount));
+        const float intensity = mid + amp * std::sin(currentTime * frequency + phase);
+
         PointLightData pointLightData{};
-        pointLightData.lightPosition = camera_->GetViewMatrix() * lightPositions_[i];
+        pointLightData.lightPositionIntensity =
+                glm::vec4(glm::vec3(camera_->GetViewMatrix() * lightPositions_[i]), intensity);
         pointLightData.lightColorRadius = glm::vec4(lightColors_[i], GetParamFloat(AppSettings::LightRadius));
         pointLightInfos.push_back(pointLightData);
     }
+
     resources_->SetBuffer(kPointLightStorageBuffer, pointLightInfos.data(),
                           pointLightInfos.size() * sizeof(PointLightData));
 }

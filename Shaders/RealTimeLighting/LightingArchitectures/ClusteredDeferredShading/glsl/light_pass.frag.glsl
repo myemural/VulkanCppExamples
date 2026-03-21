@@ -22,8 +22,8 @@ layout(set = 0, binding = 2) uniform sampler2D gNormal;
 
 struct PointLightData
 {
-    vec4 lightPosition;    // xyz = View-space Position
-    vec4 lightColorRadius; // rgb = Light Color, a = Radius
+    vec4 lightPositionIntensity;    // xyz = View-space Position, w = LightIntensity
+    vec4 lightColorRadius;          // rgb = Light Color, a = Radius
 };
 
 layout(std430, set = 0, binding = 3) readonly buffer PointLightBuffer {
@@ -59,20 +59,20 @@ vec3 calculateLight(PointLightData light, vec3 albedo, vec3 normalView, vec3 fra
     const float shininess = 64.0;
 
     float radius = light.lightColorRadius.a;
+    float intensity = light.lightPositionIntensity.w;
 
-    vec3 lightVec = light.lightPosition.xyz - fragPosView;
+    vec3 lightVec = light.lightPositionIntensity.xyz - fragPosView;
     float dist = length(lightVec);
 
     // Normalize light direction
     vec3 lightDirView = lightVec / dist;
 
-    // Radius-based attenuation
-    float d2 = dist * dist;
-    float r2 = radius * radius;
-
-    float attenuation = max(0.0, 1.0 - (d2 / r2));
-    attenuation *= attenuation;
-    attenuation /= (1.0 + d2);
+    // Smooth attenuation calculation
+    float attenuation = intensity / (dist * dist + 1.0);
+    float smoothFactor = 1.0 - (dist / radius);
+    smoothFactor = clamp(smoothFactor, 0.0, 1.0);
+    smoothFactor *= smoothFactor;
+    attenuation *= smoothFactor;
 
     // Diffuse (Lambert) calculation
     float diff = max(dot(normalView, lightDirView), 0.0);
@@ -80,11 +80,13 @@ vec3 calculateLight(PointLightData light, vec3 albedo, vec3 normalView, vec3 fra
 
     // Specular calculation
     vec3 halfDir = normalize(lightDirView + viewDir);
-    float spec = pow(max(dot(normalView, halfDir), 0.0), shininess);
-    vec3 specular = specularStrength * spec * light.lightColorRadius.rgb;
+    float NdotH = max(dot(normalView, halfDir), 0.0);
+    float specNorm = (shininess + 2.0) / 16.0; // Normalization factor for Blinn-Phong
+    float spec = specNorm * pow(NdotH, shininess);
+    vec3 specular = spec * light.lightColorRadius.rgb;
 
     // Final color (attenuation has less effect on specular)
-    vec3 finalColor = (diffuse * attenuation) + (specular * sqrt(attenuation));
+    vec3 finalColor = (diffuse + specular) * attenuation;
     return finalColor;
 }
 

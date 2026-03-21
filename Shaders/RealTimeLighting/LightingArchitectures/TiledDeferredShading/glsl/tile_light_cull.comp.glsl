@@ -16,8 +16,8 @@ layout(local_size_x = 16, local_size_y = 16) in;
 
 struct PointLightData
 {
-    vec4 lightPosition;    // xyz = View-space Position
-    vec4 lightColorRadius; // rgb = Light Color, a = Radius
+    vec4 lightPositionIntensity;    // xyz = View-space Position, w = LightIntensity
+    vec4 lightColorRadius;          // rgb = Light Color, a = Radius
 };
 
 layout(std430, set = 0, binding = 0) readonly buffer PointLightBuffer
@@ -141,7 +141,7 @@ void main()
     // Light culling
     for (uint i = localThreadIndex; i < pc.lightCount && lightCountPerTile < MAX_LIGHTS_PER_TILE; i += localThreadCount)
     {
-        vec3 center = lights[i].lightPosition.xyz;
+        vec3 center = lights[i].lightPositionIntensity.xyz;
         float radius = lights[i].lightColorRadius.a;
 
         if (sphereFrustumTest(center, radius)) {
