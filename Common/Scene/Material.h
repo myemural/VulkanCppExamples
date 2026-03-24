@@ -30,6 +30,7 @@ enum class MaterialComponent : std::uint8_t
     SPECULAR_STRENGTH_FLOAT,
     REFLECTIVITY_FLOAT,
     OPACITY_FLOAT,
+    UV_SCALE_FLOAT,
 
     DIFFUSE_MAP_TEXTURE,
     SPECULAR_MAP_TEXTURE,
@@ -53,6 +54,7 @@ struct COMMON_API Material
     float specularStrength = 0.7f;
     float reflectivity = 0.0f;
     float opacity = 1.0f;
+    float uvScale = 1.0f;
 
     // Mapping values
     int diffuseMap = -1;
@@ -98,6 +100,10 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::OPACITY_FLOAT:
                 utility::AppendBytes(buffer, material.opacity);
+                break;
+
+            case MaterialComponent::UV_SCALE_FLOAT:
+                utility::AppendBytes(buffer, material.uvScale);
                 break;
 
             case MaterialComponent::DIFFUSE_MAP_TEXTURE:

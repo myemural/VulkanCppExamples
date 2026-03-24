@@ -13,6 +13,7 @@ This repository contains Vulkan examples written in modern C++20, structured in 
 - [All Examples](#all-examples)
   - [Fundamentals](#fundamentals)
   - [Real-Time Lighting](#real-time-lighting)
+  - [Real-Time Shadows](#real-time-shadows)
 - [Environment Support](#environment-support)
 - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
@@ -201,6 +202,11 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Weighted Blended Order-Independent Transparency](/Examples/RealTimeLighting/TransparencyTechniques/WeightedBlendedTransparency)
   - [Order-Independent Transparency with Depth Peeling](/Examples/RealTimeLighting/TransparencyTechniques/DepthPeelingTransparency)
   - [Order-Independent Transparency with Per-Pixel Linked Lists](/Examples/RealTimeLighting/TransparencyTechniques/PixelLinkedListsTransparency)
+
+### [Real-Time Shadows](/Examples/RealTimeShadows)
+
+- **[Basic Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping)**
+  - [Directional Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping/DirectionalShadowMapping)
 
 ## Environment Support
 

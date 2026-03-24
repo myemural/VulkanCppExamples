@@ -54,4 +54,4 @@ endif ()
 add_subdirectory(Common)
 add_subdirectory("Examples/Fundamentals")
 add_subdirectory("Examples/RealTimeLighting")
-
+add_subdirectory("Examples/RealTimeShadows")
