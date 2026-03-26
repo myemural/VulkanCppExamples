@@ -13,10 +13,10 @@
 
 #include <memory>
 
+#include "PerspectiveCamera.h"
 #include "ApplicationEnvironmentMapping.h"
 #include "AssetManager.h"
 #include "MaterialManager.h"
-#include "PerspectiveCamera.h"
 #include "Scene.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -73,7 +73,7 @@ private:
     float lastY_ = 0.0f;
 
     // Camera
-    std::shared_ptr<common::utility::PerspectiveCamera> camera_ = nullptr;
+    std::shared_ptr<common::camera::PerspectiveCamera> camera_ = nullptr;
     glm::vec3 orbitTarget_ = glm::vec3(0.0f);
     float orbitDistance_ = 5.0f;
     float orbitYaw_ = 90.0f;

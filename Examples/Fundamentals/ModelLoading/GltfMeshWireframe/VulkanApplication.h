@@ -14,11 +14,11 @@
 #include <array>
 #include <memory>
 
+#include "PerspectiveCamera.h"
 #include "ApplicationData.h"
 #include "ApplicationModelLoading.h"
 #include "AssetManager.h"
 #include "ModelLoader.h"
-#include "PerspectiveCamera.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -86,6 +86,6 @@ private:
     float lastY_ = 0.0f;
 
     // Camera
-    std::unique_ptr<common::utility::PerspectiveCamera> camera_;
+    std::unique_ptr<common::camera::PerspectiveCamera> camera_;
 };
 } // namespace examples::fundamentals::model_loading::gltf_mesh_wireframe

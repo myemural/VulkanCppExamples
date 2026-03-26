@@ -14,10 +14,10 @@
 #include <array>
 #include <memory>
 
+#include "PerspectiveCamera.h"
 #include "ApplicationData.h"
 #include "ApplicationSwapChainsAndViewports.h"
 #include "AssetManager.h"
-#include "PerspectiveCamera.h"
 #include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanFramebuffer.h"
@@ -92,6 +92,6 @@ private:
     std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Camera
-    std::unique_ptr<common::utility::PerspectiveCamera> camera_;
+    std::unique_ptr<common::camera::PerspectiveCamera> camera_;
 };
 } // namespace examples::fundamentals::swap_chains_and_viewports::swap_chain_recreation

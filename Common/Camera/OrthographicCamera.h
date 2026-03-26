@@ -15,7 +15,7 @@
 #include "CameraBase.h"
 #include "CoreDefines.h"
 
-namespace common::utility
+namespace common::camera
 {
 
 class COMMON_API OrthographicCamera final : public CameraBase
@@ -53,4 +53,4 @@ private:
     float size_;
 };
 
-} // namespace common::utility
+} // namespace common::camera

@@ -13,10 +13,10 @@
 
 #include <memory>
 
+#include "PerspectiveCamera.h"
 #include "ApplicationData.h"
 #include "ApplicationQueriesAndPerformance.h"
 #include "AssetManager.h"
-#include "PerspectiveCamera.h"
 #include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -96,7 +96,7 @@ private:
     float lastY_ = 0.0f;
 
     // Camera
-    std::unique_ptr<common::utility::PerspectiveCamera> camera_;
+    std::unique_ptr<common::camera::PerspectiveCamera> camera_;
 
     // For control output occurrence
     unsigned long long frameCount_ = 0;

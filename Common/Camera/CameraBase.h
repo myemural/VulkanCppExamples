@@ -17,7 +17,7 @@
 #include "CoreDefines.h"
 #include "Plane.h"
 
-namespace common::utility
+namespace common::camera
 {
 
 class COMMON_API CameraBase
@@ -50,7 +50,7 @@ public:
      * @param plane Plane information.
      * @return Returns reflected view matrix to a plane.
      */
-    [[nodiscard]] glm::mat4 GetReflectedViewMatrix(const Plane& plane) const;
+    [[nodiscard]] glm::mat4 GetReflectedViewMatrix(const utility::Plane& plane) const;
 
 
     /**
@@ -66,7 +66,7 @@ public:
      * @param plane Plane information.
      * @return Returns reflection view projection matrix to a plane.
      */
-    [[nodiscard]] glm::mat4 GetReflectionViewProjMatrix(const Plane& plane) const;
+    [[nodiscard]] glm::mat4 GetReflectionViewProjMatrix(const utility::Plane& plane) const;
 
     /**
      * @brief Returns cubemap view matrices for reflection capture.
@@ -208,4 +208,4 @@ private:
     glm::vec3 worldUp_ = glm::vec3(0.0f, 1.0f, 0.0f);
 };
 
-} // namespace common::utility
+} // namespace common::camera

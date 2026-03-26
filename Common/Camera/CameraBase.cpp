@@ -12,7 +12,7 @@
 
 #include "MathUtils.h"
 
-namespace common::utility
+namespace common::camera
 {
 CameraBase::CameraBase(glm::vec3 position, float aspect, float nearPlane, float farPlane)
     : position_(position), aspect_(aspect), nearPlane_(nearPlane), farPlane_(farPlane), yaw_(-90.0f), pitch_(0.0f)
@@ -22,7 +22,7 @@ CameraBase::CameraBase(glm::vec3 position, float aspect, float nearPlane, float 
 
 glm::mat4 CameraBase::GetViewMatrix() const { return glm::lookAt(position_, position_ + cameraFront_, cameraUp_); }
 
-glm::mat4 CameraBase::GetReflectedViewMatrix(const Plane& plane) const
+glm::mat4 CameraBase::GetReflectedViewMatrix(const utility::Plane& plane) const
 {
     const glm::mat4 view = GetViewMatrix();
     const glm::mat4 reflect = plane.BuildReflectionMatrix();
@@ -35,7 +35,7 @@ glm::mat4 CameraBase::GetLightViewMatrix(const glm::vec3& lightDir, const glm::v
     return glm::lookAt(center - lightDir * 15.0f, center, worldUp_);
 }
 
-glm::mat4 CameraBase::GetReflectionViewProjMatrix(const Plane& plane) const
+glm::mat4 CameraBase::GetReflectionViewProjMatrix(const utility::Plane& plane) const
 {
     const glm::mat4 reflectedView = GetReflectedViewMatrix(plane);
     const glm::mat4 projection = GetProjectionMatrix();
@@ -53,14 +53,14 @@ std::array<glm::mat4, 6> CameraBase::GetCubemapViewMatrices() const
     const glm::vec3 pos = position_;
     std::array<glm::mat4, 6> views{};
 
-    views[0] = MakeCubemapView(pos, {1, 0, 0}, {0, -1, 0});  // +X
-    views[1] = MakeCubemapView(pos, {-1, 0, 0}, {0, -1, 0}); // -X
+    views[0] = utility::MakeCubemapView(pos, {1, 0, 0}, {0, -1, 0});  // +X
+    views[1] = utility::MakeCubemapView(pos, {-1, 0, 0}, {0, -1, 0}); // -X
 
-    views[2] = MakeCubemapView(pos, {0, 1, 0}, {0, 0, 1});   // +Y
-    views[3] = MakeCubemapView(pos, {0, -1, 0}, {0, 0, -1}); // -Y
+    views[2] = utility::MakeCubemapView(pos, {0, 1, 0}, {0, 0, 1});   // +Y
+    views[3] = utility::MakeCubemapView(pos, {0, -1, 0}, {0, 0, -1}); // -Y
 
-    views[4] = MakeCubemapView(pos, {0, 0, 1}, {0, -1, 0}); // +Z
-    views[5] = MakeCubemapView(pos, {0, 0, -1}, {0, -1, 0});  // -Z
+    views[4] = utility::MakeCubemapView(pos, {0, 0, 1}, {0, -1, 0});  // +Z
+    views[5] = utility::MakeCubemapView(pos, {0, 0, -1}, {0, -1, 0}); // -Z
 
     return views;
 }
@@ -128,4 +128,4 @@ void CameraBase::UpdateVectors()
     cameraRight_ = glm::normalize(glm::cross(cameraFront_, worldUp_));
     cameraUp_ = glm::normalize(glm::cross(cameraRight_, cameraFront_));
 }
-} // namespace common::utility
+} // namespace common::camera

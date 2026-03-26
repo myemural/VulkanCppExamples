@@ -25,6 +25,7 @@ namespace examples::fundamentals::queries_and_performance::occlusion_query
 {
 using namespace constants;
 using namespace common::asset_manager;
+using namespace common::camera;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;

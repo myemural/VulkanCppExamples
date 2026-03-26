@@ -14,10 +14,10 @@
 #include <array>
 #include <memory>
 
+#include "PerspectiveCamera.h"
 #include "ApplicationEnvironmentMapping.h"
 #include "AssetManager.h"
 #include "MaterialManager.h"
-#include "PerspectiveCamera.h"
 #include "Scene.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
@@ -88,8 +88,8 @@ private:
     float lastY_ = 0.0f;
 
     // Camera
-    std::shared_ptr<common::utility::PerspectiveCamera> camera_ = nullptr;
-    std::shared_ptr<common::utility::PerspectiveCamera> cubemapCamera_ = nullptr;
+    std::shared_ptr<common::camera::PerspectiveCamera> camera_ = nullptr;
+    std::shared_ptr<common::camera::PerspectiveCamera> cubemapCamera_ = nullptr;
 
     // Scene manager
     std::unique_ptr<common::scene::Scene> scene_;

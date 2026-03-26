@@ -14,10 +14,10 @@
 #include <array>
 #include <memory>
 
+#include "PerspectiveCamera.h"
 #include "ApplicationComputeShaders.h"
 #include "ApplicationData.h"
 #include "AssetManager.h"
-#include "PerspectiveCamera.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -91,6 +91,6 @@ private:
     float lastY_ = 0.0f;
 
     // Camera
-    std::unique_ptr<common::utility::PerspectiveCamera> camera_;
+    std::unique_ptr<common::camera::PerspectiveCamera> camera_;
 };
 } // namespace examples::fundamentals::compute_shaders::basic_particles

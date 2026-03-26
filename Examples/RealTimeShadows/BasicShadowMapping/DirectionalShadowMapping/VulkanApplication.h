@@ -88,8 +88,8 @@ private:
     float lastY_ = 0.0f;
 
     // Camera
-    std::shared_ptr<common::utility::PerspectiveCamera> camera_ = nullptr;
-    std::shared_ptr<common::utility::OrthographicCamera> lightCamera_ = nullptr;
+    std::shared_ptr<common::camera::PerspectiveCamera> camera_ = nullptr;
+    std::shared_ptr<common::camera::OrthographicCamera> lightCamera_ = nullptr;
 
     // Scene manager
     std::unique_ptr<common::scene::Scene> scene_;

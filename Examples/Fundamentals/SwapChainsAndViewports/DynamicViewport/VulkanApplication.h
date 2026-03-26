@@ -14,10 +14,10 @@
 #include <array>
 #include <memory>
 
+#include "OrthographicCamera.h"
 #include "ApplicationData.h"
 #include "ApplicationSwapChainsAndViewports.h"
 #include "AssetManager.h"
-#include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
 #include "TextureAsset.h"
 #include "VulkanCommandBuffer.h"
@@ -103,7 +103,7 @@ private:
     float lastY_ = 0.0f;
 
     // Cameras
-    std::unique_ptr<common::utility::PerspectiveCamera> perspectiveCamera_;
-    std::unique_ptr<common::utility::OrthographicCamera> orthoCamera_;
+    std::unique_ptr<common::camera::PerspectiveCamera> perspectiveCamera_;
+    std::unique_ptr<common::camera::OrthographicCamera> orthoCamera_;
 };
 } // namespace examples::fundamentals::swap_chains_and_viewports::dynamic_viewport

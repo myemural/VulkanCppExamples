@@ -8,7 +8,7 @@
 
 #include <glm/ext/matrix_clip_space.hpp>
 
-namespace common::utility
+namespace common::camera
 {
 OrthographicCamera::OrthographicCamera(glm::vec3 position, float aspect, float size, float nearPlane, float farPlane)
     : CameraBase(position, aspect, nearPlane, farPlane), size_(size)
@@ -30,4 +30,4 @@ void OrthographicCamera::SetSize(const float size) { size_ = size; }
 float OrthographicCamera::GetSize() const { return size_; }
 
 
-} // namespace common::utility
+} // namespace common::camera

@@ -15,7 +15,6 @@
 
 #include "ApplicationComputeShaders.h"
 #include "AssetManager.h"
-#include "PerspectiveCamera.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"

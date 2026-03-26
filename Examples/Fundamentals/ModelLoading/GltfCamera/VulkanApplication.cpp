@@ -9,10 +9,10 @@
 #include <algorithm>
 #include <array>
 
+#include "OrthographicCamera.h"
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
-#include "OrthographicCamera.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "VulkanHelpers.h"
@@ -22,6 +22,7 @@ namespace examples::fundamentals::model_loading::gltf_camera
 {
 using namespace constants;
 using namespace common::asset_manager;
+using namespace common::camera;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;

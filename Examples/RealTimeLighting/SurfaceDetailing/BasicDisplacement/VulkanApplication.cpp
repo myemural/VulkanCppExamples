@@ -20,8 +20,9 @@
 namespace examples::real_time_lighting::surface_detailing::basic_displacement
 {
 using namespace constants;
-using namespace common::scene;
 using namespace common::asset_manager;
+using namespace common::camera;
+using namespace common::scene;
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
