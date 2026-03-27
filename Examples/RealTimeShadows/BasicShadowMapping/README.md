@@ -8,6 +8,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
 
 1. [Directional Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping/DirectionalShadowMapping)
    - `DirectionalShadowMapping`
+2. [Spotlight Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping/SpotlightShadowMapping)
+   - `SpotlightShadowMapping`
 
 ## Architecture of the Subsection
 

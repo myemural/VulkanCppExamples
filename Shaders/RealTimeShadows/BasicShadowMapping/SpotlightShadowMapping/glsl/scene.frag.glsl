@@ -33,8 +33,10 @@ layout(std430, binding = 1) readonly buffer MeshMaterialDataBuffer {
 
 layout(std140, set = 0, binding = 2) uniform LightUBO
 {
+    vec4 lightPosition;    // xyz = Light Position
     vec4 lightDirection;   // xyz = Light Direction
     vec4 lightColor;       // rgb = Light Color
+    vec4 spotlightParams;  // x = cos(innerCutoffAngle), y = cos(outerCutoffAngle)
     mat4 lightSpaceMatrix; // Light-space matrix
 } light;
 
@@ -72,6 +74,51 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
     return (currentDepth - bias) > closestDepth ? 1.0 : 0.0;
 }
 
+vec3 calculateLight(vec3 normalWorldSpace, vec3 fragmentPosition)
+{
+    // Get mesh info
+    const MeshMaterialData meshMatInfo = meshMaterials[pc.objectId];
+
+    // Normalizing light direction
+    vec3 normalizedLightDir = normalize(light.lightPosition.xyz - fragmentPosition);
+
+    // Normalizing view direction (camera position)
+    vec3 normalizedView = normalize(pc.cameraPosition.xyz - fragPos);
+
+    // Diffuse color calculation
+    const vec2 scaledUv = fragUv * meshMatInfo.uvScale;
+    vec3 diffuseColor = meshMatInfo.diffuseColor.rgb;
+    if (meshMatInfo.diffuseMap != -1) {
+        vec4 diffuseTextureColor = texture(uCombinedSamplers[nonuniformEXT(meshMatInfo.diffuseMap)], scaledUv);
+        diffuseColor = diffuseTextureColor.rgb;
+    }
+
+    // Ambient calculation
+    vec3 ambient = meshMatInfo.ambientStrength * diffuseColor;
+
+    // Diffuse (Lambert) calculation
+    float diff = max(dot(normalWorldSpace, normalizedLightDir), 0.0);
+    vec3 diffuse = diff * light.lightColor.rgb * diffuseColor;
+
+    // Specular calculation
+    vec3 halfDir = normalize(normalizedLightDir + normalizedView);
+    float spec = pow(max(dot(normalWorldSpace, halfDir), 0.0), meshMatInfo.shininess);
+    vec3 specular = meshMatInfo.specularStrength * spec * light.lightColor.rgb * meshMatInfo.specularColor.rgb;
+
+    // Spotlight contribution calculation (soft-cutoff)
+    vec3 spotDir = normalize(-light.lightDirection.xyz);
+    float theta = dot(normalizedLightDir, spotDir);
+
+    float innerCutoff = light.spotlightParams.x;
+    float outerCutoff = light.spotlightParams.y;
+    float spotFactor = smoothstep(outerCutoff, innerCutoff, theta);
+
+    // Final color
+    float shadow = calculateShadow(normalWorldSpace, normalizedLightDir);
+    vec3 finalColor = ambient + (1.0 - shadow) * spotFactor * (diffuse + specular);
+    return finalColor;
+}
+
 void main()
 {
     // Get mesh info
@@ -79,12 +126,6 @@ void main()
 
     // Calculate scaled UV
     const vec2 scaledUv = fragUv * meshMatInfo.uvScale;
-
-    vec3 diffuseColor = meshMatInfo.diffuseColor.rgb;
-    if (meshMatInfo.diffuseMap != -1) {
-        vec4 diffuseTextureColor = texture(uCombinedSamplers[nonuniformEXT(meshMatInfo.diffuseMap)], scaledUv);
-        diffuseColor = diffuseTextureColor.rgb;
-    }
 
     // Normal map calculation
     vec3 normalWorldSpace;
@@ -104,26 +145,8 @@ void main()
         normalWorldSpace = normalize(fragTBN[2]);
     }
 
-    // Normalizing light direction
-    vec3 normalizedLightDir = normalize(-light.lightDirection.xyz);
-
-    // Normalizing view direction (camera position)
-    vec3 normalizedView = normalize(pc.cameraPosition.xyz - fragPos);
-
-    // Ambient calculation
-    vec3 ambient = meshMatInfo.ambientStrength * diffuseColor;
-
-    // Diffuse (Lambert) calculation
-    float diff = max(dot(normalWorldSpace, normalizedLightDir), 0.0);
-    vec3 diffuse = diff * light.lightColor.rgb * diffuseColor;
-
-    // Specular calculation
-    vec3 halfDir = normalize(normalizedLightDir + normalizedView);
-    float spec = pow(max(dot(normalWorldSpace, halfDir), 0.0), meshMatInfo.shininess);
-    vec3 specular = meshMatInfo.specularStrength * spec * light.lightColor.rgb * meshMatInfo.specularColor.rgb;
-
     // Final color with shadow
-    float shadow = calculateShadow(normalWorldSpace, normalizedLightDir);
-    vec3 finalColor = ambient + (1.0 - shadow) * (diffuse + specular);
-    outColor = vec4(finalColor, 1.0);
+    vec3 resultColor = vec3(0.0);
+    resultColor += calculateLight(normalWorldSpace, fragPos);
+    outColor = vec4(resultColor, 1.0);
 }
