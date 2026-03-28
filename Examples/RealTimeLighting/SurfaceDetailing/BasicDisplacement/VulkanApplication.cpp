@@ -145,9 +145,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
     sceneConfig.primitiveStackCount = 128U;
     sceneConfig.primitiveSectorCount = 128U;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -155,21 +157,24 @@ void VulkanApplication::BuildScene()
 
     // Materials
     const auto metalPatternTextureAsset = assetManager_->Load<TextureAsset>(kMetalPatternTexturePath);
-    materialManager_->LoadTexture(kMetalPatternTexture, kMainSampler, assetManager_->Get(metalPatternTextureAsset));
+    const auto metalPatternTextureId = sceneImageStorage.StoreTexture(kMetalPatternTexture, kMainSampler,
+                                                                      assetManager_->Get(metalPatternTextureAsset));
     const auto metalPatternNormalTextureAsset = assetManager_->Load<TextureAsset>(kMetalPatternNormalTexturePath);
-    materialManager_->LoadTexture(kMetalPatternNormalTexture, kMainSampler,
-                                  assetManager_->Get(metalPatternNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto metalPatternNormalTextureId = sceneImageStorage.StoreTexture(
+            kMetalPatternNormalTexture, kMainSampler, assetManager_->Get(metalPatternNormalTextureAsset),
+            VK_FORMAT_R8G8B8A8_UNORM);
     const auto metalPatternHeightTextureAsset = assetManager_->Load<TextureAsset>(kMetalPatternHeightTexturePath);
-    materialManager_->LoadTexture(kMetalPatternHeightTexture, kMainSampler,
-                                  assetManager_->Get(metalPatternHeightTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto metalPatternHeightTextureId = sceneImageStorage.StoreTexture(
+            kMetalPatternHeightTexture, kMainSampler, assetManager_->Get(metalPatternHeightTextureAsset),
+            VK_FORMAT_R8G8B8A8_UNORM);
 
     Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kMetalPatternTexture);
-    defaultMaterial.normalMap = materialManager_->GetTextureId(kMetalPatternNormalTexture);
-    defaultMaterial.heightMap = materialManager_->GetTextureId(kMetalPatternHeightTexture);
+    defaultMaterial.diffuseMap = metalPatternTextureId;
+    defaultMaterial.normalMap = metalPatternNormalTextureId;
+    defaultMaterial.heightMap = metalPatternHeightTextureId;
 
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
                                     .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
@@ -191,7 +196,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
+    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 3 + combinedImageSamplerCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
@@ -217,7 +222,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;

@@ -145,9 +145,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -155,17 +157,19 @@ void VulkanApplication::BuildScene()
 
     // Materials
     const auto ceilingTextureAsset = assetManager_->Load<TextureAsset>(kCeilingTexturePath);
-    materialManager_->LoadTexture(kCeilingTexture, kMainSampler, assetManager_->Get(ceilingTextureAsset));
+    const auto ceilingTextureId =
+            sceneImageStorage.StoreTexture(kCeilingTexture, kMainSampler, assetManager_->Get(ceilingTextureAsset));
     const auto ceilingEmissiveTextureAsset = assetManager_->Load<TextureAsset>(kCeilingEmissiveTexturePath);
-    materialManager_->LoadTexture(kCeilingEmissiveTexture, kMainSampler,
-                                  assetManager_->Get(ceilingEmissiveTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto ceilingEmissiveTextureId =
+            sceneImageStorage.StoreTexture(kCeilingEmissiveTexture, kMainSampler,
+                                           assetManager_->Get(ceilingEmissiveTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     // Default material
     Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kCeilingTexture);
-    defaultMaterial.emissiveMap = materialManager_->GetTextureId(kCeilingEmissiveTexture);
+    defaultMaterial.diffuseMap = ceilingTextureId;
+    defaultMaterial.emissiveMap = ceilingEmissiveTextureId;
 
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (auto i = 0; i < 3; ++i) {
@@ -210,7 +214,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
+    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 3 + combinedImageSamplerCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
@@ -235,7 +239,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;

@@ -191,9 +191,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -203,14 +205,16 @@ void VulkanApplication::BuildScene()
 
     // Materials
     const auto wallStoneTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneTexturePath);
-    materialManager_->LoadTexture(kWallStoneTexture, kMainSampler, assetManager_->Get(wallStoneTextureAsset));
+    const auto wallStoneTextureId =
+            sceneImageStorage.StoreTexture(kWallStoneTexture, kMainSampler, assetManager_->Get(wallStoneTextureAsset));
     const auto wallStoneNormalTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneNormalTexturePath);
-    materialManager_->LoadTexture(kWallStoneNormalTexture, kMainSampler,
-                                  assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto wallStoneNormalTextureId =
+            sceneImageStorage.StoreTexture(kWallStoneNormalTexture, kMainSampler,
+                                           assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material defaultMaterial{};
-    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
-    defaultMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
+    defaultMaterial.diffuseMap = wallStoneTextureId;
+    defaultMaterial.normalMap = wallStoneNormalTextureId;
 
     // Add scene objects and lights
     std::uint32_t index = 0;
@@ -242,7 +246,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
+    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 16 + combinedImageSamplerCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 11},
@@ -278,7 +282,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     std::vector<VkDescriptorBufferInfo> storageMaterialBufferInfos;
     storageMaterialBufferInfos.emplace_back(scene_->GetMaterialStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     std::vector<VkDescriptorBufferInfo> storagePointLightBufferInfos;
     storagePointLightBufferInfos.emplace_back(resources_->GetBuffer(kPointLightStorageBuffer)->GetHandle(), 0,

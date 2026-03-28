@@ -4,14 +4,15 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include "SceneGpuStorage.h"
+#include "SceneGpuBufferStorage.h"
 
 #include <utility>
 
 namespace common::scene
 {
 
-SceneGpuStorage::SceneGpuStorage(vulkan_framework::ResourceManager& resourceManager, const SceneConfig& sceneConfig)
+SceneGpuBufferStorage::SceneGpuBufferStorage(vulkan_framework::ResourceManager& resourceManager,
+                                             const SceneConfig& sceneConfig)
     : resourceManager_{resourceManager}, sceneConfig_(sceneConfig)
 {
     vulkan_framework::ResourceDescriptor resourceCreateInfo;
@@ -29,9 +30,9 @@ SceneGpuStorage::SceneGpuStorage(vulkan_framework::ResourceManager& resourceMana
     }
 }
 
-MeshGpu SceneGpuStorage::AllocateMesh(const utility::GltfMesh& mesh) { return AllocateMeshGpuInternal(mesh); }
+MeshGpu SceneGpuBufferStorage::AllocateMesh(const utility::GltfMesh& mesh) { return AllocateMeshGpuInternal(mesh); }
 
-MeshGpu SceneGpuStorage::AllocateBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType)
+MeshGpu SceneGpuBufferStorage::AllocateBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType)
 {
     if (const auto meshName = vulkan_framework::GetBuiltinMeshName(builtinMeshType); meshCache_.contains(meshName)) {
         return meshCache_[meshName];
@@ -62,36 +63,36 @@ MeshGpu SceneGpuStorage::AllocateBuiltinMesh(const vulkan_framework::BuiltinMesh
     return meshGpu;
 }
 
-void SceneGpuStorage::UpdateTransform(const std::uint32_t objectId, const TransformGpu& transformGpuData) const
+void SceneGpuBufferStorage::UpdateTransform(const std::uint32_t objectId, const TransformGpu& transformGpuData) const
 {
     const auto offset = objectId * sizeof(TransformGpu);
     resourceManager_.SetBuffer(kTransformStorageBufferName, &transformGpuData, sizeof(TransformGpu), offset, false);
 }
 
-void SceneGpuStorage::UpdateMaterial(const std::uint32_t objectId, const std::vector<uint8_t>& materialData) const
+void SceneGpuBufferStorage::UpdateMaterial(const std::uint32_t objectId, const std::vector<uint8_t>& materialData) const
 {
     const auto offset = objectId * materialData.size();
     resourceManager_.SetBuffer(kMaterialStorageBufferName, materialData.data(), materialData.size(), offset, false);
 }
 
-std::shared_ptr<vulkan_wrapper::VulkanBuffer> SceneGpuStorage::GetGeometryBuffer() const
+std::shared_ptr<vulkan_wrapper::VulkanBuffer> SceneGpuBufferStorage::GetGeometryBuffer() const
 {
     return resourceManager_.GetBuffer(kGeometryBufferName);
 }
 
-std::shared_ptr<vulkan_wrapper::VulkanBuffer> SceneGpuStorage::GetTransformStorageBuffer() const
+std::shared_ptr<vulkan_wrapper::VulkanBuffer> SceneGpuBufferStorage::GetTransformStorageBuffer() const
 {
     return resourceManager_.GetBuffer(kTransformStorageBufferName);
 }
 
-std::shared_ptr<vulkan_wrapper::VulkanBuffer> SceneGpuStorage::GetMaterialStorageBuffer() const
+std::shared_ptr<vulkan_wrapper::VulkanBuffer> SceneGpuBufferStorage::GetMaterialStorageBuffer() const
 {
     return resourceManager_.GetBuffer(kMaterialStorageBufferName);
 }
 
-std::uint32_t SceneGpuStorage::GetAttributeCount() const { return sceneConfig_.attributeLayout.size(); }
+std::uint32_t SceneGpuBufferStorage::GetAttributeCount() const { return sceneConfig_.attributeLayout.size(); }
 
-std::vector<VkVertexInputBindingDescription> SceneGpuStorage::GetBindingDescriptions() const
+std::vector<VkVertexInputBindingDescription> SceneGpuBufferStorage::GetBindingDescriptions() const
 {
     std::vector<VkVertexInputBindingDescription> result;
     for (uint32_t bindingIndex = 0; const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
@@ -105,7 +106,7 @@ std::vector<VkVertexInputBindingDescription> SceneGpuStorage::GetBindingDescript
     return result;
 }
 
-std::vector<VkVertexInputAttributeDescription> SceneGpuStorage::GetAttributeDescriptions() const
+std::vector<VkVertexInputAttributeDescription> SceneGpuBufferStorage::GetAttributeDescriptions() const
 {
     std::vector<VkVertexInputAttributeDescription> result;
     for (uint32_t bindingIndex = 0; const auto& [attributeType, accessorType]: sceneConfig_.attributeLayout) {
@@ -120,12 +121,12 @@ std::vector<VkVertexInputAttributeDescription> SceneGpuStorage::GetAttributeDesc
     return result;
 }
 
-std::vector<MaterialComponent> SceneGpuStorage::GetEnabledMaterialComponents() const
+std::vector<MaterialComponent> SceneGpuBufferStorage::GetEnabledMaterialComponents() const
 {
     return sceneConfig_.enabledMaterialComponents;
 }
 
-MeshGpu SceneGpuStorage::AllocateMeshGpuInternal(const utility::GltfMesh& mesh)
+MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const utility::GltfMesh& mesh)
 {
     // Check cache first for avoid duplicate GPU allocations
     if (meshCache_.contains(mesh.name)) {

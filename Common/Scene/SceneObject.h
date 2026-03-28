@@ -18,7 +18,7 @@
 
 #include "CoreDefines.h"
 #include "Material.h"
-#include "SceneGpuStorage.h"
+#include "SceneGpuBufferStorage.h"
 #include "Transform.h"
 
 namespace common::scene

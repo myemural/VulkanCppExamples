@@ -1,31 +1,34 @@
 /**
- * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
+ * Copyright (c) 2026 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
  * https://opensource.org/licenses/MIT
  */
 
-#include "MaterialManager.h"
-
-#include <utility>
+#include "SceneGpuImageStorage.h"
 
 #include "MathUtils.h"
-#include "VulkanHelpers.h"
 
-namespace common::vulkan_framework
+namespace common::scene
 {
 
-MaterialManager::MaterialManager(ResourceManager& resourceManager,
-                                 const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
-                                 const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue)
-    : resourceManager_(resourceManager), cmdPool_(cmdPool), queue_(queue)
+using namespace common::asset_manager;
+using namespace common::vulkan_framework;
+using namespace common::vulkan_wrapper;
+
+
+SceneGpuImageStorage::SceneGpuImageStorage(ResourceManager& resourceManager, const SceneConfig& sceneConfig)
+    : resourceManager_(resourceManager),
+      sceneConfig_(sceneConfig),
+      cmdPool_(sceneConfig.imageTransferCmdPool),
+      queue_(sceneConfig.imageTransferQueue)
 {
 }
 
-void MaterialManager::LoadTexture(const std::string& textureName,
-                                  const std::string& samplerName,
-                                  const asset_manager::TextureAsset& textureAsset,
-                                  const VkFormat& format,
-                                  const bool mipmappingEnabled)
+TextureId SceneGpuImageStorage::StoreTexture(const std::string& textureName,
+                                             const std::string& samplerName,
+                                             const TextureAsset& textureAsset,
+                                             const VkFormat& format,
+                                             const bool mipmappingEnabled)
 {
     // Create texture resource info
     const TextureId textureId = globalTextureId_++;
@@ -60,24 +63,24 @@ void MaterialManager::LoadTexture(const std::string& textureName,
 
     textureHandlers_[textureName] =
             InternalTextureHandler{textureId, textureName, textureImageName, textureImageViewName, samplerName};
+
+    return textureId;
 }
 
-void MaterialManager::LoadCubemapTexture(const std::string& textureName,
-                                         const std::string& samplerName,
-                                         const asset_manager::TextureAsset& rightTextureAsset,
-                                         const asset_manager::TextureAsset& leftTextureAsset,
-                                         const asset_manager::TextureAsset& topTextureAsset,
-                                         const asset_manager::TextureAsset& bottomTextureAsset,
-                                         const asset_manager::TextureAsset& backTextureAsset,
-                                         const asset_manager::TextureAsset& frontTextureAsset,
-                                         const VkFormat& format)
+TextureId SceneGpuImageStorage::StoreCubemapTexture(const std::string& textureName,
+                                                    const std::string& samplerName,
+                                                    const TextureAsset& rightTextureAsset,
+                                                    const TextureAsset& leftTextureAsset,
+                                                    const TextureAsset& topTextureAsset,
+                                                    const TextureAsset& bottomTextureAsset,
+                                                    const TextureAsset& backTextureAsset,
+                                                    const TextureAsset& frontTextureAsset,
+                                                    const VkFormat& format)
 {
     // Create texture resource info
     const TextureId textureId = globalTextureId_++;
     const auto textureImageName = textureName + kVulkanImagePostfix;
     const auto textureImageViewName = textureName + kVulkanImageViewPostfix;
-
-    VkImageUsageFlags usageFlags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 
     const auto imageResource = ImageResourceCreateInfo{
         .name = textureImageName,
@@ -87,7 +90,7 @@ void MaterialManager::LoadCubemapTexture(const std::string& textureName,
         .dimensions = {rightTextureAsset.width, rightTextureAsset.height, 1},
         .mipLevels = 1,
         .arrayLayers = 6,
-        .usageFlags = usageFlags,
+        .usageFlags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
         .views = {ImageViewCreateInfo{.viewName = textureImageViewName,
                                       .viewType = VK_IMAGE_VIEW_TYPE_CUBE,
                                       .format = format,
@@ -104,18 +107,19 @@ void MaterialManager::LoadCubemapTexture(const std::string& textureName,
 
     cubemapTextureHandlers_[textureName] =
             InternalTextureHandler{textureId, textureName, textureImageName, textureImageViewName, samplerName};
-}
 
-TextureId MaterialManager::GetTextureId(const std::string& textureName)
+    return textureId;
+}
+TextureId SceneGpuImageStorage::GetTextureId(const std::string& textureName)
 {
     return textureHandlers_[textureName].textureId;
 }
 
-std::uint32_t MaterialManager::GetTextureCount() const { return textureHandlers_.size(); }
+std::uint32_t SceneGpuImageStorage::GetTextureCount() const { return textureHandlers_.size(); }
 
-std::uint32_t MaterialManager::GetCubemapTextureCount() const { return cubemapTextureHandlers_.size(); }
+std::uint32_t SceneGpuImageStorage::GetCubemapTextureCount() const { return cubemapTextureHandlers_.size(); }
 
-std::vector<VkDescriptorImageInfo> MaterialManager::GetDescriptorImageInfos() const
+std::vector<VkDescriptorImageInfo> SceneGpuImageStorage::GetDescriptorImageInfos() const
 {
     std::vector<VkDescriptorImageInfo> descriptorImageInfos;
     descriptorImageInfos.resize(textureHandlers_.size());
@@ -134,7 +138,7 @@ std::vector<VkDescriptorImageInfo> MaterialManager::GetDescriptorImageInfos() co
     return descriptorImageInfos;
 }
 
-std::vector<VkDescriptorImageInfo> MaterialManager::GetCubemapDescriptorImageInfo(const std::string& textureName)
+std::vector<VkDescriptorImageInfo> SceneGpuImageStorage::GetCubemapDescriptorImageInfo(const std::string& textureName)
 {
     const auto& internalInfo = cubemapTextureHandlers_[textureName];
 
@@ -148,4 +152,4 @@ std::vector<VkDescriptorImageInfo> MaterialManager::GetCubemapDescriptorImageInf
     return descriptorImageInfos;
 }
 
-} // namespace common::vulkan_framework
+} // namespace common::scene

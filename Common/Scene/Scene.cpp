@@ -8,14 +8,15 @@
 
 #include <algorithm>
 
-#include "SceneGpuStorage.h"
+#include "SceneGpuBufferStorage.h"
 
 namespace common::scene
 {
 
 Scene::Scene(vulkan_framework::ResourceManager& resourceManager, const SceneConfig& config)
 {
-    gpuStorage_ = std::make_unique<SceneGpuStorage>(resourceManager, config);
+    gpuBufferStorage_ = std::make_unique<SceneGpuBufferStorage>(resourceManager, config);
+    gpuImageStorage_ = std::make_unique<SceneGpuImageStorage>(resourceManager, config);
 }
 
 std::shared_ptr<SceneObject> Scene::CreateObject(const std::string& objectName)
@@ -74,39 +75,41 @@ std::shared_ptr<SceneObject> Scene::FindObjectByName(const std::string& name) co
     return nullptr;
 }
 
-std::uint32_t Scene::GetAttributeCount() const { return gpuStorage_->GetAttributeCount(); }
+std::uint32_t Scene::GetAttributeCount() const { return gpuBufferStorage_->GetAttributeCount(); }
 
 std::vector<VkVertexInputBindingDescription> Scene::GetBindingDescriptions() const
 {
-    return gpuStorage_->GetBindingDescriptions();
+    return gpuBufferStorage_->GetBindingDescriptions();
 }
 
 std::vector<VkVertexInputAttributeDescription> Scene::GetAttributeDescriptions() const
 {
-    return gpuStorage_->GetAttributeDescriptions();
+    return gpuBufferStorage_->GetAttributeDescriptions();
 }
 
 std::vector<MaterialComponent> Scene::GetEnabledMaterialComponents() const
 {
-    return gpuStorage_->GetEnabledMaterialComponents();
+    return gpuBufferStorage_->GetEnabledMaterialComponents();
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanBuffer> Scene::GetGeometryBuffer() const
 {
-    return gpuStorage_->GetGeometryBuffer();
+    return gpuBufferStorage_->GetGeometryBuffer();
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanBuffer> Scene::GetTransformStorageBuffer() const
 {
-    return gpuStorage_->GetTransformStorageBuffer();
+    return gpuBufferStorage_->GetTransformStorageBuffer();
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanBuffer> Scene::GetMaterialStorageBuffer() const
 {
-    return gpuStorage_->GetMaterialStorageBuffer();
+    return gpuBufferStorage_->GetMaterialStorageBuffer();
 }
 
-SceneGpuStorage& Scene::GetGpuStorage() const { return *gpuStorage_; }
+SceneGpuBufferStorage& Scene::GetGpuBufferStorage() const { return *gpuBufferStorage_; }
+
+SceneGpuImageStorage& Scene::GetGpuImageStorage() const { return *gpuImageStorage_; }
 
 void Scene::TraverseRecursive(const SceneObject& object, const TraverseFunc& func)
 {

@@ -143,9 +143,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -153,21 +155,24 @@ void VulkanApplication::BuildScene()
 
     // Materials
     const auto pebblesTextureAsset = assetManager_->Load<TextureAsset>(kPebblesTexturePath);
-    materialManager_->LoadTexture(kPebblesTexture, kMainSampler, assetManager_->Get(pebblesTextureAsset));
+    const auto pebblesTextureId =
+            sceneImageStorage.StoreTexture(kPebblesTexture, kMainSampler, assetManager_->Get(pebblesTextureAsset));
     const auto pebblesNormalTextureAsset = assetManager_->Load<TextureAsset>(kPebblesNormalTexturePath);
-    materialManager_->LoadTexture(kPebblesNormalTexture, kMainSampler, assetManager_->Get(pebblesNormalTextureAsset),
-                                  VK_FORMAT_R8G8B8A8_UNORM);
+    const auto pebblesNormalTextureId =
+            sceneImageStorage.StoreTexture(kPebblesNormalTexture, kMainSampler,
+                                           assetManager_->Get(pebblesNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
     const auto pebblesHeightTextureAsset = assetManager_->Load<TextureAsset>(kPebblesHeightTexturePath);
-    materialManager_->LoadTexture(kPebblesHeightTexture, kMainSampler, assetManager_->Get(pebblesHeightTextureAsset),
-                                  VK_FORMAT_R8G8B8A8_UNORM);
+    const auto pebblesHeightTextureId =
+            sceneImageStorage.StoreTexture(kPebblesHeightTexture, kMainSampler,
+                                           assetManager_->Get(pebblesHeightTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kPebblesTexture);
-    defaultMaterial.normalMap = materialManager_->GetTextureId(kPebblesNormalTexture);
-    defaultMaterial.heightMap = materialManager_->GetTextureId(kPebblesHeightTexture);
+    defaultMaterial.diffuseMap = pebblesTextureId;
+    defaultMaterial.normalMap = pebblesNormalTextureId;
+    defaultMaterial.heightMap = pebblesHeightTextureId;
 
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
                                     .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
@@ -195,7 +200,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
+    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 3 + combinedImageSamplerCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
@@ -220,7 +225,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;

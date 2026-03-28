@@ -40,18 +40,18 @@ void SceneObject::SetScale(const glm::vec3& scale)
     UpdateTransformGpu();
 }
 
-void SceneObject::SetMesh(const utility::GltfMesh& mesh) { mesh_ = scene_.GetGpuStorage().AllocateMesh(mesh); }
+void SceneObject::SetMesh(const utility::GltfMesh& mesh) { mesh_ = scene_.GetGpuBufferStorage().AllocateMesh(mesh); }
 
 void SceneObject::SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType)
 {
-    mesh_ = scene_.GetGpuStorage().AllocateBuiltinMesh(builtinMeshType);
+    mesh_ = scene_.GetGpuBufferStorage().AllocateBuiltinMesh(builtinMeshType);
 }
 
 void SceneObject::SetMaterial(const Material& material)
 {
     material_ = material;
     const auto materialData = SerializeMaterial(material, scene_.GetEnabledMaterialComponents());
-    scene_.GetGpuStorage().UpdateMaterial(objectId_, materialData);
+    scene_.GetGpuBufferStorage().UpdateMaterial(objectId_, materialData);
 }
 
 void SceneObject::SetParent(const std::shared_ptr<SceneObject>& parent) { parent_ = parent; }
@@ -109,7 +109,7 @@ void SceneObject::UpdateTransformGpu()
     TransformGpu transformGpu{};
     transformGpu.modelMatrix = GetWorldMatrix();
     transformGpu.normalMatrix = glm::mat4(glm::transpose(glm::inverse(glm::mat3(transformGpu.modelMatrix))));
-    scene_.GetGpuStorage().UpdateTransform(objectId_, transformGpu);
+    scene_.GetGpuBufferStorage().UpdateTransform(objectId_, transformGpu);
     for (const auto& child: children_) {
         child->UpdateTransformGpu();
     }

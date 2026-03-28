@@ -146,9 +146,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
     sceneConfig.primitiveStackCount = 64U;
     sceneConfig.primitiveSectorCount = 64U;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -161,7 +163,7 @@ void VulkanApplication::BuildScene()
     const auto cubemapBottomTextureAsset = assetManager_->Load<TextureAsset>(kCubemapBottomTexturePath);
     const auto cubemapBackTextureAsset = assetManager_->Load<TextureAsset>(kCubemapBackTexturePath);
     const auto cubemapFrontTextureAsset = assetManager_->Load<TextureAsset>(kCubemapFrontTexturePath);
-    materialManager_->LoadCubemapTexture(
+    [[maybe_unused]] const auto cubemapTextureId = sceneImageStorage.StoreCubemapTexture(
             kCubemapTexture, kSkyboxSampler, assetManager_->Get(cubemapRightTextureAsset),
             assetManager_->Get(cubemapLeftTextureAsset), assetManager_->Get(cubemapTopTextureAsset),
             assetManager_->Get(cubemapBottomTextureAsset), assetManager_->Get(cubemapBackTextureAsset),
@@ -193,7 +195,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto cubemapCount = materialManager_->GetCubemapTextureCount();
+    const auto cubemapCount = scene_->GetGpuImageStorage().GetCubemapTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 3 + 2 * cubemapCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
@@ -225,7 +227,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto cubemapImageInfos = materialManager_->GetCubemapDescriptorImageInfo(kCubemapTexture);
+    auto cubemapImageInfos = scene_->GetGpuImageStorage().GetCubemapDescriptorImageInfo(kCubemapTexture);
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;

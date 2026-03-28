@@ -144,9 +144,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -154,10 +156,12 @@ void VulkanApplication::BuildScene()
 
     // Materials
     const auto wallStoneTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneTexturePath);
-    materialManager_->LoadTexture(kWallStoneTexture, kMainSampler, assetManager_->Get(wallStoneTextureAsset));
+    const auto wallStoneTextureId =
+            sceneImageStorage.StoreTexture(kWallStoneTexture, kMainSampler, assetManager_->Get(wallStoneTextureAsset));
     const auto wallStoneNormalTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneNormalTexturePath);
-    materialManager_->LoadTexture(kWallStoneNormalTexture, kMainSampler,
-                                  assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto wallStoneNormalTextureId =
+            sceneImageStorage.StoreTexture(kWallStoneNormalTexture, kMainSampler,
+                                           assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     const auto cubemapRightTextureAsset = assetManager_->Load<TextureAsset>(kCubemapRightTexturePath);
     const auto cubemapLeftTextureAsset = assetManager_->Load<TextureAsset>(kCubemapLeftTexturePath);
@@ -165,7 +169,7 @@ void VulkanApplication::BuildScene()
     const auto cubemapBottomTextureAsset = assetManager_->Load<TextureAsset>(kCubemapBottomTexturePath);
     const auto cubemapBackTextureAsset = assetManager_->Load<TextureAsset>(kCubemapBackTexturePath);
     const auto cubemapFrontTextureAsset = assetManager_->Load<TextureAsset>(kCubemapFrontTexturePath);
-    materialManager_->LoadCubemapTexture(
+    [[maybe_unused]] const auto cubemapTextureId = sceneImageStorage.StoreCubemapTexture(
             kCubemapTexture, kSkyboxSampler, assetManager_->Get(cubemapRightTextureAsset),
             assetManager_->Get(cubemapLeftTextureAsset), assetManager_->Get(cubemapTopTextureAsset),
             assetManager_->Get(cubemapBottomTextureAsset), assetManager_->Get(cubemapBackTextureAsset),
@@ -175,8 +179,8 @@ void VulkanApplication::BuildScene()
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
-    defaultMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
+    defaultMaterial.diffuseMap = wallStoneTextureId;
+    defaultMaterial.normalMap = wallStoneNormalTextureId;
 
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
                                     .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
@@ -198,8 +202,8 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
-    const auto cubemapCount = materialManager_->GetCubemapTextureCount();
+    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
+    const auto cubemapCount = scene_->GetGpuImageStorage().GetCubemapTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 3 + combinedImageSamplerCount + cubemapCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
@@ -228,9 +232,9 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
-    auto cubemapImageInfos = materialManager_->GetCubemapDescriptorImageInfo(kCubemapTexture);
+    auto cubemapImageInfos = scene_->GetGpuImageStorage().GetCubemapDescriptorImageInfo(kCubemapTexture);
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;

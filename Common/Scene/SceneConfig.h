@@ -45,7 +45,8 @@ struct COMMON_API SceneConfig
     std::vector<MaterialComponent> enabledMaterialComponents;
     std::uint32_t primitiveStackCount = 24U;
     std::uint32_t primitiveSectorCount = 24U;
-    std::string modelBasePath;
+    std::shared_ptr<vulkan_wrapper::VulkanCommandPool> imageTransferCmdPool;
+    std::shared_ptr<vulkan_wrapper::VulkanQueue> imageTransferQueue;
 };
 
 inline std::uint32_t GetAccessorSize(const AccessorType accessorType)

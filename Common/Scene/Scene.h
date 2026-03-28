@@ -18,12 +18,13 @@
 #include "CoreDefines.h"
 #include "ResourceManager.h"
 #include "SceneConfig.h"
+#include "SceneGpuImageStorage.h"
 #include "SceneObject.h"
 
 namespace common::scene
 {
 
-class SceneGpuStorage;
+class SceneGpuBufferStorage;
 
 using TraverseFunc = std::function<void(const SceneObject&)>;
 
@@ -86,7 +87,9 @@ public:
 
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanBuffer> GetMaterialStorageBuffer() const;
 
-    [[nodiscard]] SceneGpuStorage& GetGpuStorage() const;
+    [[nodiscard]] SceneGpuBufferStorage& GetGpuBufferStorage() const;
+
+    [[nodiscard]] SceneGpuImageStorage& GetGpuImageStorage() const;
 
 private:
     static void TraverseRecursive(const SceneObject& object, const TraverseFunc& func);
@@ -101,7 +104,8 @@ private:
 
     std::uint32_t currentObjectId_ = 0;
     std::vector<std::shared_ptr<SceneObject>> rootObjects_;
-    std::unique_ptr<SceneGpuStorage> gpuStorage_;
+    std::unique_ptr<SceneGpuBufferStorage> gpuBufferStorage_;
+    std::unique_ptr<SceneGpuImageStorage> gpuImageStorage_;
 };
 
 } // namespace common::scene

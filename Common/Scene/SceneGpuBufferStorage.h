@@ -1,6 +1,6 @@
 /**
- * @file    SceneGpuStorage.h
- * @brief   GPU storage management for scene data.
+ * @file    SceneGpuBufferStorage.h
+ * @brief   GPU buffer storage management for scene data.
  * @author  Mustafa Yemural (myemural)
  * @date    08.02.2026
  *
@@ -37,16 +37,16 @@ struct MeshGpu
     std::uint32_t indexCount = UINT32_MAX;
 };
 
-class COMMON_API SceneGpuStorage
+class COMMON_API SceneGpuBufferStorage
 {
 public:
     /**
      * @param resourceManager Resource manager reference.
      * @param sceneConfig Scene config.
      */
-    SceneGpuStorage(vulkan_framework::ResourceManager& resourceManager, const SceneConfig& sceneConfig);
+    SceneGpuBufferStorage(vulkan_framework::ResourceManager& resourceManager, const SceneConfig& sceneConfig);
 
-    ~SceneGpuStorage() = default;
+    ~SceneGpuBufferStorage() = default;
 
     /**
      * @brief Allocates mesh or gets it from cache.

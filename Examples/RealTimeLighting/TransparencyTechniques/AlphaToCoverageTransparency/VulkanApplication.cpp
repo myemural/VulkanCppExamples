@@ -174,9 +174,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -184,34 +186,39 @@ void VulkanApplication::BuildScene()
 
     // Textures
     const auto wallStoneTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneTexturePath);
-    materialManager_->LoadTexture(kWallStoneTexture, kMainSampler, assetManager_->Get(wallStoneTextureAsset));
+    const auto wallStoneTextureId =
+            sceneImageStorage.StoreTexture(kWallStoneTexture, kMainSampler, assetManager_->Get(wallStoneTextureAsset));
     const auto wallStoneNormalTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneNormalTexturePath);
-    materialManager_->LoadTexture(kWallStoneNormalTexture, kMainSampler,
-                                  assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto wallStoneNormalTextureId =
+            sceneImageStorage.StoreTexture(kWallStoneNormalTexture, kMainSampler,
+                                           assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     const auto metalChainTextureAsset = assetManager_->Load<TextureAsset>(kMetalChainTexturePath);
-    materialManager_->LoadTexture(kMetalChainTexture, kMainSampler, assetManager_->Get(metalChainTextureAsset));
+    const auto metalChainTextureId = sceneImageStorage.StoreTexture(kMetalChainTexture, kMainSampler,
+                                                                    assetManager_->Get(metalChainTextureAsset));
     const auto metalChainNormalTextureAsset = assetManager_->Load<TextureAsset>(kMetalChainNormalTexturePath);
-    materialManager_->LoadTexture(kMetalChainNormalTexture, kMainSampler,
-                                  assetManager_->Get(metalChainNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto metalChainNormalTextureId =
+            sceneImageStorage.StoreTexture(kMetalChainNormalTexture, kMainSampler,
+                                           assetManager_->Get(metalChainNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
     const auto metalChainOpacityTextureAsset = assetManager_->Load<TextureAsset>(kMetalChainOpacityTexturePath);
-    materialManager_->LoadTexture(kMetalChainOpacityTexture, kMainSampler,
-                                  assetManager_->Get(metalChainOpacityTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto metalChainOpacityTextureId =
+            sceneImageStorage.StoreTexture(kMetalChainOpacityTexture, kMainSampler,
+                                           assetManager_->Get(metalChainOpacityTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material wallStoneMaterial;
     wallStoneMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     wallStoneMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     wallStoneMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    wallStoneMaterial.diffuseMap = materialManager_->GetTextureId(kWallStoneTexture);
-    wallStoneMaterial.normalMap = materialManager_->GetTextureId(kWallStoneNormalTexture);
+    wallStoneMaterial.diffuseMap = wallStoneTextureId;
+    wallStoneMaterial.normalMap = wallStoneNormalTextureId;
 
     Material metalChainMaterial;
     metalChainMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     metalChainMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     metalChainMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    metalChainMaterial.diffuseMap = materialManager_->GetTextureId(kMetalChainTexture);
-    metalChainMaterial.normalMap = materialManager_->GetTextureId(kMetalChainNormalTexture);
-    metalChainMaterial.opacityMap = materialManager_->GetTextureId(kMetalChainOpacityTexture);
+    metalChainMaterial.diffuseMap = metalChainTextureId;
+    metalChainMaterial.normalMap = metalChainNormalTextureId;
+    metalChainMaterial.opacityMap = metalChainOpacityTextureId;
 
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
                                     .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
@@ -280,7 +287,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
+    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 3 + combinedImageSamplerCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
@@ -305,7 +312,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;

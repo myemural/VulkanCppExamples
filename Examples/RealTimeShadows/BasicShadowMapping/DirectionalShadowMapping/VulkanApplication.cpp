@@ -164,9 +164,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -177,31 +179,35 @@ void VulkanApplication::BuildScene()
 
     // Materials
     const auto woodFloorTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorTexturePath);
-    materialManager_->LoadTexture(kWoodFloorTexture, kMainSampler, assetManager_->Get(woodFloorTextureAsset));
+    const auto woodFloorTextureId =
+            sceneImageStorage.StoreTexture(kWoodFloorTexture, kMainSampler, assetManager_->Get(woodFloorTextureAsset));
     const auto woodFloorNormalTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorNormalTexturePath);
-    materialManager_->LoadTexture(kWoodFloorNormalTexture, kMainSampler,
-                                  assetManager_->Get(woodFloorNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto woodFloorNormalTextureId =
+            sceneImageStorage.StoreTexture(kWoodFloorNormalTexture, kMainSampler,
+                                           assetManager_->Get(woodFloorNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
     const auto terracottaTextureAsset = assetManager_->Load<TextureAsset>(kTerracottaTexturePath);
-    materialManager_->LoadTexture(kTerracottaTexture, kMainSampler, assetManager_->Get(terracottaTextureAsset));
+    const auto terracottaTextureId = sceneImageStorage.StoreTexture(kTerracottaTexture, kMainSampler,
+                                                                    assetManager_->Get(terracottaTextureAsset));
     const auto terracottaNormalTextureAsset = assetManager_->Load<TextureAsset>(kTerracottaNormalTexturePath);
-    materialManager_->LoadTexture(kTerracottaNormalTexture, kMainSampler,
-                                  assetManager_->Get(terracottaNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto terracottaNormalTextureId =
+            sceneImageStorage.StoreTexture(kTerracottaNormalTexture, kMainSampler,
+                                           assetManager_->Get(terracottaNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material objectMaterial;
     objectMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     objectMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     objectMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     objectMaterial.uvScale = 2.0f;
-    objectMaterial.diffuseMap = materialManager_->GetTextureId(kWoodFloorTexture);
-    objectMaterial.normalMap = materialManager_->GetTextureId(kWoodFloorNormalTexture);
+    objectMaterial.diffuseMap = woodFloorTextureId;
+    objectMaterial.normalMap = woodFloorNormalTextureId;
 
     Material floorMaterial;
     floorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     floorMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     floorMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     floorMaterial.uvScale = 4.0f;
-    floorMaterial.diffuseMap = materialManager_->GetTextureId(kTerracottaTexture);
-    floorMaterial.normalMap = materialManager_->GetTextureId(kTerracottaNormalTexture);
+    floorMaterial.diffuseMap = terracottaTextureId;
+    floorMaterial.normalMap = terracottaNormalTextureId;
 
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
                                     .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
@@ -238,7 +244,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
+    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 4 + combinedImageSamplerCount + 1,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3},
@@ -269,7 +275,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     std::vector<VkDescriptorImageInfo> shadowMapImageInfos;
     shadowMapImageInfos.emplace_back(resources_->GetSampler(kShadowSampler)->GetHandle(),

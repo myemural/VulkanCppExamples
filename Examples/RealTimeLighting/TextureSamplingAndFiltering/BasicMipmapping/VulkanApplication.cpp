@@ -150,9 +150,11 @@ void VulkanApplication::BuildScene()
     sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
     sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
 
-    materialManager_ = std::make_unique<MaterialManager>(*resources_, cmdPool_, queue_);
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -160,14 +162,14 @@ void VulkanApplication::BuildScene()
 
     // Materials
     const auto woodFloorTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorTexturePath);
-    materialManager_->LoadTexture(kWoodFloorTexture, kMainSampler, assetManager_->Get(woodFloorTextureAsset),
-                                  VK_FORMAT_R8G8B8A8_SRGB, true);
+    const auto woodFloorTextureId = sceneImageStorage.StoreTexture(
+            kWoodFloorTexture, kMainSampler, assetManager_->Get(woodFloorTextureAsset), VK_FORMAT_R8G8B8A8_SRGB, true);
 
     Material defaultMaterial;
     defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    defaultMaterial.diffuseMap = materialManager_->GetTextureId(kWoodFloorTexture);
+    defaultMaterial.diffuseMap = woodFloorTextureId;
 
     // Add scene objects
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
@@ -193,7 +195,7 @@ void VulkanApplication::BuildScene()
 void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
-    const auto combinedImageSamplerCount = materialManager_->GetTextureCount();
+    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 3 + combinedImageSamplerCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
@@ -218,7 +220,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
-    auto descriptorImageInfos = materialManager_->GetDescriptorImageInfos();
+    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;
