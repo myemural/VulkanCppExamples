@@ -546,7 +546,7 @@ void VulkanApplication::CreatePipelines()
 
 void VulkanApplication::CreateFramebuffers()
 {
-    // Transparency accumulation framebuffer
+    // Shadow map framebuffer
     const auto& shadowDepthImageView = resources_->GetImageView(kShadowMapImage, kShadowMapImageView);
     shadowFramebuffer_ = device_->CreateFramebuffer(shadowRenderPass_, {shadowDepthImageView}, [&](auto& builder) {
         builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);

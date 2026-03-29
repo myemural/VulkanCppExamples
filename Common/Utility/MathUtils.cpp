@@ -6,6 +6,8 @@
 
 #include "MathUtils.h"
 
+#include <optional>
+
 namespace common::utility
 {
 
@@ -49,6 +51,95 @@ std::vector<glm::vec3> GenerateRandomPositions(const size_t count,
                 break;
             }
         } while (!valid);
+        positions.push_back(pos);
+    }
+
+    return positions;
+}
+
+std::vector<glm::vec3> GenerateRandomPositionsOnBounds(const size_t count,
+                                                       const glm::vec3 minBounds,
+                                                       const glm::vec3 maxBounds,
+                                                       const float minDistance)
+{
+    std::vector<glm::vec3> positions;
+    positions.reserve(count);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    const float xMin = minBounds.x, xMax = maxBounds.x;
+    const float yMin = minBounds.y, yMax = maxBounds.y;
+    const float zMin = minBounds.z, zMax = maxBounds.z;
+
+    // std::nullopt means random distribution position, fixed values means fixed position
+    struct Region
+    {
+        std::optional<float> x;
+        std::optional<float> y;
+        std::optional<float> z;
+    };
+
+    const std::vector<Region> regions = {
+        // Faces
+        {xMin, std::nullopt, std::nullopt}, // Left face
+        {xMax, std::nullopt, std::nullopt}, // Right face
+        {std::nullopt, yMin, std::nullopt}, // Bottom face
+        {std::nullopt, yMax, std::nullopt}, // Top face
+        {std::nullopt, std::nullopt, zMin}, // Front face
+        {std::nullopt, std::nullopt, zMax}, // Back face
+
+        // Edges
+        {std::nullopt, yMin, zMin}, // Bottom-front
+        {std::nullopt, yMax, zMin}, // Top-front
+        {std::nullopt, yMin, zMax}, // Bottom-back
+        {std::nullopt, yMax, zMax}, // Top-back
+        {xMin, std::nullopt, zMin}, // Left-front
+        {xMax, std::nullopt, zMin}, // Right-front
+        {xMin, std::nullopt, zMax}, // Left-back
+        {xMax, std::nullopt, zMax}, // Right-back
+        {xMin, yMin, std::nullopt}, // Left-bottom
+        {xMax, yMin, std::nullopt}, // Right-bottom
+        {xMin, yMax, std::nullopt}, // Left-top
+        {xMax, yMax, std::nullopt}, // Right-top
+
+        // Corners
+        {xMin, yMin, zMin},
+        {xMax, yMin, zMin},
+        {xMin, yMax, zMin},
+        {xMax, yMax, zMin},
+        {xMin, yMin, zMax},
+        {xMax, yMin, zMax},
+        {xMin, yMax, zMax},
+        {xMax, yMax, zMax},
+    };
+
+    std::uniform_int_distribution<size_t> regionDist(0, regions.size() - 1);
+    std::uniform_real_distribution<float> distX(xMin, xMax);
+    std::uniform_real_distribution<float> distY(yMin, yMax);
+    std::uniform_real_distribution<float> distZ(zMin, zMax);
+
+    for (size_t i = 0; i < count; ++i) {
+        glm::vec3 pos;
+        bool valid = false;
+        int currentAttemptCount = 0;
+        constexpr int maxNumberOfAttempts = 1000;
+
+        do {
+            const auto& [x, y, z] = regions[regionDist(gen)];
+
+            pos = glm::vec3(x.value_or(distX(gen)), y.value_or(distY(gen)), z.value_or(distZ(gen)));
+            valid = true;
+
+            for (const auto& existingPos: positions) {
+                if (glm::distance(pos, existingPos) < minDistance) {
+                    valid = false;
+                    break;
+                }
+            }
+
+        } while (!valid && ++currentAttemptCount < maxNumberOfAttempts);
+
         positions.push_back(pos);
     }
 

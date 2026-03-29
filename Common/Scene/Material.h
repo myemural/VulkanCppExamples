@@ -39,7 +39,9 @@ enum class MaterialComponent : std::uint8_t
     ROUGHNESS_MAP_TEXTURE,
     OPACITY_MAP_TEXTURE,
     EMISSIVE_MAP_TEXTURE,
-    AMBIENT_OCCLUSION_MAP_TEXTURE
+    AMBIENT_OCCLUSION_MAP_TEXTURE,
+
+    FLIP_NORMALS_INT,
 };
 
 struct COMMON_API Material
@@ -65,6 +67,9 @@ struct COMMON_API Material
     int opacityMap = -1;
     int emissiveMap = -1;
     int ambientOcclusionMap = -1;
+
+    // Flag values
+    int flipNormals = 0; // 0: False, 1: True
 };
 
 inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
@@ -136,6 +141,10 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::AMBIENT_OCCLUSION_MAP_TEXTURE:
                 utility::AppendBytes(buffer, material.ambientOcclusionMap);
+                break;
+
+            case MaterialComponent::FLIP_NORMALS_INT:
+                utility::AppendBytes(buffer, material.flipNormals);
                 break;
         }
     }

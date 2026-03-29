@@ -41,6 +41,17 @@ COMMON_API std::vector<glm::vec3>
 GenerateRandomPositions(size_t count, glm::vec3 minBounds, glm::vec3 maxBounds, float minDistance = 1.5f);
 
 /**
+ * @brief Generates random position for certain amount of objects within specific bounds (corners, edges and faces).
+ * @param count Number of objects.
+ * @param minBounds Minimum bounds of the scene.
+ * @param maxBounds Maximum bounds of the scene.
+ * @param minDistance Minimum distance between objects.
+ * @return Random positions for the objects.
+ */
+COMMON_API std::vector<glm::vec3>
+GenerateRandomPositionsOnBounds(size_t count, glm::vec3 minBounds, glm::vec3 maxBounds, float minDistance = 1.5f);
+
+/**
  * @brief Generates and returns random color value between min and max values. Alpha is not included.
  * @param minValue Minimum value per color component. Default is 0.
  * @param maxValue Maximum value for color component. Default is 1.

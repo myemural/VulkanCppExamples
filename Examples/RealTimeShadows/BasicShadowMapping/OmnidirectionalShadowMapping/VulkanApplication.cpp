@@ -18,7 +18,7 @@
 #include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_shadows::basic_shadow_mapping::spotlight_shadow_mapping
+namespace examples::real_time_shadows::basic_shadow_mapping::omnidirectional_shadow_mapping
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -112,28 +112,56 @@ void VulkanApplication::CreateInitialResources() const
     const auto sceneFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kSceneFragmentShaderFile);
     const auto lightObjectsFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kLightObjectsFragmentShaderFile);
     const auto shadowMapVertexShaderAsset = assetManager_->Load<ShaderAsset>(kShadowMapVertexShaderFile);
+    const auto shadowMapFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kShadowMapFragmentShaderFile);
 
     resourceCreateInfo.shaders = {
         .modules = {
             {.name = kSceneVertexShaderKey, .asset = assetManager_->Get(sceneVertexShaderAsset)},
             {.name = kSceneFragmentShaderKey, .asset = assetManager_->Get(sceneFragmentShaderAsset)},
             {.name = kLightObjectsFragmentShaderKey, .asset = assetManager_->Get(lightObjectsFragmentShaderAsset)},
-            {.name = kShadowMapVertexShaderKey, .asset = assetManager_->Get(shadowMapVertexShaderAsset)}}};
+            {.name = kShadowMapVertexShaderKey, .asset = assetManager_->Get(shadowMapVertexShaderAsset)},
+            {.name = kShadowMapFragmentShaderKey, .asset = assetManager_->Get(shadowMapFragmentShaderAsset)}}};
 
     resourceCreateInfo.images = {
         ImageResourceCreateInfo{
-            .name = kShadowMapImage,
+            .name = kShadowCubemapImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
             .format = depthImageFormat_,
             .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .arrayLayers = 6,
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView,
-                                          .format = depthImageFormat_,
-                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}},
+            .views =
+                    {
+                        ImageViewCreateInfo{.viewName = kShadowCubemapImageView,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_CUBE,
+                                            .format = depthImageFormat_,
+                                            .subresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 6}},
+                        ImageViewCreateInfo{.viewName = kShadowCubemapImageViewRight,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = depthImageFormat_,
+                                            .subresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1}},
+                        ImageViewCreateInfo{.viewName = kShadowCubemapImageViewLeft,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = depthImageFormat_,
+                                            .subresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 1, 1}},
+                        ImageViewCreateInfo{.viewName = kShadowCubemapImageViewTop,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = depthImageFormat_,
+                                            .subresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 2, 1}},
+                        ImageViewCreateInfo{.viewName = kShadowCubemapImageViewBottom,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = depthImageFormat_,
+                                            .subresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 3, 1}},
+                        ImageViewCreateInfo{.viewName = kShadowCubemapImageViewBack,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = depthImageFormat_,
+                                            .subresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 4, 1}},
+                        ImageViewCreateInfo{.viewName = kShadowCubemapImageViewFront,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = depthImageFormat_,
+                                            .subresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 5, 1}},
+                    }},
         ImageResourceCreateInfo{
             .name = kDepthImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -176,13 +204,10 @@ void VulkanApplication::BuildScene()
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 9.0f), aspectRatio);
+    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 5.0f), aspectRatio);
 
     // Add camera for spotlight shadows
-    constexpr auto kCameraAngleMargin = 1.5f;
-    const auto kCameraFov = (GetParamFloat(AppSettings::OuterCutoffAngle) + kCameraAngleMargin) * 2.0f;
-    lightCamera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f), 1.0f, kCameraFov);
-    lightCamera_->Rotate(0.0f, -90.0f);
+    lightCamera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f), 1.0f, 90.0f, 0.1f, kPointLightFarPlane);
 
     // Materials
     const auto woodFloorTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorTexturePath);
@@ -207,47 +232,50 @@ void VulkanApplication::BuildScene()
     objectMaterial.uvScale = 2.0f;
     objectMaterial.diffuseMap = woodFloorTextureId;
     objectMaterial.normalMap = woodFloorNormalTextureId;
+    objectMaterial.flipNormals = 0;
 
-    Material floorMaterial;
-    floorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    floorMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    floorMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    floorMaterial.uvScale = 4.0f;
-    floorMaterial.diffuseMap = terracottaTextureId;
-    floorMaterial.normalMap = terracottaNormalTextureId;
+    Material roomMaterial;
+    roomMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    roomMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    roomMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    roomMaterial.uvScale = 10.0f;
+    roomMaterial.diffuseMap = terracottaTextureId;
+    roomMaterial.normalMap = terracottaNormalTextureId;
+    roomMaterial.flipNormals = 1;
 
+    int index = 0;
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
-    for (auto i = 0; i < 4; ++i) {
-        const std::string rowStr = std::to_string(i);
-        const auto zShift = -static_cast<float>(i * 2 - 1) + 2.5f;
-        rootObjectBuilder
-                .AddChild(SceneObjectBuilder(*scene_, kCubeObject + rowStr)
-                                  .WithBuiltinMesh(BuiltinMeshType::CUBE)
-                                  .WithMaterial(objectMaterial)
-                                  .WithPosition(glm::vec3{-3.0f, -1.0f, zShift}))
-                .AddChild(SceneObjectBuilder(*scene_, kSphereObject + rowStr)
-                                  .WithBuiltinMesh(BuiltinMeshType::SPHERE)
-                                  .WithMaterial(objectMaterial)
-                                  .WithPosition(glm::vec3{-1.0f, -1.0f, zShift}))
-                .AddChild(SceneObjectBuilder(*scene_, kConeObject + rowStr)
-                                  .WithBuiltinMesh(BuiltinMeshType::CONE)
-                                  .WithMaterial(objectMaterial)
-                                  .WithPosition(glm::vec3{1.0f, -1.0f, zShift}))
-                .AddChild(SceneObjectBuilder(*scene_, kCylinderObject + rowStr)
-                                  .WithBuiltinMesh(BuiltinMeshType::CYLINDER)
-                                  .WithMaterial(objectMaterial)
-                                  .WithPosition(glm::vec3{3.0f, -1.0f, zShift}));
+    for (const auto& pos: kObjectPositions) {
+        BuiltinMeshType currentMeshType;
+        switch (const std::uint32_t objectTypeValue = GenerateRandomValue(0U, 3U); objectTypeValue) {
+            case 0U:
+                currentMeshType = BuiltinMeshType::CUBE;
+                break;
+            case 1U:
+                currentMeshType = BuiltinMeshType::CONE;
+                break;
+            case 2U:
+                currentMeshType = BuiltinMeshType::SPHERE;
+                break;
+            default:
+                currentMeshType = BuiltinMeshType::CYLINDER;
+        }
+
+        rootObjectBuilder.AddChild(SceneObjectBuilder(*scene_, kObject + std::to_string(index++))
+                                           .WithBuiltinMesh(currentMeshType)
+                                           .WithMaterial(objectMaterial)
+                                           .WithPosition(pos));
     }
 
     const auto& rootObject = rootObjectBuilder
-                                     .AddChild(SceneObjectBuilder(*scene_, kFloorObject)
-                                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                                       .WithMaterial(floorMaterial)
-                                                       .WithPosition(glm::vec3{0.0f, -2.5f, 0.0f})
-                                                       .WithScale(glm::vec3{12.0f}))
+                                     .AddChild(SceneObjectBuilder(*scene_, kRoomObject)
+                                                       .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                                       .WithMaterial(roomMaterial)
+                                                       .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
+                                                       .WithScale(glm::vec3{20.0f}))
                                      .AddChild(SceneObjectBuilder(*scene_, kLightObject)
                                                        .WithTag(kLightGroup)
-                                                       .WithBuiltinMesh(BuiltinMeshType::CONE)
+                                                       .WithBuiltinMesh(BuiltinMeshType::SPHERE)
                                                        .WithMaterial(Material{})
                                                        .WithPosition(glm::vec3(0.0f))
                                                        .WithScale(glm::vec3{0.3f}))
@@ -268,8 +296,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
         .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
-                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
                                    VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
@@ -293,9 +320,10 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     std::vector<VkDescriptorImageInfo> shadowMapImageInfos;
-    shadowMapImageInfos.emplace_back(resources_->GetSampler(kShadowSampler)->GetHandle(),
-                                     resources_->GetImageView(kShadowMapImage, kShadowMapImageView)->GetHandle(),
-                                     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    shadowMapImageInfos.emplace_back(
+            resources_->GetSampler(kShadowSampler)->GetHandle(),
+            resources_->GetImageView(kShadowCubemapImage, kShadowCubemapImageView)->GetHandle(),
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;
@@ -543,7 +571,7 @@ void VulkanApplication::CreatePipelines()
     VkPushConstantRange shadowMapPushConstant;
     shadowMapPushConstant.offset = 0;
     shadowMapPushConstant.size = sizeof(ShadowMapPushConstants);
-    shadowMapPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    shadowMapPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
     shadowPipelineLayout_ = device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kShadowMapDescSetLayout)},
                                                           {shadowMapPushConstant});
@@ -560,6 +588,10 @@ void VulkanApplication::CreatePipelines()
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
             shaderStageCreateInfo.module = resources_->GetShaderModule(kShadowMapVertexShaderKey)->GetHandle();
+        });
+        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
+            shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kShadowMapFragmentShaderKey)->GetHandle();
         });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
@@ -598,13 +630,21 @@ void VulkanApplication::CreatePipelines()
 void VulkanApplication::CreateFramebuffers()
 {
     // Shadow map framebuffer
-    const auto& shadowDepthImageView = resources_->GetImageView(kShadowMapImage, kShadowMapImageView);
-    shadowFramebuffer_ = device_->CreateFramebuffer(shadowRenderPass_, {shadowDepthImageView}, [&](auto& builder) {
-        builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
-    });
+    const std::vector<std::string> cubemapImageViewKeys = {kShadowCubemapImageViewRight, kShadowCubemapImageViewLeft,
+                                                           kShadowCubemapImageViewTop,   kShadowCubemapImageViewBottom,
+                                                           kShadowCubemapImageViewBack,  kShadowCubemapImageViewFront};
 
-    if (!shadowFramebuffer_) {
-        throw std::runtime_error("Failed to create framebuffer (for shadow mapping)!");
+    for (auto i = 0U; i < cubemapImageViewKeys.size(); ++i) {
+        const auto& shadowCubemapImageView = resources_->GetImageView(kShadowCubemapImage, cubemapImageViewKeys[i]);
+
+        shadowFramebuffers_[i] =
+                device_->CreateFramebuffer(shadowRenderPass_, {shadowCubemapImageView}, [&](auto& builder) {
+                    builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                });
+
+        if (!shadowFramebuffers_[i]) {
+            throw std::runtime_error("Failed to create framebuffer (for shadow mapping)s!");
+        }
     }
 
     // Present framebuffers
@@ -647,12 +687,16 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
 
-    // Create shadow map pass
-    {
+    const auto cubemapViewMatrices = lightCamera_->GetCubemapViewMatrices();
+    auto cubemapProj = lightCamera_->GetProjectionMatrix();
+    cubemapProj[1][1] *= -1; // Revert this projection flip for shadow map render
+
+    // Create shadow map (cubemap) pass
+    for (auto i = 0U; i < shadowFramebuffers_.size(); ++i) {
         currentCmdBuffer->BeginRenderPass(
                 [&](auto& beginInfo) {
                     beginInfo.renderPass = shadowRenderPass_->GetHandle();
-                    beginInfo.framebuffer = shadowFramebuffer_->GetHandle();
+                    beginInfo.framebuffer = shadowFramebuffers_[i]->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
                     beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
                     beginInfo.clearValueCount = 1;
@@ -674,10 +718,13 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 ShadowMapPushConstants shadowMapPushConstant{};
                 shadowMapPushConstant.objectId = sceneObject.GetObjectId();
 
-                const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
-                const glm::mat4 lightView = lightCamera_->GetViewMatrix();
+                const glm::mat4 lightProjection = cubemapProj;
+                const glm::mat4 lightView = cubemapViewMatrices[i];
                 shadowMapPushConstant.lightSpaceMatrix = lightProjection * lightView;
-                currentCmdBuffer->PushConstants(shadowPipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
+                shadowMapPushConstant.lightPos = glm::vec4(scene_->FindObjectByName(kLightObject)->GetPosition(), 1.0f);
+                shadowMapPushConstant.farPlane = kPointLightFarPlane;
+                currentCmdBuffer->PushConstants(shadowPipelineLayout_,
+                                                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                 sizeof(shadowMapPushConstant), &shadowMapPushConstant);
                 currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
             }
@@ -718,6 +765,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 scenePushConstant.view = camera_->GetViewMatrix();
                 scenePushConstant.projection = camera_->GetProjectionMatrix();
                 scenePushConstant.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
+                scenePushConstant.farPlane = kPointLightFarPlane;
                 currentCmdBuffer->PushConstants(pipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                 sizeof(scenePushConstant), &scenePushConstant);
@@ -737,8 +785,8 @@ void VulkanApplication::UpdateSceneTransforms() const
 {
     const auto time = static_cast<float>(GetCurrentTime());
     constexpr float speed = 0.5f;
-    constexpr float radius = 3.0f;
-    constexpr auto center = glm::vec3(0.0f, 3.0f, 0.0f);
+    constexpr float radius = 2.0f;
+    constexpr auto center = glm::vec3(0.0f, 0.0f, 0.0f);
     const float angle = time * speed;
 
     glm::vec3 pos;
@@ -749,16 +797,13 @@ void VulkanApplication::UpdateSceneTransforms() const
     scene_->FindObjectByName(kLightObject)->SetPosition(pos);
 
     lightCamera_->SetPosition(pos);
-    const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
-    const glm::mat4 lightView = lightCamera_->GetViewMatrix();
 
     LightUbo lightUbo{};
     lightUbo.lightPosition = glm::vec4(pos, 1.0f);
-    lightUbo.lightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
     lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    lightUbo.spotlightParams.x = std::cos(glm::radians(GetParamFloat(AppSettings::InnerCutoffAngle)));
-    lightUbo.spotlightParams.y = std::cos(glm::radians(GetParamFloat(AppSettings::OuterCutoffAngle)));
-    lightUbo.lightSpaceMatrix = lightProjection * lightView;
+    lightUbo.pointLightParams.x = GetParamFloat(AppSettings::ConstantFactor);
+    lightUbo.pointLightParams.y = GetParamFloat(AppSettings::LinearFactor);
+    lightUbo.pointLightParams.z = GetParamFloat(AppSettings::QuadraticFactor);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 
@@ -778,4 +823,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_shadows::basic_shadow_mapping::spotlight_shadow_mapping
+} // namespace examples::real_time_shadows::basic_shadow_mapping::omnidirectional_shadow_mapping

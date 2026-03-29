@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(DirectionalShadowMapping)
 add_subdirectory(SpotlightShadowMapping)
+add_subdirectory(OmnidirectionalShadowMapping)
