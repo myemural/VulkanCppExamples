@@ -40,8 +40,6 @@ This section contains Vulkan examples that related to real-time lighting. Exampl
 - Including emissive texture to the lighting calculations (for blinn-phong)
 - Applying shininess or roughness texture to objects via shaders
 - Including shininess or roughness texture to the lighting calculations (for blinn-phong)
-- Applying alpha texture to objects via shaders for getting alpha values of the fragments
-- Including alpha texture to the lighting calculations (for blinn-phong)
 - Applying ambient occlusion texture to objects via shaders
 - Symbolically including ambient occlusion texture to the lighting calculations (for blinn-phong)
 

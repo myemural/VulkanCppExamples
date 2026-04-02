@@ -20,6 +20,10 @@ namespace constants
     inline constexpr auto kMainVertexShaderKey = "vertMain";
     inline constexpr auto kMainFragmentShaderKey = "fragMain";
 
+    // Buffers
+    inline constexpr auto kAvocadoVertexBuffer = "avocadoVertexBuffer";
+    inline constexpr auto kAvocadoIndexBuffer = "avocadoIndexBuffer";
+
     // Images and Image Views
     inline constexpr auto kDepthImage = "depthImage";
     inline constexpr auto kDepthImageView = "depthImageView";

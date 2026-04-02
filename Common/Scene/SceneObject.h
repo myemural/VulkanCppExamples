@@ -19,6 +19,7 @@
 #include "CoreDefines.h"
 #include "Material.h"
 #include "SceneGpuBufferStorage.h"
+#include "SceneMesh.h"
 #include "Transform.h"
 
 namespace common::scene
@@ -39,7 +40,7 @@ public:
 
     COMMON_API void SetScale(const glm::vec3& scale);
 
-    COMMON_API void SetMesh(const utility::GltfMesh& mesh);
+    COMMON_API void SetMesh(const Mesh& mesh);
 
     COMMON_API void SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType);
 

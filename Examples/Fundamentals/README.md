@@ -92,7 +92,6 @@ The topics covered by this subsection:
 - Loading single and multiple meshes and rendering them as single colored wireframe
 - Loading mesh textures and rendering textured meshes
 - Applying node transformation in the glTF
-- Adding camera that defined in the glTF to our scene
 
 ## [Multisampling](/Examples/Fundamentals/Multisampling)
 

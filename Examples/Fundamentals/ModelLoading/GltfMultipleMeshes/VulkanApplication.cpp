@@ -135,6 +135,7 @@ void VulkanApplication::InitAssetManager()
     assetManager_ = std::make_unique<AssetManager>();
     assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
     assetManager_->RegisterLoader<TextureAsset>(std::make_unique<TextureLoader>(ASSETS_DIR));
+    assetManager_->RegisterLoader<GltfModelAsset>(std::make_unique<ModelLoader>(ASSETS_DIR));
 }
 
 void VulkanApplication::CreateResources()
@@ -144,25 +145,29 @@ void VulkanApplication::CreateResources()
             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     // Load models
-    ModelLoader modelLoader{ASSETS_DIR};
-    lanternModel_ = modelLoader.LoadBinaryGltfFromFile(kLanternModelPath);
+    const auto lanternModelHandle = assetManager_->Load<GltfModelAsset>(kLanternModelPath);
+    lanternModel_ = std::make_unique<GltfModelAsset>(assetManager_->Get(lanternModelHandle));
 
     // Load model textures
-    const auto meshMatIndex = lanternModel_->meshes[0].materialIndex;
-    const auto meshTexIndex = lanternModel_->materials[meshMatIndex].pbrMetallicRoughness.baseColorTextureIndex;
-    lanternMeshTextureAsset_ = lanternModel_->textures[meshTexIndex];
+    const auto meshMatIndex = lanternModel_->GetPrimitiveMaterialIndex(0, 0);
+    const auto meshTexIndex =
+            lanternModel_->GetModel().materials[meshMatIndex].pbrMetallicRoughness.baseColorTexture.index;
+    lanternMeshTextureAsset_ = lanternModel_->GetTexture(meshTexIndex);
 
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
     std::vector<BufferResourceCreateInfo> bufferCreateInfos;
-    for (const auto& mesh: lanternModel_->meshes) {
-        const std::uint32_t vertexBufferSize = mesh.attributes.vertexCount * sizeof(VertexPos3Uv2);
-        const std::uint32_t indexBufferSize = mesh.indices.size() * sizeof(std::uint16_t);
+    for (auto i = 0; i < lanternModel_->GetModel().meshes.size(); ++i) {
+        const std::uint32_t vertexBufferSize = lanternModel_->GetVertexBufferSize(i, 0);
+        const std::uint32_t indexBufferSize = lanternModel_->GetIndexBufferSize(i, 0);
 
-        bufferCreateInfos.emplace_back(mesh.GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+        const std::string vertexBufferName = kLanternVertexBuffer + std::to_string(i);
+        const std::string indexBufferName = kLanternIndexBuffer + std::to_string(i);
+
+        bufferCreateInfos.emplace_back(vertexBufferName, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-        bufferCreateInfos.emplace_back(mesh.GetIndexBufferName(), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        bufferCreateInfos.emplace_back(indexBufferName, indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     }
     resourceCreateInfo.buffers = bufferCreateInfos;
@@ -213,14 +218,17 @@ void VulkanApplication::CreateResources()
 
 void VulkanApplication::InitResources() const
 {
-    for (auto& mesh: lanternModel_->meshes) {
-        const auto& vertexBufferData = mesh.GetVerticesAs<VertexPos3Uv2>();
-        const auto& indexBufferData = mesh.indices;
+    for (auto i = 0; i < lanternModel_->GetModel().meshes.size(); ++i) {
+        const auto& vertexBufferData = lanternModel_->GetVertices(i, 0);
+        const auto& indexBufferData = lanternModel_->GetIndices(i, 0);
         const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3Uv2);
         const std::uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
 
-        resources_->SetBuffer(mesh.GetVertexBufferName(), vertexBufferData.data(), vertexBufferSize);
-        resources_->SetBuffer(mesh.GetIndexBufferName(), indexBufferData.data(), indexBufferSize);
+        const std::string vertexBufferName = kLanternVertexBuffer + std::to_string(i);
+        const std::string indexBufferName = kLanternIndexBuffer + std::to_string(i);
+
+        resources_->SetBuffer(vertexBufferName, vertexBufferData.data(), vertexBufferSize);
+        resources_->SetBuffer(indexBufferName, indexBufferData.data(), indexBufferSize);
     }
 
     resources_->SetImageFromTexture(cmdPool_, queue_, kMeshImage, lanternMeshTextureAsset_);
@@ -393,22 +401,26 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, descSets);
 
     // Draw meshes
-    for (const auto& node: lanternModel_->nodes) {
-        if (node.meshIndex == UINT32_MAX) {
+    for (auto i = 0; i < lanternModel_->GetModel().nodes.size(); ++i) {
+        const auto meshIndex = lanternModel_->GetModel().nodes[i].mesh;
+        if (meshIndex == -1) {
             continue;
         }
 
-        const auto mesh = lanternModel_->meshes[node.meshIndex];
+        const std::string vertexBufferName = kLanternVertexBuffer + std::to_string(meshIndex);
+        const std::string indexBufferName = kLanternIndexBuffer + std::to_string(meshIndex);
+
+        const auto worldTransform = lanternModel_->GetNodeWorldTransform(i);
 
         MvpData mvpData{};
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-        mvpData.mvpMatrix = camera_->GetProjectionMatrix() * camera_->GetViewMatrix() * scale * node.worldTransform;
+        mvpData.mvpMatrix = camera_->GetProjectionMatrix() * camera_->GetViewMatrix() * scale * worldTransform;
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvpData);
 
-        const std::vector vertexBuffers{resources_->GetBuffer(mesh.GetVertexBufferName())};
+        const std::vector vertexBuffers{resources_->GetBuffer(vertexBufferName)};
         currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
-        currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(mesh.GetIndexBufferName()));
-        currentCmdBuffer->DrawIndexed(mesh.indices.size(), 1, 0, 0, 0);
+        currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(indexBufferName));
+        currentCmdBuffer->DrawIndexed(lanternModel_->GetIndexCount(meshIndex, 0), 1, 0, 0, 0);
     }
 
     currentCmdBuffer->EndRenderPass();

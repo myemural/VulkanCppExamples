@@ -12,8 +12,6 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `GltfMeshTextured`
 3. [Multiple glTF Meshes and Node Transformations](/Examples/Fundamentals/ModelLoading/GltfMultipleMeshes)
    - `GltfMultipleMeshes`
-4. [Camera Usage with glTF](/Examples/Fundamentals/ModelLoading/GltfCamera)
-   - `GltfCamera`
 
 ## Architecture of the Subsection
 

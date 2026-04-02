@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "AppCommonConfig.h"
@@ -133,6 +132,7 @@ void VulkanApplication::InitAssetManager()
 {
     assetManager_ = std::make_unique<AssetManager>();
     assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
+    assetManager_->RegisterLoader<GltfModelAsset>(std::make_unique<ModelLoader>(ASSETS_DIR));
 }
 
 void VulkanApplication::CreateResources()
@@ -142,20 +142,19 @@ void VulkanApplication::CreateResources()
             VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     // Load models
-    ModelLoader modelLoader{ASSETS_DIR};
-    avocadoModel_ = modelLoader.LoadBinaryGltfFromFile(kAvocadoModelPath);
+    const auto avocadoModelHandle = assetManager_->Load<GltfModelAsset>(kAvocadoModelPath);
+    avocadoModel_ = std::make_unique<GltfModelAsset>(assetManager_->Get(avocadoModelHandle));
 
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    const std::uint32_t vertexBufferSize = avocadoModel_->meshes[0].attributes.vertexCount * sizeof(VertexPos3Uv2);
-    const std::uint32_t indexBufferSize = avocadoModel_->meshes[0].indices.size() * sizeof(std::uint16_t);
+    const std::uint32_t vertexBufferSize = avocadoModel_->GetVertexBufferSize(0, 0);
+    const std::uint32_t indexBufferSize = avocadoModel_->GetIndexBufferSize(0, 0);
 
-    resourceCreateInfo.buffers = {
-        {avocadoModel_->meshes[0].GetVertexBufferName(), vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
-        {avocadoModel_->meshes[0].GetIndexBufferName(), indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
+    resourceCreateInfo.buffers = {{kAvocadoVertexBuffer, vertexBufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+                                  {kAvocadoIndexBuffer, indexBufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
     const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
@@ -184,13 +183,13 @@ void VulkanApplication::CreateResources()
 
 void VulkanApplication::InitResources() const
 {
-    const auto& vertexBufferData = avocadoModel_->meshes[0].GetVerticesAs<VertexPos3Uv2>();
-    const auto& indexBufferData = avocadoModel_->meshes[0].indices;
+    const auto& vertexBufferData = avocadoModel_->GetVertices(0, 0);
+    const auto& indexBufferData = avocadoModel_->GetIndices(0, 0);
     const std::uint32_t vertexBufferSize = vertexBufferData.size() * sizeof(VertexPos3Uv2);
     const std::uint32_t indexBufferSize = indexBufferData.size() * sizeof(std::uint16_t);
 
-    resources_->SetBuffer(avocadoModel_->meshes[0].GetVertexBufferName(), vertexBufferData.data(), vertexBufferSize);
-    resources_->SetBuffer(avocadoModel_->meshes[0].GetIndexBufferName(), indexBufferData.data(), indexBufferSize);
+    resources_->SetBuffer(kAvocadoVertexBuffer, vertexBufferData.data(), vertexBufferSize);
+    resources_->SetBuffer(kAvocadoIndexBuffer, indexBufferData.data(), indexBufferSize);
 }
 
 void VulkanApplication::CreateRenderPass()
@@ -338,14 +337,14 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             },
             VK_SUBPASS_CONTENTS_INLINE);
     currentCmdBuffer->BindPipeline(pipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    const std::vector vertexBuffers{resources_->GetBuffer(avocadoModel_->meshes[0].GetVertexBufferName())};
+    const std::vector vertexBuffers{resources_->GetBuffer(kAvocadoVertexBuffer)};
     currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, 1, {0});
-    currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(avocadoModel_->meshes[0].GetIndexBufferName()));
+    currentCmdBuffer->BindIndexBuffer(resources_->GetBuffer(kAvocadoIndexBuffer));
 
     // Draw meshes
     for (auto& mvp: mvpData_) {
         currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MvpData), &mvp);
-        currentCmdBuffer->DrawIndexed(avocadoModel_->meshes[0].indices.size(), 1, 0, 0, 0);
+        currentCmdBuffer->DrawIndexed(avocadoModel_->GetIndexCount(0, 0), 1, 0, 0, 0);
     }
 
     currentCmdBuffer->EndRenderPass();

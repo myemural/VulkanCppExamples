@@ -14,11 +14,11 @@
 #include <array>
 #include <memory>
 
-#include "PerspectiveCamera.h"
 #include "ApplicationData.h"
 #include "ApplicationModelLoading.h"
 #include "AssetManager.h"
 #include "ModelLoader.h"
+#include "PerspectiveCamera.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -68,7 +68,7 @@ private:
     std::array<MvpData, NUM_OBJECTS> mvpData_ = {glm::mat4(1.0)};
 
     // Model handlers
-    std::shared_ptr<common::utility::GltfModelHandler> avocadoModel_;
+    std::unique_ptr<common::asset_manager::GltfModelAsset> avocadoModel_;
 
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;

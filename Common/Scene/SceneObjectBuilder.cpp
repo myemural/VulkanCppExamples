@@ -38,7 +38,7 @@ SceneObjectBuilder& SceneObjectBuilder::WithScale(const glm::vec3& scale)
     return *this;
 }
 
-SceneObjectBuilder& SceneObjectBuilder::WithMesh(const utility::GltfMesh& mesh)
+SceneObjectBuilder& SceneObjectBuilder::WithMesh(const Mesh& mesh)
 {
     sceneObject_->SetMesh(mesh);
     return *this;

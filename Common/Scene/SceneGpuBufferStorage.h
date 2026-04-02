@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "CoreDefines.h"
-#include "GltfModelHandler.h"
 #include "ResourceManager.h"
 #include "SceneConfig.h"
 #include "ScenePrimitives.h"
@@ -53,7 +52,7 @@ public:
      * @param mesh The GLTF mesh data.
      * @return GPU representation with buffer offsets.
      */
-    MeshGpu AllocateMesh(const utility::GltfMesh& mesh);
+    MeshGpu AllocateMesh(const Mesh& mesh);
 
     /**
      * @brief Allocate GPU memory for a builtin primitive mesh (cube, sphere, etc.) or gets it from cache.
@@ -119,7 +118,7 @@ public:
     [[nodiscard]] std::vector<MaterialComponent> GetEnabledMaterialComponents() const;
 
 private:
-    MeshGpu AllocateMeshGpuInternal(const utility::GltfMesh& mesh);
+    MeshGpu AllocateMeshGpuInternal(const Mesh& mesh);
 
     static constexpr auto kGeometryBufferName = "SceneGeometryBuffer";
     static constexpr auto kTransformStorageBufferName = "SceneTransformStorageBuffer";

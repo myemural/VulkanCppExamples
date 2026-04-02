@@ -13,6 +13,8 @@
 namespace common::vulkan_framework
 {
 
+using namespace common::scene;
+
 std::vector<glm::vec3> CreateCubePositions(const float size)
 {
     float h = size * 0.5f;
@@ -169,16 +171,16 @@ std::vector<std::uint16_t> CreateCubeIndices()
     };
 }
 
-utility::GltfMesh CreateCubeMesh(const float size)
+Mesh CreateCubeMesh(const float size)
 {
-    utility::GltfMesh mesh;
+    Mesh mesh;
     mesh.name = kCubeMeshName;
     mesh.indices = CreateCubeIndices();
-    mesh.attributes.positions = CreateCubePositions(size);
-    mesh.attributes.texCoords0 = CreateCubeUVs();
-    mesh.attributes.normals = CreateCubeNormals();
-    mesh.attributes.tangents = CreateCubeTangents();
-    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    mesh.positions = CreateCubePositions(size);
+    mesh.texCoords0 = CreateCubeUVs();
+    mesh.normals = CreateCubeNormals();
+    mesh.tangents = CreateCubeTangents();
+    mesh.vertexCount = mesh.positions.size();
     return mesh;
 }
 
@@ -297,16 +299,16 @@ std::vector<std::uint16_t> CreateSphereIndices(const std::uint32_t stackCount, c
     return indices;
 }
 
-utility::GltfMesh CreateSphereMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+Mesh CreateSphereMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
-    utility::GltfMesh mesh;
+    Mesh mesh;
     mesh.name = kSphereMeshName;
     mesh.indices = CreateSphereIndices(stackCount, sectorCount);
-    mesh.attributes.positions = CreateSpherePositions(1.0f, stackCount, sectorCount);
-    mesh.attributes.texCoords0 = CreateSphereUVs(stackCount, sectorCount);
-    mesh.attributes.normals = CreateSphereNormals(stackCount, sectorCount);
-    mesh.attributes.tangents = CreateSphereTangents(stackCount, sectorCount);
-    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    mesh.positions = CreateSpherePositions(1.0f, stackCount, sectorCount);
+    mesh.texCoords0 = CreateSphereUVs(stackCount, sectorCount);
+    mesh.normals = CreateSphereNormals(stackCount, sectorCount);
+    mesh.tangents = CreateSphereTangents(stackCount, sectorCount);
+    mesh.vertexCount = mesh.positions.size();
     return mesh;
 }
 
@@ -479,16 +481,16 @@ std::vector<uint16_t> CreateConeIndices(const std::uint32_t stackCount, const st
     return indices;
 }
 
-utility::GltfMesh CreateConeMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+Mesh CreateConeMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
-    utility::GltfMesh mesh;
+    Mesh mesh;
     mesh.name = kConeMeshName;
     mesh.indices = CreateConeIndices(stackCount, sectorCount);
-    mesh.attributes.positions = CreateConePositions(1.0f, stackCount, sectorCount);
-    mesh.attributes.texCoords0 = CreateConeUVs(stackCount, sectorCount);
-    mesh.attributes.normals = CreateConeNormals(stackCount, sectorCount);
-    mesh.attributes.tangents = CreateConeTangents(stackCount, sectorCount);
-    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    mesh.positions = CreateConePositions(1.0f, stackCount, sectorCount);
+    mesh.texCoords0 = CreateConeUVs(stackCount, sectorCount);
+    mesh.normals = CreateConeNormals(stackCount, sectorCount);
+    mesh.tangents = CreateConeTangents(stackCount, sectorCount);
+    mesh.vertexCount = mesh.positions.size();
     return mesh;
 }
 
@@ -666,16 +668,16 @@ std::vector<uint16_t> CreateCylinderIndices(const std::uint32_t stackCount, cons
     return indices;
 }
 
-utility::GltfMesh CreateCylinderMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+Mesh CreateCylinderMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
-    utility::GltfMesh mesh;
+    Mesh mesh;
     mesh.name = kCylinderMeshName;
     mesh.indices = CreateCylinderIndices(stackCount, sectorCount);
-    mesh.attributes.positions = CreateCylinderPositions(1.0f, stackCount, sectorCount);
-    mesh.attributes.texCoords0 = CreateCylinderUVs(stackCount, sectorCount);
-    mesh.attributes.normals = CreateCylinderNormals(stackCount, sectorCount);
-    mesh.attributes.tangents = CreateCylinderTangents(stackCount, sectorCount);
-    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    mesh.positions = CreateCylinderPositions(1.0f, stackCount, sectorCount);
+    mesh.texCoords0 = CreateCylinderUVs(stackCount, sectorCount);
+    mesh.normals = CreateCylinderNormals(stackCount, sectorCount);
+    mesh.tangents = CreateCylinderTangents(stackCount, sectorCount);
+    mesh.vertexCount = mesh.positions.size();
     return mesh;
 }
 
@@ -732,16 +734,16 @@ std::vector<glm::vec4> CreatePlaneTangents()
 
 std::vector<std::uint16_t> CreatePlaneIndices() { return {0, 1, 2, 2, 3, 0}; }
 
-utility::GltfMesh CreatePlaneMesh(const float size)
+Mesh CreatePlaneMesh(const float size)
 {
-    utility::GltfMesh mesh;
+    Mesh mesh;
     mesh.name = kPlaneMeshName;
     mesh.indices = CreatePlaneIndices();
-    mesh.attributes.positions = CreatePlanePositions(size);
-    mesh.attributes.texCoords0 = CreatePlaneUVs();
-    mesh.attributes.normals = CreatePlaneNormals();
-    mesh.attributes.tangents = CreatePlaneTangents();
-    mesh.attributes.vertexCount = mesh.attributes.positions.size();
+    mesh.positions = CreatePlanePositions(size);
+    mesh.texCoords0 = CreatePlaneUVs();
+    mesh.normals = CreatePlaneNormals();
+    mesh.tangents = CreatePlaneTangents();
+    mesh.vertexCount = mesh.positions.size();
     return mesh;
 }
 

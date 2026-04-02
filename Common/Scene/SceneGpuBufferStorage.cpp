@@ -30,7 +30,7 @@ SceneGpuBufferStorage::SceneGpuBufferStorage(vulkan_framework::ResourceManager& 
     }
 }
 
-MeshGpu SceneGpuBufferStorage::AllocateMesh(const utility::GltfMesh& mesh) { return AllocateMeshGpuInternal(mesh); }
+MeshGpu SceneGpuBufferStorage::AllocateMesh(const Mesh& mesh) { return AllocateMeshGpuInternal(mesh); }
 
 MeshGpu SceneGpuBufferStorage::AllocateBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType)
 {
@@ -126,7 +126,7 @@ std::vector<MaterialComponent> SceneGpuBufferStorage::GetEnabledMaterialComponen
     return sceneConfig_.enabledMaterialComponents;
 }
 
-MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const utility::GltfMesh& mesh)
+MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const Mesh& mesh)
 {
     // Check cache first for avoid duplicate GPU allocations
     if (meshCache_.contains(mesh.name)) {
@@ -139,25 +139,25 @@ MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const utility::GltfMesh& 
         const auto accessorSize = GetAccessorSize(accessorType);
 
         if (attributeType == AttributeType::POSITION) {
-            const auto vertexPositons = mesh.attributes.positions;
+            const auto vertexPositons = mesh.positions;
             const auto vertexPositonsSize = vertexPositons.size() * accessorSize;
             globalBufferPos_ += vertexPositonsSize;
 
             resourceManager_.SetBuffer(kGeometryBufferName, vertexPositons.data(), vertexPositonsSize, offset, false);
         } else if (attributeType == AttributeType::TEXCOORD) {
-            const auto vertexUVs = mesh.attributes.texCoords0;
+            const auto vertexUVs = mesh.texCoords0;
             const auto vertexUVsSize = vertexUVs.size() * accessorSize;
             globalBufferPos_ += vertexUVsSize;
 
             resourceManager_.SetBuffer(kGeometryBufferName, vertexUVs.data(), vertexUVsSize, offset, false);
         } else if (attributeType == AttributeType::NORMAL) {
-            const auto vertexNormals = mesh.attributes.normals;
+            const auto vertexNormals = mesh.normals;
             const auto vertexNormalsSize = vertexNormals.size() * accessorSize;
             globalBufferPos_ += vertexNormalsSize;
 
             resourceManager_.SetBuffer(kGeometryBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
         } else if (attributeType == AttributeType::TANGENT) {
-            const auto vertexTangents = mesh.attributes.tangents;
+            const auto vertexTangents = mesh.tangents;
             const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
             globalBufferPos_ += vertexTangentsSize;
 

@@ -28,5 +28,5 @@ struct MvpData
 
 // Model position vectors
 inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
-        NUM_OBJECTS, glm::vec3(-3.0f, -2.0f, -4.0f), glm::vec3(3.0f, 2.0f, -1.0f), 15.0f);
+        NUM_OBJECTS, glm::vec3(-3.0f, -2.0f, -4.0f), glm::vec3(3.0f, 2.0f, -1.0f), 3.0f);
 } // namespace examples::fundamentals::model_loading::gltf_mesh_wireframe

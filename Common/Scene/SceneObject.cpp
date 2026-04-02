@@ -40,7 +40,7 @@ void SceneObject::SetScale(const glm::vec3& scale)
     UpdateTransformGpu();
 }
 
-void SceneObject::SetMesh(const utility::GltfMesh& mesh) { mesh_ = scene_.GetGpuBufferStorage().AllocateMesh(mesh); }
+void SceneObject::SetMesh(const Mesh& mesh) { mesh_ = scene_.GetGpuBufferStorage().AllocateMesh(mesh); }
 
 void SceneObject::SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType)
 {

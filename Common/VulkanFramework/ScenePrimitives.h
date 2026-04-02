@@ -10,11 +10,12 @@
  */
 #pragma once
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include <glm/glm.hpp>
 
-#include "GltfModelHandler.h"
+#include "SceneMesh.h"
 
 namespace common::vulkan_framework
 {
@@ -31,7 +32,7 @@ std::vector<glm::vec4> CreateCubeTangents();
 std::vector<std::uint16_t> CreateCubeIndices();
 
 inline constexpr auto kCubeMeshName = "builtin_cube";
-utility::GltfMesh CreateCubeMesh(float size);
+scene::Mesh CreateCubeMesh(float size);
 
 // For spheres
 std::vector<glm::vec3> CreateSpherePositions(float size, std::uint32_t stackCount, std::uint32_t sectorCount);
@@ -45,7 +46,7 @@ std::vector<glm::vec4> CreateSphereTangents(std::uint32_t stackCount, std::uint3
 std::vector<std::uint16_t> CreateSphereIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 
 inline constexpr auto kSphereMeshName = "builtin_sphere";
-utility::GltfMesh CreateSphereMesh(std::uint32_t stackCount, std::uint32_t sectorCount);
+scene::Mesh CreateSphereMesh(std::uint32_t stackCount, std::uint32_t sectorCount);
 
 // For cones
 std::vector<glm::vec3> CreateConePositions(float height, std::uint32_t stackCount, std::uint32_t sectorCount);
@@ -59,7 +60,7 @@ std::vector<glm::vec4> CreateConeTangents(std::uint32_t stackCount, std::uint32_
 std::vector<uint16_t> CreateConeIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 
 inline constexpr auto kConeMeshName = "builtin_cone";
-utility::GltfMesh CreateConeMesh(std::uint32_t stackCount, std::uint32_t sectorCount);
+scene::Mesh CreateConeMesh(std::uint32_t stackCount, std::uint32_t sectorCount);
 
 // For cylinders
 std::vector<glm::vec3> CreateCylinderPositions(float height, std::uint32_t stackCount, std::uint32_t sectorCount);
@@ -73,7 +74,7 @@ std::vector<glm::vec4> CreateCylinderTangents(std::uint32_t stackCount, std::uin
 std::vector<uint16_t> CreateCylinderIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 
 inline constexpr auto kCylinderMeshName = "builtin_cylinder";
-utility::GltfMesh CreateCylinderMesh(std::uint32_t stackCount, std::uint32_t sectorCount);
+scene::Mesh CreateCylinderMesh(std::uint32_t stackCount, std::uint32_t sectorCount);
 
 // For planes
 std::vector<glm::vec3> CreatePlanePositions(float size);
@@ -87,7 +88,7 @@ std::vector<glm::vec4> CreatePlaneTangents();
 std::vector<std::uint16_t> CreatePlaneIndices();
 
 inline constexpr auto kPlaneMeshName = "builtin_plane";
-utility::GltfMesh CreatePlaneMesh(float size);
+scene::Mesh CreatePlaneMesh(float size);
 
 enum class BuiltinMeshType
 {

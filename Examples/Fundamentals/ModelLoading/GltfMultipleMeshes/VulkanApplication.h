@@ -13,10 +13,10 @@
 
 #include <memory>
 
-#include "PerspectiveCamera.h"
 #include "ApplicationModelLoading.h"
 #include "AssetManager.h"
 #include "ModelLoader.h"
+#include "PerspectiveCamera.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanPipeline.h"
 #include "VulkanPipelineLayout.h"
@@ -65,7 +65,7 @@ private:
     VkFormat depthImageFormat_ = VK_FORMAT_UNDEFINED;
 
     // Model handlers
-    std::shared_ptr<common::utility::GltfModelHandler> lanternModel_;
+    std::unique_ptr<common::asset_manager::GltfModelAsset> lanternModel_;
 
     // Textures
     common::asset_manager::TextureAsset lanternMeshTextureAsset_{};
