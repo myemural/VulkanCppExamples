@@ -15,10 +15,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include "BuiltinPrimitives.h"
 #include "CoreDefines.h"
 #include "ResourceManager.h"
 #include "SceneConfig.h"
-#include "ScenePrimitives.h"
 #include "Transform.h"
 #include "VulkanBuffer.h"
 
@@ -49,17 +49,17 @@ public:
 
     /**
      * @brief Allocates mesh or gets it from cache.
-     * @param mesh The GLTF mesh data.
+     * @param meshPrimitive The mesh primitive data accessor.
      * @return GPU representation with buffer offsets.
      */
-    MeshGpu AllocateMesh(const Mesh& mesh);
+    MeshGpu AllocateMesh(const MeshPrimitive& meshPrimitive);
 
     /**
      * @brief Allocate GPU memory for a builtin primitive mesh (cube, sphere, etc.) or gets it from cache.
      * @param builtinMeshType The primitive type to allocate
      * @return GPU representation with buffer offsets.
      */
-    MeshGpu AllocateBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType);
+    MeshGpu AllocateBuiltinMesh(const BuiltinMeshType& builtinMeshType);
 
     /**
      * @brief Update transform data for a scene object in GPU storage. Called when an object's transform changes.
@@ -118,7 +118,7 @@ public:
     [[nodiscard]] std::vector<MaterialComponent> GetEnabledMaterialComponents() const;
 
 private:
-    MeshGpu AllocateMeshGpuInternal(const Mesh& mesh);
+    MeshGpu AllocateMeshGpuInternal(const MeshPrimitive& meshPrimitive);
 
     static constexpr auto kGeometryBufferName = "SceneGeometryBuffer";
     static constexpr auto kTransformStorageBufferName = "SceneTransformStorageBuffer";

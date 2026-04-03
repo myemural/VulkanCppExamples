@@ -27,9 +27,9 @@ public:
 
     COMMON_API SceneObjectBuilder& WithScale(const glm::vec3& scale);
 
-    COMMON_API SceneObjectBuilder& WithMesh(const Mesh& mesh);
+    COMMON_API SceneObjectBuilder& WithMesh(const MeshPrimitive& meshPrimitive);
 
-    COMMON_API SceneObjectBuilder& WithBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType);
+    COMMON_API SceneObjectBuilder& WithBuiltinMesh(const BuiltinMeshType& builtinMeshType);
 
     COMMON_API SceneObjectBuilder& WithMaterial(const Material& material);
 

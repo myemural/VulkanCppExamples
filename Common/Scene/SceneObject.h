@@ -40,9 +40,9 @@ public:
 
     COMMON_API void SetScale(const glm::vec3& scale);
 
-    COMMON_API void SetMesh(const Mesh& mesh);
+    COMMON_API void SetMesh(const MeshPrimitive& meshPrimitive);
 
-    COMMON_API void SetBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType);
+    COMMON_API void SetBuiltinMesh(const BuiltinMeshType& builtinMeshType);
 
     COMMON_API void SetMaterial(const Material& material);
 

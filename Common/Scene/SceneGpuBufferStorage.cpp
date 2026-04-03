@@ -30,34 +30,47 @@ SceneGpuBufferStorage::SceneGpuBufferStorage(vulkan_framework::ResourceManager& 
     }
 }
 
-MeshGpu SceneGpuBufferStorage::AllocateMesh(const Mesh& mesh) { return AllocateMeshGpuInternal(mesh); }
-
-MeshGpu SceneGpuBufferStorage::AllocateBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType)
+MeshGpu SceneGpuBufferStorage::AllocateMesh(const MeshPrimitive& meshPrimitive)
 {
-    if (const auto meshName = vulkan_framework::GetBuiltinMeshName(builtinMeshType); meshCache_.contains(meshName)) {
+    return AllocateMeshGpuInternal(meshPrimitive);
+}
+
+MeshGpu SceneGpuBufferStorage::AllocateBuiltinMesh(const BuiltinMeshType& builtinMeshType)
+{
+    if (const auto meshName = GetBuiltinMeshName(builtinMeshType); meshCache_.contains(meshName)) {
         return meshCache_[meshName];
     }
 
     MeshGpu meshGpu;
     switch (builtinMeshType) {
-        case vulkan_framework::BuiltinMeshType::CUBE:
-            meshGpu = AllocateMeshGpuInternal(vulkan_framework::CreateCubeMesh(1.0f));
+        case BuiltinMeshType::CUBE: {
+            const auto cubePrimitive = CubePrimitive{1.0f};
+            meshGpu = AllocateMesh(cubePrimitive.GetMeshPrimitive());
             break;
-        case vulkan_framework::BuiltinMeshType::SPHERE:
-            meshGpu = AllocateMeshGpuInternal(vulkan_framework::CreateSphereMesh(sceneConfig_.primitiveStackCount,
-                                                                                 sceneConfig_.primitiveSectorCount));
+        }
+        case BuiltinMeshType::SPHERE: {
+            const auto spherePrimitive =
+                    SpherePrimitive{1.0f, sceneConfig_.primitiveStackCount, sceneConfig_.primitiveSectorCount};
+            meshGpu = AllocateMesh(spherePrimitive.GetMeshPrimitive());
             break;
-        case vulkan_framework::BuiltinMeshType::CONE:
-            meshGpu = AllocateMeshGpuInternal(vulkan_framework::CreateConeMesh(sceneConfig_.primitiveStackCount,
-                                                                               sceneConfig_.primitiveSectorCount));
+        }
+        case BuiltinMeshType::CONE: {
+            const auto conePrimitive =
+                    ConePrimitive{1.0f, sceneConfig_.primitiveStackCount, sceneConfig_.primitiveSectorCount};
+            meshGpu = AllocateMesh(conePrimitive.GetMeshPrimitive());
             break;
-        case vulkan_framework::BuiltinMeshType::CYLINDER:
-            meshGpu = AllocateMeshGpuInternal(vulkan_framework::CreateCylinderMesh(sceneConfig_.primitiveStackCount,
-                                                                                   sceneConfig_.primitiveSectorCount));
+        }
+        case BuiltinMeshType::CYLINDER: {
+            const auto cylinderPrimitive =
+                    CylinderPrimitive{1.0f, sceneConfig_.primitiveStackCount, sceneConfig_.primitiveSectorCount};
+            meshGpu = AllocateMesh(cylinderPrimitive.GetMeshPrimitive());
             break;
-        case vulkan_framework::BuiltinMeshType::PLANE:
-            meshGpu = AllocateMeshGpuInternal(vulkan_framework::CreatePlaneMesh(1.0f));
+        }
+        case BuiltinMeshType::PLANE: {
+            const auto planePrimitive = PlanePrimitive{1.0f};
+            meshGpu = AllocateMesh(planePrimitive.GetMeshPrimitive());
             break;
+        }
     }
 
     return meshGpu;
@@ -126,11 +139,11 @@ std::vector<MaterialComponent> SceneGpuBufferStorage::GetEnabledMaterialComponen
     return sceneConfig_.enabledMaterialComponents;
 }
 
-MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const Mesh& mesh)
+MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const MeshPrimitive& meshPrimitive)
 {
     // Check cache first for avoid duplicate GPU allocations
-    if (meshCache_.contains(mesh.name)) {
-        return meshCache_[mesh.name];
+    if (meshCache_.contains(meshPrimitive.name)) {
+        return meshCache_[meshPrimitive.name];
     }
 
     MeshGpu meshGpu;
@@ -138,45 +151,31 @@ MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const Mesh& mesh)
         const std::uint32_t offset = globalBufferPos_;
         const auto accessorSize = GetAccessorSize(accessorType);
 
-        if (attributeType == AttributeType::POSITION) {
-            const auto vertexPositons = mesh.positions;
-            const auto vertexPositonsSize = vertexPositons.size() * accessorSize;
-            globalBufferPos_ += vertexPositonsSize;
+        const auto accessor = meshPrimitive.attributes.at(attributeType);
+        const size_t start = accessor.bufferView.byteOffset + accessor.byteOffset;
+        const size_t length = accessor.count;
+        const auto totalSize = length * accessorSize;
+        globalBufferPos_ += totalSize;
 
-            resourceManager_.SetBuffer(kGeometryBufferName, vertexPositons.data(), vertexPositonsSize, offset, false);
-        } else if (attributeType == AttributeType::TEXCOORD) {
-            const auto vertexUVs = mesh.texCoords0;
-            const auto vertexUVsSize = vertexUVs.size() * accessorSize;
-            globalBufferPos_ += vertexUVsSize;
-
-            resourceManager_.SetBuffer(kGeometryBufferName, vertexUVs.data(), vertexUVsSize, offset, false);
-        } else if (attributeType == AttributeType::NORMAL) {
-            const auto vertexNormals = mesh.normals;
-            const auto vertexNormalsSize = vertexNormals.size() * accessorSize;
-            globalBufferPos_ += vertexNormalsSize;
-
-            resourceManager_.SetBuffer(kGeometryBufferName, vertexNormals.data(), vertexNormalsSize, offset, false);
-        } else if (attributeType == AttributeType::TANGENT) {
-            const auto vertexTangents = mesh.tangents;
-            const auto vertexTangentsSize = vertexTangents.size() * accessorSize;
-            globalBufferPos_ += vertexTangentsSize;
-
-            resourceManager_.SetBuffer(kGeometryBufferName, vertexTangents.data(), vertexTangentsSize, offset, false);
-        }
+        resourceManager_.SetBuffer(kGeometryBufferName, &accessor.bufferView.data[start], totalSize, offset, false);
 
         meshGpu.vertexOffsets.push_back(offset);
     }
 
     // Store indices after all vertex data
-    const auto indices = mesh.indices;
+    const auto indicesAccessor = meshPrimitive.indices;
+    const size_t start = indicesAccessor.bufferView.byteOffset + indicesAccessor.byteOffset;
+    const size_t length = indicesAccessor.count;
+    const auto totalSize = length * sizeof(std::uint16_t);
+
     meshGpu.indexOffset = globalBufferPos_;
-    const auto indicesSize = indices.size() * sizeof(std::uint16_t);
-    globalBufferPos_ += indicesSize;
-    resourceManager_.SetBuffer(kGeometryBufferName, indices.data(), indicesSize, meshGpu.indexOffset, false);
-    meshGpu.indexCount = indices.size();
+    globalBufferPos_ += totalSize;
+    resourceManager_.SetBuffer(kGeometryBufferName, &indicesAccessor.bufferView.data[start], totalSize,
+                               meshGpu.indexOffset, false);
+    meshGpu.indexCount = length;
 
     // Cache for future allocations of same mesh
-    meshCache_[mesh.name] = meshGpu;
+    meshCache_[meshPrimitive.name] = meshGpu;
     return meshGpu;
 }
 

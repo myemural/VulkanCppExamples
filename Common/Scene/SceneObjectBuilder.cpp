@@ -38,13 +38,13 @@ SceneObjectBuilder& SceneObjectBuilder::WithScale(const glm::vec3& scale)
     return *this;
 }
 
-SceneObjectBuilder& SceneObjectBuilder::WithMesh(const Mesh& mesh)
+SceneObjectBuilder& SceneObjectBuilder::WithMesh(const MeshPrimitive& meshPrimitive)
 {
-    sceneObject_->SetMesh(mesh);
+    sceneObject_->SetMesh(meshPrimitive);
     return *this;
 }
 
-SceneObjectBuilder& SceneObjectBuilder::WithBuiltinMesh(const vulkan_framework::BuiltinMeshType& builtinMeshType)
+SceneObjectBuilder& SceneObjectBuilder::WithBuiltinMesh(const BuiltinMeshType& builtinMeshType)
 {
     sceneObject_->SetBuiltinMesh(builtinMeshType);
     return *this;

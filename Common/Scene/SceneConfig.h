@@ -10,13 +10,15 @@
  */
 #pragma once
 
-#include <string>
+#include <memory>
 #include <vector>
 
 #include <glm/glm.hpp>
 
 #include "CoreDefines.h"
 #include "Material.h"
+#include "VulkanCommandPool.h"
+#include "VulkanQueue.h"
 
 namespace common::scene
 {

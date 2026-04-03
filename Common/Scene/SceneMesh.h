@@ -12,27 +12,58 @@
 
 #include <cstdint>
 #include <string>
-#include <vector>
-
-#include <glm/glm.hpp>
+#include <unordered_map>
 
 #include "CoreDefines.h"
+#include "SceneConfig.h"
 
 namespace common::scene
 {
 
-struct COMMON_API Mesh
+enum class ComponentType
+{
+    SIGNED_BYTE,
+    UNSIGNED_BYTE,
+    SIGNED_SHORT,
+    UNSIGNED_SHORT,
+    UNSIGNED_INT,
+    FLOAT
+};
+
+enum class DataType
+{
+    SCALAR,
+    VEC2,
+    VEC3,
+    VEC4,
+    MAT2,
+    MAT3,
+    MAT4
+};
+
+struct COMMON_API BufferView
+{
+    const unsigned char* data = nullptr;
+    size_t bufferLength = SIZE_MAX;
+    size_t byteOffset = SIZE_MAX;
+    size_t byteLength = SIZE_MAX;
+    size_t byteStride = SIZE_MAX;
+};
+
+struct COMMON_API Accessor
+{
+    BufferView bufferView{};
+    size_t byteOffset = SIZE_MAX;
+    ComponentType componentType = ComponentType::FLOAT;
+    DataType type = DataType::VEC4;
+    size_t count = SIZE_MAX;
+};
+
+struct COMMON_API MeshPrimitive
 {
     std::string name;
-    std::uint32_t vertexCount = UINT32_MAX;
-    std::vector<glm::vec3> positions;
-    std::vector<glm::vec3> normals;
-    std::vector<glm::vec4> tangents;
-    std::vector<glm::vec2> texCoords0;
-    std::vector<glm::vec2> texCoords1;
-    std::vector<glm::vec4> colors0;
-    std::vector<glm::vec4> colors1;
-    std::vector<std::uint16_t> indices;
+    std::unordered_map<AttributeType, Accessor> attributes;
+    Accessor indices{};
 };
 
 } // namespace common::scene

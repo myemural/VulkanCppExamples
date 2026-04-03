@@ -1,21 +1,130 @@
 /**
- * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
+ * Copyright (c) 2026 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
  * https://opensource.org/licenses/MIT
  */
 
-#include "ScenePrimitives.h"
+#include "BuiltinPrimitives.h"
 
-#include <cmath>
 #include <numbers>
-#include <stdexcept>
 
-namespace common::vulkan_framework
+namespace common::scene
 {
 
-using namespace common::scene;
+namespace
+{
+    std::uint32_t GetAccessorByteSize(const ComponentType componentType, const DataType dataType)
+    {
+        std::uint32_t componentTypeSize = 0U;
+        switch (componentType) {
+            case ComponentType::SIGNED_BYTE:
+                [[fallthrough]];
+            case ComponentType::UNSIGNED_BYTE:
+                componentTypeSize = sizeof(unsigned char);
+                break;
+            case ComponentType::SIGNED_SHORT:
+                [[fallthrough]];
+            case ComponentType::UNSIGNED_SHORT:
+                componentTypeSize = sizeof(unsigned short);
+                break;
+            case ComponentType::UNSIGNED_INT:
+                componentTypeSize = sizeof(int);
+                break;
+            case ComponentType::FLOAT:
+                componentTypeSize = sizeof(float);
+                break;
+        }
 
-std::vector<glm::vec3> CreateCubePositions(const float size)
+        std::uint32_t componentCount = 0U;
+        switch (dataType) {
+            case DataType::SCALAR:
+                componentCount = 1U;
+                break;
+            case DataType::VEC2:
+                componentCount = 2U;
+                break;
+            case DataType::VEC3:
+                componentCount = 3U;
+                break;
+            case DataType::VEC4:
+                [[fallthrough]];
+            case DataType::MAT2:
+                componentCount = 4U;
+                break;
+            case DataType::MAT3:
+                componentCount = 9U;
+                break;
+            case DataType::MAT4:
+                componentCount = 16U;
+                break;
+        }
+
+        return componentTypeSize * componentCount;
+    }
+
+    template<typename T>
+    Accessor GenerateAccessor(const std::vector<T>& buffer, const ComponentType componentType, const DataType dataType)
+    {
+        BufferView bufferView;
+        bufferView.data = reinterpret_cast<const unsigned char*>(buffer.data());
+        bufferView.bufferLength = buffer.size() * GetAccessorByteSize(componentType, dataType);
+        bufferView.byteOffset = 0UL;
+        bufferView.byteLength = buffer.size() * GetAccessorByteSize(componentType, dataType);
+        bufferView.byteStride = 0UL;
+
+        Accessor accessor;
+        accessor.bufferView = bufferView;
+        accessor.count = buffer.size();
+        accessor.byteOffset = 0UL;
+        accessor.componentType = componentType;
+        accessor.type = dataType;
+
+        return accessor;
+    }
+} // namespace
+
+std::string GetBuiltinMeshName(const BuiltinMeshType& builtinMeshType)
+{
+    switch (builtinMeshType) {
+        case BuiltinMeshType::CUBE:
+            return CubePrimitive::kCubeMeshName;
+        case BuiltinMeshType::SPHERE:
+            return SpherePrimitive::kSphereMeshName;
+        case BuiltinMeshType::CONE:
+            return ConePrimitive::kConeMeshName;
+        case BuiltinMeshType::CYLINDER:
+            return CylinderPrimitive::kCylinderMeshName;
+        case BuiltinMeshType::PLANE:
+            return PlanePrimitive::kPlaneMeshName;
+    }
+
+    throw std::invalid_argument("Invalid builtin mesh type!");
+}
+
+void BuiltinPrimitive::CreateMeshPrimitive()
+{
+    mesh_.attributes[AttributeType::POSITION] = GenerateAccessor(positions_, ComponentType::FLOAT, DataType::VEC3);
+    mesh_.attributes[AttributeType::TEXCOORD] = GenerateAccessor(uvs_, ComponentType::FLOAT, DataType::VEC2);
+    mesh_.attributes[AttributeType::NORMAL] = GenerateAccessor(normals_, ComponentType::FLOAT, DataType::VEC3);
+    mesh_.attributes[AttributeType::TANGENT] = GenerateAccessor(tangents_, ComponentType::FLOAT, DataType::VEC4);
+    mesh_.indices = GenerateAccessor(indices_, ComponentType::UNSIGNED_SHORT, DataType::SCALAR);
+}
+
+MeshPrimitive BuiltinPrimitive::GetMeshPrimitive() const { return mesh_; }
+
+CubePrimitive::CubePrimitive(const float size)
+{
+    mesh_.name = kCubeMeshName;
+    positions_ = CreateCubePositions(size);
+    uvs_ = CreateCubeUVs();
+    normals_ = CreateCubeNormals();
+    tangents_ = CreateCubeTangents();
+    indices_ = CreateCubeIndices();
+
+    BuiltinPrimitive::CreateMeshPrimitive();
+}
+
+std::vector<glm::vec3> CubePrimitive::CreateCubePositions(const float size)
 {
     float h = size * 0.5f;
 
@@ -53,7 +162,7 @@ std::vector<glm::vec3> CreateCubePositions(const float size)
     };
 }
 
-std::vector<glm::vec2> CreateCubeUVs()
+std::vector<glm::vec2> CubePrimitive::CreateCubeUVs()
 {
     return {// Front (+Z)
             {0, 0},
@@ -87,7 +196,7 @@ std::vector<glm::vec2> CreateCubeUVs()
             {0, 1}};
 }
 
-std::vector<glm::vec3> CreateCubeNormals()
+std::vector<glm::vec3> CubePrimitive::CreateCubeNormals()
 {
     return {
         // Front (+Z)
@@ -123,7 +232,7 @@ std::vector<glm::vec3> CreateCubeNormals()
     };
 }
 
-std::vector<glm::vec4> CreateCubeTangents()
+std::vector<glm::vec4> CubePrimitive::CreateCubeTangents()
 {
     return {
         // Front (+Z)
@@ -159,7 +268,7 @@ std::vector<glm::vec4> CreateCubeTangents()
     };
 }
 
-std::vector<std::uint16_t> CreateCubeIndices()
+std::vector<std::uint16_t> CubePrimitive::CreateCubeIndices()
 {
     return {
         0,  1,  2,  0,  2,  3,  // Front
@@ -171,21 +280,21 @@ std::vector<std::uint16_t> CreateCubeIndices()
     };
 }
 
-Mesh CreateCubeMesh(const float size)
+SpherePrimitive::SpherePrimitive(const float size, const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
-    Mesh mesh;
-    mesh.name = kCubeMeshName;
-    mesh.indices = CreateCubeIndices();
-    mesh.positions = CreateCubePositions(size);
-    mesh.texCoords0 = CreateCubeUVs();
-    mesh.normals = CreateCubeNormals();
-    mesh.tangents = CreateCubeTangents();
-    mesh.vertexCount = mesh.positions.size();
-    return mesh;
+    mesh_.name = kSphereMeshName;
+    positions_ = CreateSpherePositions(size, stackCount, sectorCount);
+    uvs_ = CreateSphereUVs(stackCount, sectorCount);
+    normals_ = CreateSphereNormals(stackCount, sectorCount);
+    tangents_ = CreateSphereTangents(stackCount, sectorCount);
+    indices_ = CreateSphereIndices(stackCount, sectorCount);
+
+    BuiltinPrimitive::CreateMeshPrimitive();
 }
 
-std::vector<glm::vec3>
-CreateSpherePositions(const float size, const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec3> SpherePrimitive::CreateSpherePositions(const float size,
+                                                              const std::uint32_t stackCount,
+                                                              const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> positions;
     positions.reserve((stackCount + 1) * (sectorCount + 1));
@@ -210,7 +319,7 @@ CreateSpherePositions(const float size, const std::uint32_t stackCount, const st
     return positions;
 }
 
-std::vector<glm::vec2> CreateSphereUVs(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec2> SpherePrimitive::CreateSphereUVs(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec2> uvs;
     uvs.reserve((stackCount + 1) * (sectorCount + 1));
@@ -227,7 +336,8 @@ std::vector<glm::vec2> CreateSphereUVs(const std::uint32_t stackCount, const std
     return uvs;
 }
 
-std::vector<glm::vec3> CreateSphereNormals(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec3> SpherePrimitive::CreateSphereNormals(const std::uint32_t stackCount,
+                                                            const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> normals;
     normals.reserve((stackCount + 1) * (sectorCount + 1));
@@ -251,7 +361,8 @@ std::vector<glm::vec3> CreateSphereNormals(const std::uint32_t stackCount, const
     return normals;
 }
 
-std::vector<glm::vec4> CreateSphereTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec4> SpherePrimitive::CreateSphereTangents(const std::uint32_t stackCount,
+                                                             const std::uint32_t sectorCount)
 {
     std::vector<glm::vec4> tangents;
     tangents.reserve((stackCount + 1) * (sectorCount + 1));
@@ -274,7 +385,8 @@ std::vector<glm::vec4> CreateSphereTangents(const std::uint32_t stackCount, cons
     return tangents;
 }
 
-std::vector<std::uint16_t> CreateSphereIndices(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<std::uint16_t> SpherePrimitive::CreateSphereIndices(const std::uint32_t stackCount,
+                                                                const std::uint32_t sectorCount)
 {
     std::vector<std::uint16_t> indices;
     indices.reserve(stackCount * sectorCount * 6);
@@ -299,21 +411,20 @@ std::vector<std::uint16_t> CreateSphereIndices(const std::uint32_t stackCount, c
     return indices;
 }
 
-Mesh CreateSphereMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+ConePrimitive::ConePrimitive(const float height, const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
-    Mesh mesh;
-    mesh.name = kSphereMeshName;
-    mesh.indices = CreateSphereIndices(stackCount, sectorCount);
-    mesh.positions = CreateSpherePositions(1.0f, stackCount, sectorCount);
-    mesh.texCoords0 = CreateSphereUVs(stackCount, sectorCount);
-    mesh.normals = CreateSphereNormals(stackCount, sectorCount);
-    mesh.tangents = CreateSphereTangents(stackCount, sectorCount);
-    mesh.vertexCount = mesh.positions.size();
-    return mesh;
+    mesh_.name = kConeMeshName;
+    positions_ = CreateConePositions(height, stackCount, sectorCount);
+    uvs_ = CreateConeUVs(stackCount, sectorCount);
+    normals_ = CreateConeNormals(stackCount, sectorCount);
+    tangents_ = CreateConeTangents(stackCount, sectorCount);
+    indices_ = CreateConeIndices(stackCount, sectorCount);
+
+    BuiltinPrimitive::CreateMeshPrimitive();
 }
 
 std::vector<glm::vec3>
-CreateConePositions(const float height, const std::uint32_t stackCount, const std::uint32_t sectorCount)
+ConePrimitive::CreateConePositions(const float height, const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> positions;
     positions.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
@@ -349,7 +460,7 @@ CreateConePositions(const float height, const std::uint32_t stackCount, const st
     return positions;
 }
 
-std::vector<glm::vec2> CreateConeUVs(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec2> ConePrimitive::CreateConeUVs(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec2> uvs;
     uvs.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
@@ -379,7 +490,7 @@ std::vector<glm::vec2> CreateConeUVs(const std::uint32_t stackCount, const std::
     return uvs;
 }
 
-std::vector<glm::vec3> CreateConeNormals(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec3> ConePrimitive::CreateConeNormals(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> normals;
     normals.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
@@ -413,7 +524,8 @@ std::vector<glm::vec3> CreateConeNormals(const std::uint32_t stackCount, const s
     return normals;
 }
 
-std::vector<glm::vec4> CreateConeTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec4> ConePrimitive::CreateConeTangents(const std::uint32_t stackCount,
+                                                         const std::uint32_t sectorCount)
 {
     std::vector<glm::vec4> tangents;
     tangents.reserve((stackCount + 1) * (sectorCount + 1) + (sectorCount + 2));
@@ -441,7 +553,7 @@ std::vector<glm::vec4> CreateConeTangents(const std::uint32_t stackCount, const 
     return tangents;
 }
 
-std::vector<uint16_t> CreateConeIndices(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<uint16_t> ConePrimitive::CreateConeIndices(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<uint16_t> indices;
     indices.reserve(stackCount * sectorCount * 6 + sectorCount * 3);
@@ -481,21 +593,23 @@ std::vector<uint16_t> CreateConeIndices(const std::uint32_t stackCount, const st
     return indices;
 }
 
-Mesh CreateConeMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+CylinderPrimitive::CylinderPrimitive(const float height,
+                                     const std::uint32_t stackCount,
+                                     const std::uint32_t sectorCount)
 {
-    Mesh mesh;
-    mesh.name = kConeMeshName;
-    mesh.indices = CreateConeIndices(stackCount, sectorCount);
-    mesh.positions = CreateConePositions(1.0f, stackCount, sectorCount);
-    mesh.texCoords0 = CreateConeUVs(stackCount, sectorCount);
-    mesh.normals = CreateConeNormals(stackCount, sectorCount);
-    mesh.tangents = CreateConeTangents(stackCount, sectorCount);
-    mesh.vertexCount = mesh.positions.size();
-    return mesh;
+    mesh_.name = kCylinderMeshName;
+    positions_ = CreateCylinderPositions(height, stackCount, sectorCount);
+    uvs_ = CreateCylinderUVs(stackCount, sectorCount);
+    normals_ = CreateCylinderNormals(stackCount, sectorCount);
+    tangents_ = CreateCylinderTangents(stackCount, sectorCount);
+    indices_ = CreateCylinderIndices(stackCount, sectorCount);
+
+    BuiltinPrimitive::CreateMeshPrimitive();
 }
 
-std::vector<glm::vec3>
-CreateCylinderPositions(const float height, const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec3> CylinderPrimitive::CreateCylinderPositions(const float height,
+                                                                  const std::uint32_t stackCount,
+                                                                  const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> positions;
     positions.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
@@ -529,7 +643,8 @@ CreateCylinderPositions(const float height, const std::uint32_t stackCount, cons
     return positions;
 }
 
-std::vector<glm::vec2> CreateCylinderUVs(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec2> CylinderPrimitive::CreateCylinderUVs(const std::uint32_t stackCount,
+                                                            const std::uint32_t sectorCount)
 {
     std::vector<glm::vec2> uvs;
     uvs.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
@@ -566,7 +681,8 @@ std::vector<glm::vec2> CreateCylinderUVs(const std::uint32_t stackCount, const s
     return uvs;
 }
 
-std::vector<glm::vec3> CreateCylinderNormals(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec3> CylinderPrimitive::CreateCylinderNormals(const std::uint32_t stackCount,
+                                                                const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> normals;
     normals.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
@@ -594,7 +710,8 @@ std::vector<glm::vec3> CreateCylinderNormals(const std::uint32_t stackCount, con
     return normals;
 }
 
-std::vector<glm::vec4> CreateCylinderTangents(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<glm::vec4> CylinderPrimitive::CreateCylinderTangents(const std::uint32_t stackCount,
+                                                                 const std::uint32_t sectorCount)
 {
     std::vector<glm::vec4> tangents;
     tangents.reserve((stackCount + 1) * (sectorCount + 1) + 2 * (sectorCount + 1));
@@ -624,7 +741,8 @@ std::vector<glm::vec4> CreateCylinderTangents(const std::uint32_t stackCount, co
     return tangents;
 }
 
-std::vector<uint16_t> CreateCylinderIndices(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+std::vector<uint16_t> CylinderPrimitive::CreateCylinderIndices(const std::uint32_t stackCount,
+                                                               const std::uint32_t sectorCount)
 {
     std::vector<uint16_t> indices;
     const std::uint32_t ring = sectorCount + 1;
@@ -668,20 +786,19 @@ std::vector<uint16_t> CreateCylinderIndices(const std::uint32_t stackCount, cons
     return indices;
 }
 
-Mesh CreateCylinderMesh(const std::uint32_t stackCount, const std::uint32_t sectorCount)
+PlanePrimitive::PlanePrimitive(const float size)
 {
-    Mesh mesh;
-    mesh.name = kCylinderMeshName;
-    mesh.indices = CreateCylinderIndices(stackCount, sectorCount);
-    mesh.positions = CreateCylinderPositions(1.0f, stackCount, sectorCount);
-    mesh.texCoords0 = CreateCylinderUVs(stackCount, sectorCount);
-    mesh.normals = CreateCylinderNormals(stackCount, sectorCount);
-    mesh.tangents = CreateCylinderTangents(stackCount, sectorCount);
-    mesh.vertexCount = mesh.positions.size();
-    return mesh;
+    mesh_.name = kPlaneMeshName;
+    positions_ = CreatePlanePositions(size);
+    uvs_ = CreatePlaneUVs();
+    normals_ = CreatePlaneNormals();
+    tangents_ = CreatePlaneTangents();
+    indices_ = CreatePlaneIndices();
+
+    BuiltinPrimitive::CreateMeshPrimitive();
 }
 
-std::vector<glm::vec3> CreatePlanePositions(const float size)
+std::vector<glm::vec3> PlanePrimitive::CreatePlanePositions(const float size)
 {
     std::vector<glm::vec3> positions;
     positions.reserve(4);
@@ -696,7 +813,7 @@ std::vector<glm::vec3> CreatePlanePositions(const float size)
     return positions;
 }
 
-std::vector<glm::vec2> CreatePlaneUVs()
+std::vector<glm::vec2> PlanePrimitive::CreatePlaneUVs()
 {
     std::vector<glm::vec2> uvs;
     uvs.reserve(4);
@@ -709,7 +826,7 @@ std::vector<glm::vec2> CreatePlaneUVs()
     return uvs;
 }
 
-std::vector<glm::vec3> CreatePlaneNormals()
+std::vector<glm::vec3> PlanePrimitive::CreatePlaneNormals()
 {
     std::vector<glm::vec3> normals;
     normals.reserve(4);
@@ -722,7 +839,7 @@ std::vector<glm::vec3> CreatePlaneNormals()
     return normals;
 }
 
-std::vector<glm::vec4> CreatePlaneTangents()
+std::vector<glm::vec4> PlanePrimitive::CreatePlaneTangents()
 {
     return {
         {1.0f, 0.0f, 0.0f, -1.0f},
@@ -732,37 +849,6 @@ std::vector<glm::vec4> CreatePlaneTangents()
     };
 }
 
-std::vector<std::uint16_t> CreatePlaneIndices() { return {0, 1, 2, 2, 3, 0}; }
+std::vector<std::uint16_t> PlanePrimitive::CreatePlaneIndices() { return {0, 1, 2, 2, 3, 0}; }
 
-Mesh CreatePlaneMesh(const float size)
-{
-    Mesh mesh;
-    mesh.name = kPlaneMeshName;
-    mesh.indices = CreatePlaneIndices();
-    mesh.positions = CreatePlanePositions(size);
-    mesh.texCoords0 = CreatePlaneUVs();
-    mesh.normals = CreatePlaneNormals();
-    mesh.tangents = CreatePlaneTangents();
-    mesh.vertexCount = mesh.positions.size();
-    return mesh;
-}
-
-std::string GetBuiltinMeshName(const BuiltinMeshType& builtinMeshType)
-{
-    switch (builtinMeshType) {
-        case BuiltinMeshType::CUBE:
-            return kCubeMeshName;
-        case BuiltinMeshType::SPHERE:
-            return kSphereMeshName;
-        case BuiltinMeshType::CONE:
-            return kConeMeshName;
-        case BuiltinMeshType::CYLINDER:
-            return kCylinderMeshName;
-        case BuiltinMeshType::PLANE:
-            return kPlaneMeshName;
-    }
-
-    throw std::invalid_argument("Invalid builtin mesh type!");
-}
-
-} // namespace common::vulkan_framework
+} // namespace common::scene
