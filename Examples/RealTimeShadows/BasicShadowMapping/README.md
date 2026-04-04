@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `SpotlightShadowMapping`
 3. [Omnidirectional Shadow Mapping with Point Lights](/Examples/RealTimeShadows/BasicShadowMapping/OmnidirectionalShadowMapping)
    - `OmnidirectionalShadowMapping`
+4. [Multiple Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping/MultipleShadowMapping)
+   - `MultipleShadowMapping`
 
 ## Architecture of the Subsection
 

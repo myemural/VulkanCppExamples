@@ -207,6 +207,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Directional Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping/DirectionalShadowMapping)
   - [Spotlight Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping/SpotlightShadowMapping)
   - [Omnidirectional Shadow Mapping with Point Lights](/Examples/RealTimeShadows/BasicShadowMapping/OmnidirectionalShadowMapping)
+  - [Multiple Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping/MultipleShadowMapping)
 
 ## Environment Support
 
