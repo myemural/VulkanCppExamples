@@ -46,56 +46,6 @@ layout(push_constant) uniform MeshPushConstants {
     uint objectId;
 } pc;
 
-vec2 ParallaxOcclusionMapping(vec2 texCoords, vec3 viewDirTS, sampler2D heightMap, float heightScale)
-{
-    // Change layer count to the view angle
-    const float minLayers = 8.0;
-    const float maxLayers = 256.0;
-    float numLayers = mix(maxLayers, minLayers, abs(viewDirTS.z));
-
-    float layerStep = 1.0 / numLayers;
-
-    // Grazing-angle fade
-    float ndotv = clamp(viewDirTS.z, 0.0, 1.0);
-    float parallaxFade = smoothstep(0.0, 0.2, ndotv);
-
-    float viewDirZ = max(viewDirTS.z, 1e-4);
-    vec2 P = (viewDirTS.xy / viewDirZ) * heightScale * parallaxFade;
-    vec2 deltaTexCoords = P / numLayers;
-
-    // Ray starts at top of heightfield
-    float rayHeight = 1.0;
-
-    vec2 currentTexCoords = texCoords;
-    float currentHeight = texture(heightMap, currentTexCoords).r;
-
-    // Previous step data (for interpolation)
-    vec2 prevTexCoords = currentTexCoords;
-    float prevHeight = currentHeight;
-    float prevRayHeight = rayHeight;
-
-    // Ray marching
-    while (rayHeight > currentHeight)
-    {
-        prevTexCoords = currentTexCoords;
-        prevHeight = currentHeight;
-        prevRayHeight = rayHeight;
-
-        currentTexCoords -= deltaTexCoords;
-        rayHeight -= layerStep;
-        currentHeight = texture(heightMap, currentTexCoords).r;
-    }
-
-    // Linear interpolation between last two steps
-    float after  = currentHeight - rayHeight;
-    float before = prevHeight - prevRayHeight;
-
-    float weight = before / (before - after);
-    vec2 finalTexCoords = mix(currentTexCoords, prevTexCoords, weight);
-
-    return finalTexCoords;
-}
-
 vec2 ReliefParallaxMapping(vec2 texCoords, vec3 viewDirTS, sampler2D heightMap, float heightScale)
 {
     // Change layer count to the view angle
