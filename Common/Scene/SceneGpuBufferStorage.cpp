@@ -151,13 +151,23 @@ MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const MeshPrimitive& mesh
         const std::uint32_t offset = globalBufferPos_;
         const auto accessorSize = GetAccessorSize(accessorType);
 
-        const auto accessor = meshPrimitive.attributes.at(attributeType);
-        const size_t start = accessor.bufferView.byteOffset + accessor.byteOffset;
-        const size_t length = accessor.count;
-        const auto totalSize = length * accessorSize;
-        globalBufferPos_ += totalSize;
+        /// FIXME: There is an alignment problem for glTF meshes, this should be fixed later on.
+        if (meshPrimitive.attributes.contains(attributeType)) {
+            const auto accessor = meshPrimitive.attributes.at(attributeType);
+            const size_t start = accessor.bufferView.byteOffset + accessor.byteOffset;
+            const size_t length = accessor.count;
+            const auto totalSize = length * accessorSize;
+            globalBufferPos_ += totalSize;
 
-        resourceManager_.SetBuffer(kGeometryBufferName, &accessor.bufferView.data[start], totalSize, offset, false);
+            resourceManager_.SetBuffer(kGeometryBufferName, &accessor.bufferView.data[start], totalSize, offset, false);
+        } else {
+            // Fallback for the missing attributes
+            const auto posAccessor = meshPrimitive.attributes.at(AttributeType::POSITION);
+            const auto totalSize = posAccessor.count * accessorSize;
+            globalBufferPos_ += totalSize;
+            std::vector<unsigned char> tempVector(totalSize, 0);
+            resourceManager_.SetBuffer(kGeometryBufferName, tempVector.data(), totalSize, offset, false);
+        }
 
         meshGpu.vertexOffsets.push_back(offset);
     }

@@ -32,6 +32,12 @@ SceneObjectBuilder& SceneObjectBuilder::WithEulerAngles(const glm::vec3& eulerAn
     return *this;
 }
 
+SceneObjectBuilder& SceneObjectBuilder::WithQuaternion(const glm::vec4& quat)
+{
+    sceneObject_->SetQuaternion(quat);
+    return *this;
+}
+
 SceneObjectBuilder& SceneObjectBuilder::WithScale(const glm::vec3& scale)
 {
     sceneObject_->SetScale(scale);

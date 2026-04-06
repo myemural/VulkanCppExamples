@@ -35,6 +35,8 @@ public:
 
     [[nodiscard]] tinygltf::Model& GetModel() { return gltfModel_; }
 
+    [[nodiscard]] const tinygltf::Model& GetModel() const { return gltfModel_; }
+
     [[nodiscard]] std::vector<utility::VertexPos3Uv2> GetVertices(std::uint32_t meshIndex,
                                                                   std::uint32_t primitiveIndex) const;
 

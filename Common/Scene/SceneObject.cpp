@@ -33,6 +33,13 @@ void SceneObject::SetEulerAngles(const glm::vec3& eulerAngles)
     UpdateTransformGpu();
 }
 
+void SceneObject::SetQuaternion(const glm::vec4& quat)
+{
+    transform_.SetQuaternion(quat);
+    MarkWorldDirty();
+    UpdateTransformGpu();
+}
+
 void SceneObject::SetScale(const glm::vec3& scale)
 {
     transform_.SetScale(scale);
@@ -64,6 +71,7 @@ void SceneObject::AddChild(const std::shared_ptr<SceneObject>& childObject)
     childObject->SetParent(shared_from_this());
     children_.push_back(childObject);
     childObject->MarkWorldDirty();
+    UpdateTransformGpu();
 }
 
 glm::vec3 SceneObject::GetPosition() const { return transform_.GetPosition(); }

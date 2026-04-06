@@ -38,6 +38,8 @@ public:
 
     COMMON_API void SetEulerAngles(const glm::vec3& eulerAngles);
 
+    COMMON_API void SetQuaternion(const glm::vec4& quat);
+
     COMMON_API void SetScale(const glm::vec3& scale);
 
     COMMON_API void SetMesh(const MeshPrimitive& meshPrimitive);

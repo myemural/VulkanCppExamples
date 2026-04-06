@@ -17,6 +17,14 @@ void Transform::SetPosition(const glm::vec3& pos)
 void Transform::SetEulerAngles(const glm::vec3& eulerDegrees)
 {
     eulerAngles_ = eulerDegrees;
+    skipEulerAngles_ = false;
+    MarkDirty();
+}
+
+void Transform::SetQuaternion(const glm::vec4& quat)
+{
+    rotationQuat_ = glm::quat(quat.w, quat.x, quat.y, quat.z);
+    skipEulerAngles_ = true;
     MarkDirty();
 }
 
@@ -37,8 +45,10 @@ const glm::mat4& Transform::GetLocalMatrix()
 
 void Transform::Recalculate()
 {
-    const glm::vec3 radians = glm::radians(eulerAngles_);
-    rotationQuat_ = glm::quat(radians);
+    if (!skipEulerAngles_) {
+        const glm::vec3 radians = glm::radians(eulerAngles_);
+        rotationQuat_ = glm::quat(radians);
+    }
 
     localMatrix_ = glm::translate(glm::mat4(1.0f), position_) * glm::mat4_cast(rotationQuat_) *
                    glm::scale(glm::mat4(1.0f), scale_);

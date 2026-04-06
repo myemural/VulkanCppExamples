@@ -28,6 +28,8 @@ public:
 
     void SetEulerAngles(const glm::vec3& eulerDegrees);
 
+    void SetQuaternion(const glm::vec4& quat);
+
     void SetScale(const glm::vec3& scale);
 
     const glm::mat4& GetLocalMatrix();
@@ -50,6 +52,7 @@ private:
     glm::quat rotationQuat_{1, 0, 0, 0};
     glm::mat4 localMatrix_{1.0f};
     bool dirty_ = true;
+    bool skipEulerAngles_ = false;
 };
 
 struct COMMON_API TransformGpu

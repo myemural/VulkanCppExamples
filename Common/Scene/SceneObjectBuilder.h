@@ -25,6 +25,8 @@ public:
 
     COMMON_API SceneObjectBuilder& WithEulerAngles(const glm::vec3& eulerAngles);
 
+    COMMON_API SceneObjectBuilder& WithQuaternion(const glm::vec4& quat);
+
     COMMON_API SceneObjectBuilder& WithScale(const glm::vec3& scale);
 
     COMMON_API SceneObjectBuilder& WithMesh(const MeshPrimitive& meshPrimitive);
