@@ -66,7 +66,7 @@ namespace
     CreateTextureAsset(const tinygltf::Model& gltfModel, const int textureIndex, const std::string& basePath = "")
     {
         asset_manager::TextureAsset textureAsset;
-        if (const auto& image = gltfModel.images[textureIndex]; image.uri.empty()) {
+        if (const auto& image = gltfModel.images[gltfModel.textures[textureIndex].source]; image.uri.empty()) {
             textureAsset.width = image.width;
             textureAsset.height = image.height;
             textureAsset.channels = image.component;
@@ -244,6 +244,10 @@ Material GltfToSceneObjectConverter::CreateMaterial(const tinygltf::Model& gltfM
     if (materialCache_.contains(materialName)) {
         return materialCache_[materialName];
     }
+
+    result.diffuseColor = glm::vec4(
+            gltfMaterial.pbrMetallicRoughness.baseColorFactor[0], gltfMaterial.pbrMetallicRoughness.baseColorFactor[1],
+            gltfMaterial.pbrMetallicRoughness.baseColorFactor[2], gltfMaterial.pbrMetallicRoughness.baseColorFactor[3]);
 
     /// TODO: This part (if statements) will be modified later.
     if (gltfMaterial.pbrMetallicRoughness.baseColorTexture.index >= 0) {

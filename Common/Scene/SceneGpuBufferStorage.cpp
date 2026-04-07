@@ -11,6 +11,71 @@
 namespace common::scene
 {
 
+namespace
+{
+    void GenerateTangents(const MeshPrimitive& mesh, std::vector<glm::vec4>& outTangents)
+    {
+        const auto& posAcc = mesh.attributes.at(AttributeType::POSITION);
+        const auto& normalAcc = mesh.attributes.at(AttributeType::NORMAL);
+        const auto& uvAcc = mesh.attributes.at(AttributeType::TEXCOORD);
+        const auto& indexAcc = mesh.indices;
+
+        const auto* P = reinterpret_cast<const glm::vec3*>(
+                &posAcc.bufferView.data[posAcc.bufferView.byteOffset + posAcc.byteOffset]);
+
+        const auto* N = reinterpret_cast<const glm::vec3*>(
+                &normalAcc.bufferView.data[normalAcc.bufferView.byteOffset + normalAcc.byteOffset]);
+
+        const auto* UV = reinterpret_cast<const glm::vec2*>(
+                &uvAcc.bufferView.data[uvAcc.bufferView.byteOffset + uvAcc.byteOffset]);
+
+        const auto* I = reinterpret_cast<const uint16_t*>(
+                &indexAcc.bufferView.data[indexAcc.bufferView.byteOffset + indexAcc.byteOffset]);
+
+        const size_t vertexCount = posAcc.count;
+        const size_t indexCount = indexAcc.count;
+
+        std::vector tangents(vertexCount, glm::vec3(0));
+        std::vector bitangents(vertexCount, glm::vec3(0));
+
+        for (size_t i = 0; i < indexCount; i += 3) {
+            uint32_t i0 = I[i], i1 = I[i + 1], i2 = I[i + 2];
+
+            glm::vec3 e1 = P[i1] - P[i0];
+            glm::vec3 e2 = P[i2] - P[i0];
+
+            glm::vec2 d1 = UV[i1] - UV[i0];
+            glm::vec2 d2 = UV[i2] - UV[i0];
+
+            float r = d1.x * d2.y - d2.x * d1.y;
+            if (fabs(r) < 1e-8f) {
+                continue;
+            }
+
+            r = 1.0f / r;
+
+            glm::vec3 t = (e1 * d2.y - e2 * d1.y) * r;
+            glm::vec3 b = (e2 * d1.x - e1 * d2.x) * r;
+
+            tangents[i0] += t;
+            tangents[i1] += t;
+            tangents[i2] += t;
+            bitangents[i0] += b;
+            bitangents[i1] += b;
+            bitangents[i2] += b;
+        }
+
+        // Fill result
+        outTangents.resize(vertexCount);
+        for (size_t i = 0; i < vertexCount; ++i) {
+            const glm::vec3& n = N[i];
+            glm::vec3 t = glm::normalize(tangents[i] - n * glm::dot(n, tangents[i]));
+            float w = (glm::dot(glm::cross(n, t), bitangents[i]) < 0.0f) ? -1.0f : 1.0f;
+            outTangents[i] = glm::vec4(t, w);
+        }
+    }
+} // namespace
+
 SceneGpuBufferStorage::SceneGpuBufferStorage(vulkan_framework::ResourceManager& resourceManager,
                                              const SceneConfig& sceneConfig)
     : resourceManager_{resourceManager}, sceneConfig_(sceneConfig)
@@ -160,6 +225,15 @@ MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const MeshPrimitive& mesh
             globalBufferPos_ += totalSize;
 
             resourceManager_.SetBuffer(kGeometryBufferName, &accessor.bufferView.data[start], totalSize, offset, false);
+        } else if (attributeType == AttributeType::TANGENT &&
+                   !meshPrimitive.attributes.contains(AttributeType::TANGENT)) {
+            // Generate tangents
+            std::vector<glm::vec4> tangents;
+            GenerateTangents(meshPrimitive, tangents);
+
+            const auto totalSize = tangents.size() * accessorSize;
+            globalBufferPos_ += totalSize;
+            resourceManager_.SetBuffer(kGeometryBufferName, tangents.data(), totalSize, offset, false);
         } else {
             // Fallback for the missing attributes
             const auto posAccessor = meshPrimitive.attributes.at(AttributeType::POSITION);
