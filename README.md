@@ -208,6 +208,9 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Spotlight Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping/SpotlightShadowMapping)
   - [Omnidirectional Shadow Mapping with Point Lights](/Examples/RealTimeShadows/BasicShadowMapping/OmnidirectionalShadowMapping)
   - [Multiple Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping/MultipleShadowMapping)
+- **[Shadow Filtering And Softening](/Examples/RealTimeShadows/ShadowFilteringAndSoftening)**
+  - [Percentage Closer Filtering (PCF)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/PercentageCloserFiltering)
+  - [Hardware-Accelerated Percentage Closer Filtering](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/HardwarePercentageCloserFiltering)
 
 ## Environment Support
 

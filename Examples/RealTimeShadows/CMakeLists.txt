@@ -1,3 +1,4 @@
 set(CATEGORY_NAME RealTimeShadows)
 
 add_subdirectory(BasicShadowMapping)
+add_subdirectory(ShadowFilteringAndSoftening)

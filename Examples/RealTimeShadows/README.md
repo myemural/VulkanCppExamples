@@ -5,3 +5,7 @@ This section contains Vulkan examples that related to real-time shadows. Example
 ## [Basic Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping)
 
 TBD
+
+## [Shadow Filtering And Softening](/Examples/RealTimeShadows/ShadowFilteringAndSoftening)
+
+TBD

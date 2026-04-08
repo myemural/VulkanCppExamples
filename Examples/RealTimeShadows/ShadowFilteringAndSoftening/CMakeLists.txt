@@ -1,0 +1,7 @@
+set(SUBCATEGORY_NAME ShadowFilteringAndSoftening)
+
+add_subdirectory(Base)
+include_directories(Base)
+
+add_subdirectory(PercentageCloserFiltering)
+add_subdirectory(HardwarePercentageCloserFiltering)
