@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(PercentageCloserFiltering)
 add_subdirectory(HardwarePercentageCloserFiltering)
+add_subdirectory(ExponentialShadowMapping)

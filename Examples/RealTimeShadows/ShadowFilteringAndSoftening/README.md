@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `PercentageCloserFiltering`
 2. [Hardware-Accelerated Percentage Closer Filtering](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/HardwarePercentageCloserFiltering)
    - `HardwarePercentageCloserFiltering`
+3. [Exponential Shadow Mapping (ESM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/ExponentialShadowMapping)
+   - `ExponentialShadowMapping`
 
 ## Architecture of the Subsection
 
