@@ -1,9 +1,9 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, the shadows in the scene are created using Exponential Shadow Mapping (ESM) with using box
- *          filtering that can be adjusted from user.
+ * @brief   In this example, the shadows in the scene are created using Exponential Variance Shadow Mapping (EVSM) with
+ *          using box filtering that can be adjusted from user.
  * @author  Mustafa Yemural (myemural)
- * @date    09.04.2026
+ * @date    10.04.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping;
+using namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_variance_shadow;
 
 inline ParameterSchema CreateParameterSchema()
 {

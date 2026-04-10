@@ -2,7 +2,7 @@
  * @file    VulkanApplication.h
  * @brief   This file contains VulkanApplication class declaration.
  * @author  Mustafa Yemural (myemural)
- * @date    09.04.2026
+ * @date    10.04.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -23,7 +23,7 @@
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 
-namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_variance_shadow
 {
 class VulkanApplication final : public base::ApplicationShadowFilteringAndSoftening
 {
@@ -99,4 +99,4 @@ private:
     // For shadow filtering
     std::uint32_t currentKernelSize_ = 3;
 };
-} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_variance_shadow

@@ -13,7 +13,6 @@
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "GltfToSceneObjectConverter.h"
-#include "MathUtils.h"
 #include "ModelAsset.h"
 #include "ModelLoader.h"
 #include "SceneObjectBuilder.h"
@@ -21,7 +20,7 @@
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+namespace examples::real_time_shadows::shadow_filtering_and_softening::variance_shadow_mapping
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -130,10 +129,10 @@ void VulkanApplication::CreateInitialResources() const
         ImageResourceCreateInfo{
             .name = kShadowMapImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = VK_FORMAT_R32_SFLOAT,
+            .format = VK_FORMAT_R32G32_SFLOAT,
             .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
             .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView, .format = VK_FORMAT_R32_SFLOAT}}},
+            .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView, .format = VK_FORMAT_R32G32_SFLOAT}}},
         ImageResourceCreateInfo{
             .name = kShadowMapDepthImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -448,7 +447,7 @@ void VulkanApplication::CreateRenderPass()
 
     shadowRenderPass_ = device_->CreateRenderPass([&](auto& builder) {
         builder.AddAttachment([&](auto& attachmentCreateInfo) {
-                   attachmentCreateInfo.format = VK_FORMAT_R32_SFLOAT;
+                   attachmentCreateInfo.format = VK_FORMAT_R32G32_SFLOAT;
                    attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -642,7 +641,7 @@ void VulkanApplication::CreateCommandBuffers()
 void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex)
 {
     std::array<VkClearValue, 2> shadowMapClearValues{};
-    shadowMapClearValues[0].color = {std::exp(GetParamFloat(AppSettings::EsmExponent) * 1.0f), 0.0f, 0.0f, 0.0f};
+    shadowMapClearValues[0].color = {1.0f, 1.0f, 0.0f, 0.0f};
     shadowMapClearValues[1].depthStencil = {1.0f, 0};
 
     std::array<VkClearValue, 2> sceneClearValues{};
@@ -684,9 +683,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
                 const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
                 const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(
-                        params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f), 30.0f);
+                        params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f));
                 shadowMapPushConstant.lightSpaceMatrix = lightProjection * lightView;
-                shadowMapPushConstant.esmExponent = GetParamFloat(AppSettings::EsmExponent);
                 currentCmdBuffer->PushConstants(shadowPipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                 sizeof(shadowMapPushConstant), &shadowMapPushConstant);
@@ -727,7 +725,6 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 scenePushConstant.projection = camera_->GetProjectionMatrix();
                 scenePushConstant.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
                 scenePushConstant.filterKernelSize = currentKernelSize_;
-                scenePushConstant.esmExponent = GetParamFloat(AppSettings::EsmExponent);
                 currentCmdBuffer->PushConstants(pipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                 sizeof(scenePushConstant), &scenePushConstant);
@@ -746,8 +743,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
-    const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(params_.Get<glm::vec3>(AppSettings::LightDirection),
-                                                                 glm::vec3(0.0f), 30.0f);
+    const glm::mat4 lightView =
+            lightCamera_->GetLightViewMatrix(params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f));
 
     LightUbo lightUbo{};
     lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
@@ -789,4 +786,4 @@ void VulkanApplication::ProcessInput()
         currentKernelSize_ = 9; // 9x9 kernel
     }
 }
-} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+} // namespace examples::real_time_shadows::shadow_filtering_and_softening::variance_shadow_mapping

@@ -212,6 +212,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Percentage Closer Filtering (PCF)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/PercentageCloserFiltering)
   - [Hardware-Accelerated Percentage Closer Filtering](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/HardwarePercentageCloserFiltering)
   - [Exponential Shadow Mapping (ESM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/ExponentialShadowMapping)
+  - [Variance Shadow Mapping (VSM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/VarianceShadowMapping)
+  - [Exponential Variance Shadow Mapping (EVSM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/ExponentialVarianceShadow)
 
 ## Environment Support
 

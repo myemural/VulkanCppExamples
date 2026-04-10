@@ -2,7 +2,7 @@
  * @file    ApplicationData.h
  * @brief   This header file keeps user-provided application data (vertices, indices etc.).
  * @author  Mustafa Yemural (myemural)
- * @date    09.04.2026
+ * @date    10.04.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -14,7 +14,7 @@
 
 #include "Material.h"
 
-namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+namespace examples::real_time_shadows::shadow_filtering_and_softening::variance_shadow_mapping
 {
 
 #define SHADOW_MAP_SIZE 1024
@@ -39,14 +39,12 @@ struct ScenePushConstants
     glm::vec4 cameraPosition;
     std::uint32_t objectId;
     std::uint32_t filterKernelSize; // One dimension of the kernel
-    float esmExponent;
 };
 
 struct ShadowMapPushConstants
 {
     glm::mat4 lightSpaceMatrix;
     std::uint32_t objectId;
-    float esmExponent;
 };
 
-} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+} // namespace examples::real_time_shadows::shadow_filtering_and_softening::variance_shadow_mapping

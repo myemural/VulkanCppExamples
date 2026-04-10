@@ -13,7 +13,6 @@
 #include "AppConfig.h"
 #include "ApplicationData.h"
 #include "GltfToSceneObjectConverter.h"
-#include "MathUtils.h"
 #include "ModelAsset.h"
 #include "ModelLoader.h"
 #include "SceneObjectBuilder.h"
@@ -21,7 +20,7 @@
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_variance_shadow
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -130,10 +129,10 @@ void VulkanApplication::CreateInitialResources() const
         ImageResourceCreateInfo{
             .name = kShadowMapImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = VK_FORMAT_R32_SFLOAT,
+            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
             .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
             .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView, .format = VK_FORMAT_R32_SFLOAT}}},
+            .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView, .format = VK_FORMAT_R32G32B32A32_SFLOAT}}},
         ImageResourceCreateInfo{
             .name = kShadowMapDepthImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -448,7 +447,7 @@ void VulkanApplication::CreateRenderPass()
 
     shadowRenderPass_ = device_->CreateRenderPass([&](auto& builder) {
         builder.AddAttachment([&](auto& attachmentCreateInfo) {
-                   attachmentCreateInfo.format = VK_FORMAT_R32_SFLOAT;
+                   attachmentCreateInfo.format = VK_FORMAT_R32G32B32A32_SFLOAT;
                    attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -641,8 +640,12 @@ void VulkanApplication::CreateCommandBuffers()
 
 void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex)
 {
+    const float esmExponent = GetParamFloat(AppSettings::EsmExponent);
+    const float pos = exp(esmExponent);
+    const float neg = exp(-esmExponent);
+
     std::array<VkClearValue, 2> shadowMapClearValues{};
-    shadowMapClearValues[0].color = {std::exp(GetParamFloat(AppSettings::EsmExponent) * 1.0f), 0.0f, 0.0f, 0.0f};
+    shadowMapClearValues[0].color = {pos, pos * pos, neg, neg * neg};
     shadowMapClearValues[1].depthStencil = {1.0f, 0};
 
     std::array<VkClearValue, 2> sceneClearValues{};
@@ -789,4 +792,4 @@ void VulkanApplication::ProcessInput()
         currentKernelSize_ = 9; // 9x9 kernel
     }
 }
-} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_variance_shadow

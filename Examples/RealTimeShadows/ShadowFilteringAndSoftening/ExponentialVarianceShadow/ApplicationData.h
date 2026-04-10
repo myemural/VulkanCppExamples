@@ -2,7 +2,7 @@
  * @file    ApplicationData.h
  * @brief   This header file keeps user-provided application data (vertices, indices etc.).
  * @author  Mustafa Yemural (myemural)
- * @date    09.04.2026
+ * @date    10.04.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -14,7 +14,7 @@
 
 #include "Material.h"
 
-namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_variance_shadow
 {
 
 #define SHADOW_MAP_SIZE 1024
@@ -49,4 +49,4 @@ struct ShadowMapPushConstants
     float esmExponent;
 };
 
-} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_variance_shadow

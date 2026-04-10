@@ -30,9 +30,9 @@ glm::mat4 CameraBase::GetReflectedViewMatrix(const utility::Plane& plane) const
     return view * reflect;
 }
 
-glm::mat4 CameraBase::GetLightViewMatrix(const glm::vec3& lightDir, const glm::vec3& center) const
+glm::mat4 CameraBase::GetLightViewMatrix(const glm::vec3& lightDir, const glm::vec3& center, const float distance) const
 {
-    return glm::lookAt(center - lightDir * 15.0f, center, worldUp_);
+    return glm::lookAt(center - lightDir * distance, center, worldUp_);
 }
 
 glm::mat4 CameraBase::GetReflectionViewProjMatrix(const utility::Plane& plane) const

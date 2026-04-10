@@ -12,6 +12,10 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `HardwarePercentageCloserFiltering`
 3. [Exponential Shadow Mapping (ESM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/ExponentialShadowMapping)
    - `ExponentialShadowMapping`
+4. [Variance Shadow Mapping (VSM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/VarianceShadowMapping)
+   - `VarianceShadowMapping`
+5. [Exponential Variance Shadow Mapping (EVSM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/ExponentialVarianceShadow)
+   - `ExponentialVarianceShadow`
 
 ## Architecture of the Subsection
 

@@ -48,7 +48,6 @@ layout(push_constant) uniform MeshPushConstants {
     vec4 cameraPosition;
     uint objectId;
     uint filterKernelSize;
-    float esmExponent;
 } pc;
 
 float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
@@ -73,9 +72,9 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
         kernelSize += 1;
     }
 
-    // Apply Box Filtering
+    // Apply Box Filtering (for moments)
     vec2 texelSize = 1.0 / vec2(textureSize(uShadowMap, 0));
-    float filteredShadowMapValue = 0.0;
+    vec2 moments = vec2(0.0);
     int sampleCount = 0;
     int radius = kernelSize / 2;
     for(int x = -radius; x <= radius; ++x)
@@ -83,16 +82,25 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
         for(int y = -radius; y <= radius; ++y)
         {
             vec2 offset = vec2(x, y) * texelSize;
-            filteredShadowMapValue += texture(uShadowMap, shadowUV + offset).r;
+            moments += texture(uShadowMap, shadowUV + offset).rg;
             sampleCount++;
         }
     }
-    filteredShadowMapValue /= float(sampleCount);
+    moments /= float(sampleCount);
 
-    // Calculate and return shadow
-    float receiver = exp(pc.esmExponent * currentDepth);
-    float visibility = clamp(filteredShadowMapValue / receiver, 0.0, 1.0);
-    return 1.0 - visibility;
+    // Variance calculation
+    float mean = moments.x; // E[z]
+    float meanSq = moments.y;// E[z^2]
+    float variance = meanSq - (mean * mean);
+    variance = max(variance, 0.00002); // For light bleeding and precision fix
+
+    float d = currentDepth - mean;
+
+    // Chebyshev upper bound
+    float p = variance / (variance + d * d);
+
+    float visibility = (currentDepth <= mean) ? 1.0 : p;
+    return 1.0 - clamp(visibility, 0.0, 1.0);
 }
 
 void main()

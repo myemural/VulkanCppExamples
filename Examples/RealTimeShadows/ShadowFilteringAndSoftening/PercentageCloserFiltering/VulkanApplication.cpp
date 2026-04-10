@@ -724,7 +724,7 @@ void VulkanApplication::ProcessInput()
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 
-    // Set mipmap via num keys
+    // Set PCF kernel size via numerical keys
     if (window_->IsKeyPressed(GLFW_KEY_0)) {
         currentKernelSize_ = 1; // 1x1 kernel
     }

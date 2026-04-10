@@ -57,9 +57,11 @@ public:
      * @brief Returns light view matrix.
      * @param lightDir Light direction.
      * @param center The center position the camera is looking at.
+     * @param distance Distance from the center.
      * @return Returns light view matrix.
      */
-    [[nodiscard]] glm::mat4 GetLightViewMatrix(const glm::vec3& lightDir, const glm::vec3& center) const;
+    [[nodiscard]] glm::mat4
+    GetLightViewMatrix(const glm::vec3& lightDir, const glm::vec3& center, float distance = 15.0f) const;
 
     /**
      * @brief Returns reflection view projection matrix to a plane.

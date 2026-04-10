@@ -51,6 +51,20 @@ layout(push_constant) uniform MeshPushConstants {
     float esmExponent;
 } pc;
 
+float chebyshevUpperBound(vec2 moments, float t)
+{
+    float mean = moments.x;
+    float meanSq = moments.y;
+
+    float variance = meanSq - mean * mean;
+    variance = max(variance, 0.00002);
+
+    float d = t - mean;
+    float p = variance / (variance + d * d);
+
+    return clamp(p, 0.0, 1.0);
+}
+
 float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
 {
     vec4 fragPosLightSpace = light.lightSpaceMatrix * vec4(fragPos,1.0);
@@ -73,9 +87,9 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
         kernelSize += 1;
     }
 
-    // Apply Box Filtering
+    // Apply Box Filtering (for moments)
     vec2 texelSize = 1.0 / vec2(textureSize(uShadowMap, 0));
-    float filteredShadowMapValue = 0.0;
+    vec4 moments = vec4(0.0);
     int sampleCount = 0;
     int radius = kernelSize / 2;
     for(int x = -radius; x <= radius; ++x)
@@ -83,15 +97,34 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
         for(int y = -radius; y <= radius; ++y)
         {
             vec2 offset = vec2(x, y) * texelSize;
-            filteredShadowMapValue += texture(uShadowMap, shadowUV + offset).r;
+            vec2 uv = shadowUV + offset;
+            uv = clamp(uv, vec2(0.0), vec2(1.0));
+            moments += texture(uShadowMap, uv);
             sampleCount++;
         }
     }
-    filteredShadowMapValue /= float(sampleCount);
+    moments /= float(sampleCount);
 
-    // Calculate and return shadow
-    float receiver = exp(pc.esmExponent * currentDepth);
-    float visibility = clamp(filteredShadowMapValue / receiver, 0.0, 1.0);
+    float k = pc.esmExponent;
+
+    // Receiver warp
+    float posReceiver = exp(k * currentDepth);
+    float negReceiver = exp(-k * currentDepth);
+
+    // Check receiver is in front of the blocker distribution
+    if (posReceiver <= moments.x)
+    {
+        return 0.0;
+    }
+
+    // Chebyshev
+    float pPos = chebyshevUpperBound(moments.xy, posReceiver);
+    float pNeg = chebyshevUpperBound(moments.zw, negReceiver);
+
+    // Shadow calculation and light bleeding reduction
+    float bleedReduction = 0.2;
+    float visibility = min(pPos, pNeg);
+    visibility = clamp((visibility - bleedReduction) / (1.0 - bleedReduction), 0.0, 1.0);
     return 1.0 - visibility;
 }
 

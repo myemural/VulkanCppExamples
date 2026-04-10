@@ -40,7 +40,6 @@ layout(push_constant) uniform MeshPushConstants {
     vec4 cameraPosition;
     uint objectId;
     uint filterKernelSize;
-    float esmExponent;
 } pc;
 
 void main()

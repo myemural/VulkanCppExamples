@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps example specific constants and settings.
  * @author  Mustafa Yemural (myemural)
- * @date    09.04.2026
+ * @date    10.04.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+namespace examples::real_time_shadows::shadow_filtering_and_softening::variance_shadow_mapping
 {
 namespace constants
 {
@@ -80,6 +80,5 @@ namespace AppSettings
     constexpr auto AmbientStrength = "AppSettings.AmbientStrength";
     constexpr auto SpecularStrength = "AppSettings.SpecularStrength";
     constexpr auto Shininess = "AppSettings.Shininess";
-    constexpr auto EsmExponent = "AppSettings.EsmExponent";
 } // namespace AppSettings
-} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+} // namespace examples::real_time_shadows::shadow_filtering_and_softening::variance_shadow_mapping
