@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `VarianceShadowMapping`
 5. [Exponential Variance Shadow Mapping (EVSM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/ExponentialVarianceShadow)
    - `ExponentialVarianceShadow`
+6. [Percentage Closer Soft Shadows (PCSS)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/PercentageCloserSoftShadows)
+   - `PercentageCloserSoftShadows`
 
 ## Architecture of the Subsection
 

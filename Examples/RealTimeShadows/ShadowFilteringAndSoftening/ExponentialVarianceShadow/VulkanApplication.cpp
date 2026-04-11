@@ -184,7 +184,6 @@ void VulkanApplication::BuildScene()
     sceneConfig.imageTransferQueue = queue_;
 
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
-    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
@@ -194,36 +193,23 @@ void VulkanApplication::BuildScene()
     lightCamera_ = std::make_shared<OrthographicCamera>(glm::vec3(0.0f), 1.0f, 40.0f, 0.1f, 50.0f);
 
     // Materials
-    const auto woodFloorTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorTexturePath);
-    const auto woodFloorTextureId =
-            sceneImageStorage.StoreTexture(kWoodFloorTexture, kMainSampler, assetManager_->Get(woodFloorTextureAsset));
-    const auto woodFloorNormalTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorNormalTexturePath);
-    const auto woodFloorNormalTextureId =
-            sceneImageStorage.StoreTexture(kWoodFloorNormalTexture, kMainSampler,
-                                           assetManager_->Get(woodFloorNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
-    const auto terracottaTextureAsset = assetManager_->Load<TextureAsset>(kTerracottaTexturePath);
-    const auto terracottaTextureId = sceneImageStorage.StoreTexture(kTerracottaTexture, kMainSampler,
-                                                                    assetManager_->Get(terracottaTextureAsset));
-    const auto terracottaNormalTextureAsset = assetManager_->Load<TextureAsset>(kTerracottaNormalTexturePath);
-    const auto terracottaNormalTextureId =
-            sceneImageStorage.StoreTexture(kTerracottaNormalTexture, kMainSampler,
-                                           assetManager_->Get(terracottaNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    Material yellowMaterial;
+    yellowMaterial.diffuseColor = glm::vec4(0.8f, 0.8f, 0.0f, 0.8f);
+    yellowMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    yellowMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    yellowMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
 
-    Material objectMaterial;
-    objectMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    objectMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    objectMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    objectMaterial.uvScale = 2.0f;
-    objectMaterial.diffuseMap = woodFloorTextureId;
-    objectMaterial.normalMap = woodFloorNormalTextureId;
+    Material redMaterial;
+    redMaterial.diffuseColor = glm::vec4(0.8f, 0.0f, 0.0f, 0.8f);
+    redMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
+    redMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    redMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
 
     Material floorMaterial;
+    floorMaterial.diffuseColor = glm::vec4(0.8f, 0.8f, 0.8f, 0.8f);
     floorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
     floorMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     floorMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    floorMaterial.uvScale = 4.0f;
-    floorMaterial.diffuseMap = terracottaTextureId;
-    floorMaterial.normalMap = terracottaNormalTextureId;
 
     // Load and convert models
     const auto antiqueCameraModelHandle = assetManager_->Load<GltfModelAsset>(kAntiqueCameraModelPath);
@@ -240,12 +226,12 @@ void VulkanApplication::BuildScene()
         rootObjectBuilder
                 .AddChild(SceneObjectBuilder(*scene_, kCylinderObject + indexStr) // Left pillars
                                   .WithBuiltinMesh(BuiltinMeshType::CYLINDER)
-                                  .WithMaterial(objectMaterial)
+                                  .WithMaterial(yellowMaterial)
                                   .WithPosition(glm::vec3{6.5f, 1.0f, zShift})
                                   .WithScale(glm::vec3{1.0f, 6.0f, 1.0f}))
                 .AddChild(SceneObjectBuilder(*scene_, kCylinderObject + indexStr) // Right pillars
                                   .WithBuiltinMesh(BuiltinMeshType::CYLINDER)
-                                  .WithMaterial(objectMaterial)
+                                  .WithMaterial(yellowMaterial)
                                   .WithPosition(glm::vec3{-6.5f, 1.0f, zShift})
                                   .WithScale(glm::vec3{1.0f, 6.0f, 1.0f}));
     }
@@ -256,27 +242,27 @@ void VulkanApplication::BuildScene()
                                       .WithScale(glm::vec3{0.5f}))
                     .AddChild(SceneObjectBuilder(*scene_, kCubeObject)
                                       .WithBuiltinMesh(BuiltinMeshType::CUBE)
-                                      .WithMaterial(objectMaterial)
+                                      .WithMaterial(redMaterial)
                                       .WithPosition(glm::vec3{4.0f, -1.0f, 0.0f})
                                       .WithScale(glm::vec3{2.0f}))
                     .AddChild(SceneObjectBuilder(*scene_, kSphereObject)
                                       .WithBuiltinMesh(BuiltinMeshType::SPHERE)
-                                      .WithMaterial(objectMaterial)
+                                      .WithMaterial(redMaterial)
                                       .WithPosition(glm::vec3{4.0f, 1.0f, 0.0f})
                                       .WithScale(glm::vec3{2.0f}))
                     .AddChild(SceneObjectBuilder(*scene_, kPlaneObject1)
                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                      .WithMaterial(objectMaterial)
+                                      .WithMaterial(redMaterial)
                                       .WithPosition(glm::vec3{-1.0f, 0.0f, -6.0f})
                                       .WithScale(glm::vec3{4.0f}))
                     .AddChild(SceneObjectBuilder(*scene_, kPlaneObject2)
                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                      .WithMaterial(objectMaterial)
+                                      .WithMaterial(redMaterial)
                                       .WithPosition(glm::vec3{0.0f, 2.0f, -5.0f})
                                       .WithScale(glm::vec3{4.0f}))
                     .AddChild(SceneObjectBuilder(*scene_, kPlaneObject3)
                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                      .WithMaterial(objectMaterial)
+                                      .WithMaterial(redMaterial)
                                       .WithPosition(glm::vec3{1.0f, 4.0f, -4.0f})
                                       .WithScale(glm::vec3{4.0f}))
                     .AddChild(SceneObjectBuilder(*scene_, kFloorObject)

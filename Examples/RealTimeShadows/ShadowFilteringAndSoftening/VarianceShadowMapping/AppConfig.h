@@ -45,16 +45,6 @@ namespace constants
     inline constexpr auto kShadowMapDescSet = "shadowMapDescSet";
     inline constexpr auto kShadowMapDescSetLayout = "shadowMapDescSetLayout";
 
-    // Textures
-    inline constexpr auto kWoodFloorTexturePath = "Textures/Wood_Floor_015_basecolor.png";
-    inline constexpr auto kWoodFloorTexture = "woodFloorTexture";
-    inline constexpr auto kWoodFloorNormalTexturePath = "Textures/Wood_Floor_015_normal.png";
-    inline constexpr auto kWoodFloorNormalTexture = "woodFloorNormalTexture";
-    inline constexpr auto kTerracottaTexturePath = "Textures/Terracotta_Floor_Tiles_003_basecolor.png";
-    inline constexpr auto kTerracottaTexture = "terracottaTexture";
-    inline constexpr auto kTerracottaNormalTexturePath = "Textures/Terracotta_Floor_Tiles_003_normal.png";
-    inline constexpr auto kTerracottaNormalTexture = "terracottaNormalTexture";
-
     // Scene Objects
     inline constexpr auto kRootObject = "root";
     inline constexpr auto kCubeObject = "cube";

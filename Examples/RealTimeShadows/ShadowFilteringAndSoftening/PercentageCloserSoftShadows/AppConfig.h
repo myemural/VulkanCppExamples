@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps example specific constants and settings.
  * @author  Mustafa Yemural (myemural)
- * @date    09.04.2026
+ * @date    11.04.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+namespace examples::real_time_shadows::shadow_filtering_and_softening::percentage_closer_soft_shadows
 {
 namespace constants
 {
@@ -18,11 +18,9 @@ namespace constants
     inline constexpr auto kSceneVertexShaderFile = "scene.vert.spv";
     inline constexpr auto kSceneFragmentShaderFile = "scene.frag.spv";
     inline constexpr auto kShadowMapVertexShaderFile = "shadow_map_depth.vert.spv";
-    inline constexpr auto kShadowMapFragmentShaderFile = "shadow_map_depth.frag.spv";
     inline constexpr auto kSceneVertexShaderKey = "vertScene";
     inline constexpr auto kSceneFragmentShaderKey = "fragScene";
     inline constexpr auto kShadowMapVertexShaderKey = "vertShadowMap";
-    inline constexpr auto kShadowMapFragmentShaderKey = "fragShadowMap";
 
     // Buffers
     inline constexpr auto kLightUniformBuffer = "lightUniformBuffer";
@@ -30,8 +28,6 @@ namespace constants
     // Images and Image Views
     inline constexpr auto kShadowMapImage = "shadowMapImage";
     inline constexpr auto kShadowMapImageView = "shadowMapImageView";
-    inline constexpr auto kShadowMapDepthImage = "shadowMapDepthImage";
-    inline constexpr auto kShadowMapDepthImageView = "shadowMapDepthImageView";
     inline constexpr auto kDepthImage = "depthImage";
     inline constexpr auto kDepthImageView = "depthImageView";
 
@@ -70,6 +66,5 @@ namespace AppSettings
     constexpr auto AmbientStrength = "AppSettings.AmbientStrength";
     constexpr auto SpecularStrength = "AppSettings.SpecularStrength";
     constexpr auto Shininess = "AppSettings.Shininess";
-    constexpr auto EsmExponent = "AppSettings.EsmExponent";
 } // namespace AppSettings
-} // namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_shadow_mapping
+} // namespace examples::real_time_shadows::shadow_filtering_and_softening::percentage_closer_soft_shadows

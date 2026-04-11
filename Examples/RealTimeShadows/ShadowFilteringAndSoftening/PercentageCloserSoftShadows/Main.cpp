@@ -1,9 +1,9 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, the shadows in the scene are created using Exponential Variance Shadow Mapping (EVSM) with
- *          using box filtering that can be adjusted from user.
+ * @brief   In this example, the shadows in the scene are created using Percentage Closer Soft Shadows (PCSS) with
+ *          using Poisson-disk filtering.
  * @author  Mustafa Yemural (myemural)
- * @date    10.04.2026
+ * @date    11.04.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::real_time_shadows::shadow_filtering_and_softening::exponential_variance_shadow;
+using namespace examples::real_time_shadows::shadow_filtering_and_softening::percentage_closer_soft_shadows;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -35,7 +35,6 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterParam<float>(AppSettings::AmbientStrength);
     schema.RegisterParam<float>(AppSettings::SpecularStrength);
     schema.RegisterParam<float>(AppSettings::Shininess);
-    schema.RegisterParam<float>(AppSettings::EsmExponent);
 
     return schema;
 }
@@ -61,7 +60,6 @@ bool SetParams(ParameterServer& params)
         params.Set(AppSettings::AmbientStrength, 0.05f);
         params.Set(AppSettings::SpecularStrength, 0.5f);
         params.Set(AppSettings::Shininess, 128.0f);
-        params.Set(AppSettings::EsmExponent, 40.0f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

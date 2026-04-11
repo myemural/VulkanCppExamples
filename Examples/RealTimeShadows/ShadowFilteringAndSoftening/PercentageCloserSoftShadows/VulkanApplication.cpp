@@ -20,7 +20,7 @@
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_shadows::shadow_filtering_and_softening::variance_shadow_mapping
+namespace examples::real_time_shadows::shadow_filtering_and_softening::percentage_closer_soft_shadows
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -117,29 +117,20 @@ void VulkanApplication::CreateInitialResources() const
     const auto sceneVertexShaderAsset = assetManager_->Load<ShaderAsset>(kSceneVertexShaderFile);
     const auto sceneFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kSceneFragmentShaderFile);
     const auto shadowMapVertexShaderAsset = assetManager_->Load<ShaderAsset>(kShadowMapVertexShaderFile);
-    const auto shadowMapFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kShadowMapFragmentShaderFile);
 
     resourceCreateInfo.shaders = {
         .modules = {{.name = kSceneVertexShaderKey, .asset = assetManager_->Get(sceneVertexShaderAsset)},
                     {.name = kSceneFragmentShaderKey, .asset = assetManager_->Get(sceneFragmentShaderAsset)},
-                    {.name = kShadowMapVertexShaderKey, .asset = assetManager_->Get(shadowMapVertexShaderAsset)},
-                    {.name = kShadowMapFragmentShaderKey, .asset = assetManager_->Get(shadowMapFragmentShaderAsset)}}};
+                    {.name = kShadowMapVertexShaderKey, .asset = assetManager_->Get(shadowMapVertexShaderAsset)}}};
 
     resourceCreateInfo.images = {
         ImageResourceCreateInfo{
             .name = kShadowMapImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = VK_FORMAT_R32G32_SFLOAT,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
-            .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView, .format = VK_FORMAT_R32G32_SFLOAT}}},
-        ImageResourceCreateInfo{
-            .name = kShadowMapDepthImage,
-            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
             .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
-            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kShadowMapDepthImageView,
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView,
                                           .format = depthImageFormat_,
                                           .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
                                                                .baseMipLevel = 0,
@@ -190,7 +181,7 @@ void VulkanApplication::BuildScene()
     camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 1.0f, 9.0f), aspectRatio);
 
     // Add camera for directional light
-    lightCamera_ = std::make_shared<OrthographicCamera>(glm::vec3(0.0f), 1.0f, 40.0f, 0.1f, 50.0f);
+    lightCamera_ = std::make_shared<OrthographicCamera>(glm::vec3(0.0f), 1.0f, LIGHT_ORTHO_SIZE, 0.1f, 50.0f);
 
     // Materials
     Material yellowMaterial;
@@ -269,7 +260,7 @@ void VulkanApplication::BuildScene()
                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
                                       .WithMaterial(floorMaterial)
                                       .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
-                                      .WithScale(glm::vec3{30.0f}))
+                                      .WithScale(glm::vec3{36.0f}))
                     .Build();
 
     scene_->AddRootObject(rootObject);
@@ -429,11 +420,11 @@ void VulkanApplication::CreateRenderPass()
         throw std::runtime_error("Failed to create render pass for scene!");
     }
 
-    VkAttachmentReference shadowMapAttachmentRef{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
+    VkAttachmentReference shadowDepthAttachmentRef{0, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
 
     shadowRenderPass_ = device_->CreateRenderPass([&](auto& builder) {
         builder.AddAttachment([&](auto& attachmentCreateInfo) {
-                   attachmentCreateInfo.format = VK_FORMAT_R32G32_SFLOAT;
+                   attachmentCreateInfo.format = depthImageFormat_;
                    attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -442,21 +433,11 @@ void VulkanApplication::CreateRenderPass()
                    attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
                    attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                })
-                .AddAttachment([&](auto& attachmentCreateInfo) {
-                    attachmentCreateInfo.format = depthImageFormat_;
-                    attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-                    attachmentCreateInfo.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-                    attachmentCreateInfo.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-                    attachmentCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-                    attachmentCreateInfo.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-                })
                 .AddSubpass([&](auto& subpassCreateInfo) {
                     subpassCreateInfo.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-                    subpassCreateInfo.colorAttachmentCount = 1;
-                    subpassCreateInfo.pColorAttachments = &shadowMapAttachmentRef;
-                    subpassCreateInfo.pDepthStencilAttachment = &depthAttachmentRef;
+                    subpassCreateInfo.colorAttachmentCount = 0;
+                    subpassCreateInfo.pColorAttachments = nullptr;
+                    subpassCreateInfo.pDepthStencilAttachment = &shadowDepthAttachmentRef;
                 });
     });
 
@@ -536,7 +517,7 @@ void VulkanApplication::CreatePipelines()
     VkPushConstantRange shadowMapPushConstant;
     shadowMapPushConstant.offset = 0;
     shadowMapPushConstant.size = sizeof(ShadowMapPushConstants);
-    shadowMapPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    shadowMapPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
     shadowPipelineLayout_ = device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kShadowMapDescSetLayout)},
                                                           {shadowMapPushConstant});
@@ -554,10 +535,6 @@ void VulkanApplication::CreatePipelines()
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
             shaderStageCreateInfo.module = resources_->GetShaderModule(kShadowMapVertexShaderKey)->GetHandle();
         });
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
-            shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = resources_->GetShaderModule(kShadowMapFragmentShaderKey)->GetHandle();
-        });
         builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
             vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
             vertexInputStateCreateInfo.pVertexBindingDescriptions = bindings.data();
@@ -570,9 +547,15 @@ void VulkanApplication::CreatePipelines()
             viewportStateCreateInfo.scissorCount = 1;
             viewportStateCreateInfo.pScissors = &shadowMapScissor;
         });
+        builder.SetRasterizationState([&](auto& rasterizationStateCreateInfo) {
+            rasterizationStateCreateInfo.depthBiasEnable = VK_TRUE;
+            rasterizationStateCreateInfo.depthBiasConstantFactor = 0.15f;
+            rasterizationStateCreateInfo.depthBiasSlopeFactor = 0.5f;
+            rasterizationStateCreateInfo.depthBiasClamp = 0.0f;
+        });
         builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
-            blendStateCreateInfo.attachmentCount = 1;
-            blendStateCreateInfo.pAttachments = &colorBlendAttachment;
+            blendStateCreateInfo.attachmentCount = 0;
+            blendStateCreateInfo.pAttachments = nullptr;
         });
         builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
             depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
@@ -589,11 +572,10 @@ void VulkanApplication::CreatePipelines()
 void VulkanApplication::CreateFramebuffers()
 {
     // Shadow map framebuffer
-    const auto& shadowMapImageView = resources_->GetImageView(kShadowMapImage, kShadowMapImageView);
-    const auto& shadowMapDepthImageView = resources_->GetImageView(kShadowMapDepthImage, kShadowMapDepthImageView);
-    shadowFramebuffer_ =
-            device_->CreateFramebuffer(shadowRenderPass_, {shadowMapImageView, shadowMapDepthImageView},
-                                       [&](auto& builder) { builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE); });
+    const auto& shadowDepthImageView = resources_->GetImageView(kShadowMapImage, kShadowMapImageView);
+    shadowFramebuffer_ = device_->CreateFramebuffer(shadowRenderPass_, {shadowDepthImageView}, [&](auto& builder) {
+        builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+    });
 
     if (!shadowFramebuffer_) {
         throw std::runtime_error("Failed to create framebuffer (for shadow mapping)!");
@@ -626,9 +608,8 @@ void VulkanApplication::CreateCommandBuffers()
 
 void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentImageIndex)
 {
-    std::array<VkClearValue, 2> shadowMapClearValues{};
-    shadowMapClearValues[0].color = {1.0f, 1.0f, 0.0f, 0.0f};
-    shadowMapClearValues[1].depthStencil = {1.0f, 0};
+    VkClearValue shadowMapClearValue{};
+    shadowMapClearValue.depthStencil = {1.0f, 0};
 
     std::array<VkClearValue, 2> sceneClearValues{};
     sceneClearValues[0].color = params_.Get<VkClearColorValue>(AppSettings::ClearColor);
@@ -648,8 +629,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.framebuffer = shadowFramebuffer_->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
                     beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
-                    beginInfo.clearValueCount = shadowMapClearValues.size();
-                    beginInfo.pClearValues = shadowMapClearValues.data();
+                    beginInfo.clearValueCount = 1;
+                    beginInfo.pClearValues = &shadowMapClearValue;
                 },
                 VK_SUBPASS_CONTENTS_INLINE);
 
@@ -671,8 +652,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(
                         params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f));
                 shadowMapPushConstant.lightSpaceMatrix = lightProjection * lightView;
-                currentCmdBuffer->PushConstants(shadowPipelineLayout_,
-                                                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
+                currentCmdBuffer->PushConstants(shadowPipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
                                                 sizeof(shadowMapPushConstant), &shadowMapPushConstant);
                 currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
             }
@@ -710,7 +690,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 scenePushConstant.view = camera_->GetViewMatrix();
                 scenePushConstant.projection = camera_->GetProjectionMatrix();
                 scenePushConstant.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
-                scenePushConstant.filterKernelSize = currentKernelSize_;
+                scenePushConstant.lightOrthoSize = LIGHT_ORTHO_SIZE;
                 currentCmdBuffer->PushConstants(pipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                 sizeof(scenePushConstant), &scenePushConstant);
@@ -739,7 +719,7 @@ void VulkanApplication::UpdateSceneTransforms() const
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 
-void VulkanApplication::ProcessInput()
+void VulkanApplication::ProcessInput() const
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {
@@ -754,22 +734,5 @@ void VulkanApplication::ProcessInput()
     if (window_->IsKeyPressed(GLFW_KEY_D)) {
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
-
-    // Set box filtering kernel size via numerical keys
-    if (window_->IsKeyPressed(GLFW_KEY_0)) {
-        currentKernelSize_ = 1; // 1x1 kernel
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_1)) {
-        currentKernelSize_ = 3; // 3x3 kernel
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_2)) {
-        currentKernelSize_ = 5; // 5x5 kernel
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_3)) {
-        currentKernelSize_ = 7; // 7x7 kernel
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_4)) {
-        currentKernelSize_ = 9; // 9x9 kernel
-    }
 }
-} // namespace examples::real_time_shadows::shadow_filtering_and_softening::variance_shadow_mapping
+} // namespace examples::real_time_shadows::shadow_filtering_and_softening::percentage_closer_soft_shadows
