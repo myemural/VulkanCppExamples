@@ -54,7 +54,7 @@ bool SetParams(ParameterServer& params)
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.175f, 0.175f, 0.175f, 1.0f});
         params.Set(AppSettings::MouseSensitivity, 3.0f);
-        params.Set(AppSettings::CameraSpeed, 3.5f);
+        params.Set(AppSettings::CameraSpeed, 4.5f);
         params.Set(AppSettings::LightDirection, glm::vec3(-0.4f, -0.4f, -0.4f));
         params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
         params.Set(AppSettings::AmbientStrength, 0.05f);

@@ -54,7 +54,7 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
 {
     vec4 fragPosLightSpace = light.lightSpaceMatrix * vec4(fragPos,1.0);
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    projCoords.xy = projCoords.xy * 0.5 + 0.5;
 
     vec2 shadowUV = projCoords.xy;
     float currentDepth = projCoords.z;
@@ -100,6 +100,10 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
     float p = variance / (variance + d * d);
 
     float visibility = (currentDepth <= mean) ? 1.0 : p;
+
+    // Light bleed reducing
+    float amount = 0.22;
+    visibility = clamp((visibility - amount) / (1.0 - amount), 0.0, 1.0);
     return 1.0 - clamp(visibility, 0.0, 1.0);
 }
 

@@ -17,7 +17,7 @@ layout(push_constant) uniform MeshPushConstants {
 
 void main()
 {
-    float depth = gl_FragCoord.z * 0.5 + 0.5;
+    float depth = gl_FragCoord.z;
 
     // Exponential warp
     float pos = exp(pc.esmExponent * depth);

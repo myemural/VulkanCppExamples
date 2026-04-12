@@ -16,7 +16,7 @@ layout(push_constant) uniform MeshPushConstants {
 
 void main()
 {
-    float depth = gl_FragCoord.z * 0.5 + 0.5;
+    float depth = gl_FragCoord.z;
     float moment1 = depth;
     float moment2 = depth * depth;
     outMoments = vec2(moment1, moment2);

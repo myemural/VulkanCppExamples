@@ -46,9 +46,6 @@ namespace constants
     inline constexpr auto kCubeObject = "cube";
     inline constexpr auto kSphereObject = "sphere";
     inline constexpr auto kCylinderObject = "cylinder";
-    inline constexpr auto kPlaneObject1 = "plane1";
-    inline constexpr auto kPlaneObject2 = "plane2";
-    inline constexpr auto kPlaneObject3 = "plane3";
     inline constexpr auto kFloorObject = "floor";
 
     // Models

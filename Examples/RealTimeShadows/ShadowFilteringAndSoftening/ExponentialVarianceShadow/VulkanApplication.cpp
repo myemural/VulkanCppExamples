@@ -570,6 +570,12 @@ void VulkanApplication::CreatePipelines()
             viewportStateCreateInfo.scissorCount = 1;
             viewportStateCreateInfo.pScissors = &shadowMapScissor;
         });
+        builder.SetRasterizationState([&](auto& rasterizationStateCreateInfo) {
+            rasterizationStateCreateInfo.depthBiasEnable = VK_TRUE;
+            rasterizationStateCreateInfo.depthBiasConstantFactor = 0.15f;
+            rasterizationStateCreateInfo.depthBiasSlopeFactor = 0.5f;
+            rasterizationStateCreateInfo.depthBiasClamp = 0.0f;
+        });
         builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
             blendStateCreateInfo.attachmentCount = 1;
             blendStateCreateInfo.pAttachments = &colorBlendAttachment;

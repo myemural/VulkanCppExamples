@@ -82,7 +82,6 @@ float findBlocker(vec2 uv, float currentDepth, float bias, vec2 texelSize)
     {
         vec2 offset = poissonDisk[i] * texelSize;
         float depth = texture(uShadowMap, uv + offset).r;
-        depth = depth * 0.5 + 0.5;
 
         if (depth < (currentDepth - bias)) {
             avg += depth;
@@ -105,7 +104,6 @@ float pcfFilter(vec2 uv, float currentDepth, float bias, vec2 texelSize, float f
     {
         vec2 offset = poissonDisk[i] * texelSize * filterRadius;
         float depth = texture(uShadowMap, uv + offset).r;
-        depth = depth * 0.5 + 0.5;
 
         shadow += (currentDepth - bias) > depth ? 1.0 : 0.0;
     }
@@ -117,7 +115,7 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
 {
     vec4 fragPosLightSpace = light.lightSpaceMatrix * vec4(fragPos,1.0);
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    projCoords.xy = projCoords.xy * 0.5 + 0.5;
 
     vec2 shadowUV = projCoords.xy;
     float currentDepth = projCoords.z;
@@ -128,7 +126,6 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
     }
 
     float closestDepth = texture(uShadowMap, shadowUV).r;
-    closestDepth = closestDepth * 0.5 + 0.5;
 
     // Fixing shadow acne
     float bias = max(0.003 * (1.0 - dot(normalWorldSpace, normalizedLightDir)), 0.0001);
@@ -149,7 +146,7 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
     float penumbra = computePenumbra(currentDepth, averageBlockerDepth, lightSize);
 
     // Step 3: Adaptive PCF
-    float filterRadius = penumbra * textureSize(uShadowMap, 0).x * 0.5;
+    float filterRadius = penumbra * textureSize(uShadowMap, 0).x * 0.1;
     float shadow = pcfFilter(shadowUV, currentDepth, bias, texelSize, filterRadius);
 
     return shadow;

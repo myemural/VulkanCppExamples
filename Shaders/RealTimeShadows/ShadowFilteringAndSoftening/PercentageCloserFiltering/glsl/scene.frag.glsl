@@ -54,7 +54,7 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
 {
     vec4 fragPosLightSpace = light.lightSpaceMatrix * vec4(fragPos,1.0);
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    projCoords.xy = projCoords.xy * 0.5 + 0.5;
 
     vec2 shadowUV = projCoords.xy;
     float currentDepth = projCoords.z;
@@ -65,7 +65,6 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
     }
 
     float closestDepth = texture(uShadowMap, shadowUV).r;
-    closestDepth = closestDepth * 0.5 + 0.5;
 
     // Fixing shadow acne
     float bias = max(0.003 * (1.0 - dot(normalWorldSpace, normalizedLightDir)), 0.0001);
@@ -90,8 +89,6 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
         {
             vec2 offset = vec2(x, y) * texelSize;
             float pcfDepth = texture(uShadowMap, shadowUV + offset).r;
-
-            pcfDepth = pcfDepth * 0.5 + 0.5;
 
             shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;
             sampleCount++;

@@ -55,7 +55,7 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
 {
     vec4 fragPosLightSpace = light.lightSpaceMatrix * vec4(fragPos,1.0);
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    projCoords.xy = projCoords.xy * 0.5 + 0.5;
 
     vec2 shadowUV = projCoords.xy;
     float currentDepth = projCoords.z;

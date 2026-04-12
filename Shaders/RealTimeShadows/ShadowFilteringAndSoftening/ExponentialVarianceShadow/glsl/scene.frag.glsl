@@ -69,7 +69,7 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
 {
     vec4 fragPosLightSpace = light.lightSpaceMatrix * vec4(fragPos,1.0);
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    projCoords.xy = projCoords.xy * 0.5 + 0.5;
 
     vec2 shadowUV = projCoords.xy;
     float currentDepth = projCoords.z;
@@ -106,6 +106,10 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
     moments /= float(sampleCount);
 
     float k = pc.esmExponent;
+
+    // Add bias
+    float bias = max(0.003 * (1.0 - dot(normalWorldSpace, normalizedLightDir)), 0.0001);
+    currentDepth -= bias;
 
     // Receiver warp
     float posReceiver = exp(k * currentDepth);

@@ -18,6 +18,7 @@
 #include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
+#include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::real_time_shadows::shadow_filtering_and_softening::percentage_closer_soft_shadows
@@ -213,17 +214,17 @@ void VulkanApplication::BuildScene()
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (auto i = 0; i < 15; ++i) {
         const std::string indexStr = std::to_string(i);
-        const auto zShift = -static_cast<float>(i * 2 - 1) + 12.0f;
+        const auto zShift = -static_cast<float>(i * 2 - 1) + 15.0f;
         rootObjectBuilder
                 .AddChild(SceneObjectBuilder(*scene_, kCylinderObject + indexStr) // Left pillars
                                   .WithBuiltinMesh(BuiltinMeshType::CYLINDER)
                                   .WithMaterial(yellowMaterial)
-                                  .WithPosition(glm::vec3{6.5f, 1.0f, zShift})
+                                  .WithPosition(glm::vec3{9.5f, 1.0f, zShift})
                                   .WithScale(glm::vec3{1.0f, 6.0f, 1.0f}))
                 .AddChild(SceneObjectBuilder(*scene_, kCylinderObject + indexStr) // Right pillars
                                   .WithBuiltinMesh(BuiltinMeshType::CYLINDER)
                                   .WithMaterial(yellowMaterial)
-                                  .WithPosition(glm::vec3{-6.5f, 1.0f, zShift})
+                                  .WithPosition(glm::vec3{-9.5f, 1.0f, zShift})
                                   .WithScale(glm::vec3{1.0f, 6.0f, 1.0f}));
     }
 
@@ -234,28 +235,13 @@ void VulkanApplication::BuildScene()
                     .AddChild(SceneObjectBuilder(*scene_, kCubeObject)
                                       .WithBuiltinMesh(BuiltinMeshType::CUBE)
                                       .WithMaterial(redMaterial)
-                                      .WithPosition(glm::vec3{4.0f, -1.0f, 0.0f})
+                                      .WithPosition(glm::vec3{4.0f, 4.0f, 1.0f})
                                       .WithScale(glm::vec3{2.0f}))
                     .AddChild(SceneObjectBuilder(*scene_, kSphereObject)
                                       .WithBuiltinMesh(BuiltinMeshType::SPHERE)
                                       .WithMaterial(redMaterial)
-                                      .WithPosition(glm::vec3{4.0f, 1.0f, 0.0f})
+                                      .WithPosition(glm::vec3{-4.0f, 4.0f, 1.0f})
                                       .WithScale(glm::vec3{2.0f}))
-                    .AddChild(SceneObjectBuilder(*scene_, kPlaneObject1)
-                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                      .WithMaterial(redMaterial)
-                                      .WithPosition(glm::vec3{-1.0f, 0.0f, -6.0f})
-                                      .WithScale(glm::vec3{4.0f}))
-                    .AddChild(SceneObjectBuilder(*scene_, kPlaneObject2)
-                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                      .WithMaterial(redMaterial)
-                                      .WithPosition(glm::vec3{0.0f, 2.0f, -5.0f})
-                                      .WithScale(glm::vec3{4.0f}))
-                    .AddChild(SceneObjectBuilder(*scene_, kPlaneObject3)
-                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                      .WithMaterial(redMaterial)
-                                      .WithPosition(glm::vec3{1.0f, 4.0f, -4.0f})
-                                      .WithScale(glm::vec3{4.0f}))
                     .AddChild(SceneObjectBuilder(*scene_, kFloorObject)
                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
                                       .WithMaterial(floorMaterial)
@@ -650,7 +636,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
                 const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
                 const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(
-                        params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f));
+                        params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f), 30.0f);
                 shadowMapPushConstant.lightSpaceMatrix = lightProjection * lightView;
                 currentCmdBuffer->PushConstants(shadowPipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
                                                 sizeof(shadowMapPushConstant), &shadowMapPushConstant);
@@ -709,8 +695,28 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
-    const glm::mat4 lightView =
-            lightCamera_->GetLightViewMatrix(params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f));
+    const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(params_.Get<glm::vec3>(AppSettings::LightDirection),
+                                                                 glm::vec3(0.0f), 30.0f);
+
+    const auto time = static_cast<float>(GetCurrentTime());
+    constexpr float speed = 0.8f;
+    constexpr float radius = 4.0f;
+    constexpr auto centerCube = glm::vec3(4.0f, 4.0f, 1.0f);
+    constexpr auto centerSphere = glm::vec3(-4.0f, 4.0f, 1.0f);
+    const float angle = time * speed;
+
+    glm::vec3 posCube;
+    posCube.x = centerCube.x;
+    posCube.y = centerCube.y + radius * std::cos(angle);
+    posCube.z = centerCube.z + radius * std::sin(angle);
+
+    glm::vec3 posSphere;
+    posSphere.x = centerSphere.x;
+    posSphere.y = centerSphere.y + radius * std::cos(angle);
+    posSphere.z = centerSphere.z + radius * std::sin(angle);
+
+    scene_->FindObjectByName(kCubeObject)->SetPosition(posCube);
+    scene_->FindObjectByName(kSphereObject)->SetPosition(posSphere);
 
     LightUbo lightUbo{};
     lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);

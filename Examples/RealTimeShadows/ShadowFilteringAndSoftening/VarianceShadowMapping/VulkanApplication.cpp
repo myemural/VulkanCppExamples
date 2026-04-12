@@ -669,7 +669,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
                 const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
                 const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(
-                        params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f));
+                        params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f), 30.0f);
                 shadowMapPushConstant.lightSpaceMatrix = lightProjection * lightView;
                 currentCmdBuffer->PushConstants(shadowPipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
@@ -730,7 +730,7 @@ void VulkanApplication::UpdateSceneTransforms() const
 {
     const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
     const glm::mat4 lightView =
-            lightCamera_->GetLightViewMatrix(params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f));
+            lightCamera_->GetLightViewMatrix(params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f), 30.0f);
 
     LightUbo lightUbo{};
     lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
