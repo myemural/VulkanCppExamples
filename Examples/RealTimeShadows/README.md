@@ -4,7 +4,15 @@ This section contains Vulkan examples that related to real-time shadows. Example
 
 ## [Basic Shadow Mapping](/Examples/RealTimeShadows/BasicShadowMapping)
 
-TBD
+- Implementing directional shadow mapping technique in Vulkan
+- Fixing shadow acne problem with shadow bias
+- Handling regions outside the shadow map
+- Implementing spotlight shadow mapping technique for spotlight sources in Vulkan
+- Using perspective camera for generating shadow maps
+- Implementing omnidirectional shadow mapping technique for point light sources in Vulkan
+- Using cubemaps for generating shadow maps
+- Implementing multiple shadow mapping techniques for one scene in Vulkan
+- Blending different kind of shadows
 
 ## [Shadow Filtering And Softening](/Examples/RealTimeShadows/ShadowFilteringAndSoftening)
 
