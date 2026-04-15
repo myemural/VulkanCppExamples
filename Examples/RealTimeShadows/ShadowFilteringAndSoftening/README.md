@@ -18,6 +18,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ExponentialVarianceShadow`
 6. [Percentage Closer Soft Shadows (PCSS)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/PercentageCloserSoftShadows)
    - `PercentageCloserSoftShadows`
+7. [Exponential Variance Shadow Mapping with Gaussian Blur](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/ExponentialVarianceWithGaussian)
+   - `ExponentialVarianceWithGaussian`
 
 ## Architecture of the Subsection
 
