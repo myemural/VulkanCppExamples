@@ -20,6 +20,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `PercentageCloserSoftShadows`
 7. [Exponential Variance Shadow Mapping with Gaussian Blur](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/ExponentialVarianceWithGaussian)
    - `ExponentialVarianceWithGaussian`
+8. [Summed-Area Variance Shadow Mapping (SAVSM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/SummedAreaVarianceShadow)
+   - `SummedAreaVarianceShadow`
 
 ## Architecture of the Subsection
 
