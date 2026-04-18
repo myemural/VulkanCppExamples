@@ -10,6 +10,7 @@
  */
 #pragma once
 
+#include <cmath>
 #include <numbers>
 #include <vector>
 
@@ -37,14 +38,14 @@ CreateSphereVertices(const float radius, const std::uint32_t sectorCount, const 
 
     for (auto i = 0U; i <= stackCount; ++i) {
         const auto stackAngle = static_cast<float>(std::numbers::pi / 2.0 - i * std::numbers::pi / stackCount);
-        const float xy = radius * cosf(stackAngle);
-        const float z = radius * sinf(stackAngle);
+        const float xy = radius * std::cos(stackAngle);
+        const float z = radius * std::sin(stackAngle);
 
         for (auto j = 0U; j <= sectorCount; ++j) {
             const auto sectorAngle = static_cast<float>(j * 2 * std::numbers::pi / sectorCount);
 
-            const float x = xy * cosf(sectorAngle);
-            const float y = xy * sinf(sectorAngle);
+            const float x = xy * std::cos(sectorAngle);
+            const float y = xy * std::sin(sectorAngle);
 
             const float u = static_cast<float>(j) / static_cast<float>(sectorCount);
             const float v = static_cast<float>(i) / static_cast<float>(stackCount);
@@ -235,8 +236,8 @@ inline std::vector<VertexPos3Uv2> CreateConeVertices(const float radius,
         for (auto j = 0U; j <= sectorCount; ++j) {
             const auto sectorAngle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
 
-            const float x = r * cosf(sectorAngle);
-            const float y = r * sinf(sectorAngle);
+            const float x = r * std::cos(sectorAngle);
+            const float y = r * std::sin(sectorAngle);
 
             const float u = static_cast<float>(j) / static_cast<float>(sectorCount);
             const float v = t;
@@ -251,9 +252,9 @@ inline std::vector<VertexPos3Uv2> CreateConeVertices(const float radius,
     // Base circumference
     for (auto j = 0U; j <= sectorCount; ++j) {
         const float angle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
-        const float x = radius * cosf(angle);
-        const float y = radius * sinf(angle);
-        vertices.push_back({glm::vec3{x, y, 0}, glm::vec2{(cosf(angle) + 1.0f) * 0.5f, (sinf(angle) + 1.0f) * 0.5f}});
+        const float x = radius * std::cos(angle);
+        const float y = radius * std::sin(angle);
+        vertices.push_back({glm::vec3{x, y, 0}, glm::vec2{(std::cos(angle) + 1.0f) * 0.5f, (sinf(angle) + 1.0f) * 0.5f}});
     }
 
     return vertices;
@@ -340,8 +341,8 @@ inline std::vector<VertexPos3Uv2> CreateCylinderVertices(const float radius,
         for (auto j = 0U; j <= sectorCount; ++j) {
             const float angle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
 
-            const float x = radius * cosf(angle);
-            const float y = radius * sinf(angle);
+            const float x = radius * std::cos(angle);
+            const float y = radius * std::sin(angle);
             const float z = h;
 
             const float u = static_cast<float>(j) / static_cast<float>(sectorCount);
@@ -355,12 +356,12 @@ inline std::vector<VertexPos3Uv2> CreateCylinderVertices(const float radius,
     for (auto j = 0U; j <= sectorCount; ++j) {
         const float angle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
 
-        const float x = radius * cosf(angle);
-        const float y = radius * sinf(angle);
+        const float x = radius * std::cos(angle);
+        const float y = radius * std::sin(angle);
         const float z = +halfH;
 
-        const float u = (cosf(angle) + 1.0f) * 0.5f;
-        const float v = (sinf(angle) + 1.0f) * 0.5f;
+        const float u = (std::cos(angle) + 1.0f) * 0.5f;
+        const float v = (std::sin(angle) + 1.0f) * 0.5f;
 
         vertices.push_back({glm::vec3{x, y, z}, glm::vec2{u, v}});
     }
@@ -372,12 +373,12 @@ inline std::vector<VertexPos3Uv2> CreateCylinderVertices(const float radius,
     for (auto j = 0U; j <= sectorCount; ++j) {
         const float angle = static_cast<float>(j) * 2.0f * static_cast<float>(std::numbers::pi / sectorCount);
 
-        const float x = radius * cosf(angle);
-        const float y = radius * sinf(angle);
+        const float x = radius * std::cos(angle);
+        const float y = radius * std::sin(angle);
         const float z = -halfH;
 
-        const float u = (cosf(angle) + 1.0f) * 0.5f;
-        const float v = (sinf(angle) + 1.0f) * 0.5f;
+        const float u = (std::cos(angle) + 1.0f) * 0.5f;
+        const float v = (std::sin(angle) + 1.0f) * 0.5f;
 
         vertices.push_back({glm::vec3{x, y, z}, glm::vec2{u, v}});
     }
