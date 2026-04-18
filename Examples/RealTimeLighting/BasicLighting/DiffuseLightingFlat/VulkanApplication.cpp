@@ -172,7 +172,7 @@ void VulkanApplication::BuildScene()
 
     // Add scene objects
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
-                                    .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
+                                    .WithPosition(glm::vec3{0.0f})
                                     .AddChild(SceneObjectBuilder(*scene_, kCubeObject)
                                                       .WithBuiltinMesh(BuiltinMeshType::CUBE)
                                                       .WithMaterial(defaultMaterial)
@@ -329,14 +329,8 @@ void VulkanApplication::CreatePipelines()
                         0.0f, 1.0f};
     VkRect2D scissor{0, 0, currentWindowWidth_, currentWindowHeight_};
 
-    VkPipelineColorBlendAttachmentState colorBlendAttachment;
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
     colorBlendAttachment.blendEnable = VK_FALSE;
-    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
-    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
     colorBlendAttachment.colorWriteMask =
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 

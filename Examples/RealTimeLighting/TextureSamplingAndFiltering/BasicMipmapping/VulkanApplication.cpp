@@ -166,9 +166,9 @@ void VulkanApplication::BuildScene()
             kWoodFloorTexture, kMainSampler, assetManager_->Get(woodFloorTextureAsset), VK_FORMAT_R8G8B8A8_SRGB, true);
 
     Material defaultMaterial;
-    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
-    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    defaultMaterial.ambientStrength = kAmbientStrength;
+    defaultMaterial.specularStrength = kSpecularStrength;
+    defaultMaterial.shininess = kSpecularShininess;
     defaultMaterial.diffuseMap = woodFloorTextureId;
 
     // Add scene objects
@@ -456,8 +456,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

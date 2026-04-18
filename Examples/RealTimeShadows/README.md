@@ -16,4 +16,19 @@ This section contains Vulkan examples that related to real-time shadows. Example
 
 ## [Shadow Filtering And Softening](/Examples/RealTimeShadows/ShadowFilteringAndSoftening)
 
-TBD
+- Implementing Percentage Closer Filtering (PCF) technique in Vulkan
+- Changing kernel size with user inputs
+- Implementing Percentage Closer Filtering (PCF) technique with hardware supported samplers in Vulkan
+- Implementing Exponential Shadow Mapping (ESM) technique in Vulkan
+- Applying box filtering kernel to Exponential Shadow Mapping (ESM)
+- Implementing Variance Shadow Mapping (VSM) technique in Vulkan
+- Applying box filtering kernel to Variance Shadow Mapping (VSM)
+- Implementing Exponential Variance Shadow Mapping (EVSM) technique in Vulkan
+- Applying box filtering kernel to Exponential Variance Shadow Mapping (EVSM)
+- Implementing Percentage Closer Soft Shadows (PCSS) technique in Vulkan
+- Applying a constant-sized Poisson-disk filtering to PCSS
+- Implementing Gaussian Blur shader in Vulkan
+- Applying Gaussian Blur filtering to Exponential Variance Shadow Mapping (EVSM)
+- Implementing Summed Area Variance Shadow Mapping (SAVSM) technique in Vulkan
+- Generated Summed Area Table with compute shaders
+- Applying box filtering kernel to Summed Area Variance Shadow Mapping (SAVSM)

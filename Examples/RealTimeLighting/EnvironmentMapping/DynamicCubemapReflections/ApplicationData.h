@@ -15,14 +15,20 @@
 namespace examples::real_time_lighting::environment_mapping::dynamic_cubemap_reflections
 {
 
-#define MOVING_OBJECT_COUNT 6U
-#define CUBEMAP_RESOLUTION 256U
-
 inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,      common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
     common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::REFLECTIVITY_FLOAT,
     common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,     common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
+
+// Constants
+inline constexpr auto kMovingObjectCount = 6U;
+inline constexpr auto kReflectiveObjectPosition = glm::vec3{0.0f, 0.0f, 0.0f};
+inline constexpr auto kLightDirection = glm::vec3(-0.1f, -0.4f, -0.7f);
+inline constexpr auto kLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+inline constexpr auto kAmbientStrength = 0.05f;
+inline constexpr auto kSpecularStrength = 0.7f;
+inline constexpr auto kSpecularShininess = 128.0f;
 
 struct alignas(16) LightUbo
 {
@@ -43,7 +49,5 @@ struct ScenePushConstants
     glm::vec4 cameraPosition;
     std::uint32_t objectId;
 };
-
-constexpr glm::vec3 kReflectiveObjectPosition{0.0f, 0.0f, 0.0f};
 
 } // namespace examples::real_time_lighting::environment_mapping::dynamic_cubemap_reflections

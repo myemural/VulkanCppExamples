@@ -167,9 +167,9 @@ void VulkanApplication::BuildScene()
                                            assetManager_->Get(pebblesHeightTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material defaultMaterial;
-    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    defaultMaterial.ambientStrength = kAmbientStrength;
+    defaultMaterial.specularStrength = kSpecularStrength;
+    defaultMaterial.shininess = kSpecularShininess;
     defaultMaterial.diffuseMap = pebblesTextureId;
     defaultMaterial.normalMap = pebblesNormalTextureId;
     defaultMaterial.heightMap = pebblesHeightTextureId;
@@ -462,7 +462,7 @@ void VulkanApplication::UpdateSceneTransforms() const
 {
     LightUbo lightUbo{};
     lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

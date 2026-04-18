@@ -16,12 +16,14 @@
 
 namespace examples::real_time_lighting::light_sources::spotlight
 {
-#define LIGHT_COUNT 2
 
 inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4, common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
     common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT, common::scene::MaterialComponent::SHININESS_FLOAT,
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT};
+
+// Constants
+inline constexpr auto kLightCount = 2U;
 
 struct alignas(16) LightUbo
 {
@@ -33,7 +35,7 @@ struct alignas(16) LightUbo
 
 struct alignas(16) LightBlock
 {
-    LightUbo lightUbo[LIGHT_COUNT];
+    LightUbo lightUbo[kLightCount];
 };
 
 struct MeshPushConstants

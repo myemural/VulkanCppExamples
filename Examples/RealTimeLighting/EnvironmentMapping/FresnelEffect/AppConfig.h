@@ -71,10 +71,5 @@ namespace AppSettings
     constexpr auto ClearColor = "AppSettings.ClearColor";
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraZoomSpeed = "AppSettings.CameraZoomSpeed";
-    constexpr auto LightDirection = "AppSettings.LightDirection";
-    constexpr auto LightColor = "AppSettings.LightColor";
-    constexpr auto AmbientStrength = "AppSettings.AmbientStrength";
-    constexpr auto SpecularStrength = "AppSettings.SpecularStrength";
-    constexpr auto Shininess = "AppSettings.Shininess";
 } // namespace AppSettings
 } // namespace examples::real_time_lighting::environment_mapping::fresnel_effect

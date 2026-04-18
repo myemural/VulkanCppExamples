@@ -21,6 +21,15 @@ inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::REFLECTIVITY_FLOAT,
     common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,     common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
 
+// Constants
+inline constexpr auto kMirrorObjectPosition = glm::vec3{0.0f, 2.0f, -4.0f};
+inline constexpr auto kMirrorObjectNormal = glm::vec3{0.0f, 0.0f, -1.0f};
+inline constexpr auto kLightDirection = glm::vec3(-0.1f, -0.4f, -0.7f);
+inline constexpr auto kLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+inline constexpr auto kAmbientStrength = 0.05f;
+inline constexpr auto kSpecularStrength = 0.7f;
+inline constexpr auto kSpecularShininess = 128.0f;
+
 struct alignas(16) LightUbo
 {
     glm::vec4 lightDirection; // xyz = Light Direction
@@ -41,8 +50,5 @@ struct ScenePushConstants
     glm::vec4 cameraPosition;
     std::uint32_t objectId;
 };
-
-constexpr glm::vec3 kMirrorObjectPosition{0.0f, 2.0f, -4.0f};
-constexpr glm::vec3 kMirrorObjectNormal{0.0f, 0.0f, -1.0f};
 
 } // namespace examples::real_time_lighting::environment_mapping::planar_reflections

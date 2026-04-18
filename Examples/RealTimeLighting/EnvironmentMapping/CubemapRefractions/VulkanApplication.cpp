@@ -170,8 +170,8 @@ void VulkanApplication::BuildScene()
             assetManager_->Get(cubemapFrontTextureAsset));
 
     Material defaultMaterial;
-    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    defaultMaterial.diffuseColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::DiffuseColor), 1.0f);
+    defaultMaterial.ambientStrength = kAmbientStrength;
+    defaultMaterial.diffuseColor = glm::vec4(kDiffuseColor, 1.0f);
 
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
                                     .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
@@ -583,8 +583,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 } // namespace examples::real_time_lighting::environment_mapping::cubemap_refractions

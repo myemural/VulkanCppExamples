@@ -372,7 +372,7 @@ void VulkanApplication::CreatePipelines()
     entry.offset = 0;
     entry.size = sizeof(uint32_t);
 
-    constexpr std::uint32_t lightCount = LIGHT_COUNT;
+    constexpr std::uint32_t lightCount = kLightCount;
 
     VkSpecializationInfo specInfo{};
     specInfo.mapEntryCount = 1;
@@ -535,14 +535,14 @@ void VulkanApplication::UpdateSceneTransforms() const
     LightBuffer lightBuffer{};
     // Directional light
     lightBuffer.lights[0].lightTypeParams.x = static_cast<float>(LIGHT_TYPE_DIRECTIONAL);
-    lightBuffer.lights[0].lightDirection = glm::vec4(glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f)), 1.0f);
+    lightBuffer.lights[0].lightDirection = glm::vec4(kDirectionalLightNormalizedDirection, 1.0f);
     lightBuffer.lights[0].lightColor =
-            glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 0.2f); // 0.2 light intensity
+            glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), kDirectionalLightIntensity);
 
     // Spotlight
     lightBuffer.lights[1].lightTypeParams.x = static_cast<float>(LIGHT_TYPE_SPOT);
     lightBuffer.lights[1].lightPosition = glm::vec4(scene_->FindObjectByName(kSpotlightObject)->GetPosition(), 1.0f);
-    lightBuffer.lights[1].lightDirection = glm::vec4(glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f)), 1.0f);
+    lightBuffer.lights[1].lightDirection = glm::vec4(kSpotlightNormalizedDirection, 1.0f);
     lightBuffer.lights[1].lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
     lightBuffer.lights[1].spotlightParams.x = std::cos(glm::radians(GetParamFloat(AppSettings::InnerCutoffAngle)));
     lightBuffer.lights[1].spotlightParams.y = std::cos(glm::radians(GetParamFloat(AppSettings::OuterCutoffAngle)));

@@ -13,17 +13,22 @@
 #include <glm/glm.hpp>
 
 #include "MathUtils.h"
-#include "Vertex.h"
 
 namespace examples::real_time_lighting::texture_sampling_and_filtering::manual_mipmapping
 {
-
-#define NUM_OBJECTS 50
 
 inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,      common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
     common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE};
+
+// Constants
+inline constexpr auto kObjectCount = 50U;
+inline constexpr auto kLightDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
+inline constexpr auto kLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+inline constexpr auto kAmbientStrength = 0.05f;
+inline constexpr auto kSpecularStrength = 0.5f;
+inline constexpr auto kSpecularShininess = 64.0f;
 
 struct alignas(16) LightUbo
 {
@@ -42,6 +47,6 @@ struct MeshPushConstants
 
 // Model position vectors
 inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
-        NUM_OBJECTS, glm::vec3(-6.0f, -6.0f, -14.0f), glm::vec3(6.0f, 6.0f, -2.0f), 1.5f);
+        kObjectCount, glm::vec3(-6.0f, -6.0f, -14.0f), glm::vec3(6.0f, 6.0f, -2.0f), 1.5f);
 
 } // namespace examples::real_time_lighting::texture_sampling_and_filtering::manual_mipmapping

@@ -22,16 +22,12 @@ In this example, a sphere with reflective material is drawn on the screen, and t
 
 ### Settings
 
-| Parameter / Key              | Type              | Usage in Code                 | Description                      | Default Value |
-|------------------------------|-------------------|-------------------------------|----------------------------------|---------------|
-| AppSettings.ClearColor       | VkClearColorValue | AppSettings::ClearColor       | Background color of the screen   |               |
-| AppSettings.MouseSensitivity | float             | AppSettings::MouseSensitivity | Mouse sensitivity value          |               |
-| AppSettings.CameraSpeed      | float             | AppSettings::CameraSpeed      | Speed of the camera              |               |
-| AppSettings.LightDirection   | glm:vec3          | AppSettings::LightDirection   | Direction vector of the light    |               |
-| AppSettings.LightColor       | glm:vec3          | AppSettings::LightColor       | Color of the light (RGB)         |               |
-| AppSettings.AmbientStrength  | float             | AppSettings::AmbientStrength  | Ambient strength of the material |               |
-| AppSettings.SpecularStrength | float             | AppSettings::SpecularStrength | Specular strength factor         |               |
-| AppSettings.Shininess        | float             | AppSettings::Shininess        | Shininess exponent               |               |
+| Parameter / Key               | Type              | Usage in Code                  | Description                                               | Default Value |
+|-------------------------------|-------------------|--------------------------------|-----------------------------------------------------------|---------------|
+| AppSettings.ClearColor        | VkClearColorValue | AppSettings::ClearColor        | Background color of the screen                            |               |
+| AppSettings.MouseSensitivity  | float             | AppSettings::MouseSensitivity  | Mouse sensitivity value                                   |               |
+| AppSettings.CameraSpeed       | float             | AppSettings::CameraSpeed       | Speed of the camera                                       |               |
+| AppSettings.CubemapResolution | std::uint32_t     | AppSettings::CubemapResolution | Each side size of the generated reflection cubemap images |               |
 
 
 ## Learning Objectives

@@ -36,11 +36,11 @@ In this example, many cubes are drawn on the screen in random positions and thei
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type | Status             | Notes |
+|-------------|--------------------|-------|
+| GLSL        | :white_check_mark: |       |
+| HLSL        | :white_check_mark: |       |
+| Slang       | :white_check_mark: |       |
 
 ## Theoretical Background
 

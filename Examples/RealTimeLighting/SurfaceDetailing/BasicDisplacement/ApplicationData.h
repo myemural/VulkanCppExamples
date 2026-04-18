@@ -21,6 +21,12 @@ inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,
     common::scene::MaterialComponent::NORMAL_MAP_TEXTURE,      common::scene::MaterialComponent::HEIGHT_MAP_TEXTURE};
 
+// Constants
+inline constexpr auto kLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+inline constexpr auto kAmbientStrength = 0.07f;
+inline constexpr auto kSpecularStrength = 0.8f;
+inline constexpr auto kSpecularShininess = 128.0f;
+
 struct alignas(16) LightUbo
 {
     glm::vec4 lightDirection; // xyz = Light Direction

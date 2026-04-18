@@ -502,7 +502,7 @@ void VulkanApplication::UpdateSceneTransforms() const
     const std::array lightMeshInfos{scene_->FindObjectByName(kLightObject1), scene_->FindObjectByName(kLightObject2)};
 
     LightBlock lightBlock{};
-    for (auto i = 0U; i < LIGHT_COUNT; ++i) {
+    for (auto i = 0U; i < kLightCount; ++i) {
         lightBlock.lightUbo[i].lightPosition = glm::vec4(lightMeshInfos[i]->GetPosition(), 1.0f);
         lightBlock.lightUbo[i].lightDirection =
                 glm::vec4(glm::normalize(params_.Get<glm::vec3>(AppSettings::LightDirection)), 1.0f);

@@ -210,18 +210,18 @@ void VulkanApplication::BuildScene()
             assetManager_->Get(cubemapFrontTextureAsset));
 
     Material defaultMaterial;
-    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    defaultMaterial.ambientStrength = kAmbientStrength;
+    defaultMaterial.shininess = kSpecularShininess;
+    defaultMaterial.specularStrength = kSpecularStrength;
     defaultMaterial.reflectivity = 0.0f; // No reflection
     defaultMaterial.diffuseMap = wallStoneTextureId;
     defaultMaterial.normalMap = wallStoneNormalTextureId;
 
     Material mirrorMaterial;
     mirrorMaterial.diffuseColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
-    mirrorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    mirrorMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    mirrorMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    mirrorMaterial.ambientStrength = kAmbientStrength;
+    mirrorMaterial.shininess = kSpecularShininess;
+    mirrorMaterial.specularStrength = kSpecularStrength;
     mirrorMaterial.reflectivity = 0.9f; // High reflection
 
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
@@ -817,8 +817,8 @@ void VulkanApplication::UpdateSceneTransforms() const
     scene_->FindObjectByName(kSphereObject)->SetPosition(glm::vec3(1.5f, newY, 0.0f));
 
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

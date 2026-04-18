@@ -123,76 +123,72 @@ void VulkanApplication::CreateInitialResources() const
             {.name = kSkyboxFragmentShaderKey, .asset = assetManager_->Get(skyboxFragmentShaderAsset)},
             {.name = kReflectionFragmentShaderKey, .asset = assetManager_->Get(reflectionFragmentShaderAsset)}}};
 
-    resourceCreateInfo
-            .images = {ImageResourceCreateInfo{
-                           .name = kDepthImage,
-                           .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                           .format = depthImageFormat_,
-                           .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-                           .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                           .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
-                                                         .format = depthImageFormat_,
-                                                         .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                                              .baseMipLevel = 0,
-                                                                              .levelCount = 1,
-                                                                              .baseArrayLayer = 0,
-                                                                              .layerCount = 1}}}},
-                       ImageResourceCreateInfo{
-                           .name = kReflectionCubemapImage,
-                           .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                           .createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
-                           .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                           .dimensions = {CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1},
-                           .arrayLayers = 6,
-                           .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                           .views =
-                                   {
-                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageView,
-                                                           .viewType = VK_IMAGE_VIEW_TYPE_CUBE,
-                                                           .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 6}},
-                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewRight,
-                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                           .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}},
-                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewLeft,
-                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                           .format = VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 1, 1}},
-                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewTop,
-                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                           .format =
-                                                                   VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 2, 1}},
-                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewBottom,
-                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                           .format =
-                                                                   VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 3, 1}},
-                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewBack,
-                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                           .format =
-                                                                   VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 4, 1}},
-                                       ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewFront,
-                                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                           .format =
-                                                                   VK_FORMAT_R16G16B16A16_SFLOAT,
-                                                           .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 5, 1}},
-                                   }},
-                       ImageResourceCreateInfo{
-                           .name = kReflectionDepthImage,
-                           .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                           .format = depthImageFormat_,
-                           .dimensions = {CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1},
-                           .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                           .views = {ImageViewCreateInfo{.viewName = kReflectionDepthImageView,
-                                                         .format = depthImageFormat_,
-                                                         .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                                              .baseMipLevel = 0,
-                                                                              .levelCount = 1,
-                                                                              .baseArrayLayer = 0,
-                                                                              .layerCount = 1}}}}};
+    resourceCreateInfo.images = {
+        ImageResourceCreateInfo{
+            .name = kDepthImage,
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = depthImageFormat_,
+            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+            .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
+                                          .format = depthImageFormat_,
+                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                               .baseMipLevel = 0,
+                                                               .levelCount = 1,
+                                                               .baseArrayLayer = 0,
+                                                               .layerCount = 1}}}},
+        ImageResourceCreateInfo{
+            .name = kReflectionCubemapImage,
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
+            .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+            .dimensions = {GetParamU32(AppSettings::CubemapResolution), GetParamU32(AppSettings::CubemapResolution), 1},
+            .arrayLayers = 6,
+            .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            .views =
+                    {
+                        ImageViewCreateInfo{.viewName = kReflectionCubemapImageView,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_CUBE,
+                                            .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                            .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 6}},
+                        ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewRight,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                            .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}},
+                        ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewLeft,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                            .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 1, 1}},
+                        ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewTop,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                            .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 2, 1}},
+                        ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewBottom,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                            .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 3, 1}},
+                        ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewBack,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                            .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 4, 1}},
+                        ImageViewCreateInfo{.viewName = kReflectionCubemapImageViewFront,
+                                            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                            .format = VK_FORMAT_R16G16B16A16_SFLOAT,
+                                            .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 5, 1}},
+                    }},
+        ImageResourceCreateInfo{
+            .name = kReflectionDepthImage,
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = depthImageFormat_,
+            .dimensions = {GetParamU32(AppSettings::CubemapResolution), GetParamU32(AppSettings::CubemapResolution), 1},
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+            .views = {ImageViewCreateInfo{.viewName = kReflectionDepthImageView,
+                                          .format = depthImageFormat_,
+                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                               .baseMipLevel = 0,
+                                                               .levelCount = 1,
+                                                               .baseArrayLayer = 0,
+                                                               .layerCount = 1}}}}};
 
     resourceCreateInfo.samplers = {
         SamplerResourceCreateInfo{.name = kMainSampler,
@@ -247,22 +243,22 @@ void VulkanApplication::BuildScene()
             assetManager_->Get(cubemapFrontTextureAsset));
 
     Material defaultMaterial;
-    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    defaultMaterial.ambientStrength = kAmbientStrength;
+    defaultMaterial.shininess = kSpecularShininess;
+    defaultMaterial.specularStrength = kSpecularStrength;
     defaultMaterial.reflectivity = 0.0f; // No reflection
     defaultMaterial.diffuseMap = wallStoneTextureId;
     defaultMaterial.normalMap = wallStoneNormalTextureId;
 
     Material reflectiveMaterial;
     reflectiveMaterial.diffuseColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
-    reflectiveMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    reflectiveMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    reflectiveMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    reflectiveMaterial.ambientStrength = kAmbientStrength;
+    reflectiveMaterial.shininess = kSpecularShininess;
+    reflectiveMaterial.specularStrength = kSpecularStrength;
     reflectiveMaterial.reflectivity = 0.9f; // High reflection
 
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
-    for (auto i = 0U; i < MOVING_OBJECT_COUNT; ++i) {
+    for (auto i = 0U; i < kMovingObjectCount; ++i) {
         const std::string objectName = kCubeObject + std::to_string(i);
         rootObjectBuilder.AddChild(SceneObjectBuilder(*scene_, objectName)
                                            .WithBuiltinMesh(BuiltinMeshType::CUBE)
@@ -598,9 +594,9 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create graphics pipeline (for skybox)!");
     }
 
-    VkViewport viewportReflection{
-        0, 0, static_cast<float>(CUBEMAP_RESOLUTION), static_cast<float>(CUBEMAP_RESOLUTION), 0.0f, 1.0f};
-    VkRect2D scissorReflection{0, 0, CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION};
+    const std::uint32_t cubemapRes = GetParamU32(AppSettings::CubemapResolution);
+    VkViewport viewportReflection{0, 0, static_cast<float>(cubemapRes), static_cast<float>(cubemapRes), 0.0f, 1.0f};
+    VkRect2D scissorReflection{0, 0, cubemapRes, cubemapRes};
 
     reflectionScenePipeline_ =
             device_->CreateGraphicsPipeline(pipelineLayout_, reflectionRenderPass_, [&](auto& builder) {
@@ -691,8 +687,10 @@ void VulkanApplication::CreateFramebuffers()
                 resources_->GetImageView(kReflectionCubemapImage, cubemapImageViewKeys[i]);
 
         cubemapReflectionFramebuffers_[i] = device_->CreateFramebuffer(
-                reflectionRenderPass_, {reflectionCubemapImageView, reflectionDepthImageView},
-                [&](auto& builder) { builder.SetDimensions(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION); });
+                reflectionRenderPass_, {reflectionCubemapImageView, reflectionDepthImageView}, [&](auto& builder) {
+                    builder.SetDimensions(GetParamU32(AppSettings::CubemapResolution),
+                                          GetParamU32(AppSettings::CubemapResolution));
+                });
 
         if (!cubemapReflectionFramebuffers_[i]) {
             throw std::runtime_error("Failed to create cubemap reflection framebuffers!");
@@ -734,7 +732,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.renderPass = reflectionRenderPass_->GetHandle();
                     beginInfo.framebuffer = cubemapReflectionFramebuffers_[i]->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION);
+                    beginInfo.renderArea.extent = VkExtent2D(GetParamU32(AppSettings::CubemapResolution),
+                                                             GetParamU32(AppSettings::CubemapResolution));
                     beginInfo.clearValueCount = clearValues.size();
                     beginInfo.pClearValues = clearValues.data();
                 },
@@ -856,11 +855,11 @@ void VulkanApplication::UpdateSceneTransforms() const
     // Move the cubes around the reflective sphere
     const auto time = static_cast<float>(GetCurrentTime());
 
-    for (int i = 0; i < MOVING_OBJECT_COUNT; ++i) {
+    for (int i = 0; i < kMovingObjectCount; ++i) {
         constexpr float speed = 1.0f;
         constexpr float radius = 4.0f;
         constexpr glm::vec3 center = kReflectiveObjectPosition;
-        constexpr float angleStep = glm::two_pi<float>() / static_cast<float>(MOVING_OBJECT_COUNT);
+        constexpr float angleStep = glm::two_pi<float>() / static_cast<float>(kMovingObjectCount);
 
         const float angle = time * speed + angleStep * static_cast<float>(i);
 
@@ -873,8 +872,8 @@ void VulkanApplication::UpdateSceneTransforms() const
     }
 
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

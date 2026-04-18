@@ -14,16 +14,24 @@
 
 namespace examples::real_time_lighting::light_sources::multiple_light_sources
 {
-#define LIGHT_COUNT 4
-
-#define LIGHT_TYPE_DIRECTIONAL 0
-#define LIGHT_TYPE_POINT 1
-#define LIGHT_TYPE_SPOT 2
 
 inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4, common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
     common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT, common::scene::MaterialComponent::SHININESS_FLOAT,
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT};
+
+// Constants
+inline constexpr auto kLightCount = 4U;
+inline constexpr auto kDirectionalLightNormalizedDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
+inline constexpr auto kSpotlightNormalizedDirection = glm::vec3(0.0f, -1.0f, 0.0f);
+inline constexpr auto kDirectionalLightIntensity = 0.2f;
+
+enum LightType
+{
+    LIGHT_TYPE_DIRECTIONAL = 0,
+    LIGHT_TYPE_POINT = 1,
+    LIGHT_TYPE_SPOT = 2
+};
 
 struct alignas(16) LightData
 {
@@ -38,7 +46,7 @@ struct alignas(16) LightData
 
 struct LightBuffer
 {
-    LightData lights[LIGHT_COUNT];
+    LightData lights[kLightCount];
 };
 
 struct MeshPushConstants
