@@ -217,6 +217,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Percentage Closer Soft Shadows (PCSS)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/PercentageCloserSoftShadows)
   - [Exponential Variance Shadow Mapping with Gaussian Blur](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/ExponentialVarianceWithGaussian)
   - [Summed-Area Variance Shadow Mapping (SAVSM)](/Examples/RealTimeShadows/ShadowFilteringAndSoftening/SummedAreaVarianceShadow)
+- **[Shadow Map Splitting and Warping](/Examples/RealTimeShadows/ShadowMapSplittingWarping)**
+  - [Cascaded Shadow Maps (CSM)](/Examples/RealTimeShadows/ShadowMapSplittingWarping/CascadedShadowMaps)
 
 ## Environment Support
 
