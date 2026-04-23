@@ -50,6 +50,7 @@ layout(push_constant) uniform MeshPushConstants {
     mat4 proj;
     vec4 cameraPosition;
     uint objectId;
+    uint debugMode; // 0 = Off, 1 = On
 } pc;
 
 int getCascadeIndex(vec3 fragPosViewSpace)
@@ -89,9 +90,10 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
 
     float closestDepth = texture(uShadowMap[cascadeIndex], shadowUV).r;
 
-    // Fixing shadow acne
+    // Applying bias based on cascades
     float bias = max(0.005 * (1.0 - dot(normalWorldSpace, normalizedLightDir)), 0.0005);
-    bias *= (1.0 + float(cascadeIndex) * 0.5);
+    const float biasModifiers[4] = float[](1.0, 1.2, 1.5, 2.0);
+    bias *= biasModifiers[cascadeIndex];
 
     return (currentDepth - bias) > closestDepth ? 1.0 : 0.0;
 }
@@ -150,5 +152,23 @@ void main()
     float shadow = calculateShadow(normalWorldSpace, normalizedLightDir);
     vec3 finalColor = ambient + (1.0 - shadow) * (diffuse + specular);
 
-    outColor = vec4(finalColor, 1.0);
+    // Debug mode handling
+    if (pc.debugMode == 1) {
+        vec4 fragPosView = pc.view * vec4(fragPos, 1.0);
+        int cascadeIndex = getCascadeIndex(fragPosView.xyz);
+
+        if (cascadeIndex == 0) {
+            outColor = mix(vec4(finalColor, 1.0), vec4(1.0, 0.0, 0.0, 1.0), 0.2);
+        }
+        else if (cascadeIndex == 1) {
+            outColor = mix(vec4(finalColor, 1.0), vec4(0.0, 1.0, 0.0, 1.0), 0.2);
+        }
+        else if (cascadeIndex == 2) {
+            outColor = mix(vec4(finalColor, 1.0), vec4(0.0, 0.0, 1.0, 1.0), 0.2);
+        } else {
+            outColor = mix(vec4(finalColor, 1.0), vec4(1.0, 1.0, 0.0, 1.0), 0.2);
+        }
+    } else {
+        outColor = vec4(finalColor, 1.0);
+    }
 }

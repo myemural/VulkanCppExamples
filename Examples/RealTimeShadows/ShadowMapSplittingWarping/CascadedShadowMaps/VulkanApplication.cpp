@@ -710,6 +710,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 scenePushConstant.view = camera_->GetViewMatrix();
                 scenePushConstant.projection = camera_->GetProjectionMatrix();
                 scenePushConstant.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
+                scenePushConstant.debugMode = static_cast<std::uint32_t>(debugMode_);
                 currentCmdBuffer->PushConstants(pipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                 sizeof(scenePushConstant), &scenePushConstant);
@@ -739,7 +740,7 @@ void VulkanApplication::UpdateCascades()
     // Split calculation
     // Formula source: https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch10.html
     for (uint32_t i = 0; i < NUM_CASCADES; i++) {
-        constexpr auto splitLambda = 0.5f;
+        constexpr auto splitLambda = 0.7f;
         const float p = static_cast<float>(i + 1) / static_cast<float>(NUM_CASCADES);
         const float log = nearClip * std::pow(ratio, p);
         const float uniform = nearClip + range * p;
@@ -775,7 +776,7 @@ void VulkanApplication::UpdateCascades()
 
         // Set light-space camera for current cascade
         lightCamera_->SetSize(radius * 2.0f);
-        lightCamera_->SetNearPlane(0.0f);
+        lightCamera_->SetNearPlane(0.1f);
         lightCamera_->SetFarPlane(radius * 2.0f);
         const glm::mat4 lightProj = lightCamera_->GetProjectionMatrix();
         const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(
@@ -806,7 +807,7 @@ void VulkanApplication::UpdateSceneTransforms()
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 
-void VulkanApplication::ProcessInput() const
+void VulkanApplication::ProcessInput()
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {
@@ -820,6 +821,14 @@ void VulkanApplication::ProcessInput() const
     }
     if (window_->IsKeyPressed(GLFW_KEY_D)) {
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
+    }
+
+    // Set output debug mode via num keys
+    if (window_->IsKeyPressed(GLFW_KEY_0)) {
+        debugMode_ = DebugMode::OFF;
+    }
+    if (window_->IsKeyPressed(GLFW_KEY_1)) {
+        debugMode_ = DebugMode::ON;
     }
 }
 } // namespace examples::real_time_shadows::shadow_map_splitting_warping::cascaded_shadow_maps

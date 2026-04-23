@@ -28,6 +28,12 @@ inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::UV_SCALE_FLOAT,
     common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,     common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
 
+enum class DebugMode : std::uint32_t
+{
+    OFF = 0U, // Off
+    ON,       // On
+};
+
 struct alignas(16) LightUbo
 {
     glm::vec4 lightDirection;                   // xyz = Light Direction
@@ -42,6 +48,7 @@ struct ScenePushConstants
     glm::mat4 projection;
     glm::vec4 cameraPosition;
     std::uint32_t objectId;
+    std::uint32_t debugMode;
 };
 
 struct ShadowMapPushConstants

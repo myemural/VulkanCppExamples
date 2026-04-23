@@ -32,6 +32,7 @@ layout(push_constant) uniform MeshPushConstants {
     mat4 proj;
     vec4 cameraPosition;
     uint objectId;
+    uint debugMode;
 } pc;
 
 void main()

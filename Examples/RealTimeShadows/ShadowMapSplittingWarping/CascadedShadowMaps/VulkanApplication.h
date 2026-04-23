@@ -63,7 +63,7 @@ private:
 
     void UpdateSceneTransforms();
 
-    void ProcessInput() const;
+    void ProcessInput();
 
     void UpdateCascades();
 
@@ -101,5 +101,8 @@ private:
 
     // Cascade related values
     std::array<CascadeInfo, NUM_CASCADES> cascades_{};
+
+    // Debug values
+    DebugMode debugMode_ = DebugMode::OFF;
 };
 } // namespace examples::real_time_shadows::shadow_map_splitting_warping::cascaded_shadow_maps
