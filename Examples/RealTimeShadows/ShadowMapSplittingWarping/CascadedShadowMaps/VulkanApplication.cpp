@@ -213,13 +213,13 @@ void VulkanApplication::BuildScene()
     lightCamera_ = std::make_shared<OrthographicCamera>(glm::vec3(0.0f), 1.0f, 40.0f, 0.1f, 50.0f);
 
     // Materials
-    const auto woodFloorTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorTexturePath);
-    const auto woodFloorTextureId =
-            sceneImageStorage.StoreTexture(kWoodFloorTexture, kMainSampler, assetManager_->Get(woodFloorTextureAsset));
-    const auto woodFloorNormalTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorNormalTexturePath);
-    const auto woodFloorNormalTextureId =
-            sceneImageStorage.StoreTexture(kWoodFloorNormalTexture, kMainSampler,
-                                           assetManager_->Get(woodFloorNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto wallStoneTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneTexturePath);
+    const auto wallStoneTextureId =
+            sceneImageStorage.StoreTexture(kWallStoneTexture, kMainSampler, assetManager_->Get(wallStoneTextureAsset));
+    const auto wallStoneNormalTextureAsset = assetManager_->Load<TextureAsset>(kWallStoneNormalTexturePath);
+    const auto wallStoneNormalTextureId =
+            sceneImageStorage.StoreTexture(kWallStoneNormalTexture, kMainSampler,
+                                           assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
     const auto terracottaTextureAsset = assetManager_->Load<TextureAsset>(kTerracottaTexturePath);
     const auto terracottaTextureId = sceneImageStorage.StoreTexture(kTerracottaTexture, kMainSampler,
                                                                     assetManager_->Get(terracottaTextureAsset));
@@ -233,8 +233,8 @@ void VulkanApplication::BuildScene()
     objectMaterial.shininess = GetParamFloat(AppSettings::Shininess);
     objectMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
     objectMaterial.uvScale = 2.0f;
-    objectMaterial.diffuseMap = woodFloorTextureId;
-    objectMaterial.normalMap = woodFloorNormalTextureId;
+    objectMaterial.diffuseMap = wallStoneTextureId;
+    objectMaterial.normalMap = wallStoneNormalTextureId;
 
     Material floorMaterial;
     floorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
@@ -244,34 +244,45 @@ void VulkanApplication::BuildScene()
     floorMaterial.diffuseMap = terracottaTextureId;
     floorMaterial.normalMap = terracottaNormalTextureId;
 
-    const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
-                                    .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
-                                    .AddChild(SceneObjectBuilder(*scene_, kCubeObject1)
-                                                      .WithBuiltinMesh(BuiltinMeshType::CUBE)
-                                                      .WithMaterial(objectMaterial)
-                                                      .WithPosition(glm::vec3{3.0f, -1.0f, -16.0f})
-                                                      .WithScale(glm::vec3{2.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kCubeObject2)
-                                                      .WithBuiltinMesh(BuiltinMeshType::CUBE)
-                                                      .WithMaterial(objectMaterial)
-                                                      .WithPosition(glm::vec3{3.0f, -1.0f, 16.0f})
-                                                      .WithScale(glm::vec3{2.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kSphereObject)
-                                                      .WithBuiltinMesh(BuiltinMeshType::SPHERE)
-                                                      .WithMaterial(objectMaterial)
-                                                      .WithPosition(glm::vec3{3.0f, -1.0f, 8.0f})
-                                                      .WithScale(glm::vec3{2.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kConeObject)
-                                                      .WithBuiltinMesh(BuiltinMeshType::CONE)
-                                                      .WithMaterial(objectMaterial)
-                                                      .WithPosition(glm::vec3{3.0f, -1.0f, -8.0f})
-                                                      .WithScale(glm::vec3{2.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kFloorObject)
-                                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                                      .WithMaterial(floorMaterial)
-                                                      .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
-                                                      .WithScale(glm::vec3{50.0f}))
-                                    .Build();
+    auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
+    for (auto i = 0; i < 15; ++i) {
+        const std::string indexStr = std::to_string(i);
+        const auto zShift = -static_cast<float>(i * 2 - 1) + 12.0f;
+        rootObjectBuilder
+                .AddChild(SceneObjectBuilder(*scene_, kCylinderObject + indexStr) // Left pillars
+                                  .WithBuiltinMesh(BuiltinMeshType::CYLINDER)
+                                  .WithMaterial(objectMaterial)
+                                  .WithPosition(glm::vec3{6.5f, 1.0f, zShift})
+                                  .WithScale(glm::vec3{1.0f, 6.0f, 1.0f}))
+                .AddChild(SceneObjectBuilder(*scene_, kCylinderObject + indexStr) // Right pillars
+                                  .WithBuiltinMesh(BuiltinMeshType::CYLINDER)
+                                  .WithMaterial(objectMaterial)
+                                  .WithPosition(glm::vec3{-6.5f, 1.0f, zShift})
+                                  .WithScale(glm::vec3{1.0f, 6.0f, 1.0f}));
+    }
+
+    const auto& rootObject = rootObjectBuilder
+                                     .AddChild(SceneObjectBuilder(*scene_, kCubeObject1)
+                                                       .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                                       .WithMaterial(objectMaterial)
+                                                       .WithPosition(glm::vec3{3.0f, -1.0f, -13.0f})
+                                                       .WithScale(glm::vec3{2.0f}))
+                                     .AddChild(SceneObjectBuilder(*scene_, kCubeObject2)
+                                                       .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                                       .WithMaterial(objectMaterial)
+                                                       .WithPosition(glm::vec3{3.0f, -1.0f, 13.0f})
+                                                       .WithScale(glm::vec3{2.0f}))
+                                     .AddChild(SceneObjectBuilder(*scene_, kSphereObject)
+                                                       .WithBuiltinMesh(BuiltinMeshType::SPHERE)
+                                                       .WithMaterial(objectMaterial)
+                                                       .WithPosition(glm::vec3{-3.0f, -1.0f, 0.0f})
+                                                       .WithScale(glm::vec3{2.0f}))
+                                     .AddChild(SceneObjectBuilder(*scene_, kFloorObject)
+                                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
+                                                       .WithMaterial(floorMaterial)
+                                                       .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
+                                                       .WithScale(glm::vec3{50.0f}))
+                                     .Build();
 
     scene_->AddRootObject(rootObject);
 }

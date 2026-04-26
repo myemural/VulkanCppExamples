@@ -42,10 +42,10 @@ namespace constants
     inline constexpr auto kShadowMapDescSetLayout = "shadowMapDescSetLayout";
 
     // Textures
-    inline constexpr auto kWoodFloorTexturePath = "Textures/Wood_Floor_015_basecolor.png";
-    inline constexpr auto kWoodFloorTexture = "woodFloorTexture";
-    inline constexpr auto kWoodFloorNormalTexturePath = "Textures/Wood_Floor_015_normal.png";
-    inline constexpr auto kWoodFloorNormalTexture = "woodFloorNormalTexture";
+    inline constexpr auto kWallStoneTexturePath = "Textures/Wall_Stone_034_basecolor.png";
+    inline constexpr auto kWallStoneTexture = "wallStoneTexture";
+    inline constexpr auto kWallStoneNormalTexturePath = "Textures/Wall_Stone_034_normal.png";
+    inline constexpr auto kWallStoneNormalTexture = "wallStoneNormalTexture";
     inline constexpr auto kTerracottaTexturePath = "Textures/Terracotta_Floor_Tiles_003_basecolor.png";
     inline constexpr auto kTerracottaTexture = "terracottaTexture";
     inline constexpr auto kTerracottaNormalTexturePath = "Textures/Terracotta_Floor_Tiles_003_normal.png";
@@ -56,7 +56,7 @@ namespace constants
     inline constexpr auto kCubeObject1 = "cube1";
     inline constexpr auto kCubeObject2 = "cube2";
     inline constexpr auto kSphereObject = "sphere";
-    inline constexpr auto kConeObject = "cone";
+    inline constexpr auto kCylinderObject = "cylinder";
     inline constexpr auto kFloorObject = "floor";
 } // namespace constants
 
