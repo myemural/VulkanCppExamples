@@ -16,14 +16,18 @@ namespace examples::real_time_lighting::basic_lighting::blinn_phong
 {
 
 inline const std::vector enabledMaterialComponents{
-    common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,      common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
-    common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
+    common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4, common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
+    common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT, common::scene::MaterialComponent::SHININESS_FLOAT,
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT};
+
+inline const std::vector attributeLayouts{
+    std::pair(common::scene::AttributeType::POSITION, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3)};
 
 struct alignas(16) LightUbo
 {
-    glm::vec4 lightPosition;  // xyz = Light Position
-    glm::vec4 lightColor;     // xyz = Light Color
+    glm::vec4 lightPosition; // xyz = Light Position
+    glm::vec4 lightColor;    // xyz = Light Color
 };
 
 struct MeshPushConstants

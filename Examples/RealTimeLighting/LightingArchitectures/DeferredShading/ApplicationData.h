@@ -14,6 +14,7 @@
 
 #include "Material.h"
 #include "MathUtils.h"
+#include "SceneConfig.h"
 
 namespace examples::real_time_lighting::lighting_architectures::deferred_shading
 {
@@ -32,6 +33,12 @@ enum class DebugMode : std::uint32_t
 inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,
                                                    common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,
                                                    common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
+
+inline const std::vector attributeLayouts{
+    std::pair(common::scene::AttributeType::POSITION, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
+    std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
 
 struct alignas(16) PointLightData
 {

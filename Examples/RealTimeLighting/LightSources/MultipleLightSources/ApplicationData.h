@@ -20,6 +20,10 @@ inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT, common::scene::MaterialComponent::SHININESS_FLOAT,
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT};
 
+inline const std::vector attributeLayouts{
+    std::pair(common::scene::AttributeType::POSITION, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3)};
+
 // Constants
 inline constexpr auto kLightCount = 4U;
 inline constexpr auto kDirectionalLightNormalizedDirection = glm::vec3(-0.2f, -1.0f, -0.3f);

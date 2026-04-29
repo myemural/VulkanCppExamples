@@ -138,10 +138,7 @@ void VulkanApplication::CreateInitialResources() const
 void VulkanApplication::BuildScene()
 {
     SceneConfig sceneConfig;
-    sceneConfig.attributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
-    sceneConfig.attributeLayout.emplace_back(AttributeType::TEXCOORD, AccessorType::VEC2);
-    sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
-    sceneConfig.attributeLayout.emplace_back(AttributeType::TANGENT, AccessorType::VEC4);
+    sceneConfig.attributeLayout = attributeLayouts;
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
     sceneConfig.primitiveStackCount = 128U;
     sceneConfig.primitiveSectorCount = 128U;

@@ -149,8 +149,7 @@ void VulkanApplication::CreateInitialResources() const
 void VulkanApplication::BuildScene()
 {
     SceneConfig sceneConfig;
-    sceneConfig.attributeLayout.emplace_back(AttributeType::POSITION, AccessorType::VEC3);
-    sceneConfig.attributeLayout.emplace_back(AttributeType::NORMAL, AccessorType::VEC3);
+    sceneConfig.attributeLayout = attributeLayouts;
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
 
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);

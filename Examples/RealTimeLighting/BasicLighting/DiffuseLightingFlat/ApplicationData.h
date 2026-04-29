@@ -17,6 +17,10 @@ namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_flat
 
 inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4};
 
+inline const std::vector attributeLayouts{
+    std::pair(common::scene::AttributeType::POSITION, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3)};
+
 struct alignas(16) LightUbo
 {
     glm::vec4 lightPosition; // xyz = Light Position

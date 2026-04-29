@@ -24,6 +24,12 @@ inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::OPACITY_FLOAT};
 
+inline const std::vector attributeLayouts{
+    std::pair(common::scene::AttributeType::POSITION, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
+    std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
+
 struct alignas(16) LightUbo
 {
     glm::vec4 lightDirection; // xyz = Light Direction

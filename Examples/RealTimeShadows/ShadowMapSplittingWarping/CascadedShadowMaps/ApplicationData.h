@@ -15,6 +15,7 @@
 #include <glm/glm.hpp>
 
 #include "Material.h"
+#include "SceneConfig.h"
 
 namespace examples::real_time_shadows::shadow_map_splitting_warping::cascaded_shadow_maps
 {
@@ -27,6 +28,12 @@ inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
     common::scene::MaterialComponent::SPECULAR_STRENGTH_FLOAT, common::scene::MaterialComponent::UV_SCALE_FLOAT,
     common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,     common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
+
+inline const std::vector attributeLayouts{
+    std::pair(common::scene::AttributeType::POSITION, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
+    std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
 
 enum class DebugMode : std::uint32_t
 {

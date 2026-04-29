@@ -28,6 +28,12 @@ inline const std::vector enabledMaterialComponents{common::scene::MaterialCompon
                                                    common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,
                                                    common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
 
+inline const std::vector attributeLayouts{
+    std::pair(common::scene::AttributeType::POSITION, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
+    std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
+
 struct alignas(16) PointLightData
 {
     glm::vec4 lightPositionIntensity; // xyz = Light Position (View-Space), w = Light Intensity

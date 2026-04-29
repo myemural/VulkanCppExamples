@@ -18,6 +18,12 @@ namespace examples::real_time_lighting::environment_mapping::cubemap_refractions
 inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,
                                                    common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT};
 
+inline const std::vector attributeLayouts{
+    std::pair(common::scene::AttributeType::POSITION, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
+    std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
+    std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
+
 // Constants
 inline constexpr auto kLightDirection = glm::vec3(-0.1f, -0.4f, -0.7f);
 inline constexpr auto kLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
