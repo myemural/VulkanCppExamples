@@ -748,7 +748,7 @@ void VulkanApplication::UpdateCascades()
     // Split calculation
     // Formula source: https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch10.html
     for (uint32_t i = 0; i < NUM_CASCADES; i++) {
-        constexpr auto splitLambda = 0.7f;
+        constexpr auto splitLambda = 0.55f;
         const float p = static_cast<float>(i + 1) / static_cast<float>(NUM_CASCADES);
         const float log = nearClip * std::pow(ratio, p);
         const float uniform = nearClip + range * p;
@@ -784,11 +784,11 @@ void VulkanApplication::UpdateCascades()
 
         // Set light-space camera for current cascade
         lightCamera_->SetSize(radius * 2.0f);
-        lightCamera_->SetNearPlane(0.1f);
-        lightCamera_->SetFarPlane(radius * 2.0f);
+        lightCamera_->SetNearPlane(0.01f);
+        lightCamera_->SetFarPlane(radius * 3.0f);
         const glm::mat4 lightProj = lightCamera_->GetProjectionMatrix();
         const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(
-                glm::normalize(params_.Get<glm::vec3>(AppSettings::LightDirection)), center, radius);
+                glm::normalize(params_.Get<glm::vec3>(AppSettings::LightDirection)), center, radius * 2.0f);
 
         cascades_[i].lightSpaceMatrix = lightProj * lightView;
         cascades_[i].cascadeSplit = (nearClip + splitDist * clipRange);
