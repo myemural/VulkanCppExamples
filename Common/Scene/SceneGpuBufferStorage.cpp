@@ -216,7 +216,6 @@ MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const MeshPrimitive& mesh
         const std::uint32_t offset = globalBufferPos_;
         const auto accessorSize = GetAccessorSize(accessorType);
 
-        /// FIXME: There is an alignment problem for glTF meshes, this should be fixed later on.
         if (meshPrimitive.attributes.contains(attributeType)) {
             const auto accessor = meshPrimitive.attributes.at(attributeType);
             const size_t start = accessor.bufferView.byteOffset + accessor.byteOffset;
@@ -257,6 +256,9 @@ MeshGpu SceneGpuBufferStorage::AllocateMeshGpuInternal(const MeshPrimitive& mesh
     resourceManager_.SetBuffer(kGeometryBufferName, &indicesAccessor.bufferView.data[start], totalSize,
                                meshGpu.indexOffset, false);
     meshGpu.indexCount = length;
+
+    // Align global buffer position with 4
+    globalBufferPos_ = (globalBufferPos_ + 3) & ~3;
 
     // Cache for future allocations of same mesh
     meshCache_[meshPrimitive.name] = meshGpu;

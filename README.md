@@ -2,7 +2,7 @@
 
 This repository contains Vulkan examples written in modern C++20, structured in a granular, step-by-step progression from basic to advanced concepts. Each example builds incrementally on the previous ones, making it easier to understand Vulkan's low-level API in a practical way. These examples will first cover the basic features of Vulkan, and then include examples of implementing techniques such as real-time lighting, real-time shadowing, PBR, post-processing, ray tracing etc. using Vulkan.
 
-![ExamplesCollage.png](/Docs/Images/ExamplesCollage.png)
+![](/Docs/Images/ExamplesCollage.jpg)
 
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
