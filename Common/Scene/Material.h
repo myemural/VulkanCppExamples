@@ -23,10 +23,12 @@ namespace common::scene
 enum class MaterialComponent : std::uint8_t
 {
     DIFFUSE_COLOR_VEC4 = 0,
+    ALBEDO_COLOR_VEC4,
     SPECULAR_COLOR_VEC4,
 
     AMBIENT_STRENGTH_FLOAT,
     SHININESS_FLOAT,
+    ROUGHNESS_FLOAT,
     SPECULAR_STRENGTH_FLOAT,
     REFLECTIVITY_FLOAT,
     OPACITY_FLOAT,
@@ -48,11 +50,13 @@ struct COMMON_API Material
 {
     // VEC4 values
     glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    glm::vec4 albedoColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
     glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
 
     // Float values
     float ambientStrength = 0.05f;
     float shininess = 128.0f;
+    float roughness = 0.5f;
     float specularStrength = 0.7f;
     float reflectivity = 0.0f;
     float opacity = 1.0f;
@@ -83,6 +87,10 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
                 utility::AppendBytes(buffer, material.diffuseColor);
                 break;
 
+            case MaterialComponent::ALBEDO_COLOR_VEC4:
+                utility::AppendBytes(buffer, material.albedoColor);
+                break;
+
             case MaterialComponent::SPECULAR_COLOR_VEC4:
                 utility::AppendBytes(buffer, material.specularColor);
                 break;
@@ -93,6 +101,9 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::SHININESS_FLOAT:
                 utility::AppendBytes(buffer, material.shininess);
+
+            case MaterialComponent::ROUGHNESS_FLOAT:
+                utility::AppendBytes(buffer, material.roughness);
                 break;
 
             case MaterialComponent::SPECULAR_STRENGTH_FLOAT:

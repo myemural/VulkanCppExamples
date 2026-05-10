@@ -1,0 +1,7 @@
+set(SUBCATEGORY_NAME BasicPbr)
+
+add_subdirectory(Base)
+include_directories(Base)
+
+add_subdirectory(PbrEnergyConservation)
+add_subdirectory(CookTorranceMicrofacet)
