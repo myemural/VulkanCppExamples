@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(PbrEnergyConservation)
 add_subdirectory(CookTorranceMicrofacet)
+add_subdirectory(PbrMetallicWorkflow)

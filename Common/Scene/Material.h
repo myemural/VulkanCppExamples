@@ -29,6 +29,7 @@ enum class MaterialComponent : std::uint8_t
     AMBIENT_STRENGTH_FLOAT,
     SHININESS_FLOAT,
     ROUGHNESS_FLOAT,
+    METALLIC_FLOAT,
     SPECULAR_STRENGTH_FLOAT,
     REFLECTIVITY_FLOAT,
     OPACITY_FLOAT,
@@ -57,6 +58,7 @@ struct COMMON_API Material
     float ambientStrength = 0.05f;
     float shininess = 128.0f;
     float roughness = 0.5f;
+    float metallic = 0.5f;
     float specularStrength = 0.7f;
     float reflectivity = 0.0f;
     float opacity = 1.0f;
@@ -104,6 +106,10 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::ROUGHNESS_FLOAT:
                 utility::AppendBytes(buffer, material.roughness);
+                break;
+
+            case MaterialComponent::METALLIC_FLOAT:
+                utility::AppendBytes(buffer, material.metallic);
                 break;
 
             case MaterialComponent::SPECULAR_STRENGTH_FLOAT:

@@ -226,6 +226,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Basic PBR](/Examples/PhysicallyBasedRendering/BasicPbr)**
   - [Principle of Conservation of Energy and Tone Mapping](/Examples/PhysicallyBasedRendering/BasicPbr/PbrEnergyConservation)
   - [Cook-Torrance Microfacet BRDF](/Examples/PhysicallyBasedRendering/BasicPbr/CookTorranceMicrofacet)
+  - [Metallic Workflow in PBR](/Examples/PhysicallyBasedRendering/BasicPbr/PbrMetallicWorkflow)
 
 ## Environment Support
 

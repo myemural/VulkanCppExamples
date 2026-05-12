@@ -1,10 +1,8 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, the energy conservation principle, which forms the basis of the PBR material model, is
- *          implemented, and the total diffuse and specular light ratios are fixed. Blinn-Phong calculations are used
- *          again for the specular light. In addition, Reinhard Tone Mapping is applied to generate the output.
+ * @brief   This example demonstrates full metallic-roughness workflow implementation in physically based rendering.
  * @author  Mustafa Yemural (myemural)
- * @date    10.05.2026
+ * @date    12.05.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -20,7 +18,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::physically_based_rendering::basic_pbr::pbr_energy_conservation;
+using namespace examples::physically_based_rendering::basic_pbr::pbr_metallic_workflow;
 
 inline ParameterSchema CreateParameterSchema()
 {

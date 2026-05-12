@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `PbrEnergyConservation`
 2. [Cook-Torrance Microfacet BRDF](/Examples/PhysicallyBasedRendering/BasicPbr/CookTorranceMicrofacet)
    - `CookTorranceMicrofacet`
+3. [Metallic Workflow in PBR](/Examples/PhysicallyBasedRendering/BasicPbr/PbrMetallicWorkflow)
+   - `PbrMetallicWorkflow`
 
 ## Architecture of the Subsection
 

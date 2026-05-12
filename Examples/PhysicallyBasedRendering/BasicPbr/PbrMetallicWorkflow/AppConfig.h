@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps example specific constants and settings.
  * @author  Mustafa Yemural (myemural)
- * @date    10.05.2026
+ * @date    12.05.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::physically_based_rendering::basic_pbr::pbr_energy_conservation
+namespace examples::physically_based_rendering::basic_pbr::pbr_metallic_workflow
 {
 namespace constants
 {
@@ -56,4 +56,4 @@ namespace AppSettings
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
     constexpr auto LightColor = "AppSettings.LightColor";
 } // namespace AppSettings
-} // namespace examples::physically_based_rendering::basic_pbr::pbr_energy_conservation
+} // namespace examples::physically_based_rendering::basic_pbr::pbr_metallic_workflow
