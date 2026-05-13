@@ -55,5 +55,6 @@ namespace AppSettings
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
     constexpr auto LightColor = "AppSettings.LightColor";
+    constexpr auto Shininess = "AppSettings.Shininess";
 } // namespace AppSettings
 } // namespace examples::physically_based_rendering::basic_pbr::pbr_energy_conservation

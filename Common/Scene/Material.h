@@ -103,6 +103,7 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::SHININESS_FLOAT:
                 utility::AppendBytes(buffer, material.shininess);
+                break;
 
             case MaterialComponent::ROUGHNESS_FLOAT:
                 utility::AppendBytes(buffer, material.roughness);
