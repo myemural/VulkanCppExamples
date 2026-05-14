@@ -17,13 +17,6 @@
 namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading
 {
 
-#define NUM_OBJECTS 250
-#define MAX_LIGHT_COUNT 50
-#define TILE_SIZE_X 16
-#define TILE_SIZE_Y 16
-#define Z_SLICE_COUNT 16
-#define MAX_LIGHTS_PER_CLUSTER 32
-
 inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,
                                                    common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,
                                                    common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
@@ -34,6 +27,14 @@ inline const std::vector attributeLayouts{
     std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
     std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
 
+// Constants
+inline constexpr auto kTileSizeX = 16U;
+inline constexpr auto kTileSizeY = 16U;
+inline constexpr auto kSliceCountZ = 16U;
+inline constexpr auto kTotalNoOfPositions = 250U;
+inline constexpr auto kMaxLightCount = 50U;
+inline constexpr auto kMaxLightCountPerCluster = 32U;
+
 struct alignas(16) PointLightData
 {
     glm::vec4 lightPositionIntensity; // xyz = Light Position (View-Space), w = Light Intensity
@@ -43,7 +44,7 @@ struct alignas(16) PointLightData
 struct alignas(16) ClusterLightList
 {
     uint32_t count;
-    uint32_t indices[MAX_LIGHTS_PER_CLUSTER];
+    uint32_t indices[kMaxLightCountPerCluster];
 };
 
 struct LightCullPipelinePushConstants
@@ -67,6 +68,6 @@ struct ForwardPipelinePushConstants
 
 // Scene object and light position vectors
 inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
-        NUM_OBJECTS, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
+        kTotalNoOfPositions, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
 
 } // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_shading

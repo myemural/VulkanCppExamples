@@ -102,17 +102,17 @@ void VulkanApplication::InitAssetManager()
 void VulkanApplication::CreateInitialResources()
 {
     // Compute cluster count
-    const auto tilesX = CeilDiv(currentWindowWidth_, TILE_SIZE_X);
-    const auto tilesY = CeilDiv(currentWindowHeight_, TILE_SIZE_Y);
-    totalClusterCount_ = tilesX * tilesY * Z_SLICE_COUNT;
+    const auto tilesX = CeilDiv(currentWindowWidth_, kTileSizeX);
+    const auto tilesY = CeilDiv(currentWindowHeight_, kTileSizeY);
+    totalClusterCount_ = tilesX * tilesY * kSliceCountZ;
 
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
     const std::uint32_t clusterHeaderBufferSize = totalClusterCount_ * sizeof(ClusterHeader);
-    const std::uint32_t globalLightIndexBufferSize = totalClusterCount_ * MAX_LIGHT_COUNT * sizeof(std::uint32_t);
+    const std::uint32_t globalLightIndexBufferSize = totalClusterCount_ * kMaxLightCount * sizeof(std::uint32_t);
     resourceCreateInfo.buffers = {
-        {kPointLightStorageBuffer, sizeof(PointLightData) * MAX_LIGHT_COUNT, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+        {kPointLightStorageBuffer, sizeof(PointLightData) * kMaxLightCount, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
         {kClusterHeaderStorageBuffer, clusterHeaderBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT},
@@ -218,7 +218,7 @@ void VulkanApplication::BuildScene()
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (const auto& modelPos: modelPositions) {
         // Lights
-        if (lightPositions_.size() < MAX_LIGHT_COUNT) {
+        if (lightPositions_.size() < kMaxLightCount) {
             lightPositions_.emplace_back(modelPos, 1.0f);
             lightColors_.emplace_back(GenerateRandomColor(0.1f, 1.0f));
             continue;
@@ -867,7 +867,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindPipeline(lightPassPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
         LightPassPushConstants lightPassPushConstants{};
-        lightPassPushConstants.tilesX = CeilDiv(currentWindowWidth_, TILE_SIZE_X);
+        lightPassPushConstants.tilesX = CeilDiv(currentWindowWidth_, kTileSizeX);
         lightPassPushConstants.nearPlane = GetParamFloat(AppSettings::CameraNearPlane);
         lightPassPushConstants.farPlane = GetParamFloat(AppSettings::CameraFarPlane);
         currentCmdBuffer->PushConstants(lightPipelineLayout_, VK_SHADER_STAGE_FRAGMENT_BIT, 0,

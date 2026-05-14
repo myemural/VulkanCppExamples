@@ -104,11 +104,11 @@ void VulkanApplication::CreateInitialResources() const
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    const auto tilesX = CeilDiv(currentWindowWidth_, TILE_SIZE_X);
-    const auto tilesY = CeilDiv(currentWindowHeight_, TILE_SIZE_Y);
+    const auto tilesX = CeilDiv(currentWindowWidth_, kTileSizeX);
+    const auto tilesY = CeilDiv(currentWindowHeight_, kTileSizeY);
     const std::uint32_t totalTileCount = tilesX * tilesY;
     const std::uint32_t tileLightListStorageBufferSize = totalTileCount * sizeof(TileLightList);
-    resourceCreateInfo.buffers = {{kPointLightStorageBuffer, sizeof(PointLightData) * MAX_LIGHT_COUNT,
+    resourceCreateInfo.buffers = {{kPointLightStorageBuffer, sizeof(PointLightData) * kMaxLightCount,
                                    VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
                                   {kTileLightListStorageBuffer, tileLightListStorageBufferSize,
@@ -194,7 +194,7 @@ void VulkanApplication::BuildScene()
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject).WithPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     for (const auto& modelPos: modelPositions) {
         // Lights
-        if (lightPositions_.size() < MAX_LIGHT_COUNT) {
+        if (lightPositions_.size() < kMaxLightCount) {
             lightPositions_.emplace_back(modelPos, 1.0f);
             lightColors_.emplace_back(GenerateRandomColor(0.1f, 1.0f));
             continue;
@@ -664,8 +664,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         lightCullPushConstants.lightCount = lightPositions_.size();
         currentCmdBuffer->PushConstants(lightCullPipelineLayout_, VK_SHADER_STAGE_COMPUTE_BIT, 0,
                                         sizeof(lightCullPushConstants), &lightCullPushConstants);
-        const auto tilesX = CeilDiv(currentWindowWidth_, TILE_SIZE_X);
-        const auto tilesY = CeilDiv(currentWindowHeight_, TILE_SIZE_Y);
+        const auto tilesX = CeilDiv(currentWindowWidth_, kTileSizeX);
+        const auto tilesY = CeilDiv(currentWindowHeight_, kTileSizeY);
         currentCmdBuffer->Dispatch(tilesX, tilesY, 1);
     }
 
@@ -705,7 +705,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
                 ForwardPipelinePushConstants meshPushConstants{};
                 meshPushConstants.objectId = sceneObject.GetObjectId();
-                meshPushConstants.tilesX = CeilDiv(currentWindowWidth_, TILE_SIZE_X);
+                meshPushConstants.tilesX = CeilDiv(currentWindowWidth_, kTileSizeX);
                 meshPushConstants.view = camera_->GetViewMatrix();
                 meshPushConstants.projection = camera_->GetProjectionMatrix();
                 currentCmdBuffer->PushConstants(forwardPipelineLayout_,

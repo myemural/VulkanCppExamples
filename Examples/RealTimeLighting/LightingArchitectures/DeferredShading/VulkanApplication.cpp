@@ -103,7 +103,7 @@ void VulkanApplication::CreateInitialResources() const
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    resourceCreateInfo.buffers = {{kLightStorageBuffer, sizeof(PointLightData) * MAX_LIGHT_COUNT,
+    resourceCreateInfo.buffers = {{kLightStorageBuffer, sizeof(PointLightData) * kMaxLightCount,
                                    VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
@@ -194,7 +194,7 @@ void VulkanApplication::BuildScene()
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject);
     for (const auto& modelPos: modelPositions) {
         // Lights
-        if (lightPositions_.size() < MAX_LIGHT_COUNT) {
+        if (lightPositions_.size() < kMaxLightCount) {
             lightPositions_.emplace_back(modelPos, 1.0f);
             lightColors_.emplace_back(GenerateRandomColor(0.1f, 1.0f), 1.0f);
             continue;

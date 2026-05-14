@@ -19,9 +19,6 @@
 namespace examples::real_time_lighting::lighting_architectures::deferred_shading
 {
 
-#define NUM_OBJECTS 250
-#define MAX_LIGHT_COUNT 50
-
 enum class DebugMode : std::uint32_t
 {
     OFF = 0U, // Off
@@ -39,6 +36,10 @@ inline const std::vector attributeLayouts{
     std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
     std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
     std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
+
+// Constants
+inline constexpr auto kTotalNoOfPositions = 250U;
+inline constexpr auto kMaxLightCount = 50U;
 
 struct alignas(16) PointLightData
 {
@@ -61,6 +62,6 @@ struct LightingPushConstants
 
 // Scene object and light position vectors
 inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
-        NUM_OBJECTS, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
+        kTotalNoOfPositions, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
 
 } // namespace examples::real_time_lighting::lighting_architectures::deferred_shading

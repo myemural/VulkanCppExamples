@@ -17,12 +17,6 @@
 namespace examples::real_time_lighting::lighting_architectures::clustered_forward_unlimited
 {
 
-#define NUM_OBJECTS 500
-#define MAX_LIGHT_COUNT 150
-#define TILE_SIZE_X 16
-#define TILE_SIZE_Y 16
-#define Z_SLICE_COUNT 16
-
 inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,
                                                    common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE,
                                                    common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
@@ -32,6 +26,13 @@ inline const std::vector attributeLayouts{
     std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
     std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
     std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
+
+// Constants
+inline constexpr auto kTileSizeX = 16U;
+inline constexpr auto kTileSizeY = 16U;
+inline constexpr auto kSliceCountZ = 16U;
+inline constexpr auto kTotalNoOfPositions = 500U;
+inline constexpr auto kMaxLightCount = 150U;
 
 struct alignas(16) PointLightData
 {
@@ -64,6 +65,6 @@ struct ForwardPipelinePushConstants
 
 // Scene object and light position vectors
 inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
-        NUM_OBJECTS, glm::vec3(-25.0f, -20.0f, -30.0f), glm::vec3(25.0f, 20.0f, -2.0f), 3.0f);
+        kTotalNoOfPositions, glm::vec3(-25.0f, -20.0f, -30.0f), glm::vec3(25.0f, 20.0f, -2.0f), 3.0f);
 
 } // namespace examples::real_time_lighting::lighting_architectures::clustered_forward_unlimited
