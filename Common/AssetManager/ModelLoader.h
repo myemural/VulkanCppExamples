@@ -21,8 +21,16 @@ namespace common::asset_manager
 class COMMON_API ModelLoader : public AssetLoader<GltfModelAsset>
 {
 public:
+    /**
+     * @param basePath Base path of the models.
+     */
     explicit ModelLoader(std::filesystem::path basePath);
 
+    /**
+     * @brief Loads glTF model from file and returns it as an asset.
+     * @param relativePath Relative path of the model file.
+     * @return glTF model asset.
+     */
     std::unique_ptr<GltfModelAsset> Load(const std::string& relativePath) override;
 
 private:

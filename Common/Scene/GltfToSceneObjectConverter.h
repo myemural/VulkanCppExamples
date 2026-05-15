@@ -21,10 +21,26 @@ namespace common::scene
 class COMMON_API GltfToSceneObjectConverter
 {
 public:
+    /**
+     * @param scene Reference to the scene.
+     * @param defaultSamplerName The name of the sampler to be used if no sampler information is found in the material.
+     */
     GltfToSceneObjectConverter(Scene& scene, std::string defaultSamplerName);
 
+    /**
+     * @brief Creates a SceneObject from glTF model asset.
+     * @param modelName Name of the model.
+     * @param gltfModel glTF model asset.
+     * @return Created SceneObject instance.
+     */
     std::shared_ptr<SceneObject> Convert(const std::string& modelName, const asset_manager::GltfModelAsset& gltfModel);
 
+    /**
+     * @brief Creates a SceneObjectBuilder from glTF model asset.
+     * @param modelName Name of the model.
+     * @param gltfModel glTF model asset.
+     * @return Created SceneObjectBuilder instance.
+     */
     SceneObjectBuilder ConvertToBuilder(const std::string& modelName, const asset_manager::GltfModelAsset& gltfModel);
 
 private:

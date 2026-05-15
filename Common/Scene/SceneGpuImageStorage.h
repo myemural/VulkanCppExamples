@@ -40,12 +40,34 @@ public:
 
     ~SceneGpuImageStorage() = default;
 
+    /**
+     * @brief Stores texture asset on the GPU.
+     * @param textureName Name of the texture resource.
+     * @param samplerName Name of the sampler.
+     * @param textureAsset Asset of the texture resource.
+     * @param format Storing format of the texture.
+     * @param mipmappingEnabled Specifies whether mipmapping is enabled or not.
+     * @return Returns texture ID.
+     */
     TextureId StoreTexture(const std::string& textureName,
                            const std::string& samplerName,
                            const asset_manager::TextureAsset& textureAsset,
                            const VkFormat& format = VK_FORMAT_R8G8B8A8_SRGB,
                            bool mipmappingEnabled = false);
 
+    /**
+     * @brief Stores cubemap texture asset on the GPU.
+     * @param textureName Name of the texture resource.
+     * @param samplerName Name of the sampler.
+     * @param rightTextureAsset Asset of the right side texture of the cubemap texture resource.
+     * @param leftTextureAsset Asset of the left side texture of the cubemap texture resource.
+     * @param topTextureAsset Asset of the top side texture of the cubemap texture resource.
+     * @param bottomTextureAsset Asset of the bottom side texture of the cubemap texture resource.
+     * @param backTextureAsset Asset of the back side texture of the cubemap texture resource.
+     * @param frontTextureAsset Asset of the front side texture of the cubemap texture resource.
+     * @param format Storing format of the texture.
+     * @return Returns texture ID.
+     */
     TextureId StoreCubemapTexture(const std::string& textureName,
                                   const std::string& samplerName,
                                   const asset_manager::TextureAsset& rightTextureAsset,

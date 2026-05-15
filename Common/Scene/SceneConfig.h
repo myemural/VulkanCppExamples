@@ -51,6 +51,11 @@ struct COMMON_API SceneConfig
     std::shared_ptr<vulkan_wrapper::VulkanQueue> imageTransferQueue;
 };
 
+/**
+ * @brief Returns the size of the accessor in bytes.
+ * @param accessorType Type of the accessor.
+ * @return Returns the size of the accessor in bytes.
+ */
 inline std::uint32_t GetAccessorSize(const AccessorType accessorType)
 {
     switch (accessorType) {
@@ -64,6 +69,11 @@ inline std::uint32_t GetAccessorSize(const AccessorType accessorType)
     return UINT32_MAX;
 }
 
+/**
+ * @brief Converts accessor types into VkFormat.
+ * @param accessorType Type of the accessor.
+ * @return Returns the appropriate VkFormat.
+ */
 inline VkFormat ConvertAccessorTypeToFormat(const AccessorType accessorType)
 {
     VkFormat format = VK_FORMAT_UNDEFINED;

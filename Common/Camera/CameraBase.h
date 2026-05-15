@@ -52,7 +52,6 @@ public:
      */
     [[nodiscard]] glm::mat4 GetReflectedViewMatrix(const utility::Plane& plane) const;
 
-
     /**
      * @brief Returns light view matrix.
      * @param lightDir Light direction.
