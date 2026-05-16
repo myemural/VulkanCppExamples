@@ -5,3 +5,7 @@ This section contains Vulkan examples that related to physically based rendering
 ## [Basic PBR](/Examples/PhysicallyBasedRendering/BasicPbr)
 
 TBD
+
+## [Textured PBR](/Examples/PhysicallyBasedRendering/TexturedPbr)
+
+TBD

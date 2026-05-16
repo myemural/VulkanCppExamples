@@ -36,10 +36,12 @@ enum class MaterialComponent : std::uint8_t
     UV_SCALE_FLOAT,
 
     DIFFUSE_MAP_TEXTURE,
+    ALBEDO_MAP_TEXTURE,
     SPECULAR_MAP_TEXTURE,
     NORMAL_MAP_TEXTURE,
     HEIGHT_MAP_TEXTURE,
     ROUGHNESS_MAP_TEXTURE,
+    METALLIC_MAP_TEXTURE,
     OPACITY_MAP_TEXTURE,
     EMISSIVE_MAP_TEXTURE,
     AMBIENT_OCCLUSION_MAP_TEXTURE,
@@ -66,10 +68,12 @@ struct COMMON_API Material
 
     // Mapping values
     int diffuseMap = -1;
+    int albedoMap = -1;
     int specularMap = -1;
     int normalMap = -1;
     int heightMap = -1;
     int roughnessMap = -1;
+    int metallicMap = -1;
     int opacityMap = -1;
     int emissiveMap = -1;
     int ambientOcclusionMap = -1;
@@ -133,6 +137,10 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
                 utility::AppendBytes(buffer, material.diffuseMap);
                 break;
 
+            case MaterialComponent::ALBEDO_MAP_TEXTURE:
+                utility::AppendBytes(buffer, material.albedoMap);
+                break;
+
             case MaterialComponent::SPECULAR_MAP_TEXTURE:
                 utility::AppendBytes(buffer, material.specularMap);
                 break;
@@ -147,6 +155,10 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::ROUGHNESS_MAP_TEXTURE:
                 utility::AppendBytes(buffer, material.roughnessMap);
+                break;
+
+            case MaterialComponent::METALLIC_MAP_TEXTURE:
+                utility::AppendBytes(buffer, material.metallicMap);
                 break;
 
             case MaterialComponent::OPACITY_MAP_TEXTURE:
