@@ -10,6 +10,10 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `RoughnessMapPbr`
 2. [Metallic Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/MetallicMapPbr)
    - `MetallicMapPbr`
+3. [Normal Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/NormalMapPbr)
+   - `NormalMapPbr`
+4. [Ambient Occlusion Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/AmbientOcclusionPbr)
+   - `AmbientOcclusionPbr`
 
 ## Architecture of the Subsection
 

@@ -5,3 +5,5 @@ include_directories(Base)
 
 add_subdirectory(RoughnessMapPbr)
 add_subdirectory(MetallicMapPbr)
+add_subdirectory(NormalMapPbr)
+add_subdirectory(AmbientOcclusionPbr)
