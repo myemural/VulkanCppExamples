@@ -44,16 +44,16 @@ namespace constants
     inline constexpr auto kWoodFloorAoTexturePath = "Textures/Wood_Floor_015_ambientOcclusion.png";
     inline constexpr auto kWoodFloorAoTexture = "woodFloorAmbientOcclusionTexture";
 
-    inline constexpr auto kWallFabricAlbedoTexturePath = "Textures/Wall_Fabric_001_basecolor.png";
-    inline constexpr auto kWallFabricAlbedoTexture = "wallFabricAlbedoTexture";
-    inline constexpr auto kWallFabricRoughnessTexturePath = "Textures/Wall_Fabric_001_roughness.png";
-    inline constexpr auto kWallFabricRoughnessTexture = "wallFabricRoughnessTexture";
-    inline constexpr auto kWallFabricMetallicTexturePath = "Textures/Wall_Fabric_001_metallic.png";
-    inline constexpr auto kWallFabricMetallicTexture = "wallFabricMetallicTexture";
-    inline constexpr auto kWallFabricNormalTexturePath = "Textures/Wall_Fabric_001_normal.png";
-    inline constexpr auto kWallFabricNormalTexture = "wallFabricNormalTexture";
-    inline constexpr auto kWallFabricAoTexturePath = "Textures/Wall_Fabric_001_ambientOcclusion.png";
-    inline constexpr auto kWallFabricAoTexture = "wallFabricAmbientOcclusionTexture";
+    inline constexpr auto kMetalWeaveAlbedoTexturePath = "Textures/Metal_Weave_011_basecolor.png";
+    inline constexpr auto kMetalWeaveAlbedoTexture = "metalWeaveAlbedoTexture";
+    inline constexpr auto kMetalWeaveRoughnessTexturePath = "Textures/Metal_Weave_011_roughness.png";
+    inline constexpr auto kMetalWeaveRoughnessTexture = "metalWeaveRoughnessTexture";
+    inline constexpr auto kMetalWeaveMetallicTexturePath = "Textures/Metal_Weave_011_metallic.png";
+    inline constexpr auto kMetalWeaveMetallicTexture = "metalWeaveMetallicTexture";
+    inline constexpr auto kMetalWeaveNormalTexturePath = "Textures/Metal_Weave_011_normal.png";
+    inline constexpr auto kMetalWeaveNormalTexture = "metalWeaveNormalTexture";
+    inline constexpr auto kMetalWeaveAoTexturePath = "Textures/Metal_Weave_011_ambientOcclusion.png";
+    inline constexpr auto kMetalWeaveAoTexture = "metalWeaveAmbientOcclusionTexture";
 
     // Scene Objects
     inline constexpr auto kRootObject = "root";

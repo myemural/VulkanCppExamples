@@ -169,24 +169,24 @@ void VulkanApplication::BuildScene()
     const auto woodFloorAoTextureId = sceneImageStorage.StoreTexture(
             kWoodFloorAoTexture, kMainSampler, assetManager_->Get(woodFloorAoTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
-    const auto wallFabricAlbedoTextureAsset = assetManager_->Load<TextureAsset>(kWallFabricAlbedoTexturePath);
-    const auto wallFabricAlbedoTextureId = sceneImageStorage.StoreTexture(
-            kWallFabricAlbedoTexture, kMainSampler, assetManager_->Get(wallFabricAlbedoTextureAsset));
-    const auto wallFabricRoughnessTextureAsset = assetManager_->Load<TextureAsset>(kWallFabricRoughnessTexturePath);
-    const auto wallFabricRoughnessTextureId = sceneImageStorage.StoreTexture(
-            kWallFabricRoughnessTexture, kMainSampler, assetManager_->Get(wallFabricRoughnessTextureAsset),
+    const auto metalWeaveAlbedoTextureAsset = assetManager_->Load<TextureAsset>(kMetalWeaveAlbedoTexturePath);
+    const auto metalWeaveAlbedoTextureId = sceneImageStorage.StoreTexture(
+            kMetalWeaveAlbedoTexture, kMainSampler, assetManager_->Get(metalWeaveAlbedoTextureAsset));
+    const auto metalWeaveRoughnessTextureAsset = assetManager_->Load<TextureAsset>(kMetalWeaveRoughnessTexturePath);
+    const auto metalWeaveRoughnessTextureId = sceneImageStorage.StoreTexture(
+            kMetalWeaveRoughnessTexture, kMainSampler, assetManager_->Get(metalWeaveRoughnessTextureAsset),
             VK_FORMAT_R8G8B8A8_UNORM);
-    const auto wallFabricMetallicTextureAsset = assetManager_->Load<TextureAsset>(kWallFabricMetallicTexturePath);
-    const auto wallFabricMetallicTextureId = sceneImageStorage.StoreTexture(
-            kWallFabricMetallicTexture, kMainSampler, assetManager_->Get(wallFabricMetallicTextureAsset),
+    const auto metalWeaveMetallicTextureAsset = assetManager_->Load<TextureAsset>(kMetalWeaveMetallicTexturePath);
+    const auto metalWeaveMetallicTextureId = sceneImageStorage.StoreTexture(
+            kMetalWeaveMetallicTexture, kMainSampler, assetManager_->Get(metalWeaveMetallicTextureAsset),
             VK_FORMAT_R8G8B8A8_UNORM);
-    const auto wallFabricNormalTextureAsset = assetManager_->Load<TextureAsset>(kWallFabricNormalTexturePath);
-    const auto wallFabricNormalTextureId =
-            sceneImageStorage.StoreTexture(kWallFabricNormalTexture, kMainSampler,
-                                           assetManager_->Get(wallFabricNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
-    const auto wallFabricAoTextureAsset = assetManager_->Load<TextureAsset>(kWallFabricAoTexturePath);
-    const auto wallFabricAoTextureId = sceneImageStorage.StoreTexture(
-            kWallFabricAoTexture, kMainSampler, assetManager_->Get(wallFabricAoTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto metalWeaveNormalTextureAsset = assetManager_->Load<TextureAsset>(kMetalWeaveNormalTexturePath);
+    const auto metalWeaveNormalTextureId =
+            sceneImageStorage.StoreTexture(kMetalWeaveNormalTexture, kMainSampler,
+                                           assetManager_->Get(metalWeaveNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto metalWeaveAoTextureAsset = assetManager_->Load<TextureAsset>(kMetalWeaveAoTexturePath);
+    const auto metalWeaveAoTextureId = sceneImageStorage.StoreTexture(
+            kMetalWeaveAoTexture, kMainSampler, assetManager_->Get(metalWeaveAoTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material woodFloorMaterial;
     woodFloorMaterial.metallic = 0.0f;
@@ -196,11 +196,11 @@ void VulkanApplication::BuildScene()
     woodFloorMaterial.ambientOcclusionMap = woodFloorAoTextureId;
 
     Material wallFabricMaterial;
-    wallFabricMaterial.albedoMap = wallFabricAlbedoTextureId;
-    wallFabricMaterial.roughnessMap = wallFabricRoughnessTextureId;
-    wallFabricMaterial.metallicMap = wallFabricMetallicTextureId;
-    wallFabricMaterial.normalMap = wallFabricNormalTextureId;
-    wallFabricMaterial.ambientOcclusionMap = wallFabricAoTextureId;
+    wallFabricMaterial.albedoMap = metalWeaveAlbedoTextureId;
+    wallFabricMaterial.roughnessMap = metalWeaveRoughnessTextureId;
+    wallFabricMaterial.metallicMap = metalWeaveMetallicTextureId;
+    wallFabricMaterial.normalMap = metalWeaveNormalTextureId;
+    wallFabricMaterial.ambientOcclusionMap = metalWeaveAoTextureId;
 
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
                                     .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})

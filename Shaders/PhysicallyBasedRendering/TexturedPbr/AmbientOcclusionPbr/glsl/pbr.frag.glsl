@@ -164,7 +164,7 @@ void main()
     {
         ambientOcclusion = texture(uCombinedSamplers[nonuniformEXT(meshInfo.aoMap)], fragUv).r;
     }
-    vec3 ambient = vec3(0.01) * albedo * ambientOcclusion; // For now we are not using IBL
+    vec3 ambient = vec3(0.03) * albedo * ambientOcclusion; // For now we are not using IBL
 
     // Final color
     vec3 finalColor = ambient + Lo;
