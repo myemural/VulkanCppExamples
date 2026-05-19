@@ -22,7 +22,7 @@
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 
-namespace examples::real_time_lighting::transparency_techniques::pixel_linked_list_transparency
+namespace examples::real_time_lighting::transparency_techniques::pixel_linked_lists_transparency
 {
 class VulkanApplication final : public base::ApplicationTransparencyTechniques
 {
@@ -94,4 +94,4 @@ private:
     // Asset manager
     std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 };
-} // namespace examples::real_time_lighting::transparency_techniques::pixel_linked_list_transparency
+} // namespace examples::real_time_lighting::transparency_techniques::pixel_linked_lists_transparency

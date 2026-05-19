@@ -15,10 +15,9 @@
 #include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
-#include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouraud
+namespace examples::physically_based_rendering::textured_pbr::emissive_map_pbr
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -29,11 +28,11 @@ using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
-VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationBasicLighting(std::move(params)) {}
+VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationTexturedPbr(std::move(params)) {}
 
 bool VulkanApplication::Init()
 {
-    if (!ApplicationBasicLighting::Init()) {
+    if (!ApplicationTexturedPbr::Init()) {
         std::cerr << "Application pre-init failed!" << '\n';
         return false;
     }
@@ -42,7 +41,7 @@ bool VulkanApplication::Init()
         InitAssetManager();
         CreateInitialResources();
         BuildScene();
-        UpdateDescriptorSets();
+        CreateAndUpdateDescriptorSets();
 
         InitInputSystem();
 
@@ -86,7 +85,7 @@ void VulkanApplication::DrawFrame()
 void VulkanApplication::PreUpdate()
 {
     // Poll events
-    ApplicationBasicLighting::PreUpdate();
+    ApplicationTexturedPbr::PreUpdate();
 
     // Process continuous inputs
     ProcessInput();
@@ -110,23 +109,11 @@ void VulkanApplication::CreateInitialResources() const
     // Fill shader module create infos
     const auto mainVertexShaderAsset = assetManager_->Load<ShaderAsset>(kMainVertexShaderFile);
     const auto sceneObjectsFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kSceneObjectsFragmentShaderFile);
-    const auto lightObjectsFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kLightObjectsFragmentShaderFile);
 
     resourceCreateInfo.shaders = {
         .modules = {
             {.name = kMainVertexShaderKey, .asset = assetManager_->Get(mainVertexShaderAsset)},
-            {.name = kSceneObjectsFragmentShaderKey, .asset = assetManager_->Get(sceneObjectsFragmentShaderAsset)},
-            {.name = kLightObjectsFragmentShaderKey, .asset = assetManager_->Get(lightObjectsFragmentShaderAsset)}}};
-
-    // Fill descriptor set create infos
-    resourceCreateInfo.descriptors = {
-        .maxSets = 3,
-        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2}, {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}},
-        .layouts = {{.name = kMainDescSetLayout,
-                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
-                                  {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr}}}},
-        .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout}}};
+            {.name = kSceneObjectsFragmentShaderKey, .asset = assetManager_->Get(sceneObjectsFragmentShaderAsset)}}};
 
     resourceCreateInfo.images = {ImageResourceCreateInfo{
         .name = kDepthImage,
@@ -142,6 +129,9 @@ void VulkanApplication::CreateInitialResources() const
                                                            .baseArrayLayer = 0,
                                                            .layerCount = 1}}}}};
 
+    resourceCreateInfo.samplers = {
+        {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
+
     CreateVulkanResources(resourceCreateInfo);
 }
 
@@ -150,62 +140,127 @@ void VulkanApplication::BuildScene()
     SceneConfig sceneConfig;
     sceneConfig.attributeLayout = attributeLayouts;
     sceneConfig.enabledMaterialComponents = enabledMaterialComponents;
+    sceneConfig.imageTransferCmdPool = cmdPool_;
+    sceneConfig.imageTransferQueue = queue_;
+    sceneConfig.primitiveStackCount = 64U;
+    sceneConfig.primitiveSectorCount = 64U;
 
     scene_ = std::make_unique<Scene>(*resources_, sceneConfig);
+    auto& sceneImageStorage = scene_->GetGpuImageStorage();
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 6.0f), aspectRatio);
+    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 11.0f), aspectRatio);
 
     // Materials
-    Material defaultMaterial;
+    const auto woodFloorAlbedoTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorAlbedoTexturePath);
+    const auto woodFloorAlbedoTextureId = sceneImageStorage.StoreTexture(
+            kWoodFloorAlbedoTexture, kMainSampler, assetManager_->Get(woodFloorAlbedoTextureAsset));
+    const auto woodFloorNormalTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorNormalTexturePath);
+    const auto woodFloorNormalTextureId =
+            sceneImageStorage.StoreTexture(kWoodFloorNormalTexture, kMainSampler,
+                                           assetManager_->Get(woodFloorNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto woodFloorRoughnessTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorRoughnessTexturePath);
+    const auto woodFloorRoughnessTextureId = sceneImageStorage.StoreTexture(
+            kWoodFloorRoughnessTexture, kMainSampler, assetManager_->Get(woodFloorRoughnessTextureAsset),
+            VK_FORMAT_R8G8B8A8_UNORM);
+    const auto woodFloorAoTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorAoTexturePath);
+    const auto woodFloorAoTextureId = sceneImageStorage.StoreTexture(
+            kWoodFloorAoTexture, kMainSampler, assetManager_->Get(woodFloorAoTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
-    Material redMaterial = defaultMaterial;
-    redMaterial.diffuseColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
+    const auto ceilingAlbedoTextureAsset = assetManager_->Load<TextureAsset>(kCeilingAlbedoTexturePath);
+    const auto ceilingAlbedoTextureId = sceneImageStorage.StoreTexture(kCeilingAlbedoTexture, kMainSampler,
+                                                                       assetManager_->Get(ceilingAlbedoTextureAsset));
+    const auto ceilingRoughnessTextureAsset = assetManager_->Load<TextureAsset>(kCeilingRoughnessTexturePath);
+    const auto ceilingRoughnessTextureId =
+            sceneImageStorage.StoreTexture(kCeilingRoughnessTexture, kMainSampler,
+                                           assetManager_->Get(ceilingRoughnessTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto ceilingMetallicTextureAsset = assetManager_->Load<TextureAsset>(kCeilingMetallicTexturePath);
+    const auto ceilingMetallicTextureId =
+            sceneImageStorage.StoreTexture(kCeilingMetallicTexture, kMainSampler,
+                                           assetManager_->Get(ceilingMetallicTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto ceilingNormalTextureAsset = assetManager_->Load<TextureAsset>(kCeilingNormalTexturePath);
+    const auto ceilingNormalTextureId =
+            sceneImageStorage.StoreTexture(kCeilingNormalTexture, kMainSampler,
+                                           assetManager_->Get(ceilingNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto ceilingAoTextureAsset = assetManager_->Load<TextureAsset>(kCeilingAoTexturePath);
+    const auto ceilingAoTextureId = sceneImageStorage.StoreTexture(
+            kCeilingAoTexture, kMainSampler, assetManager_->Get(ceilingAoTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
+    const auto ceilingEmissiveTextureAsset = assetManager_->Load<TextureAsset>(kCeilingEmissiveTexturePath);
+    const auto ceilingEmissiveTextureId = sceneImageStorage.StoreTexture(
+            kCeilingEmissiveTexture, kMainSampler, assetManager_->Get(ceilingEmissiveTextureAsset));
 
-    Material blueMaterial = defaultMaterial;
-    blueMaterial.diffuseColor = glm::vec4{0.0f, 1.0f, 0.0f, 1.0f};
+    Material woodFloorMaterial;
+    woodFloorMaterial.metallic = 0.0f;
+    woodFloorMaterial.albedoMap = woodFloorAlbedoTextureId;
+    woodFloorMaterial.roughnessMap = woodFloorRoughnessTextureId;
+    woodFloorMaterial.normalMap = woodFloorNormalTextureId;
+    woodFloorMaterial.ambientOcclusionMap = woodFloorAoTextureId;
 
-    Material greenMaterial = defaultMaterial;
-    greenMaterial.diffuseColor = glm::vec4{0.0f, 0.0f, 1.0f, 1.0f};
+    Material wallFabricMaterial;
+    wallFabricMaterial.albedoMap = ceilingAlbedoTextureId;
+    wallFabricMaterial.roughnessMap = ceilingRoughnessTextureId;
+    wallFabricMaterial.metallicMap = ceilingMetallicTextureId;
+    wallFabricMaterial.normalMap = ceilingNormalTextureId;
+    wallFabricMaterial.ambientOcclusionMap = ceilingAoTextureId;
+    wallFabricMaterial.emissiveMap = ceilingEmissiveTextureId;
 
-    // Add scene objects
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
-                                    .WithPosition(glm::vec3{0.0f})
-                                    .AddChild(SceneObjectBuilder(*scene_, kCubeObject)
+                                    .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
+                                    .AddChild(SceneObjectBuilder(*scene_, kCubeObject1)
                                                       .WithBuiltinMesh(BuiltinMeshType::CUBE)
-                                                      .WithMaterial(defaultMaterial)
-                                                      .WithPosition(glm::vec3{-2.0f, 0.0f, 0.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kSphereObject)
+                                                      .WithMaterial(wallFabricMaterial)
+                                                      .WithPosition(glm::vec3{-4.0f, -1.0f, -4.0f})
+                                                      .WithScale(glm::vec3{2.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kCubeObject2)
+                                                      .WithBuiltinMesh(BuiltinMeshType::CUBE)
+                                                      .WithMaterial(wallFabricMaterial)
+                                                      .WithPosition(glm::vec3{-4.0f, -1.0f, 4.0f})
+                                                      .WithScale(glm::vec3{2.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kSphereObject1)
                                                       .WithBuiltinMesh(BuiltinMeshType::SPHERE)
-                                                      .WithMaterial(blueMaterial)
-                                                      .WithPosition(glm::vec3{-0.5f, 0.0f, 0.0f}))
+                                                      .WithMaterial(wallFabricMaterial)
+                                                      .WithPosition(glm::vec3{4.0f, -1.0f, -4.0f})
+                                                      .WithScale(glm::vec3{2.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kSphereObject2)
+                                                      .WithBuiltinMesh(BuiltinMeshType::SPHERE)
+                                                      .WithMaterial(wallFabricMaterial)
+                                                      .WithPosition(glm::vec3{4.0f, -1.0f, 4.0f})
+                                                      .WithScale(glm::vec3{2.0f}))
                                     .AddChild(SceneObjectBuilder(*scene_, kConeObject)
                                                       .WithBuiltinMesh(BuiltinMeshType::CONE)
-                                                      .WithMaterial(greenMaterial)
-                                                      .WithPosition(glm::vec3{1.0f, 0.0f, 0.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kCylinderObject)
-                                                      .WithBuiltinMesh(BuiltinMeshType::CYLINDER)
-                                                      .WithMaterial(redMaterial)
-                                                      .WithPosition(glm::vec3{2.5f, 0.0f, 0.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kPlaneObject)
+                                                      .WithMaterial(wallFabricMaterial)
+                                                      .WithPosition(glm::vec3{0.0f, -1.0f, 0.0f})
+                                                      .WithScale(glm::vec3{2.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kFloorObject)
                                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
-                                                      .WithMaterial(defaultMaterial)
+                                                      .WithMaterial(woodFloorMaterial)
                                                       .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
-                                                      .WithScale(glm::vec4{8.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kLightObject)
-                                                      .WithTag(kLightGroup)
-                                                      .WithBuiltinMesh(BuiltinMeshType::SPHERE)
-                                                      .WithMaterial(defaultMaterial)
-                                                      .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
-                                                      .WithScale(glm::vec4{0.3f}))
+                                                      .WithScale(glm::vec3{18.0f}))
                                     .Build();
 
     scene_->AddRootObject(rootObject);
 }
 
-void VulkanApplication::UpdateDescriptorSets() const
+void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
+    // Create descriptor sets
+    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
+    const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
+        .maxSets = 3 + combinedImageSamplerCount,
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
+                      {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
+                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount}},
+        .layouts = {{.name = kMainDescSetLayout,
+                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
+                                  {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
+                                  {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
+                                   VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
+        .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout}}};
+
+    resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
+
     std::vector<VkDescriptorBufferInfo> storageTransformBufferInfos;
     storageTransformBufferInfos.emplace_back(scene_->GetTransformStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
 
@@ -214,6 +269,8 @@ void VulkanApplication::UpdateDescriptorSets() const
 
     std::vector<VkDescriptorBufferInfo> lightUboInfos;
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
+
+    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;
@@ -233,9 +290,16 @@ void VulkanApplication::UpdateDescriptorSets() const
     lightUboRequest.buffers = lightUboInfos;
     lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
+    ImageWriteRequest textureUpdateRequest;
+    textureUpdateRequest.descriptorSetName = kMainDescSet;
+    textureUpdateRequest.bindingIndex = 3;
+    textureUpdateRequest.images = descriptorImageInfos;
+    textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {.bufferWriteRequests = {objectStorageTransformBufferRequest,
                                                                                   objectStorageMaterialBufferRequest,
-                                                                                  lightUboRequest}};
+                                                                                  lightUboRequest},
+                                                          .imageWriteRequests = {textureUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -315,7 +379,7 @@ void VulkanApplication::CreatePipelines()
     VkPushConstantRange mvpPushConstant;
     mvpPushConstant.offset = 0;
     mvpPushConstant.size = sizeof(MeshPushConstants);
-    mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    mvpPushConstant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
     pipelineLayout_ =
             device_->CreatePipelineLayout({resources_->GetDescriptorLayout(kMainDescSetLayout)}, {mvpPushConstant});
@@ -371,42 +435,6 @@ void VulkanApplication::CreatePipelines()
     if (!scenePipeline_) {
         throw std::runtime_error("Failed to create graphics pipeline (for scene objects)!");
     }
-
-    lightPipeline_ = device_->CreateGraphicsPipeline(pipelineLayout_, renderPass_, [&](auto& builder) {
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
-            shaderStageCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-            shaderStageCreateInfo.module = resources_->GetShaderModule(kMainVertexShaderKey)->GetHandle();
-        });
-        builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
-            shaderStageCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-            shaderStageCreateInfo.module = resources_->GetShaderModule(kLightObjectsFragmentShaderKey)->GetHandle();
-        });
-        builder.SetVertexInputState([&](auto& vertexInputStateCreateInfo) {
-            vertexInputStateCreateInfo.vertexBindingDescriptionCount = bindings.size();
-            vertexInputStateCreateInfo.pVertexBindingDescriptions = bindings.data();
-            vertexInputStateCreateInfo.vertexAttributeDescriptionCount = attributes.size();
-            vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributes.data();
-        });
-        builder.SetViewportState([&](auto& viewportStateCreateInfo) {
-            viewportStateCreateInfo.viewportCount = 1;
-            viewportStateCreateInfo.pViewports = &viewport;
-            viewportStateCreateInfo.scissorCount = 1;
-            viewportStateCreateInfo.pScissors = &scissor;
-        });
-        builder.SetColorBlendState([&](auto& blendStateCreateInfo) {
-            blendStateCreateInfo.attachmentCount = 1;
-            blendStateCreateInfo.pAttachments = &colorBlendAttachment;
-        });
-        builder.SetDepthStencilState([&](auto& depthStencilStateCreateInfo) {
-            depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
-            depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
-            depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
-        });
-    });
-
-    if (!lightPipeline_) {
-        throw std::runtime_error("Failed to create graphics pipeline (for lights)!");
-    }
 }
 
 void VulkanApplication::CreateCommandBuffers()
@@ -448,10 +476,6 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
     currentCmdBuffer->BindPipeline(scenePipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
     scene_->Traverse([&](const SceneObject& sceneObject) {
         if (sceneObject.HasRenderable()) {
-            if (sceneObject.GetTag() == kLightGroup) {
-                currentCmdBuffer->BindPipeline(lightPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-            }
-
             const auto [vertexOffsets, indexOffset, indexCount] = sceneObject.GetMeshGpu().value();
             currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
             currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
@@ -460,8 +484,9 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
             meshPushConstants.objectId = sceneObject.GetObjectId();
             meshPushConstants.view = camera_->GetViewMatrix();
             meshPushConstants.projection = camera_->GetProjectionMatrix();
-            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(meshPushConstants),
-                                            &meshPushConstants);
+            meshPushConstants.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
+            currentCmdBuffer->PushConstants(pipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                                            0, sizeof(meshPushConstants), &meshPushConstants);
             currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
         }
     });
@@ -474,21 +499,11 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::UpdateSceneTransforms() const
 {
-    const auto currentTime = static_cast<float>(GetCurrentTime());
-    scene_->FindObjectByName(kCubeObject)->SetEulerAngles(glm::vec3(0.0f, 5.0f * currentTime, 0.0f));
-    scene_->FindObjectByName(kSphereObject)->SetEulerAngles(glm::vec3(0.0f, 5.0f * currentTime, 0.0f));
-    scene_->FindObjectByName(kConeObject)->SetEulerAngles(glm::vec3(5.0f * currentTime, 0.0f, 0.0f));
-    scene_->FindObjectByName(kCylinderObject)->SetEulerAngles(glm::vec3(5.0f * currentTime, 0.0f, 0.0f));
-
-    const float angularSpeed = 0.5f * currentTime;
-    constexpr float radius = 3.0f;
-    const float x = radius * cos(angularSpeed);
-    const float z = radius * sin(angularSpeed);
-    scene_->FindObjectByName(kLightObject)->SetPosition(glm::vec3(x, 2.0f, z));
+    constexpr float lightIntensity = 0.4f;
 
     LightUbo lightUbo{};
-    lightUbo.lightPosition = glm::vec4(scene_->FindObjectByName(kLightObject)->GetPosition(), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
+    lightUbo.lightColorAndIntensity = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), lightIntensity);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 
@@ -508,4 +523,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouraud
+} // namespace examples::physically_based_rendering::textured_pbr::emissive_map_pbr

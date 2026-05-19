@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `NormalMapPbr`
 4. [Ambient Occlusion Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/AmbientOcclusionPbr)
    - `AmbientOcclusionPbr`
+5. [Emissive Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/EmissiveMapPbr)
+   - `EmissiveMapPbr`
 
 ## Architecture of the Subsection
 

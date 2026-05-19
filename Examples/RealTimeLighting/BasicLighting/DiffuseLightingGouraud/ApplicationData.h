@@ -12,7 +12,7 @@
 
 #include <glm/glm.hpp>
 
-namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouroud
+namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouraud
 {
 
 inline const std::vector enabledMaterialComponents{common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4};
@@ -34,4 +34,4 @@ struct MeshPushConstants
     std::uint32_t objectId;
 };
 
-} // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouroud
+} // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouraud

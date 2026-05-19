@@ -17,7 +17,7 @@
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_lighting::transparency_techniques::pixel_linked_list_transparency
+namespace examples::real_time_lighting::transparency_techniques::pixel_linked_lists_transparency
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -711,4 +711,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_lighting::transparency_techniques::pixel_linked_list_transparency
+} // namespace examples::real_time_lighting::transparency_techniques::pixel_linked_lists_transparency

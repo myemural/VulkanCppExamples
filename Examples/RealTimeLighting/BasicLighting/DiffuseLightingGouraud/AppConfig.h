@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouroud
+namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouraud
 {
 namespace constants
 {
@@ -56,4 +56,4 @@ namespace AppSettings
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
     constexpr auto LightColor = "AppSettings.LightColor";
 } // namespace AppSettings
-} // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouroud
+} // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouraud

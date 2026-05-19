@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouroud;
+using namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouraud;
 
 inline ParameterSchema CreateParameterSchema()
 {

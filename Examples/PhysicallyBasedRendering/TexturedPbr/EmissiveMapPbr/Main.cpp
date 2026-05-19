@@ -1,10 +1,10 @@
 /**
  * @file    Main.cpp
- * @brief   This example demonstrates Order-Independent Transparency (OIT) using the Per-Pixel Linked List technique.
+ * @brief   This example demonstrates the use of emissive textures in a PBR metallic/roughness workflow.
  * @author  Mustafa Yemural (myemural)
- * @date    20.03.2026
+ * @date    19.05.2026
  *
- * Copyright (c) 2026 Mustafa Yemural - www.mustafayemural.com
+ * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
  * https://opensource.org/licenses/MIT
  */
@@ -18,7 +18,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::real_time_lighting::transparency_techniques::pixel_linked_lists_transparency;
+using namespace examples::physically_based_rendering::textured_pbr::emissive_map_pbr;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -31,9 +31,6 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterParam<float>(AppSettings::CameraSpeed);
     schema.RegisterParam<glm::vec3>(AppSettings::LightDirection);
     schema.RegisterParam<glm::vec3>(AppSettings::LightColor);
-    schema.RegisterParam<float>(AppSettings::AmbientStrength);
-    schema.RegisterParam<float>(AppSettings::SpecularStrength);
-    schema.RegisterParam<float>(AppSettings::Shininess);
 
     return schema;
 }
@@ -49,16 +46,14 @@ bool SetParams(ParameterServer& params)
         // Vulkan settings
         params.Set<std::string>(VulkanParams::ApplicationName, params.Get<std::string>(WindowParams::Title));
         params.Set<std::vector<std::string>>(VulkanParams::InstanceLayers, {"VK_LAYER_KHRONOS_validation"});
+        params.Set<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_2);
 
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.175f, 0.175f, 0.175f, 1.0f});
         params.Set(AppSettings::MouseSensitivity, 3.0f);
         params.Set(AppSettings::CameraSpeed, 3.0f);
-        params.Set(AppSettings::LightDirection, glm::vec3(-0.1f, -0.4f, -0.7f));
+        params.Set(AppSettings::LightDirection, glm::vec3(-0.4f, -0.4f, -0.4f));
         params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
-        params.Set(AppSettings::AmbientStrength, 0.05f);
-        params.Set(AppSettings::SpecularStrength, 0.7f);
-        params.Set(AppSettings::Shininess, 128.0f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
@@ -83,7 +78,6 @@ int main()
         return -1;
     }
     params.Set<std::vector<std::string>>(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
-    params.Set<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_2);
 
     // Init Vulkan application
     VulkanApplication app{std::move(params)};

@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::real_time_lighting::transparency_techniques::pixel_linked_list_transparency
+namespace examples::real_time_lighting::transparency_techniques::pixel_linked_lists_transparency
 {
 namespace constants
 {
@@ -67,4 +67,4 @@ namespace AppSettings
     constexpr auto SpecularStrength = "AppSettings.SpecularStrength";
     constexpr auto Shininess = "AppSettings.Shininess";
 } // namespace AppSettings
-} // namespace examples::real_time_lighting::transparency_techniques::pixel_linked_list_transparency
+} // namespace examples::real_time_lighting::transparency_techniques::pixel_linked_lists_transparency

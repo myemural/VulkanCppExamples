@@ -232,6 +232,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Metallic Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/MetallicMapPbr)
   - [Normal Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/NormalMapPbr)
   - [Ambient Occlusion Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/AmbientOcclusionPbr)
+  - [Emissive Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/EmissiveMapPbr)
 
 ## Environment Support
 

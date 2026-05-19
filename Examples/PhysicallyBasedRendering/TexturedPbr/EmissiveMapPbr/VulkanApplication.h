@@ -2,7 +2,7 @@
  * @file    VulkanApplication.h
  * @brief   This file contains VulkanApplication class declaration.
  * @author  Mustafa Yemural (myemural)
- * @date    13.12.2025
+ * @date    19.05.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -13,7 +13,7 @@
 
 #include <memory>
 
-#include "ApplicationBasicLighting.h"
+#include "ApplicationTexturedPbr.h"
 #include "AssetManager.h"
 #include "PerspectiveCamera.h"
 #include "Scene.h"
@@ -22,9 +22,9 @@
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 
-namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouraud
+namespace examples::physically_based_rendering::textured_pbr::emissive_map_pbr
 {
-class VulkanApplication final : public base::ApplicationBasicLighting
+class VulkanApplication final : public base::ApplicationTexturedPbr
 {
 public:
     explicit VulkanApplication(common::utility::ParameterServer&& params);
@@ -45,7 +45,7 @@ private:
 
     void BuildScene();
 
-    void UpdateDescriptorSets() const;
+    void CreateAndUpdateDescriptorSets() const;
 
     void InitInputSystem();
 
@@ -64,7 +64,6 @@ private:
     // Pipelines
     std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> scenePipeline_;
-    std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> lightPipeline_;
 
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
@@ -77,10 +76,10 @@ private:
     // Camera
     std::shared_ptr<common::camera::PerspectiveCamera> camera_ = nullptr;
 
-    // Scene manager
+    // Scene
     std::unique_ptr<common::scene::Scene> scene_;
 
     // Asset manager
     std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 };
-} // namespace examples::real_time_lighting::basic_lighting::diffuse_lighting_gouraud
+} // examples::physically_based_rendering::textured_pbr::emissive_map_pbr
