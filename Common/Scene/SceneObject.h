@@ -68,10 +68,10 @@ public:
 
     [[nodiscard]] COMMON_API bool HasRenderable() const;
 
+    [[nodiscard]] COMMON_API const glm::mat4& GetWorldMatrix();
+
 private:
     void RecalculateWorld();
-
-    const glm::mat4& GetWorldMatrix();
 
     void MarkWorldDirty();
 

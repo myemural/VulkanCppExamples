@@ -9,3 +9,7 @@ TBD
 ## [Textured PBR](/Examples/PhysicallyBasedRendering/TexturedPbr)
 
 TBD
+
+## [Area Lights](/Examples/PhysicallyBasedRendering/AreaLights)
+
+TBD

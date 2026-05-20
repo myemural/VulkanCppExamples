@@ -233,6 +233,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Normal Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/NormalMapPbr)
   - [Ambient Occlusion Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/AmbientOcclusionPbr)
   - [Emissive Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/EmissiveMapPbr)
+- **[Area Lights](/Examples/PhysicallyBasedRendering/AreaLights)**
+  - [Rectangular Area Lights](/Examples/PhysicallyBasedRendering/AreaLights/RectangularAreaLights)
 
 ## Environment Support
 
