@@ -6,8 +6,10 @@ This subsection contains examples of area lights and their applications in PBR m
 
 The examples in this subsection, listed from easy to complex, are as follows:
 
-1. [Rectangular Area Lights](/Examples/PhysicallyBasedRendering/AreaLights/RectangularAreaLights)
+1. [Rectangular Area Lights with Linearly Transformed Cosines (LTC)](/Examples/PhysicallyBasedRendering/AreaLights/RectangularAreaLights)
    - `RectangularAreaLights`
+2. [Sphere Area Lights with Representative Point Method](/Examples/PhysicallyBasedRendering/AreaLights/SphereAreaLights)
+   - `SphereAreaLights`
 
 ## Architecture of the Subsection
 

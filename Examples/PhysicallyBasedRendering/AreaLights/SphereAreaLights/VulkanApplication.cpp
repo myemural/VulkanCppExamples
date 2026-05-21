@@ -18,7 +18,7 @@
 #include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::physically_based_rendering::area_lights::rectangular_area_lights
+namespace examples::physically_based_rendering::area_lights::sphere_area_lights
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -28,17 +28,6 @@ using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
-
-namespace
-{
-    std::array<glm::vec4, 4> ComputePlaneCornersInWorldSpace(const glm::mat4& planeModelMatrix)
-    {
-        return {glm::vec4(planeModelMatrix * glm::vec4(-0.5f, 0.0f, -0.5f, 1.0f)),
-                glm::vec4(planeModelMatrix * glm::vec4(0.5f, 0.0f, -0.5f, 1.0f)),
-                glm::vec4(planeModelMatrix * glm::vec4(0.5f, 0.0f, 0.5f, 1.0f)),
-                glm::vec4(planeModelMatrix * glm::vec4(-0.5f, 0.0f, 0.5f, 1.0f))};
-    }
-} // namespace
 
 VulkanApplication::VulkanApplication(ParameterServer&& params) : ApplicationAreaLights(std::move(params)) {}
 
@@ -52,7 +41,6 @@ bool VulkanApplication::Init()
     try {
         InitAssetManager();
         CreateInitialResources();
-        UploadLtcResourcesToGpu();
         BuildScene();
         CreateAndUpdateDescriptorSets();
 
@@ -130,54 +118,24 @@ void VulkanApplication::CreateInitialResources() const
             {.name = kSceneObjectsFragmentShaderKey, .asset = assetManager_->Get(sceneObjectsFragmentShaderAsset)},
             {.name = kLightObjectsFragmentShaderKey, .asset = assetManager_->Get(lightObjectsFragmentShaderAsset)}}};
 
-    resourceCreateInfo.images = {
-        ImageResourceCreateInfo{
-            .name = kDepthImage,
-            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = depthImageFormat_,
-            .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
-            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
-                                          .format = depthImageFormat_,
-                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}},
-        ImageResourceCreateInfo{
-            .name = kLtc1Image,
-            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .dimensions = {LTC_LUT_IMAGE_WIDTH, LTC_LUT_IMAGE_HEIGHT, 1},
-            .usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kLtc1ImageView, .format = VK_FORMAT_R32G32B32A32_SFLOAT}}},
-        ImageResourceCreateInfo{
-            .name = kLtc2Image,
-            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .dimensions = {LTC_LUT_IMAGE_WIDTH, LTC_LUT_IMAGE_HEIGHT, 1},
-            .usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kLtc2ImageView, .format = VK_FORMAT_R32G32B32A32_SFLOAT}}}};
+    resourceCreateInfo.images = {ImageResourceCreateInfo{
+        .name = kDepthImage,
+        .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        .format = depthImageFormat_,
+        .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
+        .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .views = {ImageViewCreateInfo{.viewName = kDepthImageView,
+                                      .format = depthImageFormat_,
+                                      .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                           .baseMipLevel = 0,
+                                                           .levelCount = 1,
+                                                           .baseArrayLayer = 0,
+                                                           .layerCount = 1}}}}};
 
     resourceCreateInfo.samplers = {
         {.name = kMainSampler, .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}}};
 
     CreateVulkanResources(resourceCreateInfo);
-}
-
-void VulkanApplication::UploadLtcResourcesToGpu() const
-{
-    TextureAsset ltcAsset;
-    ltcAsset.data.resize(sizeof(kLtc1LutData));
-    ltcAsset.width = LTC_LUT_IMAGE_WIDTH;
-    ltcAsset.height = LTC_LUT_IMAGE_HEIGHT;
-    ltcAsset.channels = LTC_LUT_IMAGE_CHANNELS;
-
-    // Upload LTC1 and LTC2
-    std::memcpy(ltcAsset.data.data(), kLtc1LutData, sizeof(kLtc1LutData));
-    resources_->SetImageFromTexture(cmdPool_, queue_, kLtc1Image, ltcAsset);
-    std::memcpy(ltcAsset.data.data(), kLtc2LutData, sizeof(kLtc2LutData));
-    resources_->SetImageFromTexture(cmdPool_, queue_, kLtc2Image, ltcAsset);
 }
 
 void VulkanApplication::BuildScene()
@@ -254,14 +212,13 @@ void VulkanApplication::BuildScene()
                                                       .WithBuiltinMesh(BuiltinMeshType::PLANE)
                                                       .WithMaterial(floorMaterial)
                                                       .WithPosition(glm::vec3{0.0f, -2.0f, 0.0f})
-                                                      .WithScale(glm::vec3{18.0f}))
-                                    .AddChild(SceneObjectBuilder(*scene_, kLightRectObject)
-                                                      .WithBuiltinMesh(BuiltinMeshType::PLANE)
+                                                      .WithScale(glm::vec3{24.0f}))
+                                    .AddChild(SceneObjectBuilder(*scene_, kLightSphereObject)
+                                                      .WithBuiltinMesh(BuiltinMeshType::SPHERE)
                                                       .WithTag(kLightGroup)
                                                       .WithMaterial(lightObjectMaterial)
-                                                      .WithPosition(glm::vec3{0.0f, 0.0f, 0.02f})
-                                                      .WithEulerAngles(glm::vec3{90.0f, 0.0f, 0.0f})
-                                                      .WithScale(glm::vec3{1.0f}))
+                                                      .WithPosition(glm::vec3{0.0f, 0.0f, 0.0f})
+                                                      .WithScale(glm::vec3{GetParamFloat(AppSettings::LightRadius)}))
                                     .Build();
 
     scene_->AddRootObject(rootObject);
@@ -272,20 +229,16 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     // Create descriptor sets
     const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 3 + combinedImageSamplerCount + 2,
+        .maxSets = 3 + combinedImageSamplerCount,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
-                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + 2}},
+                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount}},
         .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
-                                   VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-                                   nullptr},
-                                  {5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-                                   nullptr}}}},
+                                   VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}}},
         .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout}}};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
@@ -300,16 +253,6 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
 
     auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
-
-    std::vector<VkDescriptorImageInfo> ltc1ImageInfos;
-    ltc1ImageInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
-                                resources_->GetImageView(kLtc1Image, kLtc1ImageView)->GetHandle(),
-                                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    std::vector<VkDescriptorImageInfo> ltc2ImageInfos;
-    ltc2ImageInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
-                                resources_->GetImageView(kLtc2Image, kLtc2ImageView)->GetHandle(),
-                                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     BufferWriteRequest objectStorageTransformBufferRequest;
     objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;
@@ -335,22 +278,10 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     textureUpdateRequest.images = descriptorImageInfos;
     textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    ImageWriteRequest textureLut1UpdateRequest;
-    textureLut1UpdateRequest.descriptorSetName = kMainDescSet;
-    textureLut1UpdateRequest.bindingIndex = 4;
-    textureLut1UpdateRequest.images = ltc1ImageInfos;
-    textureLut1UpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest textureLut2UpdateRequest;
-    textureLut2UpdateRequest.descriptorSetName = kMainDescSet;
-    textureLut2UpdateRequest.bindingIndex = 5;
-    textureLut2UpdateRequest.images = ltc2ImageInfos;
-    textureLut2UpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .bufferWriteRequests = {objectStorageTransformBufferRequest, objectStorageMaterialBufferRequest,
-                                lightUboRequest},
-        .imageWriteRequests = {textureUpdateRequest, textureLut1UpdateRequest, textureLut2UpdateRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.bufferWriteRequests = {objectStorageTransformBufferRequest,
+                                                                                  objectStorageMaterialBufferRequest,
+                                                                                  lightUboRequest},
+                                                          .imageWriteRequests = {textureUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -590,30 +521,26 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     const auto currentTime = static_cast<float>(GetCurrentTime());
-    constexpr auto moveSpeed = 0.8f;
-    constexpr auto scaleSpeed = 1.1f;
+    constexpr auto moveSpeedY = 0.8f;
+    constexpr auto orbitSpeed = 0.5f;
 
-    const auto& lightRectObject = scene_->FindObjectByName(kLightRectObject);
+    const auto& lightSphereObject = scene_->FindObjectByName(kLightSphereObject);
 
     // Movement along the Y-axis
-    constexpr float lightPosAmplitude = 1.5f;
-    const float planePosY = std::sin(currentTime * moveSpeed) * lightPosAmplitude;
-    lightRectObject->SetPosition(glm::vec3(0.0f, planePosY, 0.0f));
-
-    // Scaling on the X-axis
-    const float scaleX = 0.75f + (std::sin(currentTime * scaleSpeed) * 0.5f + 0.5f) * 1.5f; // Range: 0.75 - 2.25
-    lightRectObject->SetScale(glm::vec3(scaleX, 1.0f, 1.0f));
-
-    // Get plane corner coordinates in world-space
-    const auto& lightWorldMat = lightRectObject->GetWorldMatrix();
-    const auto areaLightRectCorners = ComputePlaneCornersInWorldSpace(lightWorldMat);
+    constexpr float orbitRadius = 3.0f;
+    constexpr float posAmplitudeY = 1.5f;
+    const float posX = std::cos(currentTime * orbitSpeed) * orbitRadius;
+    const float posY = std::sin(currentTime * moveSpeedY) * posAmplitudeY;
+    const float posZ = std::sin(currentTime * orbitSpeed) * orbitRadius;
+    lightSphereObject->SetPosition(glm::vec3(posX, posY, posZ));
 
     LightUbo lightUbo{};
+    // Radius value should be half of the scale of sphere's real geometry
+    const auto lightRadius = GetParamFloat(AppSettings::LightRadius) / 2.0f;
+    lightUbo.lightPositionAndRadius = glm::vec4(lightSphereObject->GetPosition(), lightRadius);
     const auto lightColor = params_.Get<glm::vec3>(AppSettings::LightColor);
     const auto lightIntensity = GetParamFloat(AppSettings::LightIntensity);
     lightUbo.lightColorAndIntensity = glm::vec4(lightColor, lightIntensity);
-    lightUbo.lightRectCornerPos = areaLightRectCorners;
-    lightUbo.isDoubleSided = params_.Get<bool>(AppSettings::IsAreaLightDoubleSided) ? 1 : 0;
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 
@@ -633,4 +560,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::physically_based_rendering::area_lights::rectangular_area_lights
+} // namespace examples::physically_based_rendering::area_lights::sphere_area_lights

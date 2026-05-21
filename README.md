@@ -234,7 +234,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Ambient Occlusion Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/AmbientOcclusionPbr)
   - [Emissive Map in PBR](/Examples/PhysicallyBasedRendering/TexturedPbr/EmissiveMapPbr)
 - **[Area Lights](/Examples/PhysicallyBasedRendering/AreaLights)**
-  - [Rectangular Area Lights](/Examples/PhysicallyBasedRendering/AreaLights/RectangularAreaLights)
+  - [Rectangular Area Lights with Linearly Transformed Cosines (LTC)](/Examples/PhysicallyBasedRendering/AreaLights/RectangularAreaLights)
+  - [Sphere Area Lights with Representative Point Method](/Examples/PhysicallyBasedRendering/AreaLights/SphereAreaLights)
 
 ## Environment Support
 

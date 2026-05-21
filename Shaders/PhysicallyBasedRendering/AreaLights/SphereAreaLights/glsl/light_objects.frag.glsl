@@ -31,14 +31,11 @@ layout(std430, binding = 1) readonly buffer MeshMaterialDataBuffer {
 
 layout(std140, set = 0, binding = 2) uniform LightUBO
 {
+    vec4 lightPositionAndRadius; // xyz = Light Position, w = Light Radius
     vec4 lightColorAndIntensity; // xyz = Light Color, w = Light Intensity
-    vec4 lightRectCornerPos[4];  // xyz = Light Rectangle Corner Position
-    int isDoubleSided;           // 0: Single-sided, 1: Double-sided
 } light;
 
 layout(set = 0, binding = 3) uniform sampler2D uCombinedSamplers[];
-layout(set = 0, binding = 4) uniform sampler2D uLtc1;
-layout(set = 0, binding = 5) uniform sampler2D uLtc2;
 
 layout(push_constant) uniform MeshPushConstants {
     mat4 view;
@@ -49,6 +46,9 @@ layout(push_constant) uniform MeshPushConstants {
 
 void main()
 {
-    // Hardcoded white color for light objects
-    outColor = vec4(1.0, 1.0, 1.0, 1.0);
+    // Get mesh material info
+    const MeshMaterialData meshMatInfo = meshMaterials[pc.objectId];
+
+    // Apply only albedo color for light objects
+    outColor = meshMatInfo.albedoColor;
 }

@@ -2,7 +2,7 @@
  * @file    AppConfig.h
  * @brief   This header file keeps example specific constants and settings.
  * @author  Mustafa Yemural (myemural)
- * @date    20.05.2026
+ * @date    21.05.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::physically_based_rendering::area_lights::rectangular_area_lights
+namespace examples::physically_based_rendering::area_lights::sphere_area_lights
 {
 namespace constants
 {
@@ -28,10 +28,6 @@ namespace constants
     // Images and Image Views
     inline constexpr auto kDepthImage = "depthImage";
     inline constexpr auto kDepthImageView = "depthImageView";
-    inline constexpr auto kLtc1Image = "ltc1Image";
-    inline constexpr auto kLtc1ImageView = "ltc1ImageView";
-    inline constexpr auto kLtc2Image = "ltc2Image";
-    inline constexpr auto kLtc2ImageView = "ltc2ImageView";
 
     // Samplers
     inline constexpr auto kMainSampler = "mainSampler";
@@ -57,7 +53,7 @@ namespace constants
     inline constexpr auto kSphereObject1 = "sphere1";
     inline constexpr auto kSphereObject2 = "sphere2";
     inline constexpr auto kFloorObject = "floor";
-    inline constexpr auto kLightRectObject = "lightRect";
+    inline constexpr auto kLightSphereObject = "lightSphere";
 
     // Object Groups
     inline constexpr auto kLightGroup = "lights";
@@ -69,9 +65,9 @@ namespace AppSettings
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
     constexpr auto LightColor = "AppSettings.LightColor";
+    constexpr auto LightRadius = "AppSettings.LightRadius";
     constexpr auto LightIntensity = "AppSettings.LightIntensity";
-    constexpr auto IsAreaLightDoubleSided = "AppSettings.IsAreaLightDoubleSided";
     constexpr auto FloorRoughness = "AppSettings.FloorRoughness";
     constexpr auto FloorMetallic = "AppSettings.FloorMetallic";
 } // namespace AppSettings
-} // namespace examples::physically_based_rendering::area_lights::rectangular_area_lights
+} // namespace examples::physically_based_rendering::area_lights::sphere_area_lights

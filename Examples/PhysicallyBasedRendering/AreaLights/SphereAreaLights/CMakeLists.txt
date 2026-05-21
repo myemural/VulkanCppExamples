@@ -1,5 +1,5 @@
-set(CURRENT_TARGET_NAME RectangularAreaLights)
-set(CURRENT_EXAMPLE_NAME "Rectangular Area Lights with Linearly Transformed Cosines (LTC)")
+set(CURRENT_TARGET_NAME SphereAreaLights)
+set(CURRENT_EXAMPLE_NAME "Sphere Area Lights with Representative Point Method")
 set(CURRENT_LIB_NAMES Common AreaLightsBase)
 
 include(BuildTarget)

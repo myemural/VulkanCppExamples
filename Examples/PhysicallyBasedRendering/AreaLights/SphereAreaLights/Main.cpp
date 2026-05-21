@@ -1,9 +1,8 @@
 /**
  * @file    Main.cpp
- * @brief   This example demonstrates the implementation of rectangular area lights with using Linearly Transformed
- *          Cosines (LTC) method.
+ * @brief   This example demonstrates the implementation of sphere area lights with using Representative Point method.
  * @author  Mustafa Yemural (myemural)
- * @date    20.05.2026
+ * @date    21.05.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +18,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::physically_based_rendering::area_lights::rectangular_area_lights;
+using namespace examples::physically_based_rendering::area_lights::sphere_area_lights;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -31,8 +30,8 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);
     schema.RegisterParam<float>(AppSettings::CameraSpeed);
     schema.RegisterParam<glm::vec3>(AppSettings::LightColor);
+    schema.RegisterParam<float>(AppSettings::LightRadius);
     schema.RegisterParam<float>(AppSettings::LightIntensity);
-    schema.RegisterParam<bool>(AppSettings::IsAreaLightDoubleSided);
     schema.RegisterParam<float>(AppSettings::FloorRoughness);
     schema.RegisterParam<float>(AppSettings::FloorMetallic);
 
@@ -56,9 +55,9 @@ bool SetParams(ParameterServer& params)
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.0f, 0.0f, 0.0f, 1.0f});
         params.Set(AppSettings::MouseSensitivity, 3.0f);
         params.Set(AppSettings::CameraSpeed, 3.0f);
-        params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
+        params.Set(AppSettings::LightColor, glm::vec3(0.0f, 0.75f, 0.0f));
+        params.Set(AppSettings::LightRadius, 1.0f);
         params.Set(AppSettings::LightIntensity, 16.0f);
-        params.Set(AppSettings::IsAreaLightDoubleSided, true);
         params.Set(AppSettings::FloorRoughness, 0.2f);
         params.Set(AppSettings::FloorMetallic, 0.0f);
     } catch (const std::exception& e) {
