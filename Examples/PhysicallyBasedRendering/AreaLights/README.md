@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `RectangularAreaLights`
 2. [Sphere Area Lights with Representative Point Method](/Examples/PhysicallyBasedRendering/AreaLights/SphereAreaLights)
    - `SphereAreaLights`
+3. [Using Multiple Area Lights](/Examples/PhysicallyBasedRendering/AreaLights/MultipleAreaLights)
+   - `MultipleAreaLights`
 
 ## Architecture of the Subsection
 

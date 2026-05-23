@@ -236,6 +236,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Area Lights](/Examples/PhysicallyBasedRendering/AreaLights)**
   - [Rectangular Area Lights with Linearly Transformed Cosines (LTC)](/Examples/PhysicallyBasedRendering/AreaLights/RectangularAreaLights)
   - [Sphere Area Lights with Representative Point Method](/Examples/PhysicallyBasedRendering/AreaLights/SphereAreaLights)
+  - [Using Multiple Area Lights](/Examples/PhysicallyBasedRendering/AreaLights/MultipleAreaLights)
 
 ## Environment Support
 
