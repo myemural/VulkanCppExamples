@@ -78,8 +78,5 @@ namespace AppSettings
     constexpr auto DirectionalLightDirection = "AppSettings.DirectionalLightDirection";
     constexpr auto DirectionalLightColor = "AppSettings.DirectionalLightColor";
     constexpr auto DirectionalLightIntensity = "AppSettings.DirectionalLightIntensity";
-    constexpr auto IsAreaLightDoubleSided = "AppSettings.IsAreaLightDoubleSided";
-    constexpr auto FloorRoughness = "AppSettings.FloorRoughness";
-    constexpr auto FloorMetallic = "AppSettings.FloorMetallic";
 } // namespace AppSettings
 } // namespace examples::physically_based_rendering::area_lights::multiple_area_lights

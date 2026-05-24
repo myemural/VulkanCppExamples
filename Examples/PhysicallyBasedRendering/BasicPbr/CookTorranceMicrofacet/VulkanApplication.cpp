@@ -155,7 +155,7 @@ void VulkanApplication::BuildScene()
 
     // Add camera
     const float aspectRatio = static_cast<float>(currentWindowWidth_) / static_cast<float>(currentWindowHeight_);
-    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 6.0f), aspectRatio);
+    camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 0.0f, 6.5f), aspectRatio);
 
     // Materials
     Material defaultMaterial;

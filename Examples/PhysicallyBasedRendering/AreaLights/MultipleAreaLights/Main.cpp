@@ -33,9 +33,6 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterParam<glm::vec3>(AppSettings::DirectionalLightDirection);
     schema.RegisterParam<glm::vec3>(AppSettings::DirectionalLightColor);
     schema.RegisterParam<float>(AppSettings::DirectionalLightIntensity);
-    schema.RegisterParam<bool>(AppSettings::IsAreaLightDoubleSided);
-    schema.RegisterParam<float>(AppSettings::FloorRoughness);
-    schema.RegisterParam<float>(AppSettings::FloorMetallic);
 
     return schema;
 }
@@ -60,9 +57,6 @@ bool SetParams(ParameterServer& params)
         params.Set(AppSettings::DirectionalLightDirection, glm::vec3(-0.4f, -0.4f, -0.4f));
         params.Set(AppSettings::DirectionalLightColor, glm::vec3(1.0f, 1.0f, 1.0f));
         params.Set(AppSettings::DirectionalLightIntensity, 0.3f);
-        params.Set(AppSettings::IsAreaLightDoubleSided, true);
-        params.Set(AppSettings::FloorRoughness, 0.2f);
-        params.Set(AppSettings::FloorMetallic, 0.0f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

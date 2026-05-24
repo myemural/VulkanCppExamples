@@ -31,7 +31,6 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);
     schema.RegisterParam<float>(AppSettings::CameraSpeed);
     schema.RegisterParam<glm::vec3>(AppSettings::LightColor);
-    schema.RegisterParam<float>(AppSettings::Shininess);
 
     return schema;
 }
@@ -53,7 +52,6 @@ bool SetParams(ParameterServer& params)
         params.Set(AppSettings::MouseSensitivity, 3.0f);
         params.Set(AppSettings::CameraSpeed, 3.0f);
         params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
-        params.Set(AppSettings::Shininess, 128.0f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
