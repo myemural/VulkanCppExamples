@@ -248,8 +248,8 @@ Material GltfToSceneObjectConverter::CreateMaterial(const tinygltf::Model& gltfM
     result.diffuseColor = glm::vec4(
             gltfMaterial.pbrMetallicRoughness.baseColorFactor[0], gltfMaterial.pbrMetallicRoughness.baseColorFactor[1],
             gltfMaterial.pbrMetallicRoughness.baseColorFactor[2], gltfMaterial.pbrMetallicRoughness.baseColorFactor[3]);
+    result.albedoColor = result.diffuseColor;
 
-    /// TODO: This part (if statements) will be modified later.
     if (gltfMaterial.pbrMetallicRoughness.baseColorTexture.index >= 0) {
         const auto textureIndex = gltfMaterial.pbrMetallicRoughness.baseColorTexture.index;
         const auto textureAsset = CreateTextureAsset(gltfModel, textureIndex);
@@ -257,13 +257,26 @@ Material GltfToSceneObjectConverter::CreateMaterial(const tinygltf::Model& gltfM
                 sceneImageStorage.StoreTexture(materialName + "_diffuse", defaultSamplerName_, textureAsset);
 
         result.diffuseMap = textureId;
+        result.albedoMap = textureId;
+    }
+
+    result.metallic = static_cast<float>(gltfMaterial.pbrMetallicRoughness.metallicFactor);
+    result.roughness = static_cast<float>(gltfMaterial.pbrMetallicRoughness.roughnessFactor);
+
+    if (gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index >= 0) {
+        const auto textureIndex = gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index;
+        const auto textureAsset = CreateTextureAsset(gltfModel, textureIndex);
+        const auto textureId = sceneImageStorage.StoreTexture(materialName + "_metallicRoughness", defaultSamplerName_,
+                                                              textureAsset, VK_FORMAT_R8G8B8A8_UNORM);
+
+        result.metallicRoughnessMap = textureId;
     }
 
     if (gltfMaterial.normalTexture.index >= 0) {
         const auto textureIndex = gltfMaterial.normalTexture.index;
         const auto textureAsset = CreateTextureAsset(gltfModel, textureIndex);
-        const auto textureId =
-                sceneImageStorage.StoreTexture(materialName + "_normal", defaultSamplerName_, textureAsset);
+        const auto textureId = sceneImageStorage.StoreTexture(materialName + "_normal", defaultSamplerName_,
+                                                              textureAsset, VK_FORMAT_R8G8B8A8_UNORM);
 
         result.normalMap = textureId;
     }
@@ -275,6 +288,15 @@ Material GltfToSceneObjectConverter::CreateMaterial(const tinygltf::Model& gltfM
                 sceneImageStorage.StoreTexture(materialName + "_emissive", defaultSamplerName_, textureAsset);
 
         result.emissiveMap = textureId;
+    }
+
+    if (gltfMaterial.occlusionTexture.index >= 0) {
+        const auto textureIndex = gltfMaterial.occlusionTexture.index;
+        const auto textureAsset = CreateTextureAsset(gltfModel, textureIndex);
+        const auto textureId = sceneImageStorage.StoreTexture(materialName + "_ao", defaultSamplerName_, textureAsset,
+                                                              VK_FORMAT_R8G8B8A8_UNORM);
+
+        result.ambientOcclusionMap = textureId;
     }
 
     // Cache for future allocations of same material

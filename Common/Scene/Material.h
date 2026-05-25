@@ -42,6 +42,7 @@ enum class MaterialComponent : std::uint8_t
     HEIGHT_MAP_TEXTURE,
     ROUGHNESS_MAP_TEXTURE,
     METALLIC_MAP_TEXTURE,
+    METALLIC_ROUGHNESS_MAP_TEXTURE, // G Channel: Roughness, B Channel: Metallic
     OPACITY_MAP_TEXTURE,
     EMISSIVE_MAP_TEXTURE,
     AMBIENT_OCCLUSION_MAP_TEXTURE,
@@ -74,6 +75,7 @@ struct COMMON_API Material
     int heightMap = -1;
     int roughnessMap = -1;
     int metallicMap = -1;
+    int metallicRoughnessMap = -1;
     int opacityMap = -1;
     int emissiveMap = -1;
     int ambientOcclusionMap = -1;
@@ -159,6 +161,10 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::METALLIC_MAP_TEXTURE:
                 utility::AppendBytes(buffer, material.metallicMap);
+                break;
+
+            case MaterialComponent::METALLIC_ROUGHNESS_MAP_TEXTURE:
+                utility::AppendBytes(buffer, material.metallicRoughnessMap);
                 break;
 
             case MaterialComponent::OPACITY_MAP_TEXTURE:
