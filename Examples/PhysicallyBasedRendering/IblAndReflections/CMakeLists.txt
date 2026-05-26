@@ -1,0 +1,6 @@
+set(SUBCATEGORY_NAME IblAndReflections)
+
+add_subdirectory(Base)
+include_directories(Base)
+
+add_subdirectory(EquirectangularHdrSkybox)

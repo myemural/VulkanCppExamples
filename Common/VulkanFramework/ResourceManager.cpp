@@ -188,6 +188,47 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
                                           VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, currentLayer, 1});
 }
 
+void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
+                                          const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                                          const std::string& imageName,
+                                          const asset_manager::TextureAssetHDR& textureAsset,
+                                          const std::uint32_t mipLevels,
+                                          const std::uint32_t currentLayer)
+{
+    images_[imageName]->ChangeImageLayout(
+            cmdPool, queue, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, currentLayer, 1});
+
+    const std::uint32_t bufferSizeInBytes = textureAsset.data.size() * sizeof(float);
+
+    const BufferResourceCreateInfo stagingBufferCreateInfo{
+        imageName + "_tempStagingBuffer", bufferSizeInBytes, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT};
+
+    buffers_[stagingBufferCreateInfo.name] = std::make_unique<BufferResource>(physicalDevice_, device_);
+    buffers_[stagingBufferCreateInfo.name]->CreateBuffer(stagingBufferCreateInfo);
+
+    SetBuffer(stagingBufferCreateInfo.name, textureAsset.data.data(), bufferSizeInBytes);
+
+    const VkBufferImageCopy copyRegion = {.bufferOffset = 0,
+                                          .bufferRowLength = 0,
+                                          .bufferImageHeight = 0,
+                                          .imageSubresource =
+                                                  {
+                                                      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                                                      .mipLevel = 0,
+                                                      .baseArrayLayer = currentLayer,
+                                                      .layerCount = 1,
+                                                  },
+                                          .imageOffset = {0, 0, 0},
+                                          .imageExtent = {textureAsset.width, textureAsset.height, 1}};
+    images_[imageName]->CopyDataFromBuffer(cmdPool, queue, buffers_[stagingBufferCreateInfo.name]->GetBuffer(),
+                                           {copyRegion});
+    images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                          VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                          VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, currentLayer, 1});
+}
+
 void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                                       const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                       const std::string& imageName,
@@ -270,6 +311,7 @@ void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::Vulk
     queue->Submit({cmdBufferMipmap});
     queue->WaitIdle();
 }
+
 void ResourceManager::DeleteBuffer(const std::string& bufferName) { buffers_.erase(bufferName); }
 
 void ResourceManager::DeleteImage(const std::string& imageName) { images_.erase(imageName); }

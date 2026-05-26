@@ -37,4 +37,23 @@ private:
     std::filesystem::path basePath_;
 };
 
+class COMMON_API TextureLoaderHDR : public AssetLoader<TextureAssetHDR>
+{
+public:
+    /**
+     * @param basePath Base path of the HDR textures.
+     */
+    explicit TextureLoaderHDR(std::filesystem::path basePath);
+
+    /**
+     * @brief Loads HDR texture from file and returns it as an asset.
+     * @param relativePath Relative path of the HDR texture file.
+     * @return HDR texture asset.
+     */
+    std::unique_ptr<TextureAssetHDR> Load(const std::string& relativePath) override;
+
+private:
+    std::filesystem::path basePath_;
+};
+
 } // namespace common::asset_manager

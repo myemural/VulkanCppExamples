@@ -237,6 +237,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Rectangular Area Lights with Linearly Transformed Cosines (LTC)](/Examples/PhysicallyBasedRendering/AreaLights/RectangularAreaLights)
   - [Sphere Area Lights with Representative Point Method](/Examples/PhysicallyBasedRendering/AreaLights/SphereAreaLights)
   - [Using Multiple Area Lights](/Examples/PhysicallyBasedRendering/AreaLights/MultipleAreaLights)
+- **[IBL and Reflections](/Examples/PhysicallyBasedRendering/IblAndReflections)**
+  - [Using Equirectangular HDR Images as Skybox](/Examples/PhysicallyBasedRendering/IblAndReflections/EquirectangularHdrSkybox)
 
 ## Environment Support
 

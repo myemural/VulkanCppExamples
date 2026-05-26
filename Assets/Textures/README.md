@@ -20,6 +20,7 @@ This directory contains several texture files that taken from different free sou
 - Rock_Ore_001_COLOR.jpg ([Rock with Ore 001, 3dtextures.me](https://3dtextures.me/2017/12/27/rock-with-ore-001/))
 - Rock_Ore_001_SPEC.jpg ([Rock with Ore 001, 3dtextures.me](https://3dtextures.me/2017/12/27/rock-with-ore-001/))
 - Rock_Ore_001_ROUGH.jpg ([Rock with Ore 001, 3dtextures.me](https://3dtextures.me/2017/12/27/rock-with-ore-001/))
+- sundowner_deck_2k.hdr ([Sundowner Deck, polyhaven.com](https://polyhaven.com/a/sundowner_deck))
 - texture_atlas.jpg ([Texture atlas, reddit.com](https://www.reddit.com/r/blenderhelp/comments/14qkez3/texture_atlas/))
 - wall.jpg ([Concrete wall texture, freepik.com](https://img.freepik.com/free-photo/concrete-wall-texture_1194-6922.jpg?semt=ais_hybrid&w=740&q=80))
 - Wood_Floor_015_basecolor.png ([Wood Floor 015, 3dtextures.me](https://3dtextures.me/2025/10/03/wood-floor-015/))

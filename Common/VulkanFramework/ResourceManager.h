@@ -178,6 +178,22 @@ public:
                              std::uint32_t currentLayer = 0);
 
     /**
+     * @brief Sets an HDR image resource with texture data.
+     * @param cmdPool Command pool that the command buffer will be created.
+     * @param queue Queue that the command buffer will be sent.
+     * @param imageName Name of the image resource to be updated.
+     * @param textureAsset HDR texture asset.
+     * @param mipLevels Mip level count.
+     * @param currentLayer Current layer index.
+     */
+    void SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
+                             const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
+                             const std::string& imageName,
+                             const asset_manager::TextureAssetHDR& textureAsset,
+                             std::uint32_t mipLevels = 1,
+                             std::uint32_t currentLayer = 0);
+
+    /**
      * @brief Generates mipmap data in image memory area.
      * @param cmdPool Command pool that the command buffer will be created.
      * @param queue Queue that the command buffer will be sent.

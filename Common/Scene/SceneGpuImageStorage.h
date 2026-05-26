@@ -56,6 +56,21 @@ public:
                            bool mipmappingEnabled = false);
 
     /**
+     * @brief Stores HDR texture asset on the GPU.
+     * @param textureName Name of the texture resource.
+     * @param samplerName Name of the sampler.
+     * @param textureAsset Asset of the HDR texture resource.
+     * @param format Storing format of the texture.
+     * @param mipmappingEnabled Specifies whether mipmapping is enabled or not.
+     * @return Returns texture ID.
+     */
+    TextureId StoreTexture(const std::string& textureName,
+                           const std::string& samplerName,
+                           const asset_manager::TextureAssetHDR& textureAsset,
+                           const VkFormat& format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                           bool mipmappingEnabled = false);
+
+    /**
      * @brief Stores cubemap texture asset on the GPU.
      * @param textureName Name of the texture resource.
      * @param samplerName Name of the sampler.
@@ -83,6 +98,8 @@ public:
     [[nodiscard]] std::uint32_t GetTextureCount() const;
 
     [[nodiscard]] std::uint32_t GetCubemapTextureCount() const;
+
+    [[nodiscard]] std::vector<VkDescriptorImageInfo> GetDescriptorImageInfo(const std::string& textureName);
 
     [[nodiscard]] std::vector<VkDescriptorImageInfo> GetDescriptorImageInfos() const;
 
