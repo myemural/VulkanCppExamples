@@ -19,6 +19,7 @@
 #include "SamplerResource.h"
 #include "ShaderResource.h"
 #include "TextureAsset.h"
+#include "VulkanCommandBuffer.h"
 #include "VulkanDevice.h"
 #include "VulkanPhysicalDevice.h"
 
@@ -167,14 +168,12 @@ public:
      * @param queue Queue that the command buffer will be sent.
      * @param imageName Name of the image resource to be updated.
      * @param textureAsset Texture asset.
-     * @param mipLevels Mip level count.
      * @param currentLayer Current layer index.
      */
     void SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                              const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                              const std::string& imageName,
                              const asset_manager::TextureAsset& textureAsset,
-                             std::uint32_t mipLevels = 1,
                              std::uint32_t currentLayer = 0);
 
     /**
@@ -183,14 +182,12 @@ public:
      * @param queue Queue that the command buffer will be sent.
      * @param imageName Name of the image resource to be updated.
      * @param textureAsset HDR texture asset.
-     * @param mipLevels Mip level count.
      * @param currentLayer Current layer index.
      */
     void SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                              const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                              const std::string& imageName,
                              const asset_manager::TextureAssetHDR& textureAsset,
-                             std::uint32_t mipLevels = 1,
                              std::uint32_t currentLayer = 0);
 
     /**
@@ -198,14 +195,34 @@ public:
      * @param cmdPool Command pool that the command buffer will be created.
      * @param queue Queue that the command buffer will be sent.
      * @param imageName Name of the image resource to be updated.
-     * @param textureAsset Texture asset.
+     * @param textureWidth Width of the texture.
+     * @param textureHeight Height of the texture.
      * @param mipLevels Mip level count.
+     * @param layerCount Layer count.
      */
     void GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                          const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                          const std::string& imageName,
-                         const asset_manager::TextureAsset& textureAsset,
-                         std::uint32_t mipLevels) const;
+                         std::uint32_t textureWidth,
+                         std::uint32_t textureHeight,
+                         std::uint32_t mipLevels,
+                         std::uint32_t layerCount = 1) const;
+
+    /**
+     * @brief Generates mipmap data in image memory area using external command buffer.
+     * @param cmdBuffer External command buffer.
+     * @param imageName Name of the image resource to be updated.
+     * @param textureWidth Width of the texture.
+     * @param textureHeight Height of the texture.
+     * @param mipLevels Mip level count.
+     * @param layerCount Layer count.
+     */
+    void GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::VulkanCommandBuffer>& cmdBuffer,
+                         const std::string& imageName,
+                         std::uint32_t textureWidth,
+                         std::uint32_t textureHeight,
+                         std::uint32_t mipLevels,
+                         std::uint32_t layerCount = 1) const;
 
     /**
      * @brief Deletes buffer resource from resource manager.

@@ -12,6 +12,7 @@
 #include "AppCommonConfig.h"
 #include "AppConfig.h"
 #include "ApplicationData.h"
+#include "MathUtils.h"
 #include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
@@ -121,6 +122,8 @@ void VulkanApplication::CreateInitialResources() const
              .asset = assetManager_->Get(irradianceConvolutionFragmentShaderAsset)},
             {.name = kSkyboxFragmentShaderKey, .asset = assetManager_->Get(skyboxFragmentShaderAsset)}}};
 
+    const auto envCubemapMipLevels = GetMipLevelCount(kEnvironmentCubemapSize, kEnvironmentCubemapSize);
+
     resourceCreateInfo.images =
             {ImageResourceCreateInfo{
                  .name = kDepthImage,
@@ -141,22 +144,25 @@ void VulkanApplication::CreateInitialResources() const
                  .createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
                  .format = VK_FORMAT_R32G32B32A32_SFLOAT,
                  .dimensions = {kEnvironmentCubemapSize, kEnvironmentCubemapSize, 1},
+                 .mipLevels = envCubemapMipLevels,
                  .arrayLayers = 6,
                  .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
                  .views =
                          {
-                             ImageViewCreateInfo{.viewName = kEnvironmentCubemapImageView,
-                                                 .viewType = VK_IMAGE_VIEW_TYPE_CUBE,
-                                                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-                                                 .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 6}},
+                             ImageViewCreateInfo{
+                                 .viewName = kEnvironmentCubemapImageView,
+                                 .viewType = VK_IMAGE_VIEW_TYPE_CUBE,
+                                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                                 .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, envCubemapMipLevels, 0, 6}},
                              ImageViewCreateInfo{.viewName = kEnvironmentCubemapImageViewRight,
                                                  .viewType = VK_IMAGE_VIEW_TYPE_2D,
                                                  .format = VK_FORMAT_R32G32B32A32_SFLOAT,
                                                  .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}},
                              ImageViewCreateInfo{.viewName = kEnvironmentCubemapImageViewLeft,
                                                  .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
+                                                 .format =
+                                                         VK_FORMAT_R32G32B32A32_SFLOAT,
                                                  .subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 1, 1}},
                              ImageViewCreateInfo{.viewName = kEnvironmentCubemapImageViewTop,
                                                  .viewType = VK_IMAGE_VIEW_TYPE_2D,
@@ -219,9 +225,17 @@ void VulkanApplication::CreateInitialResources() const
                                      }}};
 
     resourceCreateInfo.samplers = {
-        SamplerResourceCreateInfo{.name = kMainSampler,
+        SamplerResourceCreateInfo{.name = kHdrTextureSampler,
                                   .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR}},
-        SamplerResourceCreateInfo{.name = kSkyboxSampler,
+        SamplerResourceCreateInfo{.name = kEnvironmentCubemapSampler,
+                                  .filtering = {.magFilter = VK_FILTER_LINEAR,
+                                                .minFilter = VK_FILTER_LINEAR,
+                                                .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR},
+                                  .addressModes = {VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+                                                   VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+                                                   VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE},
+                                  .lod = {.mipLodBias = 0.0f, .minLod = 0.0f, .maxLod = VK_LOD_CLAMP_NONE}},
+        SamplerResourceCreateInfo{.name = kIrradianceMapSampler,
                                   .filtering = {.magFilter = VK_FILTER_LINEAR, .minFilter = VK_FILTER_LINEAR},
                                   .addressModes = {VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
                                                    VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
@@ -249,7 +263,7 @@ void VulkanApplication::BuildScene()
 
     const auto hdrEnvironmentTextureAsset = assetManager_->Load<TextureAssetHDR>(kHdrEnvironmentTexturePath);
     [[maybe_unused]] const auto hdrEnvironmentTextureId = sceneImageStorage.StoreTexture(
-            kHdrEnvironmentTexture, kSkyboxSampler, assetManager_->Get(hdrEnvironmentTextureAsset));
+            kHdrEnvironmentTexture, kHdrTextureSampler, assetManager_->Get(hdrEnvironmentTextureAsset));
 
     auto rootObjectBuilder = SceneObjectBuilder(*scene_, kRootObject).WithPosition(glm::vec3{0.0f, 0.0f, 0.0f});
 
@@ -337,13 +351,13 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
 
     std::vector<VkDescriptorImageInfo> environmentCubemapImageInfos;
     environmentCubemapImageInfos.emplace_back(
-            resources_->GetSampler(kSkyboxSampler)->GetHandle(),
+            resources_->GetSampler(kEnvironmentCubemapSampler)->GetHandle(),
             resources_->GetImageView(kEnvironmentCubemapImage, kEnvironmentCubemapImageView)->GetHandle(),
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     std::vector<VkDescriptorImageInfo> irradianceCubemapImageInfos;
     irradianceCubemapImageInfos.emplace_back(
-            resources_->GetSampler(kSkyboxSampler)->GetHandle(),
+            resources_->GetSampler(kIrradianceMapSampler)->GetHandle(),
             resources_->GetImageView(kIrradianceCubemapImage, kIrradianceCubemapImageView)->GetHandle(),
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
@@ -838,12 +852,20 @@ void VulkanApplication::ConvertEquirectangularToCubemap()
         currentCmdBuffer->EndRenderPass();
     }
 
-    // Barrier for using environment cubemap in irradiance convolution
+    // Generate mipmaps for environment cubemap image
+    const auto envCubemapMipLevels = GetMipLevelCount(kEnvironmentCubemapSize, kEnvironmentCubemapSize);
+    {
+        resources_->GenerateMipmaps(currentCmdBuffer, kEnvironmentCubemapImage, kEnvironmentCubemapSize,
+                                    kEnvironmentCubemapSize, envCubemapMipLevels, 6);
+    }
+
+    // Barrier for using environment cubemap image in irradiance convolution
     {
         const auto environmentCubemapImage = resources_->GetImage(kEnvironmentCubemapImage);
         const auto environmentCubemapBarrier = environmentCubemapImage->CreateImageMemoryBarrier(
                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT,
-                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, envCubemapMipLevels, 0, 6});
         currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                                           VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, {environmentCubemapBarrier});
     }

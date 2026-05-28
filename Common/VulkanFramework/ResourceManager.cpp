@@ -153,12 +153,11 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
                                           const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                           const std::string& imageName,
                                           const asset_manager::TextureAsset& textureAsset,
-                                          const std::uint32_t mipLevels,
                                           const std::uint32_t currentLayer)
 {
-    images_[imageName]->ChangeImageLayout(
-            cmdPool, queue, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, currentLayer, 1});
+    images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_UNDEFINED,
+                                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                          VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, currentLayer, 1});
 
     const BufferResourceCreateInfo stagingBufferCreateInfo{
         imageName + "_tempStagingBuffer", static_cast<std::uint32_t>(textureAsset.data.size()),
@@ -192,12 +191,11 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
                                           const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                           const std::string& imageName,
                                           const asset_manager::TextureAssetHDR& textureAsset,
-                                          const std::uint32_t mipLevels,
                                           const std::uint32_t currentLayer)
 {
-    images_[imageName]->ChangeImageLayout(
-            cmdPool, queue, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, mipLevels, currentLayer, 1});
+    images_[imageName]->ChangeImageLayout(cmdPool, queue, VK_IMAGE_LAYOUT_UNDEFINED,
+                                          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                          VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, currentLayer, 1});
 
     const std::uint32_t bufferSizeInBytes = textureAsset.data.size() * sizeof(float);
 
@@ -232,8 +230,10 @@ void ResourceManager::SetImageFromTexture(const std::shared_ptr<vulkan_wrapper::
 void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::VulkanCommandPool>& cmdPool,
                                       const std::shared_ptr<vulkan_wrapper::VulkanQueue>& queue,
                                       const std::string& imageName,
-                                      const asset_manager::TextureAsset& textureAsset,
-                                      const std::uint32_t mipLevels) const
+                                      const std::uint32_t textureWidth,
+                                      const std::uint32_t textureHeight,
+                                      const std::uint32_t mipLevels,
+                                      const std::uint32_t layerCount) const
 {
     const auto cmdBufferMipmap = cmdPool->CreateCommandBuffers(1, VK_COMMAND_BUFFER_LEVEL_PRIMARY).front();
 
@@ -248,16 +248,24 @@ void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::Vulk
 
     const auto image = GetImage(imageName);
 
-    VkImageSubresourceRange subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    VkImageSubresourceRange subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, layerCount};
     auto barrier = image->CreateImageMemoryBarrier(VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT,
                                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceRange);
 
-    auto mipWidth = static_cast<int32_t>(textureAsset.width);
-    auto mipHeight = static_cast<int32_t>(textureAsset.height);
+    subresourceRange.baseMipLevel = 1;
+    subresourceRange.levelCount = mipLevels - 1;
+    barrier.subresourceRange = subresourceRange;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    cmdBufferMipmap->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {barrier});
+
+    auto mipWidth = static_cast<int32_t>(textureWidth);
+    auto mipHeight = static_cast<int32_t>(textureHeight);
 
     for (uint32_t i = 1; i < mipLevels; ++i) {
         barrier.subresourceRange.baseMipLevel = i - 1;
+        barrier.subresourceRange.levelCount = 1;
         barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
@@ -275,13 +283,13 @@ void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::Vulk
         blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         blit.srcSubresource.mipLevel = i - 1;
         blit.srcSubresource.baseArrayLayer = 0;
-        blit.srcSubresource.layerCount = 1;
+        blit.srcSubresource.layerCount = layerCount;
         blit.dstOffsets[0] = {0, 0, 0};
         blit.dstOffsets[1] = {mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1};
         blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         blit.dstSubresource.mipLevel = i;
         blit.dstSubresource.baseArrayLayer = 0;
-        blit.dstSubresource.layerCount = 1;
+        blit.dstSubresource.layerCount = layerCount;
         cmdBufferMipmap->BlitImage(image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image,
                                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, {blit});
 
@@ -310,6 +318,78 @@ void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::Vulk
 
     queue->Submit({cmdBufferMipmap});
     queue->WaitIdle();
+}
+
+void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::VulkanCommandBuffer>& cmdBuffer,
+                                      const std::string& imageName,
+                                      const std::uint32_t textureWidth,
+                                      const std::uint32_t textureHeight,
+                                      const std::uint32_t mipLevels,
+                                      const std::uint32_t layerCount) const
+{
+    const auto image = GetImage(imageName);
+
+    VkImageSubresourceRange subresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, layerCount};
+    auto barrier = image->CreateImageMemoryBarrier(VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT,
+                                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                                   VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, subresourceRange);
+
+    subresourceRange.baseMipLevel = 1;
+    subresourceRange.levelCount = mipLevels - 1;
+    barrier.subresourceRange = subresourceRange;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    cmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {barrier});
+
+    auto mipWidth = static_cast<int32_t>(textureWidth);
+    auto mipHeight = static_cast<int32_t>(textureHeight);
+
+    for (uint32_t i = 1; i < mipLevels; ++i) {
+        barrier.subresourceRange.baseMipLevel = i - 1;
+        barrier.subresourceRange.levelCount = 1;
+        barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        if (i == 1) {
+            barrier.oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; // For first level only
+        } else {
+            barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        }
+
+        cmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {barrier});
+
+        VkImageBlit blit{};
+        blit.srcOffsets[0] = {0, 0, 0};
+        blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
+        blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        blit.srcSubresource.mipLevel = i - 1;
+        blit.srcSubresource.baseArrayLayer = 0;
+        blit.srcSubresource.layerCount = layerCount;
+        blit.dstOffsets[0] = {0, 0, 0};
+        blit.dstOffsets[1] = {mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1};
+        blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        blit.dstSubresource.mipLevel = i;
+        blit.dstSubresource.baseArrayLayer = 0;
+        blit.dstSubresource.layerCount = layerCount;
+        cmdBuffer->BlitImage(image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                             {blit});
+
+        barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+        cmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, {barrier});
+
+        mipWidth = mipWidth > 1 ? mipWidth / 2 : 1;
+        mipHeight = mipHeight > 1 ? mipHeight / 2 : 1;
+    }
+
+    barrier.subresourceRange.baseMipLevel = mipLevels - 1;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    cmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, {barrier});
 }
 
 void ResourceManager::DeleteBuffer(const std::string& bufferName) { buffers_.erase(bufferName); }

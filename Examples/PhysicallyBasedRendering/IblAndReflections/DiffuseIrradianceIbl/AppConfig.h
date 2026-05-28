@@ -52,8 +52,9 @@ namespace constants
     inline constexpr auto kIrradianceCubemapImageViewFront = "irradianceCubemapImageViewFront";
 
     // Samplers
-    inline constexpr auto kMainSampler = "mainSampler";
-    inline constexpr auto kSkyboxSampler = "skyboxSampler";
+    inline constexpr auto kHdrTextureSampler = "hdrTextureSampler";
+    inline constexpr auto kEnvironmentCubemapSampler = "environmentCubemapSampler";
+    inline constexpr auto kIrradianceMapSampler = "irradianceMapSampler";
 
     // Descriptor Sets and Layouts
     inline constexpr auto kMainDescSet = "mainDescSet";

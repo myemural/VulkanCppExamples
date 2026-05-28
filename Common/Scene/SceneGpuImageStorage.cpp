@@ -55,10 +55,11 @@ TextureId SceneGpuImageStorage::StoreTexture(const std::string& textureName,
 
     resourceManager_.CreateImages({imageResource});
 
-    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, textureAsset, mipLevels);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, textureAsset);
 
     if (mipmappingEnabled) {
-        resourceManager_.GenerateMipmaps(cmdPool_, queue_, textureImageName, textureAsset, mipLevels);
+        resourceManager_.GenerateMipmaps(cmdPool_, queue_, textureImageName, textureAsset.width, textureAsset.height,
+                                         mipLevels);
     }
 
     textureHandlers_[textureName] =
@@ -98,12 +99,12 @@ TextureId SceneGpuImageStorage::StoreTexture(const std::string& textureName,
 
     resourceManager_.CreateImages({imageResource});
 
-    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, textureAsset, mipLevels);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, textureAsset);
 
-    /// TODO: Fix mipmap generation on resource manager and uncomment these lines.
-    // if (mipmappingEnabled) {
-    //     resourceManager_.GenerateMipmaps(cmdPool_, queue_, textureImageName, textureAsset, mipLevels);
-    // }
+    if (mipmappingEnabled) {
+        resourceManager_.GenerateMipmaps(cmdPool_, queue_, textureImageName, textureAsset.width, textureAsset.height,
+                                         mipLevels);
+    }
 
     textureHandlers_[textureName] =
             InternalTextureHandler{textureId, textureName, textureImageName, textureImageViewName, samplerName};
@@ -142,12 +143,12 @@ TextureId SceneGpuImageStorage::StoreCubemapTexture(const std::string& textureNa
 
     resourceManager_.CreateImages({imageResource});
 
-    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, rightTextureAsset, 1, 0);
-    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, leftTextureAsset, 1, 1);
-    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, topTextureAsset, 1, 2);
-    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, bottomTextureAsset, 1, 3);
-    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, backTextureAsset, 1, 4);
-    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, frontTextureAsset, 1, 5);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, rightTextureAsset, 0);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, leftTextureAsset, 1);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, topTextureAsset, 2);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, bottomTextureAsset, 3);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, backTextureAsset, 4);
+    resourceManager_.SetImageFromTexture(cmdPool_, queue_, textureImageName, frontTextureAsset, 5);
 
     cubemapTextureHandlers_[textureName] =
             InternalTextureHandler{textureId, textureName, textureImageName, textureImageViewName, samplerName};
