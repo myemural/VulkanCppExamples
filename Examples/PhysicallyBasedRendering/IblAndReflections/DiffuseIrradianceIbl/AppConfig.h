@@ -59,6 +59,7 @@ namespace constants
     inline constexpr auto kMainDescSet = "mainDescSet";
     inline constexpr auto kMainDescSetLayout = "mainDescSetLayout";
     inline constexpr auto kConvertToCubemapDescSet = "convertToCubemapDescSet";
+    inline constexpr auto kIrradianceConvolutionDescSet = "irradianceConvolutionDescSet";
     inline constexpr auto kSkyboxDescSet = "skyboxDescSet";
     inline constexpr auto kSkyboxDescSetLayout = "skyboxDescSetLayout";
 

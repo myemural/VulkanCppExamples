@@ -28,7 +28,7 @@ void main()
 
     // Lower = More quality
     // Higher = Faster
-    const float sampleDelta = 0.025;
+    const float sampleDelta = 0.020;
 
     // Hemisphere integration
     vec3 irradiance = vec3(0.0);

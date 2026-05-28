@@ -317,6 +317,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
                                    nullptr}}}},
         .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout},
                            {.name = kConvertToCubemapDescSet, .layoutName = kSkyboxDescSetLayout},
+                           {.name = kIrradianceConvolutionDescSet, .layoutName = kSkyboxDescSetLayout},
                            {.name = kSkyboxDescSet, .layoutName = kSkyboxDescSetLayout}}};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
@@ -382,6 +383,12 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     cubemapUpdateRequest.images = hdrEnvironmentImageInfos;
     cubemapUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
+    ImageWriteRequest irradianceConvolutionUpdateRequest;
+    irradianceConvolutionUpdateRequest.descriptorSetName = kIrradianceConvolutionDescSet;
+    irradianceConvolutionUpdateRequest.bindingIndex = 0;
+    irradianceConvolutionUpdateRequest.images = environmentCubemapImageInfos;
+    irradianceConvolutionUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
     ImageWriteRequest skyboxUpdateRequest;
     skyboxUpdateRequest.descriptorSetName = kSkyboxDescSet;
     skyboxUpdateRequest.bindingIndex = 0;
@@ -392,7 +399,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
         .bufferWriteRequests = {objectStorageTransformBufferRequest, objectStorageMaterialBufferRequest,
                                 lightUboRequest},
         .imageWriteRequests = {textureUpdateRequest, irradianceMapUpdateRequest, cubemapUpdateRequest,
-                               skyboxUpdateRequest}};
+                               irradianceConvolutionUpdateRequest, skyboxUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -795,6 +802,7 @@ void VulkanApplication::ConvertEquirectangularToCubemap()
 
     const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
 
+    // Convert equirectangular to cubemap
     for (uint32_t face = 0; face < environmentCubemapFramebuffers_.size(); face++) {
         currentCmdBuffer->BeginRenderPass(
                 [&](auto& beginInfo) {
@@ -830,6 +838,17 @@ void VulkanApplication::ConvertEquirectangularToCubemap()
         currentCmdBuffer->EndRenderPass();
     }
 
+    // Barrier for using environment cubemap in irradiance convolution
+    {
+        const auto environmentCubemapImage = resources_->GetImage(kEnvironmentCubemapImage);
+        const auto environmentCubemapBarrier = environmentCubemapImage->CreateImageMemoryBarrier(
+                VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                          VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, {environmentCubemapBarrier});
+    }
+
+    // Calculate irradiance convolution cubemap
     for (uint32_t face = 0; face < irradianceCubemapFramebuffers_.size(); face++) {
         currentCmdBuffer->BeginRenderPass(
                 [&](auto& beginInfo) {
@@ -849,7 +868,7 @@ void VulkanApplication::ConvertEquirectangularToCubemap()
                 currentCmdBuffer->BindVertexBuffers(vertexBuffers, 0, vertexBuffers.size(), vertexOffsets);
                 currentCmdBuffer->BindIndexBuffer(scene_->GetGeometryBuffer(), indexOffset);
 
-                const std::vector skyboxDescSets{resources_->GetDescriptorSet(kSkyboxDescSet)};
+                const std::vector skyboxDescSets{resources_->GetDescriptorSet(kIrradianceConvolutionDescSet)};
                 currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayoutSkybox_, 0,
                                                      skyboxDescSets);
 
