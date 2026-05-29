@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `EquirectangularHdrSkybox`
 2. [Diffuse Irradiance Image Based Lighting](/Examples/PhysicallyBasedRendering/IblAndReflections/DiffuseIrradianceIbl)
    - `DiffuseIrradianceIbl`
+3. [Specular Image Based Lighting](/Examples/PhysicallyBasedRendering/IblAndReflections/SpecularIbl)
+   - `SpecularIbl`
 
 ## Architecture of the Subsection
 

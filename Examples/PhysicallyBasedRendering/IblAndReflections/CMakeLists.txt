@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(EquirectangularHdrSkybox)
 add_subdirectory(DiffuseIrradianceIbl)
+add_subdirectory(SpecularIbl)
