@@ -37,11 +37,11 @@ Supported shader stages and their file name formats should be like this:
 | Shader Stage                            | GLSL File Format      | HLSL File Format    | Slang File Format      | SPIR-V File Format   |
 |-----------------------------------------|-----------------------|---------------------|------------------------|----------------------|
 | Vertex Shader                           | shader_name.vert.glsl | shader_name.vs.hlsl | shader_name.vert.slang | shader_name.vert.spv |
-| Fragment/Pixel Shader                   | shader_name.frag.glsl | shader_name.ps.hlsl | shader_name.frag.slang | shader_name.vert.spv |
-| Geometry Shader                         | shader_name.geom.glsl | shader_name.gs.hlsl | shader_name.geom.slang | shader_name.vert.spv |
-| Tessellation Control / Hull Shader      | shader_name.tesc.glsl | shader_name.hs.hlsl | shader_name.tesc.slang | shader_name.vert.spv |
-| Tessellation Evaluation / Domain Shader | shader_name.tese.glsl | shader_name.ds.hlsl | shader_name.tese.slang | shader_name.vert.spv |
-| Compute Shader                          | shader_name.comp.glsl | shader_name.cs.hlsl | shader_name.comp.slang | shader_name.vert.spv |
+| Fragment/Pixel Shader                   | shader_name.frag.glsl | shader_name.ps.hlsl | shader_name.frag.slang | shader_name.frag.spv |
+| Geometry Shader                         | shader_name.geom.glsl | shader_name.gs.hlsl | shader_name.geom.slang | shader_name.geom.spv |
+| Tessellation Control / Hull Shader      | shader_name.tesc.glsl | shader_name.hs.hlsl | shader_name.tesc.slang | shader_name.tesc.spv |
+| Tessellation Evaluation / Domain Shader | shader_name.tese.glsl | shader_name.ds.hlsl | shader_name.tese.slang | shader_name.tese.spv |
+| Compute Shader                          | shader_name.comp.glsl | shader_name.cs.hlsl | shader_name.comp.slang | shader_name.comp.spv |
 
 ### Directory Structure
 

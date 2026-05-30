@@ -241,6 +241,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Using Equirectangular HDR Images as Skybox](/Examples/PhysicallyBasedRendering/IblAndReflections/EquirectangularHdrSkybox)
   - [Diffuse Irradiance Image Based Lighting](/Examples/PhysicallyBasedRendering/IblAndReflections/DiffuseIrradianceIbl)
   - [Specular Image Based Lighting](/Examples/PhysicallyBasedRendering/IblAndReflections/SpecularIbl)
+  - [Complete Image Based Lighting on Textured Materials](/Examples/PhysicallyBasedRendering/IblAndReflections/CompleteIblTextured)
 
 ## Environment Support
 

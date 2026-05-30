@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `DiffuseIrradianceIbl`
 3. [Specular Image Based Lighting](/Examples/PhysicallyBasedRendering/IblAndReflections/SpecularIbl)
    - `SpecularIbl`
+4. [Complete Image Based Lighting on Textured Materials](/Examples/PhysicallyBasedRendering/IblAndReflections/CompleteIblTextured)
+   - `CompleteIblTextured`
 
 ## Architecture of the Subsection
 
