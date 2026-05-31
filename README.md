@@ -242,6 +242,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Diffuse Irradiance Image Based Lighting](/Examples/PhysicallyBasedRendering/IblAndReflections/DiffuseIrradianceIbl)
   - [Specular Image Based Lighting](/Examples/PhysicallyBasedRendering/IblAndReflections/SpecularIbl)
   - [Complete Image Based Lighting on Textured Materials](/Examples/PhysicallyBasedRendering/IblAndReflections/CompleteIblTextured)
+  - [Screen-Space Reflections (SSR)](/Examples/PhysicallyBasedRendering/IblAndReflections/ScreenSpaceReflections)
 
 ## Environment Support
 

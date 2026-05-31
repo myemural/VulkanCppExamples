@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `SpecularIbl`
 4. [Complete Image Based Lighting on Textured Materials](/Examples/PhysicallyBasedRendering/IblAndReflections/CompleteIblTextured)
    - `CompleteIblTextured`
+5. [Screen-Space Reflections (SSR)](/Examples/PhysicallyBasedRendering/IblAndReflections/ScreenSpaceReflections)
+   - `ScreenSpaceReflections`
 
 ## Architecture of the Subsection
 
