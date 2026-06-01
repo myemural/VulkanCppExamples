@@ -104,7 +104,7 @@ void VulkanApplication::CreateInitialResources() const
 
     // Fill buffer create infos
     const uint32_t pixelCount = currentWindowWidth_ * currentWindowHeight_;
-    const uint32_t linkedListBufferSize = sizeof(OitNode) * pixelCount * MAX_FRAGMENTS_PER_PIXEL;
+    const uint32_t linkedListBufferSize = sizeof(OitNode) * pixelCount * kMaxFragmentsPerPixel;
     const uint32_t headPointerBufferSize = sizeof(uint32_t) * pixelCount;
 
     resourceCreateInfo.buffers = {
@@ -174,9 +174,9 @@ void VulkanApplication::BuildScene()
                                            assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material opaqueTexturedMaterial;
-    opaqueTexturedMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    opaqueTexturedMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    opaqueTexturedMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    opaqueTexturedMaterial.ambientStrength = kAmbientStrength;
+    opaqueTexturedMaterial.shininess = kSpecularShininess;
+    opaqueTexturedMaterial.specularStrength = kSpecularStrength;
     opaqueTexturedMaterial.diffuseMap = wallStoneTextureId;
     opaqueTexturedMaterial.normalMap = wallStoneNormalTextureId;
     opaqueTexturedMaterial.opacity = 1.0f;
@@ -187,9 +187,9 @@ void VulkanApplication::BuildScene()
     for (const auto& modelPos: modelPositions) {
         Material transparentColoredMaterial;
         transparentColoredMaterial.diffuseColor = glm::vec4{GenerateRandomColor(0.1f, 1.0f), 1.0f};
-        transparentColoredMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-        transparentColoredMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-        transparentColoredMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+        transparentColoredMaterial.ambientStrength = kAmbientStrength;
+        transparentColoredMaterial.shininess = kSpecularShininess;
+        transparentColoredMaterial.specularStrength = kSpecularStrength;
         transparentColoredMaterial.opacity = GenerateRandomValue(0.1f, 0.6f);
 
         // Select material
@@ -690,8 +690,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

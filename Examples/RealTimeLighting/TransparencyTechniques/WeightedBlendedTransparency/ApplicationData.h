@@ -17,8 +17,6 @@
 namespace examples::real_time_lighting::transparency_techniques::weighted_blended_transparency
 {
 
-#define NUM_OBJECTS 250
-
 inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4,      common::scene::MaterialComponent::SPECULAR_COLOR_VEC4,
     common::scene::MaterialComponent::AMBIENT_STRENGTH_FLOAT,  common::scene::MaterialComponent::SHININESS_FLOAT,
@@ -29,6 +27,14 @@ inline const std::vector attributeLayouts{
     std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
     std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
     std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
+
+// Constants
+inline constexpr auto kLightDirection = glm::vec3(-0.1f, -0.4f, -0.7f);
+inline constexpr auto kLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+inline constexpr auto kAmbientStrength = 0.05f;
+inline constexpr auto kSpecularStrength = 0.7f;
+inline constexpr auto kSpecularShininess = 128.0f;
+inline constexpr auto kTotalNoOfPositions = 250U;
 
 struct alignas(16) LightUbo
 {
@@ -46,6 +52,6 @@ struct MeshPushConstants
 
 // Scene object and light position vectors
 inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
-        NUM_OBJECTS, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
+        kTotalNoOfPositions, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
 
 } // namespace examples::real_time_lighting::transparency_techniques::weighted_blended_transparency

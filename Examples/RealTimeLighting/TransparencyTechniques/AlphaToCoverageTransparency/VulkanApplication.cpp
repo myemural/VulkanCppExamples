@@ -203,16 +203,16 @@ void VulkanApplication::BuildScene()
                                            assetManager_->Get(metalChainOpacityTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material wallStoneMaterial;
-    wallStoneMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    wallStoneMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    wallStoneMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    wallStoneMaterial.ambientStrength = kAmbientStrength;
+    wallStoneMaterial.shininess = kSpecularShininess;
+    wallStoneMaterial.specularStrength = kSpecularStrength;
     wallStoneMaterial.diffuseMap = wallStoneTextureId;
     wallStoneMaterial.normalMap = wallStoneNormalTextureId;
 
     Material metalChainMaterial;
-    metalChainMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    metalChainMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    metalChainMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    metalChainMaterial.ambientStrength = kAmbientStrength;
+    metalChainMaterial.shininess = kSpecularShininess;
+    metalChainMaterial.specularStrength = kSpecularStrength;
     metalChainMaterial.diffuseMap = metalChainTextureId;
     metalChainMaterial.normalMap = metalChainNormalTextureId;
     metalChainMaterial.opacityMap = metalChainOpacityTextureId;
@@ -588,8 +588,8 @@ void VulkanApplication::UpdateSceneTransforms() const
     scene_->FindObjectByName(kCubeObject)->SetEulerAngles(glm::vec3(angle, 0.0f, 0.0f));
 
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

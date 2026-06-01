@@ -73,8 +73,5 @@ namespace AppSettings
     constexpr auto ClearColor = "AppSettings.ClearColor";
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
-    constexpr auto ConstantFactor = "AppSettings.ConstantFactor";
-    constexpr auto LinearFactor = "AppSettings.LinearFactor";
-    constexpr auto QuadraticFactor = "AppSettings.QuadraticFactor";
 } // namespace AppSettings
 } // namespace examples::real_time_lighting::transparency_techniques::hybrid_alpha_blending

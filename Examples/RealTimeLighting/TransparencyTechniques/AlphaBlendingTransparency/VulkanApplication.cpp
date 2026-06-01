@@ -161,31 +161,31 @@ void VulkanApplication::BuildScene()
                                            assetManager_->Get(wallStoneNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material defaultMaterial;
-    defaultMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    defaultMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    defaultMaterial.ambientStrength = kAmbientStrength;
+    defaultMaterial.shininess = kSpecularShininess;
+    defaultMaterial.specularStrength = kSpecularStrength;
     defaultMaterial.diffuseMap = wallStoneTextureId;
     defaultMaterial.normalMap = wallStoneNormalTextureId;
 
     Material redMaterial;
     redMaterial.diffuseColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
-    redMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    redMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    redMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    redMaterial.ambientStrength = kAmbientStrength;
+    redMaterial.shininess = kSpecularShininess;
+    redMaterial.specularStrength = kSpecularStrength;
     redMaterial.opacity = 0.5f;
 
     Material greenMaterial;
     greenMaterial.diffuseColor = glm::vec4{0.0f, 1.0f, 0.0f, 1.0f};
-    greenMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    greenMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    greenMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    greenMaterial.ambientStrength = kAmbientStrength;
+    greenMaterial.shininess = kSpecularShininess;
+    greenMaterial.specularStrength = kSpecularStrength;
     greenMaterial.opacity = 0.5f;
 
     Material blueMaterial;
     blueMaterial.diffuseColor = glm::vec4{0.0f, 0.0f, 1.0f, 1.0f};
-    blueMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    blueMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    blueMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    blueMaterial.ambientStrength = kAmbientStrength;
+    blueMaterial.shininess = kSpecularShininess;
+    blueMaterial.specularStrength = kSpecularStrength;
     blueMaterial.opacity = 0.5f;
 
     const auto rootObject = SceneObjectBuilder(*scene_, kRootObject)
@@ -486,8 +486,8 @@ void VulkanApplication::UpdateSceneTransforms() const
     scene_->FindObjectByName(kCubeObject)->SetEulerAngles(glm::vec3(angle, 0.0f, 0.0f));
 
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

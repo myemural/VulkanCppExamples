@@ -172,9 +172,9 @@ void VulkanApplication::BuildScene()
     for (const auto& modelPos: modelPositions) {
         Material transparentMaterial{};
         transparentMaterial.diffuseColor = glm::vec4(GenerateRandomColor(0.1f, 1.0f), 1.0f);
-        transparentMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-        transparentMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-        transparentMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+        transparentMaterial.ambientStrength = kAmbientStrength;
+        transparentMaterial.shininess = kSpecularShininess;
+        transparentMaterial.specularStrength = kSpecularStrength;
         transparentMaterial.opacity = GenerateRandomValue(0.1f, 0.8f);
 
         if (const auto value = GenerateRandomValue(0U, 1U); value == 0) {
@@ -645,8 +645,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

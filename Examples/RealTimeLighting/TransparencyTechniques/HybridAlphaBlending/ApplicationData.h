@@ -17,9 +17,6 @@
 namespace examples::real_time_lighting::transparency_techniques::hybrid_alpha_blending
 {
 
-#define NUM_OBJECTS 250
-#define MAX_LIGHT_COUNT 50
-
 inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::DIFFUSE_COLOR_VEC4, common::scene::MaterialComponent::OPACITY_FLOAT,
     common::scene::MaterialComponent::DIFFUSE_MAP_TEXTURE, common::scene::MaterialComponent::NORMAL_MAP_TEXTURE};
@@ -29,6 +26,13 @@ inline const std::vector attributeLayouts{
     std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
     std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
     std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
+
+// Constants
+inline constexpr auto kConstantFactor = 1.0f;
+inline constexpr auto kLinearFactor = 0.14f;
+inline constexpr auto kQuadraticFactor = 0.07f;
+inline constexpr auto kTotalNoOfPositions = 250U;
+inline constexpr auto kMaxLightCount = 50U;
 
 struct alignas(16) MeshMaterialData
 {
@@ -54,6 +58,6 @@ struct MeshPushConstants
 
 // Scene object and light position vectors
 inline const std::vector<glm::vec3> modelPositions = common::utility::GenerateRandomPositions(
-        NUM_OBJECTS, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
+        kTotalNoOfPositions, glm::vec3(-15.0f, -13.0f, -25.0f), glm::vec3(15.0f, 13.0f, -2.0f), 3.0f);
 
 } // namespace examples::real_time_lighting::transparency_techniques::hybrid_alpha_blending
