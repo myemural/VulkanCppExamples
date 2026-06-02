@@ -128,7 +128,7 @@ void VulkanApplication::CreateInitialResources() const
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
             .format = depthImageFormat_,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
             .arrayLayers = 6,
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             .views =
@@ -223,18 +223,18 @@ void VulkanApplication::BuildScene()
                                            assetManager_->Get(terracottaNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material objectMaterial;
-    objectMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    objectMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    objectMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    objectMaterial.ambientStrength = kAmbientStrength;
+    objectMaterial.shininess = kSpecularShininess;
+    objectMaterial.specularStrength = kSpecularStrength;
     objectMaterial.uvScale = 2.0f;
     objectMaterial.diffuseMap = woodFloorTextureId;
     objectMaterial.normalMap = woodFloorNormalTextureId;
     objectMaterial.flipNormals = 0;
 
     Material roomMaterial;
-    roomMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    roomMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    roomMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    roomMaterial.ambientStrength = kAmbientStrength;
+    roomMaterial.shininess = kSpecularShininess;
+    roomMaterial.specularStrength = kSpecularStrength;
     roomMaterial.uvScale = 10.0f;
     roomMaterial.diffuseMap = terracottaTextureId;
     roomMaterial.normalMap = terracottaNormalTextureId;
@@ -571,9 +571,9 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create pipeline layout (for shadow mapping)!");
     }
 
-    VkViewport shadowMapViewport{0,    0,   static_cast<float>(SHADOW_MAP_SIZE), static_cast<float>(SHADOW_MAP_SIZE),
+    VkViewport shadowMapViewport{0,    0,   static_cast<float>(kShadowMapSize), static_cast<float>(kShadowMapSize),
                                  0.0f, 1.0f};
-    VkRect2D shadowMapScissor{0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE};
+    VkRect2D shadowMapScissor{0, 0, kShadowMapSize, kShadowMapSize};
 
     shadowPipeline_ = device_->CreateGraphicsPipeline(shadowPipelineLayout_, shadowRenderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -630,7 +630,7 @@ void VulkanApplication::CreateFramebuffers()
 
         shadowFramebuffers_[i] =
                 device_->CreateFramebuffer(shadowRenderPass_, {shadowCubemapImageView}, [&](auto& builder) {
-                    builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    builder.SetDimensions(kShadowMapSize, kShadowMapSize);
                 });
 
         if (!shadowFramebuffers_[i]) {
@@ -689,7 +689,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.renderPass = shadowRenderPass_->GetHandle();
                     beginInfo.framebuffer = shadowFramebuffers_[i]->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    beginInfo.renderArea.extent = VkExtent2D(kShadowMapSize, kShadowMapSize);
                     beginInfo.clearValueCount = 1;
                     beginInfo.pClearValues = &shadowMapClearValue;
                 },
@@ -791,10 +791,10 @@ void VulkanApplication::UpdateSceneTransforms() const
 
     LightUbo lightUbo{};
     lightUbo.lightPosition = glm::vec4(pos, 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    lightUbo.pointLightParams.x = GetParamFloat(AppSettings::ConstantFactor);
-    lightUbo.pointLightParams.y = GetParamFloat(AppSettings::LinearFactor);
-    lightUbo.pointLightParams.z = GetParamFloat(AppSettings::QuadraticFactor);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
+    lightUbo.pointLightParams.x = kConstantFactor;
+    lightUbo.pointLightParams.y = kLinearFactor;
+    lightUbo.pointLightParams.z = kQuadraticFactor;
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

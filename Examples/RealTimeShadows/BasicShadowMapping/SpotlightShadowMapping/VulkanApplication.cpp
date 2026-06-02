@@ -125,7 +125,7 @@ void VulkanApplication::CreateInitialResources() const
             .name = kShadowMapImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView,
                                           .format = depthImageFormat_,
@@ -177,7 +177,7 @@ void VulkanApplication::BuildScene()
 
     // Add camera for spotlight shadows
     constexpr auto kCameraAngleMargin = 1.5f;
-    const auto kCameraFov = (GetParamFloat(AppSettings::OuterCutoffAngle) + kCameraAngleMargin) * 2.0f;
+    constexpr auto kCameraFov = (kOuterCutoffAngle + kCameraAngleMargin) * 2.0f;
     lightCamera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f), 1.0f, kCameraFov);
     lightCamera_->Rotate(0.0f, -90.0f);
 
@@ -198,17 +198,17 @@ void VulkanApplication::BuildScene()
                                            assetManager_->Get(terracottaNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material objectMaterial;
-    objectMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    objectMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    objectMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    objectMaterial.ambientStrength = kAmbientStrength;
+    objectMaterial.shininess = kSpecularShininess;
+    objectMaterial.specularStrength = kSpecularStrength;
     objectMaterial.uvScale = 2.0f;
     objectMaterial.diffuseMap = woodFloorTextureId;
     objectMaterial.normalMap = woodFloorNormalTextureId;
 
     Material floorMaterial;
-    floorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    floorMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    floorMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    floorMaterial.ambientStrength = kAmbientStrength;
+    floorMaterial.shininess = kSpecularShininess;
+    floorMaterial.specularStrength = kSpecularStrength;
     floorMaterial.uvScale = 4.0f;
     floorMaterial.diffuseMap = terracottaTextureId;
     floorMaterial.normalMap = terracottaNormalTextureId;
@@ -543,9 +543,9 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create pipeline layout (for shadow mapping)!");
     }
 
-    VkViewport shadowMapViewport{0,    0,   static_cast<float>(SHADOW_MAP_SIZE), static_cast<float>(SHADOW_MAP_SIZE),
+    VkViewport shadowMapViewport{0,    0,   static_cast<float>(kShadowMapSize), static_cast<float>(kShadowMapSize),
                                  0.0f, 1.0f};
-    VkRect2D shadowMapScissor{0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE};
+    VkRect2D shadowMapScissor{0, 0, kShadowMapSize, kShadowMapSize};
 
     shadowPipeline_ = device_->CreateGraphicsPipeline(shadowPipelineLayout_, shadowRenderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -591,7 +591,7 @@ void VulkanApplication::CreateFramebuffers()
     // Shadow map framebuffer
     const auto& shadowDepthImageView = resources_->GetImageView(kShadowMapImage, kShadowMapImageView);
     shadowFramebuffer_ = device_->CreateFramebuffer(shadowRenderPass_, {shadowDepthImageView}, [&](auto& builder) {
-        builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+        builder.SetDimensions(kShadowMapSize, kShadowMapSize);
     });
 
     if (!shadowFramebuffer_) {
@@ -645,7 +645,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.renderPass = shadowRenderPass_->GetHandle();
                     beginInfo.framebuffer = shadowFramebuffer_->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    beginInfo.renderArea.extent = VkExtent2D(kShadowMapSize, kShadowMapSize);
                     beginInfo.clearValueCount = 1;
                     beginInfo.pClearValues = &shadowMapClearValue;
                 },
@@ -746,9 +746,9 @@ void VulkanApplication::UpdateSceneTransforms() const
     LightUbo lightUbo{};
     lightUbo.lightPosition = glm::vec4(pos, 1.0f);
     lightUbo.lightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    lightUbo.spotlightParams.x = std::cos(glm::radians(GetParamFloat(AppSettings::InnerCutoffAngle)));
-    lightUbo.spotlightParams.y = std::cos(glm::radians(GetParamFloat(AppSettings::OuterCutoffAngle)));
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
+    lightUbo.spotlightParams.x = std::cos(glm::radians(kInnerCutoffAngle));
+    lightUbo.spotlightParams.y = std::cos(glm::radians(kOuterCutoffAngle));
     lightUbo.lightSpaceMatrix = lightProjection * lightView;
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }

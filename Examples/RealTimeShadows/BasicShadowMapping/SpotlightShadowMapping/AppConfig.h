@@ -71,11 +71,5 @@ namespace AppSettings
     constexpr auto ClearColor = "AppSettings.ClearColor";
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
-    constexpr auto LightColor = "AppSettings.LightColor";
-    constexpr auto AmbientStrength = "AppSettings.AmbientStrength";
-    constexpr auto SpecularStrength = "AppSettings.SpecularStrength";
-    constexpr auto Shininess = "AppSettings.Shininess";
-    constexpr auto InnerCutoffAngle = "AppSettings.InnerCutoffAngle";
-    constexpr auto OuterCutoffAngle = "AppSettings.OuterCutoffAngle";
 } // namespace AppSettings
 } // namespace examples::real_time_shadows::basic_shadow_mapping::spotlight_shadow_mapping

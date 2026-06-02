@@ -128,7 +128,7 @@ void VulkanApplication::CreateInitialResources() const
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .createFlags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
             .format = depthImageFormat_,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
             .arrayLayers = 6,
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             .views =
@@ -166,7 +166,7 @@ void VulkanApplication::CreateInitialResources() const
             .name = kDirLightShadowMapImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             .views = {ImageViewCreateInfo{.viewName = kDirLightShadowMapImageView,
                                           .format = depthImageFormat_,
@@ -179,7 +179,7 @@ void VulkanApplication::CreateInitialResources() const
             .name = kSpotLightShadowMapImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             .views = {ImageViewCreateInfo{.viewName = kSpotLightShadowMapImageView,
                                           .format = depthImageFormat_,
@@ -234,8 +234,7 @@ void VulkanApplication::BuildScene()
     directionalLightCamera_ =
             std::make_shared<OrthographicCamera>(glm::vec3(0.0f), 1.0f, 40.0f, 0.1f, kPointLightFarPlane);
     constexpr auto kSpotLightCameraAngleMargin = 1.5f;
-    const auto kSpotLightCameraFov =
-            (GetParamFloat(AppSettings::OuterCutoffAngle) + kSpotLightCameraAngleMargin) * 2.0f;
+    constexpr auto kSpotLightCameraFov = (kOuterCutoffAngle + kSpotLightCameraAngleMargin) * 2.0f;
     spotLightCamera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f), 1.0f, kSpotLightCameraFov);
     spotLightCamera_->Rotate(0.0f, -90.0f);
 
@@ -256,17 +255,17 @@ void VulkanApplication::BuildScene()
                                            assetManager_->Get(terracottaNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material objectMaterial;
-    objectMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    objectMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    objectMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    objectMaterial.ambientStrength = kAmbientStrength;
+    objectMaterial.shininess = kSpecularShininess;
+    objectMaterial.specularStrength = kSpecularStrength;
     objectMaterial.uvScale = 2.0f;
     objectMaterial.diffuseMap = woodFloorTextureId;
     objectMaterial.normalMap = woodFloorNormalTextureId;
 
     Material planeMaterial;
-    planeMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    planeMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    planeMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    planeMaterial.ambientStrength = kAmbientStrength;
+    planeMaterial.shininess = kSpecularShininess;
+    planeMaterial.specularStrength = kSpecularStrength;
     planeMaterial.uvScale = 6.0f;
     planeMaterial.diffuseMap = terracottaTextureId;
     planeMaterial.normalMap = terracottaNormalTextureId;
@@ -638,9 +637,9 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create pipeline layout (for shadow mapping)!");
     }
 
-    VkViewport shadowMapViewport{0,    0,   static_cast<float>(SHADOW_MAP_SIZE), static_cast<float>(SHADOW_MAP_SIZE),
+    VkViewport shadowMapViewport{0,    0,   static_cast<float>(kShadowMapSize), static_cast<float>(kShadowMapSize),
                                  0.0f, 1.0f};
-    VkRect2D shadowMapScissor{0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE};
+    VkRect2D shadowMapScissor{0, 0, kShadowMapSize, kShadowMapSize};
 
     shadowPipeline_ = device_->CreateGraphicsPipeline(shadowPipelineLayout_, shadowRenderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -699,7 +698,7 @@ void VulkanApplication::CreateFramebuffers()
 
         pointLightShadowFramebuffers_[i] =
                 device_->CreateFramebuffer(shadowRenderPass_, {shadowCubemapImageView}, [&](auto& builder) {
-                    builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    builder.SetDimensions(kShadowMapSize, kShadowMapSize);
                 });
 
         if (!pointLightShadowFramebuffers_[i]) {
@@ -712,7 +711,7 @@ void VulkanApplication::CreateFramebuffers()
             resources_->GetImageView(kDirLightShadowMapImage, kDirLightShadowMapImageView);
     dirLightShadowFramebuffer_ =
             device_->CreateFramebuffer(shadowRenderPass_, {dirLightShadowDepthImageView},
-                                       [&](auto& builder) { builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE); });
+                                       [&](auto& builder) { builder.SetDimensions(kShadowMapSize, kShadowMapSize); });
 
     if (!dirLightShadowFramebuffer_) {
         throw std::runtime_error("Failed to create framebuffer (for shadow mapping)!");
@@ -723,7 +722,7 @@ void VulkanApplication::CreateFramebuffers()
             resources_->GetImageView(kSpotLightShadowMapImage, kSpotLightShadowMapImageView);
     spotLightShadowFramebuffer_ =
             device_->CreateFramebuffer(shadowRenderPass_, {spotLightShadowDepthImageView},
-                                       [&](auto& builder) { builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE); });
+                                       [&](auto& builder) { builder.SetDimensions(kShadowMapSize, kShadowMapSize); });
 
     if (!spotLightShadowFramebuffer_) {
         throw std::runtime_error("Failed to create framebuffer (for shadow mapping)!");
@@ -780,7 +779,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.renderPass = shadowRenderPass_->GetHandle();
                     beginInfo.framebuffer = pointLightShadowFramebuffers_[i]->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    beginInfo.renderArea.extent = VkExtent2D(kShadowMapSize, kShadowMapSize);
                     beginInfo.clearValueCount = 1;
                     beginInfo.pClearValues = &shadowMapClearValue;
                 },
@@ -824,7 +823,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.renderPass = shadowRenderPass_->GetHandle();
                     beginInfo.framebuffer = dirLightShadowFramebuffer_->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    beginInfo.renderArea.extent = VkExtent2D(kShadowMapSize, kShadowMapSize);
                     beginInfo.clearValueCount = 1;
                     beginInfo.pClearValues = &shadowMapClearValue;
                 },
@@ -845,8 +844,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 shadowMapPushConstant.objectId = sceneObject.GetObjectId();
 
                 const glm::mat4 lightProjection = directionalLightCamera_->GetProjectionMatrix();
-                const glm::mat4 lightView = directionalLightCamera_->GetLightViewMatrix(
-                        params_.Get<glm::vec3>(AppSettings::DirectionalLightDirection), glm::vec3(0.0f));
+                const glm::mat4 lightView =
+                        directionalLightCamera_->GetLightViewMatrix(kDirectionalLightDirection, glm::vec3(0.0f));
                 shadowMapPushConstant.lightSpaceMatrix = lightProjection * lightView;
                 currentCmdBuffer->PushConstants(shadowPipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
@@ -865,7 +864,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.renderPass = shadowRenderPass_->GetHandle();
                     beginInfo.framebuffer = spotLightShadowFramebuffer_->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    beginInfo.renderArea.extent = VkExtent2D(kShadowMapSize, kShadowMapSize);
                     beginInfo.clearValueCount = 1;
                     beginInfo.pClearValues = &shadowMapClearValue;
                 },
@@ -965,18 +964,17 @@ void VulkanApplication::UpdateSceneTransforms() const
 
     LightUbo lightUbo{};
     lightUbo.pointLightPosition = glm::vec4(pos, 1.0f);
-    lightUbo.pointLightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    lightUbo.pointLightParams.x = GetParamFloat(AppSettings::ConstantFactor);
-    lightUbo.pointLightParams.y = GetParamFloat(AppSettings::LinearFactor);
-    lightUbo.pointLightParams.z = GetParamFloat(AppSettings::QuadraticFactor);
+    lightUbo.pointLightColor = glm::vec4(kLightColor, 1.0f);
+    lightUbo.pointLightParams.x = kConstantFactor;
+    lightUbo.pointLightParams.y = kLinearFactor;
+    lightUbo.pointLightParams.z = kQuadraticFactor;
 
     const glm::mat4 directionalLightProj = directionalLightCamera_->GetProjectionMatrix();
-    const glm::mat4 directionalLightView = directionalLightCamera_->GetLightViewMatrix(
-            params_.Get<glm::vec3>(AppSettings::DirectionalLightDirection), glm::vec3(0.0f));
+    const glm::mat4 directionalLightView =
+            directionalLightCamera_->GetLightViewMatrix(kDirectionalLightDirection, glm::vec3(0.0f));
 
-    lightUbo.directionalLightDirection =
-            glm::vec4(params_.Get<glm::vec3>(AppSettings::DirectionalLightDirection), 1.0f);
-    lightUbo.directionalLightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.directionalLightDirection = glm::vec4(kDirectionalLightDirection, 1.0f);
+    lightUbo.directionalLightColor = glm::vec4(kLightColor, 1.0f);
     lightUbo.directionalLightSpaceMatrix = directionalLightProj * directionalLightView;
 
     const glm::mat4 spotLightProj = spotLightCamera_->GetProjectionMatrix();
@@ -984,9 +982,9 @@ void VulkanApplication::UpdateSceneTransforms() const
 
     lightUbo.spotLightPosition = glm::vec4(scene_->FindObjectByName(kSpotLightObject)->GetPosition(), 1.0f);
     lightUbo.spotLightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
-    lightUbo.spotLightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
-    lightUbo.spotLightParams.x = std::cos(glm::radians(GetParamFloat(AppSettings::InnerCutoffAngle)));
-    lightUbo.spotLightParams.y = std::cos(glm::radians(GetParamFloat(AppSettings::OuterCutoffAngle)));
+    lightUbo.spotLightColor = glm::vec4(kLightColor, 1.0f);
+    lightUbo.spotLightParams.x = std::cos(glm::radians(kInnerCutoffAngle));
+    lightUbo.spotLightParams.y = std::cos(glm::radians(kOuterCutoffAngle));
     lightUbo.spotLightSpaceMatrix = spotLightProj * spotLightView;
 
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));

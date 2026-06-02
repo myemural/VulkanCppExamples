@@ -30,13 +30,6 @@ inline ParameterSchema CreateParameterSchema()
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);
     schema.RegisterParam<float>(AppSettings::CameraSpeed);
-    schema.RegisterParam<glm::vec3>(AppSettings::LightColor);
-    schema.RegisterParam<float>(AppSettings::AmbientStrength);
-    schema.RegisterParam<float>(AppSettings::SpecularStrength);
-    schema.RegisterParam<float>(AppSettings::Shininess);
-    schema.RegisterParam<float>(AppSettings::ConstantFactor);
-    schema.RegisterParam<float>(AppSettings::LinearFactor);
-    schema.RegisterParam<float>(AppSettings::QuadraticFactor);
 
     return schema;
 }
@@ -57,13 +50,6 @@ bool SetParams(ParameterServer& params)
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.175f, 0.175f, 0.175f, 1.0f});
         params.Set(AppSettings::MouseSensitivity, 3.0f);
         params.Set(AppSettings::CameraSpeed, 3.0f);
-        params.Set(AppSettings::LightColor, glm::vec3(1.0f, 1.0f, 1.0f));
-        params.Set(AppSettings::AmbientStrength, 0.05f);
-        params.Set(AppSettings::SpecularStrength, 0.7f);
-        params.Set(AppSettings::Shininess, 128.0f);
-        params.Set(AppSettings::ConstantFactor, 1.0f);
-        params.Set(AppSettings::LinearFactor, 0.07f);
-        params.Set(AppSettings::QuadraticFactor, 0.0017f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;
