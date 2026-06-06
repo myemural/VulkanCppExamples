@@ -30,3 +30,7 @@ This section contains Vulkan examples that related to physically based rendering
 ## [IBL and Reflections](/Examples/PhysicallyBasedRendering/IblAndReflections)
 
 TBD
+
+## [Disney Principled BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf)
+
+TBD

@@ -243,6 +243,11 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Specular Image Based Lighting](/Examples/PhysicallyBasedRendering/IblAndReflections/SpecularIbl)
   - [Complete Image Based Lighting on Textured Materials](/Examples/PhysicallyBasedRendering/IblAndReflections/CompleteIblTextured)
   - [Screen-Space Reflections (SSR)](/Examples/PhysicallyBasedRendering/IblAndReflections/ScreenSpaceReflections)
+- **[Disney Principled BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf)**
+  - [Fundamental Diffuse and Specular Model of the Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyDiffuseSpecular)
+  - [Clear Coat Layer in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfClearCoat)
+  - [Sheen Layer in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfSheen)
+  - [Anisotropic Specular in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfAnisotropy)
 
 ## Environment Support
 

@@ -30,7 +30,14 @@ enum class MaterialComponent : std::uint8_t
     SHININESS_FLOAT,
     ROUGHNESS_FLOAT,
     METALLIC_FLOAT,
+    SUBSURFACE_FLOAT,
     SPECULAR_STRENGTH_FLOAT,
+    SPECULAR_TINT_FLOAT,
+    ANISOTROPIC_FLOAT,
+    SHEEN_FLOAT,
+    SHEEN_TINT_FLOAT,
+    CLEARCOAT_FLOAT,
+    CLEARCOAT_GLOSS_FLOAT,
     REFLECTIVITY_FLOAT,
     OPACITY_FLOAT,
     UV_SCALE_FLOAT,
@@ -62,7 +69,14 @@ struct COMMON_API Material
     float shininess = 128.0f;
     float roughness = 0.5f;
     float metallic = 0.5f;
-    float specularStrength = 0.7f;
+    float subsurface = 0.0f;
+    float specularStrength = 0.5f;
+    float specularTint = 0.0f;
+    float anisotropic = 0.0f;
+    float sheen = 0.0f;
+    float sheenTint = 0.0f;
+    float clearcoat = 0.0f;
+    float clearcoatGloss = 1.0f;
     float reflectivity = 0.0f;
     float opacity = 1.0f;
     float uvScale = 1.0f;
@@ -119,8 +133,36 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
                 utility::AppendBytes(buffer, material.metallic);
                 break;
 
+            case MaterialComponent::SUBSURFACE_FLOAT:
+                utility::AppendBytes(buffer, material.subsurface);
+                break;
+
             case MaterialComponent::SPECULAR_STRENGTH_FLOAT:
                 utility::AppendBytes(buffer, material.specularStrength);
+                break;
+
+            case MaterialComponent::SPECULAR_TINT_FLOAT:
+                utility::AppendBytes(buffer, material.specularTint);
+                break;
+
+            case MaterialComponent::ANISOTROPIC_FLOAT:
+                utility::AppendBytes(buffer, material.anisotropic);
+                break;
+
+            case MaterialComponent::SHEEN_FLOAT:
+                utility::AppendBytes(buffer, material.sheen);
+                break;
+
+            case MaterialComponent::SHEEN_TINT_FLOAT:
+                utility::AppendBytes(buffer, material.sheenTint);
+                break;
+
+            case MaterialComponent::CLEARCOAT_FLOAT:
+                utility::AppendBytes(buffer, material.clearcoat);
+                break;
+
+            case MaterialComponent::CLEARCOAT_GLOSS_FLOAT:
+                utility::AppendBytes(buffer, material.clearcoatGloss);
                 break;
 
             case MaterialComponent::REFLECTIVITY_FLOAT:

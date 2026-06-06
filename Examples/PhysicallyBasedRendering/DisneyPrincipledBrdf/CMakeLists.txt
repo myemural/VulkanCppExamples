@@ -1,0 +1,9 @@
+set(SUBCATEGORY_NAME DisneyPrincipledBrdf)
+
+add_subdirectory(Base)
+include_directories(Base)
+
+add_subdirectory(DisneyDiffuseSpecular)
+add_subdirectory(DisneyBrdfClearCoat)
+add_subdirectory(DisneyBrdfSheen)
+add_subdirectory(DisneyBrdfAnisotropy)
