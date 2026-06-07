@@ -299,6 +299,74 @@ Material GltfToSceneObjectConverter::CreateMaterial(const tinygltf::Model& gltfM
         result.ambientOcclusionMap = textureId;
     }
 
+    // Specular Processing
+    if (const auto it = gltfMaterial.extensions.find("KHR_materials_specular"); it != gltfMaterial.extensions.end()) {
+        const tinygltf::Value& specularExt = it->second;
+
+        if (specularExt.Has("specularFactor")) {
+            result.specularStrength = static_cast<float>(specularExt.Get("specularFactor").GetNumberAsDouble()) * 0.5f;
+        }
+
+        if (specularExt.Has("specularColorFactor")) {
+            const auto& specColorFactorArray = specularExt.Get("specularColorFactor").Get<tinygltf::Value::Array>();
+            glm::vec3 specularColorFactor = {static_cast<float>(specColorFactorArray[0].GetNumberAsDouble()),
+                                             static_cast<float>(specColorFactorArray[1].GetNumberAsDouble()),
+                                             static_cast<float>(specColorFactorArray[2].GetNumberAsDouble())};
+
+            // Normalize luminance and turn it to chromaticity (approximate to Disney BRDF specular tint)
+            static constexpr glm::vec3 kLuminance(0.2126f, 0.7152f, 0.0722f);
+            if (float luminance = glm::dot(specularColorFactor, kLuminance); luminance > 1e-5f) {
+                glm::vec3 chromaticity = specularColorFactor / luminance;
+                float deviation = glm::length(chromaticity - glm::vec3(1.0f));
+                result.specularTint = glm::clamp(deviation / 1.414f, 0.0f, 1.0f);
+            } else {
+                result.specularTint = 0.0f;
+            }
+        }
+    }
+
+    // Clear Coat Processing
+    if (const auto it = gltfMaterial.extensions.find("KHR_materials_clearcoat"); it != gltfMaterial.extensions.end()) {
+        const tinygltf::Value& clearcoatExt = it->second;
+
+        if (clearcoatExt.Has("clearcoatFactor")) {
+            result.clearcoat = static_cast<float>(clearcoatExt.Get("clearcoatFactor").GetNumberAsDouble());
+        }
+
+        if (clearcoatExt.Has("clearcoatRoughnessFactor")) {
+            result.clearcoatGloss =
+                    1.0f - static_cast<float>(clearcoatExt.Get("clearcoatRoughnessFactor").GetNumberAsDouble());
+        }
+    }
+
+    // Sheen Processing
+    if (const auto it = gltfMaterial.extensions.find("KHR_materials_sheen"); it != gltfMaterial.extensions.end()) {
+        if (const tinygltf::Value& sheenExt = it->second; sheenExt.Has("sheenColorFactor")) {
+            glm::vec3 sheenColorFactor;
+            sheenColorFactor.r = static_cast<float>(
+                    sheenExt.Get("sheenColorFactor").Get<tinygltf::Value::Array>()[0].GetNumberAsDouble());
+            sheenColorFactor.g = static_cast<float>(
+                    sheenExt.Get("sheenColorFactor").Get<tinygltf::Value::Array>()[1].GetNumberAsDouble());
+            sheenColorFactor.b = static_cast<float>(
+                    sheenExt.Get("sheenColorFactor").Get<tinygltf::Value::Array>()[2].GetNumberAsDouble());
+
+            // Sheen and sheen tint approximation (for Disney BRDF)
+            float maxSheenColorFactor = std::max({sheenColorFactor.r, sheenColorFactor.g, sheenColorFactor.b});
+            result.sheen = maxSheenColorFactor;
+
+            glm::vec3 sheenColor = sheenColorFactor / maxSheenColorFactor;
+            result.sheenTint = 1.0f - glm::dot(sheenColor, glm::vec3(1.0f / 3.0f));
+        }
+    }
+
+    // Anisotropy Processing
+    if (const auto it = gltfMaterial.extensions.find("KHR_materials_anisotropy"); it != gltfMaterial.extensions.end()) {
+
+        if (const tinygltf::Value& anisotropyExt = it->second; anisotropyExt.Has("anisotropyStrength")) {
+            result.anisotropic = static_cast<float>(anisotropyExt.Get("anisotropyStrength").GetNumberAsDouble());
+        }
+    }
+
     // Cache for future allocations of same material
     materialCache_[materialName] = result;
     return result;

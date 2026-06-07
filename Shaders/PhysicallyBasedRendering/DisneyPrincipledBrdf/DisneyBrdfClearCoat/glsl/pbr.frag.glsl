@@ -164,6 +164,9 @@ void main()
         normalWorldSpace = normalize(fragTBN[2]);
     }
 
+    // Get geometric normal for advanced material calculations
+    vec3 geomNormalWorldSpace = normalize(fragTBN[2]);
+
     // Normalizing fundamental vectors
     vec3 normNormal = normalWorldSpace;
     vec3 normLightDir = normalize(-light.lightDirection.xyz);
@@ -212,10 +215,15 @@ void main()
     float Gs = calculateSmithGGX(NdotL, sqrRoughness) * calculateSmithGGX(NdotV, sqrRoughness);
     vec3 specularPart = Fs * Ds * Gs;
 
+    // Calculate dot products which related to cler coat
+    float ccNdotH = max(dot(geomNormalWorldSpace, normHalfDir), 0.0);
+    float ccNdotL = max(dot(geomNormalWorldSpace, normLightDir), 0.0);
+    float ccNdotV = max(dot(geomNormalWorldSpace, normViewDir), 0.0);
+
     // Clear coat calculation
     float Fc = mix(0.04, 1.0, FH);
-    float Dc = calculateGTR1(NdotH, mix(0.1, 0.001, meshInfo.clearcoatGloss));
-    float Gc = calculateSmithGGX(NdotL, 0.25) * calculateSmithGGX(NdotV, 0.25);
+    float Dc = calculateGTR1(ccNdotH, mix(0.1, 0.001, meshInfo.clearcoatGloss));
+    float Gc = calculateSmithGGX(ccNdotL, 0.25) * calculateSmithGGX(ccNdotV, 0.25);
     vec3 clearcoatLobe = vec3(0.25 * meshInfo.clearcoat * Fc * Dc * Gc);
 
     // Calculate disney BRDF for fundamental diffuse and specular
@@ -237,10 +245,11 @@ void main()
     vec3 specularIBL = prefilteredColor * (ambientKS * brdfLutSample.x + brdfLutSample.y);
 
     // IBL for clear coat specular
+    vec3 ccReflDir = reflect(-normViewDir, geomNormalWorldSpace);
     float ccRoughnessIBL = clamp(1.0 - meshInfo.clearcoatGloss, 0.04, 1.0);
-    vec3 ccPrefilteredColor = textureLod(prefilterMap, reflectDir, ccRoughnessIBL * prefilterMaxLod).rgb;
-    vec2 ccBrdf = texture(brdfLut, vec2(NdotV, ccRoughnessIBL)).rg;
-    float ccFresnel = 0.04 + 0.96 * schlickFresnel(NdotV); // F0 = 0.04
+    vec3 ccPrefilteredColor = textureLod(prefilterMap, ccReflDir, ccRoughnessIBL * prefilterMaxLod).rgb;
+    vec2 ccBrdf = texture(brdfLut, vec2(ccNdotV, ccRoughnessIBL)).rg;
+    float ccFresnel = 0.04 + 0.96 * schlickFresnel(ccNdotV); // F0 = 0.04
     vec3 clearcoatIBL = meshInfo.clearcoat * ccPrefilteredColor * (ccFresnel * ccBrdf.x + ccBrdf.y);
 
     // Total ambient calculation

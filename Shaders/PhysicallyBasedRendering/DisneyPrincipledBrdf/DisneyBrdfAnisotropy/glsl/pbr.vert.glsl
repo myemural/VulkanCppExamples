@@ -36,6 +36,11 @@ layout(push_constant) uniform MeshPushConstants {
     uint isIblEnabled;
 } pc;
 
+vec2 TransformUV(vec2 uv, mat3 transform)
+{
+    return (transform * vec3(uv, 1.0)).xy;
+}
+
 void main()
 {
     // Get mesh data
@@ -43,7 +48,13 @@ void main()
 
     // World-space position and UV
     fragPos = vec3(meshTransform.model * vec4(inPosition, 1.0));
-    fragUv  = inUV;
+    mat3 uvTransform = mat3(
+    3.0, 0.0, 0.0,
+    0.0, 3.0, 0.0,
+    0.0, 0.0, 1.0
+    );
+
+    fragUv = TransformUV(inUV, uvTransform);
 
     // Normal matrix
     mat3 normalMatrix = mat3(meshTransform.normalMatrix);
