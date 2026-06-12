@@ -36,6 +36,10 @@ struct InternalTextureHandler
 class COMMON_API SceneGpuImageStorage
 {
 public:
+    /**
+     * @param resourceManager Resource manager reference.
+     * @param sceneConfig Scene config.
+     */
     SceneGpuImageStorage(vulkan_framework::ResourceManager& resourceManager, const SceneConfig& sceneConfig);
 
     ~SceneGpuImageStorage() = default;

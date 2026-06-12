@@ -1,6 +1,7 @@
 /**
  * @file    Main.cpp
- * @brief   TODO
+ * @brief   In this example, Image Based Lighting (IBL), including emissive and ambient occlusion maps, is applied to a
+ *          textured glTF model.
  * @author  Mustafa Yemural (myemural)
  * @date    30.05.2026
  *

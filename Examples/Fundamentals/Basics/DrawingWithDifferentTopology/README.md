@@ -37,11 +37,11 @@ This example draws 2 quads to the screen to demonstrate primitive restart index 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                              | Status             | Notes |
+|--------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Basics/DrawingWithDifferentTopology/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Basics/DrawingWithDifferentTopology/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Basics/DrawingWithDifferentTopology/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

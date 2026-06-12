@@ -29,8 +29,26 @@ This section contains Vulkan examples that related to physically based rendering
 
 ## [IBL and Reflections](/Examples/PhysicallyBasedRendering/IblAndReflections)
 
-TBD
+- Loading HDR images
+- Converting an equirectangular HDR image to a cubemap
+- Using equirectangular HDR images as a skybox
+- Generating an irradiance map via convolution on a HDR skybox
+- Using irradiance map to calculate diffuse part of the IBL
+- Generating pre-calculated BRDF Lookup Table (LUT) via compute shaders
+- Generating prefiltered cubemap image via compute shaders
+- Using prefiltered cubemap image to calculate specular part of the IBL
+- Integrate emissive and ambient occlusion maps with the IBL calculations
+- Applying complete IBL calculations to a textured glTF 3D model
+- Implementing PBR material system with deferred rendering technique
+- Implementing Screen-Space Reflection (SSR) with ray marching
 
 ## [Disney Principled BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf)
 
-TBD
+- Implementing Disney BRDF's roughness and metallic parameters with IBL in Vulkan
+- Implementing Disney BRDF's subsurface parameter with IBL in Vulkan
+- Implementing Disney BRDF's specular and specular tint parameters with IBL in Vulkan
+- Adding clear coat layer to the PBR material system
+- Implementing Disney BRDF's clear coat and clear coat glossiness parameters with IBL in Vulkan
+- Adding sheen layer to the PBR material system
+- Implementing Disney BRDF's sheen and sheen tint parameters with IBL in Vulkan
+- Implementing Disney BRDF's anisotropic parameter with IBL in Vulkan

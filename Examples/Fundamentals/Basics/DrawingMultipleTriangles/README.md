@@ -33,11 +33,11 @@ This example draws 4 identical triangles to the screen to show how to draw somet
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                          | Status             | Notes |
+|----------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Basics/DrawingMultipleTriangles/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Basics/DrawingMultipleTriangles/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Basics/DrawingMultipleTriangles/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

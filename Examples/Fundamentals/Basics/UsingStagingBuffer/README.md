@@ -32,11 +32,11 @@ This example draws a blue octagon to the screen with using an additional staging
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                    | Status             | Notes |
+|----------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Basics/UsingStagingBuffer/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Basics/UsingStagingBuffer/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Basics/UsingStagingBuffer/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

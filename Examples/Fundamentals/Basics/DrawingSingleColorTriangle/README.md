@@ -34,11 +34,11 @@ This example shows hot to draw a single colored triangle to the screen to demons
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                            | Status             | Notes |
+|------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Basics/DrawingSingleColorTriangle/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Basics/DrawingSingleColorTriangle/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Basics/DrawingSingleColorTriangle/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

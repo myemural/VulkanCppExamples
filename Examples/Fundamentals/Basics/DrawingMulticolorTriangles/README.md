@@ -32,11 +32,11 @@ This example draws 4 different colored triangles to the screen to show how to wo
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                            | Status             | Notes |
+|------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Basics/DrawingMulticolorTriangles/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Basics/DrawingMulticolorTriangles/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Basics/DrawingMulticolorTriangles/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 
