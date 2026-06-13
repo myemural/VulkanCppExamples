@@ -6,7 +6,9 @@
 
 #include "GltfToSceneObjectConverter.h"
 
+#include <algorithm>
 #include <utility>
+
 #include <glm/gtc/type_ptr.hpp>
 
 namespace common::scene
