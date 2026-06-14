@@ -159,7 +159,7 @@ void VulkanApplication::BuildScene()
 
     // Materials
     Material defaultMaterial;
-    defaultMaterial.shininess = GetParamFloat(AppSettings::Shininess);
+    defaultMaterial.shininess = kSpecularShininess;
 
     Material redMaterial = defaultMaterial;
     redMaterial.albedoColor = glm::vec4{1.0f, 0.0f, 0.0f, 1.0f};
@@ -490,7 +490,7 @@ void VulkanApplication::UpdateSceneTransforms() const
 
     LightUbo lightUbo{};
     lightUbo.lightPosition = glm::vec4(scene_->FindObjectByName(kLightObject)->GetPosition(), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

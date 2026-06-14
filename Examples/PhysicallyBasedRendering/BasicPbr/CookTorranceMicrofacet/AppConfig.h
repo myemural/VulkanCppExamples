@@ -54,6 +54,5 @@ namespace AppSettings
     constexpr auto ClearColor = "AppSettings.ClearColor";
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
-    constexpr auto LightColor = "AppSettings.LightColor";
 } // namespace AppSettings
 } // namespace examples::physically_based_rendering::basic_pbr::cook_torrance_microfacet

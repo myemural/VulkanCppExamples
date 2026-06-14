@@ -27,7 +27,6 @@ This example demonstrates a basic PBR implementation using the Cook-Torrance BRD
 | AppSettings.ClearColor       | VkClearColorValue | AppSettings::ClearColor       | Background color of the screen |               |
 | AppSettings.MouseSensitivity | float             | AppSettings::MouseSensitivity | Mouse sensitivity value        |               |
 | AppSettings.CameraSpeed      | float             | AppSettings::CameraSpeed      | Speed of the camera            |               |
-| AppSettings.LightColor       | glm:vec3          | AppSettings::LightColor       | Color of the light             |               |
 
 ## Learning Objectives
 

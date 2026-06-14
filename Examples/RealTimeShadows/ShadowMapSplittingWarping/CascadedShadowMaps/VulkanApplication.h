@@ -78,7 +78,7 @@ private:
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> shadowPipeline_;
 
     // Framebuffers
-    std::array<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>, NUM_CASCADES> shadowFramebuffers_;
+    std::array<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>, kNoOfCascades> shadowFramebuffers_;
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> presentFramebuffers_;
 
     // Command buffers
@@ -100,7 +100,7 @@ private:
     std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 
     // Cascade related values
-    std::array<CascadeInfo, NUM_CASCADES> cascades_{};
+    std::array<CascadeInfo, kNoOfCascades> cascades_{};
 
     // Debug values
     DebugMode debugMode_ = DebugMode::OFF;

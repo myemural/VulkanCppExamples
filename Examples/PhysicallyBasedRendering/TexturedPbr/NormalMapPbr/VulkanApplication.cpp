@@ -158,9 +158,9 @@ void VulkanApplication::BuildScene()
     const auto woodFloorAlbedoTextureId = sceneImageStorage.StoreTexture(
             kWoodFloorAlbedoTexture, kMainSampler, assetManager_->Get(woodFloorAlbedoTextureAsset));
     const auto woodFloorNormalTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorNormalTexturePath);
-    const auto woodFloorNormalTextureId = sceneImageStorage.StoreTexture(
-            kWoodFloorNormalTexture, kMainSampler, assetManager_->Get(woodFloorNormalTextureAsset),
-            VK_FORMAT_R8G8B8A8_UNORM);
+    const auto woodFloorNormalTextureId =
+            sceneImageStorage.StoreTexture(kWoodFloorNormalTexture, kMainSampler,
+                                           assetManager_->Get(woodFloorNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
     const auto woodFloorRoughnessTextureAsset = assetManager_->Load<TextureAsset>(kWoodFloorRoughnessTexturePath);
     const auto woodFloorRoughnessTextureId = sceneImageStorage.StoreTexture(
             kWoodFloorRoughnessTexture, kMainSampler, assetManager_->Get(woodFloorRoughnessTextureAsset),
@@ -497,8 +497,8 @@ void VulkanApplication::UpdateSceneTransforms() const
             minIntensity + (std::sin(currentTime * speed) * 0.5f + 0.5f) * (maxIntensity - minIntensity);
 
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColorAndIntensity = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), lightIntensity);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColorAndIntensity = glm::vec4(kLightColor, lightIntensity);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

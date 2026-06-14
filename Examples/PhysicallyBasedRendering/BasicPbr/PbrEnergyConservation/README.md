@@ -27,8 +27,6 @@ In this example, the energy conservation principle, which forms the basis of the
 | AppSettings.ClearColor       | VkClearColorValue | AppSettings::ClearColor       | Background color of the screen |               |
 | AppSettings.MouseSensitivity | float             | AppSettings::MouseSensitivity | Mouse sensitivity value        |               |
 | AppSettings.CameraSpeed      | float             | AppSettings::CameraSpeed      | Speed of the camera            |               |
-| AppSettings.LightColor       | glm:vec3          | AppSettings::LightColor       | Color of the light             |               |
-| AppSettings.Shininess        | float             | AppSettings::Shininess        | Shininess exponent             |               |
 
 ## Learning Objectives
 

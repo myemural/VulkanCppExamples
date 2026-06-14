@@ -27,8 +27,6 @@ This example demonstrates the use of emissive textures in a PBR metallic/roughne
 | AppSettings.ClearColor       | VkClearColorValue | AppSettings::ClearColor       | Background color of the screen |               |
 | AppSettings.MouseSensitivity | float             | AppSettings::MouseSensitivity | Mouse sensitivity value        |               |
 | AppSettings.CameraSpeed      | float             | AppSettings::CameraSpeed      | Speed of the camera            |               |
-| AppSettings.LightDirection   | glm:vec3          | AppSettings::LightDirection   | Direction of the light         |               |
-| AppSettings.LightColor       | glm:vec3          | AppSettings::LightColor       | Color of the light             |               |
 
 ## Learning Objectives
 

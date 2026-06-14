@@ -160,14 +160,14 @@ void VulkanApplication::CreateInitialResources() const
                                                            .baseArrayLayer = 0,
                                                            .layerCount = 1}}}}};
 
-    for (auto i = 0U; i < NUM_CASCADES; ++i) {
+    for (auto i = 0U; i < kNoOfCascades; ++i) {
         const std::string shadowMapImageName = kShadowMapImage + std::to_string(i);
         const std::string shadowMapImageViewName = kShadowMapImageView + std::to_string(i);
         ImageResourceCreateInfo shadowMapImage{
             .name = shadowMapImageName,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             .views = {ImageViewCreateInfo{.viewName = shadowMapImageViewName,
                                           .format = depthImageFormat_,
@@ -226,17 +226,17 @@ void VulkanApplication::BuildScene()
                                            assetManager_->Get(terracottaNormalTextureAsset), VK_FORMAT_R8G8B8A8_UNORM);
 
     Material objectMaterial;
-    objectMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    objectMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    objectMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    objectMaterial.ambientStrength = kAmbientStrength;
+    objectMaterial.shininess = kSpecularShininess;
+    objectMaterial.specularStrength = kSpecularStrength;
     objectMaterial.uvScale = 2.0f;
     objectMaterial.diffuseMap = wallStoneTextureId;
     objectMaterial.normalMap = wallStoneNormalTextureId;
 
     Material floorMaterial;
-    floorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    floorMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    floorMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    floorMaterial.ambientStrength = kAmbientStrength;
+    floorMaterial.shininess = kSpecularShininess;
+    floorMaterial.specularStrength = kSpecularStrength;
     floorMaterial.uvScale = 10.0f;
     floorMaterial.diffuseMap = terracottaTextureId;
     floorMaterial.normalMap = terracottaNormalTextureId;
@@ -289,10 +289,10 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     // Create descriptor sets
     const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 4 + combinedImageSamplerCount + NUM_CASCADES,
+        .maxSets = 4 + combinedImageSamplerCount + kNoOfCascades,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
-                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + NUM_CASCADES}},
+                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + kNoOfCascades}},
         .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
                                   {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
@@ -300,7 +300,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
                                    VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
                                   {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
                                    VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, NUM_CASCADES,
+                                  {4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, kNoOfCascades,
                                    VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
                     {.name = kShadowMapDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr}}}},
@@ -321,7 +321,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
     std::vector<VkDescriptorImageInfo> shadowMapImageInfos;
-    for (auto i = 0U; i < NUM_CASCADES; ++i) {
+    for (auto i = 0U; i < kNoOfCascades; ++i) {
         const std::string shadowMapImageName = kShadowMapImage + std::to_string(i);
         const std::string shadowMapImageViewName = kShadowMapImageView + std::to_string(i);
         shadowMapImageInfos.emplace_back(
@@ -543,9 +543,9 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create pipeline layout (for shadow mapping)!");
     }
 
-    VkViewport shadowMapViewport{0,    0,   static_cast<float>(SHADOW_MAP_SIZE), static_cast<float>(SHADOW_MAP_SIZE),
+    VkViewport shadowMapViewport{0,    0,   static_cast<float>(kShadowMapSize), static_cast<float>(kShadowMapSize),
                                  0.0f, 1.0f};
-    VkRect2D shadowMapScissor{0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE};
+    VkRect2D shadowMapScissor{0, 0, kShadowMapSize, kShadowMapSize};
 
     shadowPipeline_ = device_->CreateGraphicsPipeline(shadowPipelineLayout_, shadowRenderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -589,14 +589,14 @@ void VulkanApplication::CreatePipelines()
 void VulkanApplication::CreateFramebuffers()
 {
     // Shadow map framebuffers
-    for (auto i = 0U; i < NUM_CASCADES; ++i) {
+    for (auto i = 0U; i < kNoOfCascades; ++i) {
         const std::string shadowMapImageName = kShadowMapImage + std::to_string(i);
         const std::string shadowMapImageViewName = kShadowMapImageView + std::to_string(i);
         const auto& shadowDepthImageView = resources_->GetImageView(shadowMapImageName, shadowMapImageViewName);
 
         shadowFramebuffers_[i] =
                 device_->CreateFramebuffer(shadowRenderPass_, {shadowDepthImageView}, [&](auto& builder) {
-                    builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    builder.SetDimensions(kShadowMapSize, kShadowMapSize);
                 });
 
         if (!shadowFramebuffers_[i]) {
@@ -646,13 +646,13 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
     // Create shadow map pass
     {
-        for (auto i = 0U; i < NUM_CASCADES; ++i) {
+        for (auto i = 0U; i < kNoOfCascades; ++i) {
             currentCmdBuffer->BeginRenderPass(
                     [&](auto& beginInfo) {
                         beginInfo.renderPass = shadowRenderPass_->GetHandle();
                         beginInfo.framebuffer = shadowFramebuffers_[i]->GetHandle();
                         beginInfo.renderArea.offset = {0, 0};
-                        beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                        beginInfo.renderArea.extent = VkExtent2D(kShadowMapSize, kShadowMapSize);
                         beginInfo.clearValueCount = 1;
                         beginInfo.pClearValues = &shadowMapClearValue;
                     },
@@ -730,7 +730,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
 void VulkanApplication::UpdateCascades()
 {
-    float cascadeSplits[NUM_CASCADES];
+    float cascadeSplits[kNoOfCascades];
 
     const float nearClip = camera_->GetNearPlane();
     const float farClip = camera_->GetFarPlane();
@@ -741,9 +741,9 @@ void VulkanApplication::UpdateCascades()
 
     // Split calculation
     // Formula source: https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch10.html
-    for (uint32_t i = 0; i < NUM_CASCADES; i++) {
+    for (uint32_t i = 0; i < kNoOfCascades; i++) {
         constexpr auto splitLambda = 0.55f;
-        const float p = static_cast<float>(i + 1) / static_cast<float>(NUM_CASCADES);
+        const float p = static_cast<float>(i + 1) / static_cast<float>(kNoOfCascades);
         const float log = nearClip * std::pow(ratio, p);
         const float uniform = nearClip + range * p;
         const float d = splitLambda * (log - uniform) + uniform;
@@ -754,7 +754,7 @@ void VulkanApplication::UpdateCascades()
             GetFrustumCornersWorldSpace(camera_->GetProjectionMatrix(), camera_->GetViewMatrix());
 
     float lastSplitDist = 0.0f;
-    for (uint32_t i = 0; i < NUM_CASCADES; i++) {
+    for (uint32_t i = 0; i < kNoOfCascades; i++) {
         const float splitDist = cascadeSplits[i];
 
         // Calculate cascade frustum points
@@ -781,8 +781,8 @@ void VulkanApplication::UpdateCascades()
         lightCamera_->SetNearPlane(0.01f);
         lightCamera_->SetFarPlane(radius * 3.0f);
         const glm::mat4 lightProj = lightCamera_->GetProjectionMatrix();
-        const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(
-                glm::normalize(params_.Get<glm::vec3>(AppSettings::LightDirection)), center, radius * 2.0f);
+        const glm::mat4 lightView =
+                lightCamera_->GetLightViewMatrix(glm::normalize(kLightDirection), center, radius * 2.0f);
 
         cascades_[i].lightSpaceMatrix = lightProj * lightView;
         cascades_[i].cascadeSplit = (nearClip + splitDist * clipRange);
@@ -796,10 +796,10 @@ void VulkanApplication::UpdateSceneTransforms()
     UpdateCascades();
 
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
 
-    for (uint32_t i = 0; i < NUM_CASCADES; i++) {
+    for (uint32_t i = 0; i < kNoOfCascades; i++) {
         lightUbo.lightSpaceMatrices[i] = cascades_[i].lightSpaceMatrix;
     }
 

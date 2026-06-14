@@ -474,7 +474,7 @@ void VulkanApplication::UpdateSceneTransforms() const
 
     LightUbo lightUbo{};
     lightUbo.lightPosition = glm::vec4(scene_->FindObjectByName(kLightObject)->GetPosition(), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

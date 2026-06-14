@@ -70,7 +70,5 @@ namespace AppSettings
     constexpr auto ClearColor = "AppSettings.ClearColor";
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
-    constexpr auto LightDirection = "AppSettings.LightDirection";
-    constexpr auto LightColor = "AppSettings.LightColor";
 } // namespace AppSettings
 } // namespace examples::physically_based_rendering::textured_pbr::ambient_occlusion_pbr

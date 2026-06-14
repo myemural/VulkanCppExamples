@@ -502,8 +502,8 @@ void VulkanApplication::UpdateSceneTransforms() const
     constexpr float lightIntensity = 0.4f;
 
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColorAndIntensity = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), lightIntensity);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColorAndIntensity = glm::vec4(kLightColor, lightIntensity);
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
 

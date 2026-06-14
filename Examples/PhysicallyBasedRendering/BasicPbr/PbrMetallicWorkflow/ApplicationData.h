@@ -23,6 +23,8 @@ inline const std::vector attributeLayouts{
     std::pair(common::scene::AttributeType::POSITION, common::scene::AccessorType::VEC3),
     std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3)};
 
+inline constexpr auto kLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
 struct alignas(16) LightUbo
 {
     glm::vec4 lightPosition; // xyz = Light Position
