@@ -40,7 +40,7 @@ In this example, a sphere with reflective material is drawn on the screen, and t
 | Shader Type | Status             | Notes                |
 |-------------|--------------------|----------------------|
 | GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
+| HLSL        | :white_check_mark: |                      |
 | Slang       | :x:                | Will be implemented. |
 
 ## Theoretical Background

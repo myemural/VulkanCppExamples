@@ -37,7 +37,7 @@ In this example, the cubemap used for the skybox is also used for the object's r
 | Shader Type | Status             | Notes                |
 |-------------|--------------------|----------------------|
 | GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
+| HLSL        | :white_check_mark: |                      |
 | Slang       | :x:                | Will be implemented. |
 
 ## Theoretical Background
