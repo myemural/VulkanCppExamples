@@ -63,7 +63,7 @@ void ImageResource::CreateImage(const ImageResourceCreateInfo& createInfo)
 std::shared_ptr<vulkan_wrapper::VulkanImageView> ImageResource::GetImageView(const std::string& viewName) const
 {
     if (!imageViews_.contains(viewName)) {
-        throw std::runtime_error("Image " + viewName + " does not exist");
+        throw std::runtime_error("Cannot get image view \"" + viewName + "\"");
     }
 
     return imageViews_.at(viewName);

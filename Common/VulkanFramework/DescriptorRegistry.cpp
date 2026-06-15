@@ -18,7 +18,7 @@ void DescriptorRegistry::CreateDescriptors(const DescriptorResourceCreateInfo& c
         CreateLayout(name, bindings);
     }
 
-    for (const auto& [name, layoutName] : createInfo.descriptorSets) {
+    for (const auto& [name, layoutName]: createInfo.descriptorSets) {
         CreateSet(name, layoutName);
     }
 }
@@ -35,7 +35,7 @@ void DescriptorRegistry::CreatePool(const std::uint32_t maxSets,
 }
 
 DescriptorRegistry& DescriptorRegistry::CreateLayout(const std::string& layoutName,
-                                                  const std::vector<VkDescriptorSetLayoutBinding>& bindings)
+                                                     const std::vector<VkDescriptorSetLayoutBinding>& bindings)
 {
     descriptorSetLayouts_[layoutName] = device_->CreateDescriptorSetLayout(bindings);
     if (!descriptorSetLayouts_[layoutName]) {
@@ -59,15 +59,26 @@ DescriptorRegistry& DescriptorRegistry::CreateSet(const std::string& descriptorS
 std::shared_ptr<vulkan_wrapper::VulkanDescriptorSetLayout>
 DescriptorRegistry::GetDescriptorLayout(const std::string& layoutName)
 {
+    if (!descriptorSetLayouts_.contains(layoutName)) {
+        throw std::runtime_error("Cannot get descriptor set layout \"" + layoutName + "\"");
+    }
+
     return descriptorSetLayouts_.at(layoutName);
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> DescriptorRegistry::GetDescriptorSet(const std::string& setName)
 {
+    if (!descriptorSets_.contains(setName)) {
+        throw std::runtime_error("Cannot get descriptor set \"" + setName + "\"");
+    }
+
     return descriptorSets_.at(setName);
 }
 
-void DescriptorRegistry::DeleteDescriptorLayout(const std::string& layoutName) { descriptorSetLayouts_.erase(layoutName); }
+void DescriptorRegistry::DeleteDescriptorLayout(const std::string& layoutName)
+{
+    descriptorSetLayouts_.erase(layoutName);
+}
 
 void DescriptorRegistry::DeleteDescriptorSet(const std::string& setName) { descriptorSets_.erase(setName); }
 } // namespace common::vulkan_framework

@@ -82,22 +82,38 @@ void ResourceManager::UpdateDescriptorSet(const DescriptorUpdateInfo& descriptor
 
 std::shared_ptr<vulkan_wrapper::VulkanBuffer> ResourceManager::GetBuffer(const std::string& bufferName) const
 {
+    if (!buffers_.contains(bufferName)) {
+        throw std::runtime_error("Cannot get buffer \"" + bufferName + "\"");
+    }
+
     return buffers_.at(bufferName)->GetBuffer();
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanImage> ResourceManager::GetImage(const std::string& imageName) const
 {
+    if (!images_.contains(imageName)) {
+        throw std::runtime_error("Cannot get image \"" + imageName + "\"");
+    }
+
     return images_.at(imageName)->GetImage();
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanImageView> ResourceManager::GetImageView(const std::string& imageName,
                                                                                const std::string& viewName) const
 {
+    if (!images_.contains(imageName)) {
+        throw std::runtime_error("Cannot get image \"" + imageName + "\"");
+    }
+
     return images_.at(imageName)->GetImageView(viewName);
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanSampler> ResourceManager::GetSampler(const std::string& samplerName) const
 {
+    if (!samplers_.contains(samplerName)) {
+        throw std::runtime_error("Cannot get sampler \"" + samplerName + "\"");
+    }
+
     return samplers_.at(samplerName)->GetSampler();
 }
 

@@ -50,6 +50,10 @@ public:
      */
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanShaderModule> GetShaderModule(const std::string& name)
     {
+        if (!shaderModules_.contains(name)) {
+            throw std::runtime_error("Shader module \"" + name + "\" not found!");
+        }
+
         return shaderModules_[name];
     }
 
