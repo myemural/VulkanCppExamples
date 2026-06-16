@@ -289,7 +289,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     // Create descriptor sets
     const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 5 + combinedImageSamplerCount + 2,
+        .maxSets = 3,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1},

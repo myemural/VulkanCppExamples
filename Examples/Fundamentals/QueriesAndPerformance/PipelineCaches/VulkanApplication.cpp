@@ -227,7 +227,7 @@ void VulkanApplication::CreateResources()
 
     // Fill descriptor set create infos
     resourceCreateInfo.descriptors = {
-        .maxSets = 2,
+        .maxSets = 1,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1}, {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}},
         .layouts = {{.name = kMainDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_VERTEX_BIT,

@@ -172,7 +172,7 @@ void VulkanApplication::CreateResources()
                     {.name = kMainFragmentShaderKey, .asset = assetManager_->Get(mainFragmentShaderAsset)}}};
 
     // Fill descriptor set create infos
-    resourceCreateInfo.descriptors = {.maxSets = 2,
+    resourceCreateInfo.descriptors = {.maxSets = 1,
                                       .poolSizes = {{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2}},
                                       .layouts = {{.name = kMainDescSetLayout,
                                                    .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1,

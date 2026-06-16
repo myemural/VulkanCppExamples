@@ -243,7 +243,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
 {
     // Create descriptor sets
     DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 4 + 6 * layerCount_,
+        .maxSets = 2 + layerCount_,
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2 + 2 * layerCount_},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 + layerCount_},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3 * layerCount_ + 1}},
