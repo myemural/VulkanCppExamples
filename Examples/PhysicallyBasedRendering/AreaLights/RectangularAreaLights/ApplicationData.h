@@ -15,10 +15,6 @@
 namespace examples::physically_based_rendering::area_lights::rectangular_area_lights
 {
 
-#define LTC_LUT_IMAGE_WIDTH 64U
-#define LTC_LUT_IMAGE_HEIGHT 64U
-#define LTC_LUT_IMAGE_CHANNELS 4U
-
 inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::ALBEDO_COLOR_VEC4,     common::scene::MaterialComponent::ROUGHNESS_FLOAT,
     common::scene::MaterialComponent::METALLIC_FLOAT,        common::scene::MaterialComponent::ALBEDO_MAP_TEXTURE,
@@ -30,6 +26,10 @@ inline const std::vector attributeLayouts{
     std::pair(common::scene::AttributeType::TEXCOORD, common::scene::AccessorType::VEC2),
     std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
     std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
+
+inline constexpr auto kLtcLutImageWidth = 64U;
+inline constexpr auto kLtcLutImageHeight = 64U;
+inline constexpr auto kLtcLutImageChannels = 4U;
 
 struct alignas(16) LightUbo
 {

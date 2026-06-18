@@ -15,13 +15,6 @@
 namespace examples::physically_based_rendering::area_lights::multiple_area_lights
 {
 
-#define LTC_LUT_IMAGE_WIDTH 64U
-#define LTC_LUT_IMAGE_HEIGHT 64U
-#define LTC_LUT_IMAGE_CHANNELS 4U
-#define RECT_AREA_LIGHT_COUNT 4U
-#define SPHERE_AREA_LIGHT_COUNT 2U
-#define DIRECTIONAL_LIGHT_COUNT 1U
-
 inline const std::vector enabledMaterialComponents{
     common::scene::MaterialComponent::ALBEDO_COLOR_VEC4,    common::scene::MaterialComponent::ROUGHNESS_FLOAT,
     common::scene::MaterialComponent::METALLIC_FLOAT,       common::scene::MaterialComponent::UV_SCALE_FLOAT,
@@ -34,6 +27,13 @@ inline const std::vector attributeLayouts{
     std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
     std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
 
+inline constexpr auto kLtcLutImageWidth = 64U;
+inline constexpr auto kLtcLutImageHeight = 64U;
+inline constexpr auto kLtcLutImageChannels = 4U;
+inline constexpr auto kRectAreaLightCount = 4U;
+inline constexpr auto kSphereAreaLightCount = 2U;
+inline constexpr auto kDirectionalLightCount = 1U;
+
 struct alignas(16) RectangularAreaLightData
 {
     glm::vec4 lightColorAndIntensity;            // xyz = Light Color, w = Light Intensity
@@ -44,21 +44,21 @@ struct alignas(16) RectangularAreaLightData
 
 struct alignas(16) SphereAreaLightData
 {
-    glm::vec4 lightPositionAndRadius; // xyz = Light Position, w = Light Radius
-    glm::vec4 lightColorAndIntensity; // xyz = Light Color, w = Light Intensity
+    glm::vec4 lightPositionAndRadius{}; // xyz = Light Position, w = Light Radius
+    glm::vec4 lightColorAndIntensity{}; // xyz = Light Color, w = Light Intensity
 };
 
 struct alignas(16) DirectionalLightData
 {
-    glm::vec4 lightDirection;         // xyz = Light Direction
-    glm::vec4 lightColorAndIntensity; // xyz = Light Color, w = Light Intensity
+    glm::vec4 lightDirection{};         // xyz = Light Direction
+    glm::vec4 lightColorAndIntensity{}; // xyz = Light Color, w = Light Intensity
 };
 
 struct LightBuffer
 {
-    RectangularAreaLightData rectangularAreaLights[RECT_AREA_LIGHT_COUNT];
-    SphereAreaLightData sphereAreaLights[SPHERE_AREA_LIGHT_COUNT]{};
-    DirectionalLightData directionalLights[DIRECTIONAL_LIGHT_COUNT]{};
+    RectangularAreaLightData rectangularAreaLights[kRectAreaLightCount];
+    SphereAreaLightData sphereAreaLights[kSphereAreaLightCount];
+    DirectionalLightData directionalLights[kDirectionalLightCount];
 };
 
 enum class AreaLightType

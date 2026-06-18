@@ -149,14 +149,14 @@ void VulkanApplication::CreateInitialResources() const
             .name = kLtc1Image,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .dimensions = {LTC_LUT_IMAGE_WIDTH, LTC_LUT_IMAGE_HEIGHT, 1},
+            .dimensions = {kLtcLutImageWidth, kLtcLutImageHeight, 1},
             .usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
             .views = {ImageViewCreateInfo{.viewName = kLtc1ImageView, .format = VK_FORMAT_R32G32B32A32_SFLOAT}}},
         ImageResourceCreateInfo{
             .name = kLtc2Image,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .dimensions = {LTC_LUT_IMAGE_WIDTH, LTC_LUT_IMAGE_HEIGHT, 1},
+            .dimensions = {kLtcLutImageWidth, kLtcLutImageHeight, 1},
             .usageFlags = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
             .views = {ImageViewCreateInfo{.viewName = kLtc2ImageView, .format = VK_FORMAT_R32G32B32A32_SFLOAT}}}};
 
@@ -170,9 +170,9 @@ void VulkanApplication::UploadLtcResourcesToGpu() const
 {
     TextureAsset ltcAsset;
     ltcAsset.data.resize(sizeof(kLtc1LutData));
-    ltcAsset.width = LTC_LUT_IMAGE_WIDTH;
-    ltcAsset.height = LTC_LUT_IMAGE_HEIGHT;
-    ltcAsset.channels = LTC_LUT_IMAGE_CHANNELS;
+    ltcAsset.width = kLtcLutImageWidth;
+    ltcAsset.height = kLtcLutImageHeight;
+    ltcAsset.channels = kLtcLutImageChannels;
 
     // Upload LTC1 and LTC2
     std::memcpy(ltcAsset.data.data(), kLtc1LutData, sizeof(kLtc1LutData));
