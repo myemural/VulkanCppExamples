@@ -129,7 +129,7 @@ void VulkanApplication::CreateInitialResources() const
             .name = kShadowMapImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView,
                                           .format = depthImageFormat_,
@@ -179,26 +179,26 @@ void VulkanApplication::BuildScene()
     camera_ = std::make_shared<PerspectiveCamera>(glm::vec3(0.0f, 1.0f, 9.0f), aspectRatio);
 
     // Add camera for directional light
-    lightCamera_ = std::make_shared<OrthographicCamera>(glm::vec3(0.0f), 1.0f, LIGHT_ORTHO_SIZE, 0.1f, 50.0f);
+    lightCamera_ = std::make_shared<OrthographicCamera>(glm::vec3(0.0f), 1.0f, kLightOrthoSize, 0.1f, 50.0f);
 
     // Materials
     Material yellowMaterial;
     yellowMaterial.diffuseColor = glm::vec4(0.8f, 0.8f, 0.0f, 0.8f);
-    yellowMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    yellowMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    yellowMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    yellowMaterial.ambientStrength = kAmbientStrength;
+    yellowMaterial.shininess = kSpecularShininess;
+    yellowMaterial.specularStrength = kSpecularStrength;
 
     Material redMaterial;
     redMaterial.diffuseColor = glm::vec4(0.8f, 0.0f, 0.0f, 0.8f);
-    redMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    redMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    redMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    redMaterial.ambientStrength = kAmbientStrength;
+    redMaterial.shininess = kSpecularShininess;
+    redMaterial.specularStrength = kSpecularStrength;
 
     Material floorMaterial;
     floorMaterial.diffuseColor = glm::vec4(0.8f, 0.8f, 0.8f, 0.8f);
-    floorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    floorMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    floorMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    floorMaterial.ambientStrength = kAmbientStrength;
+    floorMaterial.shininess = kSpecularShininess;
+    floorMaterial.specularStrength = kSpecularStrength;
 
     // Load and convert models
     const auto antiqueCameraModelHandle = assetManager_->Load<GltfModelAsset>(kAntiqueCameraModelPath);
@@ -503,9 +503,9 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create pipeline layout (for shadow mapping)!");
     }
 
-    VkViewport shadowMapViewport{0,    0,   static_cast<float>(SHADOW_MAP_SIZE), static_cast<float>(SHADOW_MAP_SIZE),
+    VkViewport shadowMapViewport{0,    0,   static_cast<float>(kShadowMapSize), static_cast<float>(kShadowMapSize),
                                  0.0f, 1.0f};
-    VkRect2D shadowMapScissor{0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE};
+    VkRect2D shadowMapScissor{0, 0, kShadowMapSize, kShadowMapSize};
 
     shadowPipeline_ = device_->CreateGraphicsPipeline(shadowPipelineLayout_, shadowRenderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -551,7 +551,7 @@ void VulkanApplication::CreateFramebuffers()
     // Shadow map framebuffer
     const auto& shadowDepthImageView = resources_->GetImageView(kShadowMapImage, kShadowMapImageView);
     shadowFramebuffer_ = device_->CreateFramebuffer(shadowRenderPass_, {shadowDepthImageView}, [&](auto& builder) {
-        builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+        builder.SetDimensions(kShadowMapSize, kShadowMapSize);
     });
 
     if (!shadowFramebuffer_) {
@@ -605,7 +605,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.renderPass = shadowRenderPass_->GetHandle();
                     beginInfo.framebuffer = shadowFramebuffer_->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    beginInfo.renderArea.extent = VkExtent2D(kShadowMapSize, kShadowMapSize);
                     beginInfo.clearValueCount = 1;
                     beginInfo.pClearValues = &shadowMapClearValue;
                 },
@@ -626,8 +626,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 shadowMapPushConstant.objectId = sceneObject.GetObjectId();
 
                 const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
-                const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(
-                        params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f), 30.0f);
+                const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(kLightDirection, glm::vec3(0.0f), 30.0f);
                 shadowMapPushConstant.lightSpaceMatrix = lightProjection * lightView;
                 currentCmdBuffer->PushConstants(shadowPipelineLayout_, VK_SHADER_STAGE_VERTEX_BIT, 0,
                                                 sizeof(shadowMapPushConstant), &shadowMapPushConstant);
@@ -667,7 +666,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 scenePushConstant.view = camera_->GetViewMatrix();
                 scenePushConstant.projection = camera_->GetProjectionMatrix();
                 scenePushConstant.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
-                scenePushConstant.lightOrthoSize = LIGHT_ORTHO_SIZE;
+                scenePushConstant.lightOrthoSize = kLightOrthoSize;
                 currentCmdBuffer->PushConstants(pipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                 sizeof(scenePushConstant), &scenePushConstant);
@@ -686,8 +685,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
-    const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(params_.Get<glm::vec3>(AppSettings::LightDirection),
-                                                                 glm::vec3(0.0f), 30.0f);
+    const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(kLightDirection, glm::vec3(0.0f), 30.0f);
 
     const auto time = static_cast<float>(GetCurrentTime());
     constexpr float speed = 0.8f;
@@ -710,8 +708,8 @@ void VulkanApplication::UpdateSceneTransforms() const
     scene_->FindObjectByName(kSphereObject)->SetPosition(posSphere);
 
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     lightUbo.lightSpaceMatrix = lightProjection * lightView;
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }

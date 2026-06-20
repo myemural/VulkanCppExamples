@@ -134,13 +134,13 @@ void VulkanApplication::CreateInitialResources() const
             .name = kShadowMapImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
             .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             .views = {ImageViewCreateInfo{.viewName = kShadowMapImageView, .format = VK_FORMAT_R32G32B32A32_SFLOAT}}},
         ImageResourceCreateInfo{.name = kBlurredShadowMapImage,
                                 .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                 .format = VK_FORMAT_R32G32B32A32_SFLOAT,
-                                .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+                                .dimensions = {kShadowMapSize, kShadowMapSize, 1},
                                 .usageFlags = VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
                                               VK_IMAGE_USAGE_TRANSFER_DST_BIT,
                                 .views = {ImageViewCreateInfo{.viewName = kBlurredShadowMapImageView,
@@ -149,7 +149,7 @@ void VulkanApplication::CreateInitialResources() const
             .name = kShadowMapDepthImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
-            .dimensions = {SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, 1},
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
             .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
             .views = {ImageViewCreateInfo{.viewName = kShadowMapDepthImageView,
                                           .format = depthImageFormat_,
@@ -204,21 +204,21 @@ void VulkanApplication::BuildScene()
     // Materials
     Material yellowMaterial;
     yellowMaterial.diffuseColor = glm::vec4(0.8f, 0.8f, 0.0f, 0.8f);
-    yellowMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    yellowMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    yellowMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    yellowMaterial.ambientStrength = kAmbientStrength;
+    yellowMaterial.shininess = kSpecularShininess;
+    yellowMaterial.specularStrength = kSpecularStrength;
 
     Material redMaterial;
     redMaterial.diffuseColor = glm::vec4(0.8f, 0.0f, 0.0f, 0.8f);
-    redMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    redMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    redMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    redMaterial.ambientStrength = kAmbientStrength;
+    redMaterial.shininess = kSpecularShininess;
+    redMaterial.specularStrength = kSpecularStrength;
 
     Material floorMaterial;
     floorMaterial.diffuseColor = glm::vec4(0.8f, 0.8f, 0.8f, 0.8f);
-    floorMaterial.ambientStrength = GetParamFloat(AppSettings::AmbientStrength);
-    floorMaterial.shininess = GetParamFloat(AppSettings::Shininess);
-    floorMaterial.specularStrength = GetParamFloat(AppSettings::SpecularStrength);
+    floorMaterial.ambientStrength = kAmbientStrength;
+    floorMaterial.shininess = kSpecularShininess;
+    floorMaterial.specularStrength = kSpecularStrength;
 
     // Load and convert models
     const auto antiqueCameraModelHandle = assetManager_->Load<GltfModelAsset>(kAntiqueCameraModelPath);
@@ -597,9 +597,9 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create pipeline layout (for shadow mapping)!");
     }
 
-    VkViewport shadowMapViewport{0,    0,   static_cast<float>(SHADOW_MAP_SIZE), static_cast<float>(SHADOW_MAP_SIZE),
+    VkViewport shadowMapViewport{0,    0,   static_cast<float>(kShadowMapSize), static_cast<float>(kShadowMapSize),
                                  0.0f, 1.0f};
-    VkRect2D shadowMapScissor{0, 0, SHADOW_MAP_SIZE, SHADOW_MAP_SIZE};
+    VkRect2D shadowMapScissor{0, 0, kShadowMapSize, kShadowMapSize};
 
     shadowPipeline_ = device_->CreateGraphicsPipeline(shadowPipelineLayout_, shadowRenderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -651,7 +651,7 @@ void VulkanApplication::CreateFramebuffers()
     const auto& shadowMapDepthImageView = resources_->GetImageView(kShadowMapDepthImage, kShadowMapDepthImageView);
     shadowFramebuffer_ =
             device_->CreateFramebuffer(shadowRenderPass_, {shadowMapImageView, shadowMapDepthImageView},
-                                       [&](auto& builder) { builder.SetDimensions(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE); });
+                                       [&](auto& builder) { builder.SetDimensions(kShadowMapSize, kShadowMapSize); });
 
     if (!shadowFramebuffer_) {
         throw std::runtime_error("Failed to create framebuffer (for shadow mapping)!");
@@ -709,7 +709,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     beginInfo.renderPass = shadowRenderPass_->GetHandle();
                     beginInfo.framebuffer = shadowFramebuffer_->GetHandle();
                     beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+                    beginInfo.renderArea.extent = VkExtent2D(kShadowMapSize, kShadowMapSize);
                     beginInfo.clearValueCount = shadowMapClearValues.size();
                     beginInfo.pClearValues = shadowMapClearValues.data();
                 },
@@ -730,8 +730,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 shadowMapPushConstant.objectId = sceneObject.GetObjectId();
 
                 const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
-                const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(
-                        params_.Get<glm::vec3>(AppSettings::LightDirection), glm::vec3(0.0f), 30.0f);
+                const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(kLightDirection, glm::vec3(0.0f), 30.0f);
                 shadowMapPushConstant.lightSpaceMatrix = lightProjection * lightView;
                 shadowMapPushConstant.esmExponent = GetParamFloat(AppSettings::EsmExponent);
                 currentCmdBuffer->PushConstants(shadowPipelineLayout_,
@@ -759,8 +758,8 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         const std::vector descSets{resources_->GetDescriptorSet(kGaussianBlurDescSet)};
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_COMPUTE, gaussianBlurPipelineLayout_, 0, descSets);
 
-        const auto batchSizeX = CeilDiv(SHADOW_MAP_SIZE, GAUSSIAN_BLUR_BATCH_SIZE);
-        const auto batchSizeY = CeilDiv(SHADOW_MAP_SIZE, GAUSSIAN_BLUR_BATCH_SIZE);
+        const auto batchSizeX = CeilDiv(kShadowMapSize, kGaussianBlurBatchSize);
+        const auto batchSizeY = CeilDiv(kShadowMapSize, kGaussianBlurBatchSize);
         currentCmdBuffer->Dispatch(batchSizeX, batchSizeY, 1);
     }
 
@@ -822,12 +821,11 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 void VulkanApplication::UpdateSceneTransforms() const
 {
     const glm::mat4 lightProjection = lightCamera_->GetProjectionMatrix();
-    const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(params_.Get<glm::vec3>(AppSettings::LightDirection),
-                                                                 glm::vec3(0.0f), 30.0f);
+    const glm::mat4 lightView = lightCamera_->GetLightViewMatrix(kLightDirection, glm::vec3(0.0f), 30.0f);
 
     LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightDirection), 1.0f);
-    lightUbo.lightColor = glm::vec4(params_.Get<glm::vec3>(AppSettings::LightColor), 1.0f);
+    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
     lightUbo.lightSpaceMatrix = lightProjection * lightView;
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }

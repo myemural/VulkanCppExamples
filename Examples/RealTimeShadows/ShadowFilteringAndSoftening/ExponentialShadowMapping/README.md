@@ -32,13 +32,7 @@ In this example, the shadows in the scene are created using Exponential Shadow M
 | AppSettings.ClearColor       | VkClearColorValue | AppSettings::ClearColor       | Background color of the screen   |               |
 | AppSettings.MouseSensitivity | float             | AppSettings::MouseSensitivity | Mouse sensitivity value          |               |
 | AppSettings.CameraSpeed      | float             | AppSettings::CameraSpeed      | Speed of the camera              |               |
-| AppSettings.LightDirection   | glm:vec3          | AppSettings::LightDirection   | Direction vector of the light    |               |
-| AppSettings.LightColor       | glm:vec3          | AppSettings::LightColor       | Color of the light (RGB)         |               |
-| AppSettings.AmbientStrength  | float             | AppSettings::AmbientStrength  | Ambient strength of the material |               |
-| AppSettings.SpecularStrength | float             | AppSettings::SpecularStrength | Specular strength factor         |               |
-| AppSettings.Shininess        | float             | AppSettings::Shininess        | Shininess exponent               |               |
 | AppSettings.EsmExponent      | float             | AppSettings::EsmExponent      | ESM coefficient                  |               |
-
 
 ## Learning Objectives
 

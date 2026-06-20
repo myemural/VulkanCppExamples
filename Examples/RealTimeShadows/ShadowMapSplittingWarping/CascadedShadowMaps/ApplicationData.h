@@ -32,6 +32,7 @@ inline const std::vector attributeLayouts{
     std::pair(common::scene::AttributeType::NORMAL, common::scene::AccessorType::VEC3),
     std::pair(common::scene::AttributeType::TANGENT, common::scene::AccessorType::VEC4)};
 
+// Constants
 inline constexpr auto kLightDirection = glm::vec3(-0.4f, -0.4f, -0.4f);
 inline constexpr auto kLightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 inline constexpr auto kAmbientStrength = 0.05f;
