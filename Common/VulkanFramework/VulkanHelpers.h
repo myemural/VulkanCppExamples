@@ -17,6 +17,10 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "VulkanBuffer.h"
+#include "VulkanImageView.h"
+#include "VulkanSampler.h"
+
 namespace common::vulkan_framework
 {
 
@@ -146,6 +150,26 @@ inline VkRect2D GetAnimatedScissorRect(const float time, const float viewportWid
     rect.extent.height = static_cast<std::uint32_t>(scissorHeight);
 
     return rect;
+}
+
+inline std::vector<VkDescriptorBufferInfo>
+MakeSingleDescBufferInfo(const std::shared_ptr<vulkan_wrapper::VulkanBuffer>& buffer,
+                         VkDeviceSize offset = 0,
+                         VkDeviceSize range = VK_WHOLE_SIZE)
+{
+    std::vector<VkDescriptorBufferInfo> result;
+    result.emplace_back(buffer->GetHandle(), offset, range);
+    return result;
+}
+
+inline std::vector<VkDescriptorImageInfo>
+MakeSingleDescImageInfo(const std::shared_ptr<vulkan_wrapper::VulkanImageView>& imageView,
+                        const std::shared_ptr<vulkan_wrapper::VulkanSampler>& sampler = nullptr,
+                        const VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+{
+    std::vector<VkDescriptorImageInfo> result;
+    result.emplace_back(sampler ? sampler->GetHandle() : VK_NULL_HANDLE, imageView->GetHandle(), layout);
+    return result;
 }
 
 } // namespace common::vulkan_framework

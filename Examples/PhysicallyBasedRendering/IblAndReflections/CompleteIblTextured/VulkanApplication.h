@@ -45,7 +45,9 @@ private:
 
     void BuildScene();
 
-    void CreateAndUpdateDescriptorSets() const;
+    void CreateDescriptorSets() const;
+
+    void UpdateDescriptorSets() const;
 
     void InitInputSystem();
 

@@ -28,8 +28,8 @@ struct COMMON_API ImageWriteRequest
 {
     std::string descriptorSetName;
     std::uint32_t bindingIndex = UINT32_MAX;
+    VkDescriptorType type = VK_DESCRIPTOR_TYPE_MAX_ENUM; // COMBINED_IMAGE_SAMPLER, SAMPLED_IMAGE etc.
     std::vector<VkDescriptorImageInfo> images;
-    VkDescriptorType type  = VK_DESCRIPTOR_TYPE_MAX_ENUM; // COMBINED_IMAGE_SAMPLER, SAMPLED_IMAGE etc.
     std::uint32_t arrayElement = 0;
 };
 
@@ -37,8 +37,8 @@ struct COMMON_API TexelBufferWriteRequest
 {
     std::string descriptorSetName;
     std::uint32_t bindingIndex = UINT32_MAX;
-    VkDescriptorType type  = VK_DESCRIPTOR_TYPE_MAX_ENUM; // UNIFORM_TEXEL_BUFFER, STORAGE_TEXEL_BUFFER etc.
-    std::vector<VkBufferView> bufferViews; /// TODO: Will be change after VulkanBufferView has been added.
+    VkDescriptorType type = VK_DESCRIPTOR_TYPE_MAX_ENUM; // UNIFORM_TEXEL_BUFFER, STORAGE_TEXEL_BUFFER etc.
+    std::vector<VkBufferView> bufferViews;               /// TODO: Will be change after VulkanBufferView has been added.
     std::uint32_t arrayElement = 0;
 };
 
