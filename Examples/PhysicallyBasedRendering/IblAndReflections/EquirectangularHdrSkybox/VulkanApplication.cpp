@@ -15,6 +15,7 @@
 #include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
+#include "VulkanHelpers.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::physically_based_rendering::ibl_and_reflections::equirectangular_hdr_skybox
@@ -41,7 +42,8 @@ bool VulkanApplication::Init()
         InitAssetManager();
         CreateInitialResources();
         BuildScene();
-        CreateAndUpdateDescriptorSets();
+        CreateDescriptorSets();
+        UpdateDescriptorSets();
 
         InitInputSystem();
 
@@ -243,90 +245,70 @@ void VulkanApplication::BuildScene()
     scene_->AddRootObject(rootObject);
 }
 
-void VulkanApplication::CreateAndUpdateDescriptorSets() const
+void VulkanApplication::CreateDescriptorSets() const
 {
-    // Create descriptor sets
-    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
-    const auto cubemapCount = scene_->GetGpuImageStorage().GetCubemapTextureCount();
+    const auto sceneTextureCount = scene_->GetGpuImageStorage().GetTextureCount();
+    std::vector<DescriptorResourceCreateInfo::Layout> descriptorSetLayouts;
+    descriptorSetLayouts.push_back(
+            {.name = kMainDescSetLayout,
+             .bindings = {
+                 {0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT},
+                 {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                 {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                 {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, sceneTextureCount, VK_SHADER_STAGE_FRAGMENT_BIT}}});
+    descriptorSetLayouts.push_back(
+            {.name = kSkyboxDescSetLayout,
+             .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT}}});
+
+    std::vector<DescriptorResourceCreateInfo::DescriptorSet> descriptorSets;
+    descriptorSets.push_back({.name = kMainDescSet, .layoutName = kMainDescSetLayout});
+    descriptorSets.push_back({.name = kConvertToCubemapDescSet, .layoutName = kSkyboxDescSetLayout});
+    descriptorSets.push_back({.name = kSkyboxDescSet, .layoutName = kSkyboxDescSetLayout});
+
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 3,
+        .maxSets = static_cast<std::uint32_t>(descriptorSets.size()),
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
-                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + cubemapCount}},
-        .layouts = {{.name = kMainDescSetLayout,
-                     .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                                  {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
-                                   VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
-                    {.name = kSkyboxDescSetLayout,
-                     .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-                                   nullptr}}}},
-        .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout},
-                           {.name = kConvertToCubemapDescSet, .layoutName = kSkyboxDescSetLayout},
-                           {.name = kSkyboxDescSet, .layoutName = kSkyboxDescSetLayout}}};
+                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, sceneTextureCount + 1}},
+        .layouts = descriptorSetLayouts,
+        .descriptorSets = descriptorSets};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
+}
 
-    std::vector<VkDescriptorBufferInfo> storageTransformBufferInfos;
-    storageTransformBufferInfos.emplace_back(scene_->GetTransformStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+void VulkanApplication::UpdateDescriptorSets() const
+{
+    // Descriptor buffer info vectors
+    const auto storageTransformBufferInfos = MakeSingleDescBufferInfo(scene_->GetTransformStorageBuffer());
+    const auto storageMaterialBufferInfos = MakeSingleDescBufferInfo(scene_->GetMaterialStorageBuffer());
+    const auto lightUboInfos = MakeSingleDescBufferInfo(resources_->GetBuffer(kLightUniformBuffer));
 
-    std::vector<VkDescriptorBufferInfo> storageMaterialBufferInfos;
-    storageMaterialBufferInfos.emplace_back(scene_->GetMaterialStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+    // Descriptor image info vectors
+    const auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
+    const auto hdrEnvironmentImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfo(kHdrEnvironmentTexture);
+    const auto environmentCubemapImageInfos =
+            MakeSingleDescImageInfo(resources_->GetImageView(kEnvironmentCubemapImage, kEnvironmentCubemapImageView),
+                                    resources_->GetSampler(kSkyboxSampler));
 
-    std::vector<VkDescriptorBufferInfo> lightUboInfos;
-    lightUboInfos.emplace_back(resources_->GetBuffer(kLightUniformBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
+    std::vector<BufferWriteRequest> bufferWriteRequests;
+    std::vector<ImageWriteRequest> imageWriteRequests;
 
-    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
+    // For kMainDescSet
+    bufferWriteRequests.emplace_back(kMainDescSet, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, storageTransformBufferInfos);
+    bufferWriteRequests.emplace_back(kMainDescSet, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, storageMaterialBufferInfos);
+    bufferWriteRequests.emplace_back(kMainDescSet, 2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, lightUboInfos);
+    imageWriteRequests.emplace_back(kMainDescSet, 3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorImageInfos);
 
-    auto hdrEnvironmentImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfo(kHdrEnvironmentTexture);
+    // For kConvertToCubemapDescSet
+    imageWriteRequests.emplace_back(kConvertToCubemapDescSet, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                    hdrEnvironmentImageInfos);
 
-    std::vector<VkDescriptorImageInfo> environmentCubemapImageInfos;
-    environmentCubemapImageInfos.emplace_back(
-            resources_->GetSampler(kSkyboxSampler)->GetHandle(),
-            resources_->GetImageView(kEnvironmentCubemapImage, kEnvironmentCubemapImageView)->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    // For kSkyboxDescSet
+    imageWriteRequests.emplace_back(kSkyboxDescSet, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                    environmentCubemapImageInfos);
 
-    BufferWriteRequest objectStorageTransformBufferRequest;
-    objectStorageTransformBufferRequest.descriptorSetName = kMainDescSet;
-    objectStorageTransformBufferRequest.bindingIndex = 0;
-    objectStorageTransformBufferRequest.buffers = storageTransformBufferInfos;
-    objectStorageTransformBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-
-    BufferWriteRequest objectStorageMaterialBufferRequest;
-    objectStorageMaterialBufferRequest.descriptorSetName = kMainDescSet;
-    objectStorageMaterialBufferRequest.bindingIndex = 1;
-    objectStorageMaterialBufferRequest.buffers = storageMaterialBufferInfos;
-    objectStorageMaterialBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-
-    BufferWriteRequest lightUboRequest;
-    lightUboRequest.descriptorSetName = kMainDescSet;
-    lightUboRequest.bindingIndex = 2;
-    lightUboRequest.buffers = lightUboInfos;
-    lightUboRequest.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-
-    ImageWriteRequest textureUpdateRequest;
-    textureUpdateRequest.descriptorSetName = kMainDescSet;
-    textureUpdateRequest.bindingIndex = 3;
-    textureUpdateRequest.images = descriptorImageInfos;
-    textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest cubemapUpdateRequest;
-    cubemapUpdateRequest.descriptorSetName = kConvertToCubemapDescSet;
-    cubemapUpdateRequest.bindingIndex = 0;
-    cubemapUpdateRequest.images = hdrEnvironmentImageInfos;
-    cubemapUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest skyboxUpdateRequest;
-    skyboxUpdateRequest.descriptorSetName = kSkyboxDescSet;
-    skyboxUpdateRequest.bindingIndex = 0;
-    skyboxUpdateRequest.images = environmentCubemapImageInfos;
-    skyboxUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .bufferWriteRequests = {objectStorageTransformBufferRequest, objectStorageMaterialBufferRequest,
-                                lightUboRequest},
-        .imageWriteRequests = {textureUpdateRequest, cubemapUpdateRequest, skyboxUpdateRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.bufferWriteRequests = bufferWriteRequests,
+                                                          .imageWriteRequests = imageWriteRequests};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
