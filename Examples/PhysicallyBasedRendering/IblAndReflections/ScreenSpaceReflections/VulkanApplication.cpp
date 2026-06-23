@@ -15,6 +15,7 @@
 #include "SceneObjectBuilder.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
+#include "VulkanHelpers.h"
 #include "VulkanShaderModule.h"
 
 namespace examples::physically_based_rendering::ibl_and_reflections::screen_space_reflections
@@ -41,7 +42,8 @@ bool VulkanApplication::Init()
         InitAssetManager();
         CreateInitialResources();
         BuildScene();
-        CreateAndUpdateDescriptorSets();
+        CreateDescriptorSets();
+        UpdateDescriptorSets();
 
         InitInputSystem();
 
@@ -286,153 +288,92 @@ void VulkanApplication::BuildScene()
     scene_->AddRootObject(rootObject);
 }
 
-void VulkanApplication::CreateAndUpdateDescriptorSets() const
+void VulkanApplication::CreateDescriptorSets() const
 {
-    // Create descriptor sets
-    const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
+    const auto sceneTextureCount = scene_->GetGpuImageStorage().GetTextureCount();
+    std::vector<DescriptorResourceCreateInfo::Layout> descriptorSetLayouts;
+    descriptorSetLayouts.push_back(
+            {.name = kMainDescSetLayout,
+             .bindings = {
+                 {0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT},
+                 {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                 {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, sceneTextureCount, VK_SHADER_STAGE_FRAGMENT_BIT}}});
+    descriptorSetLayouts.push_back(
+            {.name = kLightDescSetLayout,
+             .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                          {1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                          {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                          {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                          {4, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT}}});
+    descriptorSetLayouts.push_back(
+            {.name = kSsrDescSetLayout,
+             .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                          {1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                          {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+                          {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT}}});
+
+    std::vector<DescriptorResourceCreateInfo::DescriptorSet> descriptorSets;
+    descriptorSets.push_back({.name = kMainDescSet, .layoutName = kMainDescSetLayout});
+    descriptorSets.push_back({.name = kLightDescSet, .layoutName = kLightDescSetLayout});
+    descriptorSets.push_back({.name = kSsrDescSet, .layoutName = kSsrDescSetLayout});
+
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
-        .maxSets = 3,
+        .maxSets = static_cast<std::uint32_t>(descriptorSets.size()),
         .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 3},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
-                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + 10}},
-        .layouts =
-                {{.name = kMainDescSetLayout,
-                  .bindings = {{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr},
-                               {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                               {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount,
-                                VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
-                 {.name = kLightDescSetLayout,
-                  .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                               {1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                               {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                               {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                               {4, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr}}},
-                 {.name = kSsrDescSetLayout,
-                  .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                               {1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                               {2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr},
-                               {3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
-                                nullptr}}}},
-        .descriptorSets = {{.name = kMainDescSet, .layoutName = kMainDescSetLayout},
-                           {.name = kLightDescSet, .layoutName = kLightDescSetLayout},
-                           {.name = kSsrDescSet, .layoutName = kSsrDescSetLayout}}};
+                      {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, sceneTextureCount + 10}},
+        .layouts = descriptorSetLayouts,
+        .descriptorSets = descriptorSets};
 
     resources_->CreateDescriptorSets(descriptorResourceCreateInfo);
+}
 
-    std::vector<VkDescriptorBufferInfo> storageTransformBufferInfos;
-    storageTransformBufferInfos.emplace_back(scene_->GetTransformStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+void VulkanApplication::UpdateDescriptorSets() const
+{
+    // Descriptor buffer info vectors
+    const auto storageTransformBufferInfos = MakeSingleDescBufferInfo(scene_->GetTransformStorageBuffer());
+    const auto storageMaterialBufferInfos = MakeSingleDescBufferInfo(scene_->GetMaterialStorageBuffer());
+    const auto storageLightBufferInfos = MakeSingleDescBufferInfo(resources_->GetBuffer(kLightStorageBuffer));
 
-    std::vector<VkDescriptorBufferInfo> storageMaterialBufferInfos;
-    storageMaterialBufferInfos.emplace_back(scene_->GetMaterialStorageBuffer()->GetHandle(), 0, VK_WHOLE_SIZE);
+    // Descriptor image info vectors
+    const auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
+    const auto positionImageInfos = MakeSingleDescImageInfo(
+            resources_->GetImageView(kPositionImage, kPositionImageView), resources_->GetSampler(kMainSampler));
+    const auto albedoImageInfos = MakeSingleDescImageInfo(resources_->GetImageView(kAlbedoImage, kAlbedoImageView),
+                                                          resources_->GetSampler(kMainSampler));
+    const auto metallicRoughnessImageInfos =
+            MakeSingleDescImageInfo(resources_->GetImageView(kMetallicRoughnessImage, kMetallicRoughnessImageView),
+                                    resources_->GetSampler(kMainSampler));
+    const auto normalImageInfos = MakeSingleDescImageInfo(resources_->GetImageView(kNormalImage, kNormalImageView),
+                                                          resources_->GetSampler(kMainSampler));
+    const auto sceneColorImageInfos = MakeSingleDescImageInfo(
+            resources_->GetImageView(kSceneColorImage, kSceneColorImageView), resources_->GetSampler(kMainSampler));
 
-    std::vector<VkDescriptorBufferInfo> storageLightBufferInfos;
-    storageLightBufferInfos.emplace_back(resources_->GetBuffer(kLightStorageBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
+    std::vector<BufferWriteRequest> bufferWriteRequests;
+    std::vector<ImageWriteRequest> imageWriteRequests;
 
-    auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
+    // For kMainDescSet
+    bufferWriteRequests.emplace_back(kMainDescSet, 0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, storageTransformBufferInfos);
+    bufferWriteRequests.emplace_back(kMainDescSet, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, storageMaterialBufferInfos);
+    imageWriteRequests.emplace_back(kMainDescSet, 2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, descriptorImageInfos);
 
-    std::vector<VkDescriptorImageInfo> positionImageInfos;
-    positionImageInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
-                                    resources_->GetImageView(kPositionImage, kPositionImageView)->GetHandle(),
-                                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    // For kLightDescSet
+    imageWriteRequests.emplace_back(kLightDescSet, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, positionImageInfos);
+    imageWriteRequests.emplace_back(kLightDescSet, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, albedoImageInfos);
+    imageWriteRequests.emplace_back(kLightDescSet, 2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                    metallicRoughnessImageInfos);
+    imageWriteRequests.emplace_back(kLightDescSet, 3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, normalImageInfos);
+    bufferWriteRequests.emplace_back(kLightDescSet, 4, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, storageLightBufferInfos);
 
-    std::vector<VkDescriptorImageInfo> albedoImageInfos;
-    albedoImageInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
-                                  resources_->GetImageView(kAlbedoImage, kAlbedoImageView)->GetHandle(),
-                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    // For kSsrDescSet
+    imageWriteRequests.emplace_back(kSsrDescSet, 0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, positionImageInfos);
+    imageWriteRequests.emplace_back(kSsrDescSet, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, normalImageInfos);
+    imageWriteRequests.emplace_back(kSsrDescSet, 2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                    metallicRoughnessImageInfos);
+    imageWriteRequests.emplace_back(kSsrDescSet, 3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, sceneColorImageInfos);
 
-    std::vector<VkDescriptorImageInfo> metallicRoughnessImageInfos;
-    metallicRoughnessImageInfos.emplace_back(
-            resources_->GetSampler(kMainSampler)->GetHandle(),
-            resources_->GetImageView(kMetallicRoughnessImage, kMetallicRoughnessImageView)->GetHandle(),
-            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    std::vector<VkDescriptorImageInfo> normalImageInfos;
-    normalImageInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
-                                  resources_->GetImageView(kNormalImage, kNormalImageView)->GetHandle(),
-                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    std::vector<VkDescriptorImageInfo> sceneColorImageInfos;
-    sceneColorImageInfos.emplace_back(resources_->GetSampler(kMainSampler)->GetHandle(),
-                                      resources_->GetImageView(kSceneColorImage, kSceneColorImageView)->GetHandle(),
-                                      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    BufferWriteRequest transformStorageBufferRequest;
-    transformStorageBufferRequest.descriptorSetName = kMainDescSet;
-    transformStorageBufferRequest.bindingIndex = 0;
-    transformStorageBufferRequest.buffers = storageTransformBufferInfos;
-    transformStorageBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-
-    BufferWriteRequest transformMaterialBufferRequest;
-    transformMaterialBufferRequest.descriptorSetName = kMainDescSet;
-    transformMaterialBufferRequest.bindingIndex = 1;
-    transformMaterialBufferRequest.buffers = storageMaterialBufferInfos;
-    transformMaterialBufferRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-
-    ImageWriteRequest textureUpdateRequest;
-    textureUpdateRequest.descriptorSetName = kMainDescSet;
-    textureUpdateRequest.bindingIndex = 2;
-    textureUpdateRequest.images = descriptorImageInfos;
-    textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest positionUpdateRequest;
-    positionUpdateRequest.descriptorSetName = kLightDescSet;
-    positionUpdateRequest.bindingIndex = 0;
-    positionUpdateRequest.images = positionImageInfos;
-    positionUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest albedoUpdateRequest;
-    albedoUpdateRequest.descriptorSetName = kLightDescSet;
-    albedoUpdateRequest.bindingIndex = 1;
-    albedoUpdateRequest.images = albedoImageInfos;
-    albedoUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest metallicRoughnessUpdateRequest;
-    metallicRoughnessUpdateRequest.descriptorSetName = kLightDescSet;
-    metallicRoughnessUpdateRequest.bindingIndex = 2;
-    metallicRoughnessUpdateRequest.images = metallicRoughnessImageInfos;
-    metallicRoughnessUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest normalUpdateRequest;
-    normalUpdateRequest.descriptorSetName = kLightDescSet;
-    normalUpdateRequest.bindingIndex = 3;
-    normalUpdateRequest.images = normalImageInfos;
-    normalUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    BufferWriteRequest lightUpdateRequest;
-    lightUpdateRequest.descriptorSetName = kLightDescSet;
-    lightUpdateRequest.bindingIndex = 4;
-    lightUpdateRequest.buffers = storageLightBufferInfos;
-    lightUpdateRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-
-    ImageWriteRequest ssrPositionRequest;
-    ssrPositionRequest.descriptorSetName = kSsrDescSet;
-    ssrPositionRequest.bindingIndex = 0;
-    ssrPositionRequest.images = positionImageInfos;
-    ssrPositionRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest ssrNormalRequest;
-    ssrNormalRequest.descriptorSetName = kSsrDescSet;
-    ssrNormalRequest.bindingIndex = 1;
-    ssrNormalRequest.images = normalImageInfos;
-    ssrNormalRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest ssrMetallicRoughnessRequest;
-    ssrMetallicRoughnessRequest.descriptorSetName = kSsrDescSet;
-    ssrMetallicRoughnessRequest.bindingIndex = 2;
-    ssrMetallicRoughnessRequest.images = metallicRoughnessImageInfos;
-    ssrMetallicRoughnessRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    ImageWriteRequest ssrSceneColorRequest;
-    ssrSceneColorRequest.descriptorSetName = kSsrDescSet;
-    ssrSceneColorRequest.bindingIndex = 3;
-    ssrSceneColorRequest.images = sceneColorImageInfos;
-    ssrSceneColorRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-
-    const DescriptorUpdateInfo descriptorSetUpdateInfo = {
-        .bufferWriteRequests = {transformStorageBufferRequest, transformMaterialBufferRequest, lightUpdateRequest},
-        .imageWriteRequests = {textureUpdateRequest, positionUpdateRequest, albedoUpdateRequest,
-                               metallicRoughnessUpdateRequest, normalUpdateRequest, ssrPositionRequest,
-                               ssrNormalRequest, ssrMetallicRoughnessRequest, ssrSceneColorRequest}};
+    const DescriptorUpdateInfo descriptorSetUpdateInfo = {.bufferWriteRequests = bufferWriteRequests,
+                                                          .imageWriteRequests = imageWriteRequests};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
