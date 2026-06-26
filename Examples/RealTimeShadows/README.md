@@ -37,3 +37,7 @@ This section contains Vulkan examples that related to real-time shadows. Example
 
 - Implementing Cascaded Shadow Maps without any stabilization in Vulkan
 - Applying debug visualization to show cascades on the screen
+
+## [Shadow Resource Management](/Examples/RealTimeShadows/ShadowResourceManagement)
+
+TBD
