@@ -19,7 +19,7 @@
 #include "TimeUtils.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::real_time_shadows::shadow_resource_management::shadow_map_atlas
+namespace examples::real_time_shadows::shadow_resource_management::layered_shadow_maps
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -127,19 +127,6 @@ void VulkanApplication::CreateInitialResources() const
 
     resourceCreateInfo.images = {
         ImageResourceCreateInfo{
-            .name = kShadowMapAtlasImage,
-            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            .format = depthImageFormat_,
-            .dimensions = {kShadowMapAtlasSize, kShadowMapAtlasSize, 1},
-            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-            .views = {ImageViewCreateInfo{.viewName = kShadowMapAtlasImageView,
-                                          .format = depthImageFormat_,
-                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                                                               .baseMipLevel = 0,
-                                                               .levelCount = 1,
-                                                               .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}},
-        ImageResourceCreateInfo{
             .name = kDepthImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
             .format = depthImageFormat_,
@@ -151,7 +138,31 @@ void VulkanApplication::CreateInitialResources() const
                                                                .baseMipLevel = 0,
                                                                .levelCount = 1,
                                                                .baseArrayLayer = 0,
-                                                               .layerCount = 1}}}}};
+                                                               .layerCount = 1}}}},
+        ImageResourceCreateInfo{
+            .name = kShadowMapsImage,
+            .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            .format = depthImageFormat_,
+            .dimensions = {kShadowMapSize, kShadowMapSize, 1},
+            .arrayLayers = kNumOfLights,
+            .usageFlags = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            .views = {ImageViewCreateInfo{.viewName = kShadowMapsImageView,
+                                          .viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY,
+                                          .format = depthImageFormat_,
+                                          .subresourceRange = {.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                               .baseMipLevel = 0,
+                                                               .levelCount = 1,
+                                                               .baseArrayLayer = 0,
+                                                               .layerCount = kNumOfLights}}}}};
+
+    for (auto i = 0U; i < kNumOfLights; ++i) {
+        const std::string imageViewName = kShadowMapLayerImageView + std::to_string(i);
+        resourceCreateInfo.images->back().views.emplace_back(
+                ImageViewCreateInfo{.viewName = imageViewName,
+                                    .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                                    .format = depthImageFormat_,
+                                    .subresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, i, 1}});
+    }
 
     resourceCreateInfo.samplers = {
         SamplerResourceCreateInfo{.name = kMainSampler,
@@ -301,10 +312,10 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
 
     auto descriptorImageInfos = scene_->GetGpuImageStorage().GetDescriptorImageInfos();
 
-    std::vector<VkDescriptorImageInfo> shadowMapAtlasImageInfos;
-    shadowMapAtlasImageInfos.emplace_back(
+    std::vector<VkDescriptorImageInfo> shadowMapsLayerImageInfos;
+    shadowMapsLayerImageInfos.emplace_back(
             resources_->GetSampler(kShadowSampler)->GetHandle(),
-            resources_->GetImageView(kShadowMapAtlasImage, kShadowMapAtlasImageView)->GetHandle(),
+            resources_->GetImageView(kShadowMapsImage, kShadowMapsImageView)->GetHandle(),
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     BufferWriteRequest objectStorageTransformBufferRequest;
@@ -331,11 +342,11 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     textureUpdateRequest.images = descriptorImageInfos;
     textureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
-    ImageWriteRequest shadowMapAtlasTextureUpdateRequest;
-    shadowMapAtlasTextureUpdateRequest.descriptorSetName = kMainDescSet;
-    shadowMapAtlasTextureUpdateRequest.bindingIndex = 4;
-    shadowMapAtlasTextureUpdateRequest.images = shadowMapAtlasImageInfos;
-    shadowMapAtlasTextureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    ImageWriteRequest shadowMapLayerTextureUpdateRequest;
+    shadowMapLayerTextureUpdateRequest.descriptorSetName = kMainDescSet;
+    shadowMapLayerTextureUpdateRequest.bindingIndex = 4;
+    shadowMapLayerTextureUpdateRequest.images = shadowMapsLayerImageInfos;
+    shadowMapLayerTextureUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
     BufferWriteRequest shadowMapTransformBufferRequest;
     shadowMapTransformBufferRequest.descriptorSetName = kShadowMapDescSet;
@@ -346,7 +357,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
         .bufferWriteRequests = {objectStorageTransformBufferRequest, objectStorageMaterialBufferRequest,
                                 lightUboRequest, shadowMapTransformBufferRequest},
-        .imageWriteRequests = {textureUpdateRequest, shadowMapAtlasTextureUpdateRequest}};
+        .imageWriteRequests = {textureUpdateRequest, shadowMapLayerTextureUpdateRequest}};
 
     resources_->UpdateDescriptorSet(descriptorSetUpdateInfo);
 }
@@ -556,7 +567,9 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create pipeline layout (for shadow mapping)!");
     }
 
-    std::vector shadowMapDynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkViewport shadowMapViewport{0,    0,   static_cast<float>(kShadowMapSize), static_cast<float>(kShadowMapSize),
+                                 0.0f, 1.0f};
+    VkRect2D shadowMapScissor{0, 0, kShadowMapSize, kShadowMapSize};
 
     shadowPipeline_ = device_->CreateGraphicsPipeline(shadowPipelineLayout_, shadowRenderPass_, [&](auto& builder) {
         builder.AddShaderStage([&](auto& shaderStageCreateInfo) {
@@ -575,9 +588,9 @@ void VulkanApplication::CreatePipelines()
         });
         builder.SetViewportState([&](auto& viewportStateCreateInfo) {
             viewportStateCreateInfo.viewportCount = 1;
-            viewportStateCreateInfo.pViewports = nullptr;
+            viewportStateCreateInfo.pViewports = &shadowMapViewport;
             viewportStateCreateInfo.scissorCount = 1;
-            viewportStateCreateInfo.pScissors = nullptr;
+            viewportStateCreateInfo.pScissors = &shadowMapScissor;
         });
         builder.SetRasterizationState([&](auto& rasterizationStateCreateInfo) {
             rasterizationStateCreateInfo.depthBiasEnable = VK_TRUE;
@@ -594,10 +607,6 @@ void VulkanApplication::CreatePipelines()
             depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
             depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
         });
-        builder.SetDynamicState([&](auto& dynamicStateCreateInfo) {
-            dynamicStateCreateInfo.dynamicStateCount = shadowMapDynamicStates.size();
-            dynamicStateCreateInfo.pDynamicStates = shadowMapDynamicStates.data();
-        });
     });
 
     if (!shadowPipeline_) {
@@ -607,15 +616,20 @@ void VulkanApplication::CreatePipelines()
 
 void VulkanApplication::CreateFramebuffers()
 {
-    // Shadow map framebuffer
-    const auto& shadowAtlasImageImageView = resources_->GetImageView(kShadowMapAtlasImage, kShadowMapAtlasImageView);
-    shadowMapFramebuffer_ =
-            device_->CreateFramebuffer(shadowRenderPass_, {shadowAtlasImageImageView}, [&](auto& builder) {
-                builder.SetDimensions(kShadowMapAtlasSize, kShadowMapAtlasSize);
-            });
+    // Shadow map framebuffers
+    for (auto i = 0U; i < kNumOfLights; ++i) {
+        const std::string imageViewName = kShadowMapLayerImageView + std::to_string(i);
+        const auto& shadowMapLayerImageView = resources_->GetImageView(kShadowMapsImage, imageViewName);
+        const auto shadowMapLayerFB =
+                device_->CreateFramebuffer(shadowRenderPass_, {shadowMapLayerImageView}, [&](auto& builder) {
+                    builder.SetDimensions(kShadowMapSize, kShadowMapSize);
+                });
 
-    if (!shadowMapFramebuffer_) {
-        throw std::runtime_error("Failed to create framebuffer (for shadow mapping)!");
+        if (!shadowMapLayerFB) {
+            throw std::runtime_error("Failed to create framebuffer (for shadow map layer)!");
+        }
+
+        shadowMapFramebuffers_.push_back(shadowMapLayerFB);
     }
 
     // Present framebuffers
@@ -660,33 +674,24 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
 
     // Create shadow map pass
     {
-        currentCmdBuffer->BeginRenderPass(
-                [&](auto& beginInfo) {
-                    beginInfo.renderPass = shadowRenderPass_->GetHandle();
-                    beginInfo.framebuffer = shadowMapFramebuffer_->GetHandle();
-                    beginInfo.renderArea.offset = {0, 0};
-                    beginInfo.renderArea.extent = VkExtent2D(kShadowMapAtlasSize, kShadowMapAtlasSize);
-                    beginInfo.clearValueCount = 1;
-                    beginInfo.pClearValues = &shadowMapClearValue;
-                },
-                VK_SUBPASS_CONTENTS_INLINE);
-
-
-        const std::vector descSets{resources_->GetDescriptorSet(kShadowMapDescSet)};
-        currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, shadowPipelineLayout_, 0, descSets);
-        const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
-
-        currentCmdBuffer->BindPipeline(shadowPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
-
         for (auto i = 0U; i < kLightProperties.size(); ++i) {
-            const auto& shadowMapRect = kLightProperties.at(i).shadowMapAtlasRect;
+            currentCmdBuffer->BeginRenderPass(
+                    [&](auto& beginInfo) {
+                        beginInfo.renderPass = shadowRenderPass_->GetHandle();
+                        beginInfo.framebuffer = shadowMapFramebuffers_[i]->GetHandle();
+                        beginInfo.renderArea.offset = {0, 0};
+                        beginInfo.renderArea.extent = VkExtent2D(kShadowMapSize, kShadowMapSize);
+                        beginInfo.clearValueCount = 1;
+                        beginInfo.pClearValues = &shadowMapClearValue;
+                    },
+                    VK_SUBPASS_CONTENTS_INLINE);
 
-            VkViewport shadowMapViewport{
-                shadowMapRect.x, shadowMapRect.y, shadowMapRect.z, shadowMapRect.w, 0.0f, 1.0f};
-            VkRect2D shadowMapScissor{static_cast<int32_t>(shadowMapRect.x), static_cast<int32_t>(shadowMapRect.y),
-                                      static_cast<uint32_t>(shadowMapRect.z), static_cast<uint32_t>(shadowMapRect.w)};
-            currentCmdBuffer->SetViewports(0, {shadowMapViewport});
-            currentCmdBuffer->SetScissors(0, {shadowMapScissor});
+
+            const std::vector descSets{resources_->GetDescriptorSet(kShadowMapDescSet)};
+            currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, shadowPipelineLayout_, 0, descSets);
+            const std::vector vertexBuffers(scene_->GetAttributeCount(), scene_->GetGeometryBuffer());
+
+            currentCmdBuffer->BindPipeline(shadowPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
             scene_->Traverse([&](const SceneObject& sceneObject) {
                 if (sceneObject.HasRenderable() && sceneObject.GetTag() != kLightGroup) {
@@ -713,9 +718,9 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                     currentCmdBuffer->DrawIndexed(indexCount, 1, 0, 0, 0);
                 }
             });
-        }
 
-        currentCmdBuffer->EndRenderPass();
+            currentCmdBuffer->EndRenderPass();
+        }
     }
 
     // Draw scene pass
@@ -796,8 +801,6 @@ void VulkanApplication::UpdateSceneTransforms() const
     lightUbo.lightData[0].lightDirection = glm::vec4(kDirectionalLightDirection, 1.0f);
     lightUbo.lightData[0].lightColor = glm::vec4(kLightColor, 1.0f);
     lightUbo.lightData[0].lightParams.x = static_cast<float>(LIGHT_TYPE_DIRECTIONAL);
-    lightUbo.lightData[0].shadowMapAtlasRect =
-            kLightProperties[0].shadowMapAtlasRect / static_cast<float>(kShadowMapAtlasSize);
 
     // Spotlight 1
     const glm::mat4 spotLightProj1 = lightCameras_[1]->GetProjectionMatrix();
@@ -810,8 +813,6 @@ void VulkanApplication::UpdateSceneTransforms() const
     lightUbo.lightData[1].lightParams.x = static_cast<float>(LIGHT_TYPE_SPOT);
     lightUbo.lightData[1].lightParams.y = std::cos(glm::radians(kInnerCutoffAngle));
     lightUbo.lightData[1].lightParams.z = std::cos(glm::radians(kOuterCutoffAngle));
-    lightUbo.lightData[1].shadowMapAtlasRect =
-            kLightProperties[1].shadowMapAtlasRect / static_cast<float>(kShadowMapAtlasSize);
 
     // Spotlight 2
     const glm::mat4 spotLightProj2 = lightCameras_[2]->GetProjectionMatrix();
@@ -824,8 +825,6 @@ void VulkanApplication::UpdateSceneTransforms() const
     lightUbo.lightData[2].lightParams.x = static_cast<float>(LIGHT_TYPE_SPOT);
     lightUbo.lightData[2].lightParams.y = std::cos(glm::radians(kInnerCutoffAngle));
     lightUbo.lightData[2].lightParams.z = std::cos(glm::radians(kOuterCutoffAngle));
-    lightUbo.lightData[2].shadowMapAtlasRect =
-            kLightProperties[2].shadowMapAtlasRect / static_cast<float>(kShadowMapAtlasSize);
 
     // Spotlight 3
     const glm::mat4 spotLightProj3 = lightCameras_[3]->GetProjectionMatrix();
@@ -838,8 +837,6 @@ void VulkanApplication::UpdateSceneTransforms() const
     lightUbo.lightData[3].lightParams.x = static_cast<float>(LIGHT_TYPE_SPOT);
     lightUbo.lightData[3].lightParams.y = std::cos(glm::radians(kInnerCutoffAngle));
     lightUbo.lightData[3].lightParams.z = std::cos(glm::radians(kOuterCutoffAngle));
-    lightUbo.lightData[3].shadowMapAtlasRect =
-            kLightProperties[3].shadowMapAtlasRect / static_cast<float>(kShadowMapAtlasSize);
 
     resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
 }
@@ -860,4 +857,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::real_time_shadows::shadow_resource_management::shadow_map_atlas
+} // namespace examples::real_time_shadows::shadow_resource_management::layered_shadow_maps

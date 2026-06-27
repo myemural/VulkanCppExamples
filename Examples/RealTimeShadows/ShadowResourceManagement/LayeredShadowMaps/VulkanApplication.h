@@ -2,7 +2,7 @@
  * @file    VulkanApplication.h
  * @brief   This file contains VulkanApplication class declaration.
  * @author  Mustafa Yemural (myemural)
- * @date    25.06.2026
+ * @date    27.06.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -22,7 +22,7 @@
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 
-namespace examples::real_time_shadows::shadow_resource_management::shadow_map_atlas
+namespace examples::real_time_shadows::shadow_resource_management::layered_shadow_maps
 {
 class VulkanApplication final : public base::ApplicationShadowResourceManagement
 {
@@ -75,7 +75,7 @@ private:
     std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> shadowPipeline_;
 
     // Framebuffers
-    std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer> shadowMapFramebuffer_;
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> shadowMapFramebuffers_;
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanFramebuffer>> presentFramebuffers_;
 
     // Command buffers
@@ -96,4 +96,4 @@ private:
     // Asset manager
     std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 };
-} // namespace examples::real_time_shadows::shadow_resource_management::shadow_map_atlas
+} // namespace examples::real_time_shadows::shadow_resource_management::layered_shadow_maps

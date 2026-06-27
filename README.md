@@ -222,6 +222,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Cascaded Shadow Maps (CSM)](/Examples/RealTimeShadows/ShadowMapSplittingWarping/CascadedShadowMaps)
 - **[Shadow Resource Management](/Examples/RealTimeShadows/ShadowResourceManagement)**
   - [Shadow Map Atlas](/Examples/RealTimeShadows/ShadowResourceManagement/ShadowMapAtlas)
+  - [Layered Shadow Maps with Texture Arrays](/Examples/RealTimeShadows/ShadowResourceManagement/LayeredShadowMaps)
 
 ### [Physically Based Rendering](/Examples/PhysicallyBasedRendering)
 

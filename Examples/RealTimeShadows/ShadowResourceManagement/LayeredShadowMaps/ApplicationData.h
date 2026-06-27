@@ -2,7 +2,7 @@
  * @file    ApplicationData.h
  * @brief   This header file keeps user-provided application data (vertices, indices etc.).
  * @author  Mustafa Yemural (myemural)
- * @date    25.06.2026
+ * @date    27.06.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -15,7 +15,7 @@
 #include "Material.h"
 #include "MathUtils.h"
 
-namespace examples::real_time_shadows::shadow_resource_management::shadow_map_atlas
+namespace examples::real_time_shadows::shadow_resource_management::layered_shadow_maps
 {
 
 inline const std::vector enabledMaterialComponents{
@@ -42,7 +42,6 @@ inline constexpr auto kSpecularShininess = 128.0f;
 inline constexpr auto kInnerCutoffAngle = 12.5f;
 inline constexpr auto kOuterCutoffAngle = 25.0f;
 inline constexpr auto kShadowMapSize = 1024U;
-inline constexpr auto kShadowMapAtlasSize = 2048U;
 inline constexpr auto kDirectionalLightFarPlane = 50.0f;
 inline constexpr auto kNumOfLights = 4U;
 
@@ -55,14 +54,13 @@ enum LightType
 struct LightProperty
 {
     LightType type;
-    glm::vec4 shadowMapAtlasRect; // x = X, y = Y, z = Width, w = Height
 };
 
 inline constexpr std::array kLightProperties{
-    LightProperty{LIGHT_TYPE_DIRECTIONAL, glm::vec4{0.0f, 0.0f, kShadowMapSize, kShadowMapSize}},
-    LightProperty{LIGHT_TYPE_SPOT, glm::vec4{kShadowMapSize, 0.0f, kShadowMapSize, kShadowMapSize}},
-    LightProperty{LIGHT_TYPE_SPOT, glm::vec4{0.0f, kShadowMapSize, kShadowMapSize, kShadowMapSize}},
-    LightProperty{LIGHT_TYPE_SPOT, glm::vec4{kShadowMapSize, kShadowMapSize, kShadowMapSize, kShadowMapSize}},
+    LightProperty{LIGHT_TYPE_DIRECTIONAL},
+    LightProperty{LIGHT_TYPE_SPOT},
+    LightProperty{LIGHT_TYPE_SPOT},
+    LightProperty{LIGHT_TYPE_SPOT},
 };
 
 struct alignas(16) LightDataGpu
@@ -73,7 +71,6 @@ struct alignas(16) LightDataGpu
     glm::vec4 lightColor;       // xyz = Light Color
     glm::vec4 lightParams;      // x = Light Type (0: Directional, 1: Spot), y = cos(innerCutoffAngle) for spotlight,
                                 // z = cos(outerCutoffAngle) for spotlight
-    glm::vec4 shadowMapAtlasRect;
 };
 
 struct alignas(16) LightUboGpu
@@ -95,4 +92,4 @@ struct ShadowMapPushConstants
     std::uint32_t objectId;
 };
 
-} // namespace examples::real_time_shadows::shadow_resource_management::shadow_map_atlas
+} // namespace examples::real_time_shadows::shadow_resource_management::layered_shadow_maps
