@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `LayeredShadowMaps`
 3. [Mipmapped Variance Shadow Maps](/Examples/RealTimeShadows/ShadowResourceManagement/MipmappedShadowMaps)
    - `MipmappedShadowMaps`
+4. [Anisotropic Filtering with Variance Shadow Maps](/Examples/RealTimeShadows/ShadowResourceManagement/AnisotropicShadowMaps)
+   - `AnisotropicShadowMaps`
 
 ## Architecture of the Subsection
 
