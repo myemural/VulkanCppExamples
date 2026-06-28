@@ -223,6 +223,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Shadow Resource Management](/Examples/RealTimeShadows/ShadowResourceManagement)**
   - [Shadow Map Atlas](/Examples/RealTimeShadows/ShadowResourceManagement/ShadowMapAtlas)
   - [Layered Shadow Maps with Texture Arrays](/Examples/RealTimeShadows/ShadowResourceManagement/LayeredShadowMaps)
+  - [Mipmapped Variance Shadow Maps](/Examples/RealTimeShadows/ShadowResourceManagement/MipmappedShadowMaps)
 
 ### [Physically Based Rendering](/Examples/PhysicallyBasedRendering)
 

@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ShadowMapAtlas`
 2. [Layered Shadow Maps with Texture Arrays](/Examples/RealTimeShadows/ShadowResourceManagement/LayeredShadowMaps)
    - `LayeredShadowMaps`
+3. [Mipmapped Variance Shadow Maps](/Examples/RealTimeShadows/ShadowResourceManagement/MipmappedShadowMaps)
+   - `MipmappedShadowMaps`
 
 ## Architecture of the Subsection
 
