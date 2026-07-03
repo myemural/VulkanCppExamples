@@ -40,4 +40,8 @@ This section contains Vulkan examples that related to real-time shadows. Example
 
 ## [Shadow Resource Management](/Examples/RealTimeShadows/ShadowResourceManagement)
 
-TBD
+- Creating and using shadow map atlas in Vulkan
+- Creating and using layered shadow maps in Vulkan via texture arrays
+- Creating mipmapped variance shadow maps
+- Apply trilinear filtering to the mipmapped shadow map to achieve soft shadows by distances to the camera
+- Apply anisotropic filtering to the mipmapped shadow map to achieve better soft shadows by distances to the camera
