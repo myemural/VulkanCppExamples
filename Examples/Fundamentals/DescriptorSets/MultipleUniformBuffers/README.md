@@ -32,11 +32,11 @@ This example draws 4 triangles to the different areas of the screen. Then it app
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                | Status             | Notes |
+|----------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/DescriptorSets/MultipleUniformBuffers/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/DescriptorSets/MultipleUniformBuffers/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/DescriptorSets/MultipleUniformBuffers/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

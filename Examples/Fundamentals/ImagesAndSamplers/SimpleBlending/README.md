@@ -32,11 +32,11 @@ This examples draws 4 quads to the screen. Then it applies a transparent leaf te
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                 | Status             | Notes |
+|-----------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/ImagesAndSamplers/SimpleBlending/glsl)         | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/ImagesAndSamplers/SimpleBlending/hlsl)         | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/ImagesAndSamplers/SimpleBlending/slang)       | :white_check_mark: |       |
 
 ## Theoretical Background
 

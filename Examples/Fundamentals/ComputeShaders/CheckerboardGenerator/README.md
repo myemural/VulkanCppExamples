@@ -38,11 +38,11 @@ In this example, a checkerboard texture is first generated with a compute shader
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                               | Status             | Notes |
+|---------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/ComputeShaders/CheckerboardGenerator/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/ComputeShaders/CheckerboardGenerator/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/ComputeShaders/CheckerboardGenerator/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

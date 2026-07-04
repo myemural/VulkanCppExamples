@@ -34,11 +34,11 @@ This example draws a single quad to the screen and applies a texture on it.
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                         | Status             | Notes |
+|---------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/ImagesAndSamplers/TexturedQuad/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/ImagesAndSamplers/TexturedQuad/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/ImagesAndSamplers/TexturedQuad/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

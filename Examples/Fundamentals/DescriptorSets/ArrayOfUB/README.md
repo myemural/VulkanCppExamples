@@ -32,11 +32,11 @@ This example draws 4 squares to the screen. Then it applies different transforma
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                   | Status             | Notes |
+|---------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/DescriptorSets/ArrayOfUB/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/DescriptorSets/ArrayOfUB/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/DescriptorSets/ArrayOfUB/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

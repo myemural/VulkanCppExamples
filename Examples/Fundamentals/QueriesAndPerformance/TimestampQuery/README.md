@@ -53,11 +53,11 @@ Pipeline 4: 9635ns
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                               | Status             | Notes |
+|---------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/QueriesAndPerformance/TimestampQuery/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/QueriesAndPerformance/TimestampQuery/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/QueriesAndPerformance/TimestampQuery/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

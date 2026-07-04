@@ -45,11 +45,11 @@ examples::fundamentals::queries_and_performance::indirect_drawing::VulkanApplica
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                                             |
-|-------------|--------------------|---------------------------------------------------|
-| GLSL        | :white_check_mark: |                                                   |
-| HLSL        | :white_check_mark: |                                                   |
-| Slang       | :x:                | Currently it has a problem with indirect drawing. |
+| Shader Type                                                                | Status             | Notes                                             |
+|----------------------------------------------------------------------------|--------------------|---------------------------------------------------|
+| [GLSL](/Shaders/Fundamentals/QueriesAndPerformance/IndirectDrawing/glsl)   | :white_check_mark: |                                                   |
+| [HLSL](/Shaders/Fundamentals/QueriesAndPerformance/IndirectDrawing/hlsl)   | :white_check_mark: |                                                   |
+| [Slang](/Shaders/Fundamentals/QueriesAndPerformance/IndirectDrawing/slang) | :x:                | Currently it has a problem with indirect drawing. |
 
 ## Theoretical Background
 

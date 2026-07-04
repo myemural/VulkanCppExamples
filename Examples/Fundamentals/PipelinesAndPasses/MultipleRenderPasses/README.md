@@ -37,11 +37,11 @@ In this example, a plane with a cloud texture moving into the background is draw
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                  | Status             | Notes |
+|------------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/PipelinesAndPasses/MultipleRenderPasses/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/PipelinesAndPasses/MultipleRenderPasses/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/PipelinesAndPasses/MultipleRenderPasses/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

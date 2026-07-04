@@ -37,11 +37,11 @@ This examples draws a cube to the screen and rotates it constantly. But this tim
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                       | Status             | Notes |
+|-------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Drawing3D/BasicCameraControl/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Drawing3D/BasicCameraControl/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Drawing3D/BasicCameraControl/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

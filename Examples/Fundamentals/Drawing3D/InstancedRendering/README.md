@@ -36,11 +36,11 @@ This example draws 20 rotating cubes on the screen using instanced rendering met
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                       | Status             | Notes |
+|-------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Drawing3D/InstancedRendering/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Drawing3D/InstancedRendering/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Drawing3D/InstancedRendering/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

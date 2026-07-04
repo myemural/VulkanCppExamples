@@ -36,11 +36,11 @@ In this example, a full screen quad was drawn on the screen and MSAA was impleme
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                          | Status             | Notes |
+|----------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Multisampling/ExplicitResolving/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Multisampling/ExplicitResolving/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Multisampling/ExplicitResolving/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

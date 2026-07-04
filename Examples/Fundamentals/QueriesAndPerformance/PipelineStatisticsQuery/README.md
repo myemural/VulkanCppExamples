@@ -68,11 +68,11 @@ Fragment Shader Invocations: 10732
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                        | Status             | Notes |
+|------------------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/QueriesAndPerformance/PipelineStatisticsQuery/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/QueriesAndPerformance/PipelineStatisticsQuery/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/QueriesAndPerformance/PipelineStatisticsQuery/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

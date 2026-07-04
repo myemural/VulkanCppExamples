@@ -37,11 +37,11 @@ In this example, multiple cubes are drawn in the scene. Then blend constant valu
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                   | Status             | Notes |
+|-------------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/PipelinesAndPasses/DynamicStatePipelines/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/PipelinesAndPasses/DynamicStatePipelines/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/PipelinesAndPasses/DynamicStatePipelines/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

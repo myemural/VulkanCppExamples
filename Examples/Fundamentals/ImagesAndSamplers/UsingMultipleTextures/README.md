@@ -33,11 +33,11 @@ This examples draws 3 textured quads to the screen. Top quads have different tex
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                  | Status             | Notes |
+|------------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/ImagesAndSamplers/UsingMultipleTextures/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/ImagesAndSamplers/UsingMultipleTextures/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/ImagesAndSamplers/UsingMultipleTextures/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

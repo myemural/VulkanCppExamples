@@ -37,11 +37,11 @@ This example demonstrates descriptor indexing, which allows multiple textures to
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                   | Status             | Notes |
+|-------------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/QueriesAndPerformance/DescriptorIndexing/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/QueriesAndPerformance/DescriptorIndexing/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/QueriesAndPerformance/DescriptorIndexing/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

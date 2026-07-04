@@ -32,11 +32,11 @@ In this example, a Mandelbrot fractal is drawn on the screen and the zoom is mad
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                           | Status             | Notes |
+|-----------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/ComputeShaders/MandelbrotFractal/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/ComputeShaders/MandelbrotFractal/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/ComputeShaders/MandelbrotFractal/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

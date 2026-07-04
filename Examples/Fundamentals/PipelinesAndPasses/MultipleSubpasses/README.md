@@ -33,11 +33,11 @@ In this example, three cubes rotating at different speeds are drawn on the scree
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                               | Status             | Notes |
+|---------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/PipelinesAndPasses/MultipleSubpasses/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/PipelinesAndPasses/MultipleSubpasses/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/PipelinesAndPasses/MultipleSubpasses/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

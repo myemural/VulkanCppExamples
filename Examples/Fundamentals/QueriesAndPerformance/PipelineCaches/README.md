@@ -43,11 +43,11 @@ examples::fundamentals::queries_and_performance::pipeline_caches::VulkanApplicat
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                               | Status             | Notes |
+|---------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/QueriesAndPerformance/PipelineCaches/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/QueriesAndPerformance/PipelineCaches/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/QueriesAndPerformance/PipelineCaches/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

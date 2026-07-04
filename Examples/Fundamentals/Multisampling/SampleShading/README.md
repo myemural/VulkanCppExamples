@@ -36,11 +36,11 @@ In this example, cubes were drawn on the screen using the sample shader. The fir
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                      | Status             | Notes |
+|------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Multisampling/SampleShading/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Multisampling/SampleShading/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Multisampling/SampleShading/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

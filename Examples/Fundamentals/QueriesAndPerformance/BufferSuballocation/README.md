@@ -44,11 +44,11 @@ examples::fundamentals::queries_and_performance::buffer_suballocation::VulkanApp
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                    | Status             | Notes |
+|--------------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/QueriesAndPerformance/BufferSuballocation/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/QueriesAndPerformance/BufferSuballocation/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/QueriesAndPerformance/BufferSuballocation/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

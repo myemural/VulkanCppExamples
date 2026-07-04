@@ -36,11 +36,11 @@ This example draws a single triangle to the screen. Then it tries to change colo
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                             | Status             | Notes |
+|-------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/DescriptorSets/ChangingColorWithUB/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/DescriptorSets/ChangingColorWithUB/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/DescriptorSets/ChangingColorWithUB/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

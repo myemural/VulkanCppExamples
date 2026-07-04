@@ -34,11 +34,11 @@ This example draws a cube to the screen and rotates it X and Y directions simult
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                | Status             | Notes |
+|------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Drawing3D/DrawingCube/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Drawing3D/DrawingCube/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Drawing3D/DrawingCube/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

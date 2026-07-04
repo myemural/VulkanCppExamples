@@ -39,11 +39,11 @@ This examples draws two planes and two cubes to the screen. Then applies depth t
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                           | Status             | Notes |
+|-----------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Drawing3D/DepthTestingOperations/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Drawing3D/DepthTestingOperations/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Drawing3D/DepthTestingOperations/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

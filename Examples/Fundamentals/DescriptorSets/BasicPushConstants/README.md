@@ -36,11 +36,11 @@ This example demonstrate the basic push constants usage with changing color of t
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                            | Status             | Notes |
+|------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/DescriptorSets/BasicPushConstants/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/DescriptorSets/BasicPushConstants/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/DescriptorSets/BasicPushConstants/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

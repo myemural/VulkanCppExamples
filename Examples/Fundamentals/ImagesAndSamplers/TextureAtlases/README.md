@@ -32,11 +32,11 @@ This example draws 4 quads to the screen. Then it applies different textures fro
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                 | Status             | Notes |
+|-----------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/ImagesAndSamplers/TextureAtlases/glsl)         | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/ImagesAndSamplers/TextureAtlases/hlsl)         | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/ImagesAndSamplers/TextureAtlases/slang)       | :white_check_mark: |       |
 
 ## Theoretical Background
 

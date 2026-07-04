@@ -36,11 +36,11 @@ In this example, a quad is placed on the right side of the screen and the render
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                | Status             | Notes |
+|----------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/PipelinesAndPasses/OffscreenRendering/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/PipelinesAndPasses/OffscreenRendering/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/PipelinesAndPasses/OffscreenRendering/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

@@ -38,11 +38,11 @@ In this example, outlines are drawn around objects using multiple pipelines and 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                 | Status             | Notes |
+|-----------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/PipelinesAndPasses/BasicStencilTesting/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/PipelinesAndPasses/BasicStencilTesting/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/PipelinesAndPasses/BasicStencilTesting/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

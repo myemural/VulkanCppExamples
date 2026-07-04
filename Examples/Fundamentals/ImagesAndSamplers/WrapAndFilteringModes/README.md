@@ -32,11 +32,11 @@ This example draws 4 quads to the screen. Then it applies them different sampler
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                  | Status             | Notes |
+|------------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/ImagesAndSamplers/WrapAndFilteringModes/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/ImagesAndSamplers/WrapAndFilteringModes/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/ImagesAndSamplers/WrapAndFilteringModes/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

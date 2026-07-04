@@ -32,11 +32,11 @@ In this example, there is a constantly rotating scissor rectangle on the screen,
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                                  | Status             | Notes |
+|------------------------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/SwapChainsAndViewports/ScissorAnimation/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/SwapChainsAndViewports/ScissorAnimation/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/SwapChainsAndViewports/ScissorAnimation/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

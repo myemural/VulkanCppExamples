@@ -37,11 +37,11 @@ In this example, MSAA is activated based on the maximum sample number supported 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                   | Status             | Notes |
+|---------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Multisampling/MsaaBasics/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Multisampling/MsaaBasics/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Multisampling/MsaaBasics/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 

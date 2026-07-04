@@ -38,11 +38,11 @@ This example draws 10 static cubes on the screen using the user-specified cull m
 
 ## Shader Status
 
-| Shader Type | Status             | Notes |
-|-------------|--------------------|-------|
-| GLSL        | :white_check_mark: |       |
-| HLSL        | :white_check_mark: |       |
-| Slang       | :white_check_mark: |       |
+| Shader Type                                                | Status             | Notes |
+|------------------------------------------------------------|--------------------|-------|
+| [GLSL](/Shaders/Fundamentals/Drawing3D/FaceCulling/glsl)   | :white_check_mark: |       |
+| [HLSL](/Shaders/Fundamentals/Drawing3D/FaceCulling/hlsl)   | :white_check_mark: |       |
+| [Slang](/Shaders/Fundamentals/Drawing3D/FaceCulling/slang) | :white_check_mark: |       |
 
 ## Theoretical Background
 
