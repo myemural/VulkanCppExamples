@@ -18,7 +18,7 @@ using namespace common::window_wrapper;
 
 void ApplicationDrawing3D::SetWindow(const std::shared_ptr<Window>& window) { window_ = window; }
 
-void ApplicationDrawing3D::PreUpdate() { window_->PollEvents(); }
+void ApplicationDrawing3D::PreUpdate() { Window::PollEvents(); }
 
 void ApplicationDrawing3D::PostUpdate() { window_->SwapBuffers(); }
 

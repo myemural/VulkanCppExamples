@@ -19,7 +19,7 @@ using namespace common::window_wrapper;
 
 void ApplicationImagesAndSamplers::SetWindow(const std::shared_ptr<Window>& window) { window_ = window; }
 
-void ApplicationImagesAndSamplers::PreUpdate() { window_->PollEvents(); }
+void ApplicationImagesAndSamplers::PreUpdate() { Window::PollEvents(); }
 
 void ApplicationImagesAndSamplers::PostUpdate() { window_->SwapBuffers(); }
 

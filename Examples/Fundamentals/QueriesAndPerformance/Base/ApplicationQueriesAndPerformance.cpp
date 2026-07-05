@@ -8,7 +8,6 @@
 
 #include "AppCommonConfig.h"
 #include "TimeUtils.h"
-#include "VulkanCommandBuffer.h"
 #include "VulkanInstance.h"
 
 namespace examples::fundamentals::queries_and_performance::base
@@ -27,7 +26,7 @@ void ApplicationQueriesAndPerformance::PreUpdate()
     deltaTime_ = currentFrame - lastFrame_;
     lastFrame_ = currentFrame;
 
-    window_->PollEvents();
+    Window::PollEvents();
 }
 
 void ApplicationQueriesAndPerformance::PostUpdate() { window_->SwapBuffers(); }

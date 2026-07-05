@@ -8,7 +8,6 @@
 
 #include "AppCommonConfig.h"
 #include "TimeUtils.h"
-#include "VulkanCommandBuffer.h"
 #include "VulkanInstance.h"
 
 namespace examples::fundamentals::model_loading::base
@@ -27,7 +26,7 @@ void ApplicationModelLoading::PreUpdate()
     deltaTime_ = currentFrame - lastFrame_;
     lastFrame_ = currentFrame;
 
-    window_->PollEvents();
+    Window::PollEvents();
 }
 
 void ApplicationModelLoading::PostUpdate() { window_->SwapBuffers(); }

@@ -17,7 +17,7 @@ using namespace common::window_wrapper;
 
 void ApplicationDescriptorSets::SetWindow(const std::shared_ptr<Window>& window) { window_ = window; }
 
-void ApplicationDescriptorSets::PreUpdate() { window_->PollEvents(); }
+void ApplicationDescriptorSets::PreUpdate() { Window::PollEvents(); }
 
 void ApplicationDescriptorSets::PostUpdate() { window_->SwapBuffers(); }
 

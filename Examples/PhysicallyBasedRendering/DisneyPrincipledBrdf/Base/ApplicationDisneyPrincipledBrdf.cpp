@@ -8,7 +8,6 @@
 
 #include "AppCommonConfig.h"
 #include "TimeUtils.h"
-#include "VulkanCommandBuffer.h"
 #include "VulkanInstance.h"
 
 namespace examples::physically_based_rendering::disney_principled_brdf::base

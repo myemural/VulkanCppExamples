@@ -8,7 +8,6 @@
 
 #include "AppCommonConfig.h"
 #include "TimeUtils.h"
-#include "VulkanCommandBuffer.h"
 #include "VulkanInstance.h"
 
 namespace examples::fundamentals::swap_chains_and_viewports::base
@@ -27,7 +26,7 @@ void ApplicationSwapChainsAndViewports::PreUpdate()
     deltaTime_ = currentFrame - lastFrame_;
     lastFrame_ = currentFrame;
 
-    window_->PollEvents();
+    Window::PollEvents();
 }
 
 void ApplicationSwapChainsAndViewports::PostUpdate() { window_->SwapBuffers(); }

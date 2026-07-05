@@ -8,7 +8,6 @@
 
 #include "AppCommonConfig.h"
 #include "TimeUtils.h"
-#include "VulkanCommandBuffer.h"
 #include "VulkanInstance.h"
 
 namespace examples::real_time_lighting::light_sources::base
@@ -37,8 +36,8 @@ bool ApplicationLightSoruces::Init()
         resources_ = std::make_unique<ResourceManager>(physicalDevice_, device_);
 
         depthImageFormat_ = physicalDevice_->FindSupportedFormat(
-            {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
-            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+                {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+                VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';

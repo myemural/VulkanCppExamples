@@ -8,7 +8,6 @@
 
 #include "AppCommonConfig.h"
 #include "TimeUtils.h"
-#include "VulkanCommandBuffer.h"
 #include "VulkanInstance.h"
 
 namespace examples::fundamentals::compute_shaders::base
@@ -27,7 +26,7 @@ void ApplicationComputeShaders::PreUpdate()
     deltaTime_ = currentFrame - lastFrame_;
     lastFrame_ = currentFrame;
 
-    window_->PollEvents();
+    Window::PollEvents();
 }
 
 void ApplicationComputeShaders::PostUpdate() { window_->SwapBuffers(); }

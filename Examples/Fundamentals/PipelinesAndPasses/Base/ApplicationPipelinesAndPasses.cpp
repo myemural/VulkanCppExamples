@@ -8,7 +8,6 @@
 
 #include "AppCommonConfig.h"
 #include "TimeUtils.h"
-#include "VulkanCommandBuffer.h"
 #include "VulkanInstance.h"
 
 namespace examples::fundamentals::pipelines_and_passes::base
@@ -27,7 +26,7 @@ void ApplicationPipelinesAndPasses::PreUpdate()
     deltaTime_ = currentFrame - lastFrame_;
     lastFrame_ = currentFrame;
 
-    window_->PollEvents();
+    Window::PollEvents();
 }
 
 void ApplicationPipelinesAndPasses::PostUpdate() { window_->SwapBuffers(); }
