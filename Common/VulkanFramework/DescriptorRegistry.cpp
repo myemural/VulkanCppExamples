@@ -49,7 +49,8 @@ DescriptorRegistry& DescriptorRegistry::CreateSet(const std::string& descriptorS
 {
     const auto descSets = descPool_->CreateDescriptorSets({descriptorSetLayouts_[layoutName]});
     if (descSets.empty()) {
-        throw std::runtime_error("Failed to create descriptor sets!");
+        throw std::runtime_error("Failed to create \"" + descriptorSetName + "\"" + " descriptor set with \"" +
+                                 layoutName + "\" layout!");
     }
     descriptorSets_[descriptorSetName] = descSets.front();
 
@@ -77,8 +78,19 @@ std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> DescriptorRegistry::GetDesc
 
 void DescriptorRegistry::DeleteDescriptorLayout(const std::string& layoutName)
 {
+    if (!descriptorSetLayouts_.contains(layoutName)) {
+        throw std::runtime_error("Cannot be found descriptor set layout \"" + layoutName + "\" for delete!");
+    }
+
     descriptorSetLayouts_.erase(layoutName);
 }
 
-void DescriptorRegistry::DeleteDescriptorSet(const std::string& setName) { descriptorSets_.erase(setName); }
+void DescriptorRegistry::DeleteDescriptorSet(const std::string& setName)
+{
+    if (!descriptorSets_.contains(setName)) {
+        throw std::runtime_error("Cannot be found descriptor set \"" + setName + "\" for delete!");
+    }
+
+    descriptorSets_.erase(setName);
+}
 } // namespace common::vulkan_framework
