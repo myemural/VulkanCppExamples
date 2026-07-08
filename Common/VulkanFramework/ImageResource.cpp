@@ -168,6 +168,13 @@ void ImageResource::CopyDataFromBuffer(const std::shared_ptr<vulkan_wrapper::Vul
     queue->WaitIdle();
 }
 
-void ImageResource::DeleteImageView(const std::string& imageViewName) { imageViews_.erase(imageViewName); }
+void ImageResource::DeleteImageView(const std::string& imageViewName)
+{
+    if (!imageViews_.contains(imageViewName)) {
+        throw std::runtime_error("Cannot be found image view \"" + imageViewName + "\" for delete!");
+    }
+
+    imageViews_.erase(imageViewName);
+}
 
 } // namespace common::vulkan_framework
