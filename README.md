@@ -15,6 +15,7 @@ This repository contains Vulkan examples written in modern C++20, structured in 
   - [Real-Time Lighting](#real-time-lighting)
   - [Real-Time Shadows](#real-time-shadows)
   - [Physically Based Rendering](#physically-based-rendering)
+  - [Advanced Shader Programming](#advanced-shader-programming)
 - [Environment Support](#environment-support)
 - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
@@ -253,6 +254,11 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Clear Coat Layer in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfClearCoat)
   - [Sheen Layer in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfSheen)
   - [Anisotropic Specular in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfAnisotropy)
+
+### [Advanced Shader Programming](/Examples/AdvancedShaderProgramming)
+
+- **[Geometry Shaders](/Examples/AdvancedShaderProgramming/GeometryShaders)**
+  - [Simple Primitive Generation](/Examples/AdvancedShaderProgramming/GeometryShaders/SimplePrimitiveGeneration)
 
 ## Environment Support
 

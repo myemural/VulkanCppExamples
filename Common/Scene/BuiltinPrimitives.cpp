@@ -96,6 +96,8 @@ std::string GetBuiltinMeshName(const BuiltinMeshType& builtinMeshType)
             return CylinderPrimitive::kCylinderMeshName;
         case BuiltinMeshType::PLANE:
             return PlanePrimitive::kPlaneMeshName;
+        case BuiltinMeshType::POINT:
+            return PointPrimitive::kPointMeshName;
     }
 
     throw std::invalid_argument("Invalid builtin mesh type!");
@@ -111,6 +113,18 @@ void BuiltinPrimitive::CreateMeshPrimitive()
 }
 
 MeshPrimitive BuiltinPrimitive::GetMeshPrimitive() const { return mesh_; }
+
+PointPrimitive::PointPrimitive()
+{
+    mesh_.name = kPointMeshName;
+    positions_ = CreatePointPositions();
+
+    BuiltinPrimitive::CreateMeshPrimitive();
+}
+std::vector<glm::vec3> PointPrimitive::CreatePointPositions()
+{
+    return {{0.0f, 0.0f, 0.0f}};
+}
 
 CubePrimitive::CubePrimitive(const float size)
 {

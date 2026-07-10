@@ -136,6 +136,11 @@ MeshGpu SceneGpuBufferStorage::AllocateBuiltinMesh(const BuiltinMeshType& builti
             meshGpu = AllocateMesh(planePrimitive.GetMeshPrimitive());
             break;
         }
+        case BuiltinMeshType::POINT: {
+            const auto pointPrimitive = PointPrimitive{};
+            meshGpu = AllocateMesh(pointPrimitive.GetMeshPrimitive());
+            break;
+        }
     }
 
     return meshGpu;

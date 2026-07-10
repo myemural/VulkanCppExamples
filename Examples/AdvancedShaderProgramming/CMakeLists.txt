@@ -1,0 +1,3 @@
+set(CATEGORY_NAME AdvancedShaderProgramming)
+
+add_subdirectory(GeometryShaders)

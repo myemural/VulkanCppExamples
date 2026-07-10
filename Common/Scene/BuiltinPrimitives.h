@@ -21,7 +21,8 @@ enum class BuiltinMeshType
     SPHERE,
     CONE,
     CYLINDER,
-    PLANE
+    PLANE,
+    POINT
 };
 
 std::string GetBuiltinMeshName(const BuiltinMeshType& builtinMeshType);
@@ -42,6 +43,17 @@ protected:
     std::vector<glm::vec3> normals_;
     std::vector<glm::vec4> tangents_;
     std::vector<std::uint16_t> indices_;
+};
+
+class PointPrimitive : public BuiltinPrimitive
+{
+public:
+    explicit PointPrimitive();
+
+    static constexpr auto kPointMeshName = "builtin_point";
+
+private:
+    static std::vector<glm::vec3> CreatePointPositions();
 };
 
 class CubePrimitive : public BuiltinPrimitive
