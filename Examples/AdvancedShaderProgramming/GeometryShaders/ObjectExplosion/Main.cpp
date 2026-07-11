@@ -1,9 +1,9 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, points drawn on the scene in the shape of a sine wave are rendered by placing cubes on
- *          them using a geometry shader, demonstrating the primitive generation mechanism of the geometry shader.
+ * @brief   In this example, the 3D model rendered in the scene is broken down and reassembled over time repeatedly
+ *          using a geometry shader, creating a simple explosion effect.
  * @author  Mustafa Yemural (myemural)
- * @date    09.07.2026
+ * @date    11.07.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::advanced_shader_programming::geometry_shaders::simple_primitive_generation;
+using namespace examples::advanced_shader_programming::geometry_shaders::object_explosion;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -74,6 +74,7 @@ int main()
         return -1;
     }
     params.Set<std::vector<std::string>>(VulkanParams::InstanceExtensions, Window::GetVulkanInstanceExtensions());
+    params.Set<std::uint32_t>(VulkanParams::VulkanApiVersion, VK_API_VERSION_1_2);
 
     // Init Vulkan application
     VulkanApplication app{std::move(params)};

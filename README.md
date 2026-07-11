@@ -259,6 +259,8 @@ Every example has its own directory and CMake target. You can build what you wan
 
 - **[Geometry Shaders](/Examples/AdvancedShaderProgramming/GeometryShaders)**
   - [Simple Primitive Generation](/Examples/AdvancedShaderProgramming/GeometryShaders/SimplePrimitiveGeneration)
+  - [Object Explosion via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/ObjectExplosion)
+  - [Normal Vector Visualization](/Examples/AdvancedShaderProgramming/GeometryShaders/NormalVectorVisualization)
 
 ## Environment Support
 
