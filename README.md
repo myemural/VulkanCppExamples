@@ -261,6 +261,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Simple Primitive Generation](/Examples/AdvancedShaderProgramming/GeometryShaders/SimplePrimitiveGeneration)
   - [Object Explosion via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/ObjectExplosion)
   - [Normal Vector Visualization](/Examples/AdvancedShaderProgramming/GeometryShaders/NormalVectorVisualization)
+  - [Wireframe Overlay Visualization](/Examples/AdvancedShaderProgramming/GeometryShaders/WireframeOverlayVisualization)
 
 ## Environment Support
 

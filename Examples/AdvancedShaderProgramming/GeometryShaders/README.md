@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ObjectExplosion`
 3. [Normal Vector Visualization](/Examples/AdvancedShaderProgramming/GeometryShaders/NormalVectorVisualization)
    - `NormalVectorVisualization`
+4. [Wireframe Overlay Visualization](/Examples/AdvancedShaderProgramming/GeometryShaders/WireframeOverlayVisualization)
+   - `WireframeOverlayVisualization`
 
 ## Architecture of the Subsection
 
