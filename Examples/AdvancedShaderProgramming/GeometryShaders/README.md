@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `WireframeOverlayVisualization`
 5. [Single-Pass Cubemap Rendering](/Examples/AdvancedShaderProgramming/GeometryShaders/SinglePassCubemapRendering)
    - `SinglePassCubemapRendering`
+6. [Viewport Arrays via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/ViewportArraysGeometry)
+   - `ViewportArraysGeometry`
 
 ## Architecture of the Subsection
 

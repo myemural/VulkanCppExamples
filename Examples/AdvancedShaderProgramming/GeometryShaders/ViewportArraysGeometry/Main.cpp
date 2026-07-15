@@ -1,9 +1,9 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, the cubemap created for omnidirectional shadow mapping on the scene is generated in a
- *          single-pass using a geometry shader.
+ * @brief   In this example, the screen is divided into 4 viewports, and the scene is drawn with different lighting in
+ *          each viewport. The viewport array is rendered using a geometry shader.
  * @author  Mustafa Yemural (myemural)
- * @date    13.07.2026
+ * @date    15.07.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::advanced_shader_programming::geometry_shaders::single_pass_cubemap_rendering;
+using namespace examples::advanced_shader_programming::geometry_shaders::viewport_arrays_geometry;
 
 inline ParameterSchema CreateParameterSchema()
 {
