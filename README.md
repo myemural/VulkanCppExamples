@@ -264,6 +264,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Wireframe Overlay Visualization](/Examples/AdvancedShaderProgramming/GeometryShaders/WireframeOverlayVisualization)
   - [Single-Pass Cubemap Rendering](/Examples/AdvancedShaderProgramming/GeometryShaders/SinglePassCubemapRendering)
   - [Viewport Arrays via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/ViewportArraysGeometry)
+  - [Billboarding with Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/BillboardingGeometryShader)
 
 ## Environment Support
 

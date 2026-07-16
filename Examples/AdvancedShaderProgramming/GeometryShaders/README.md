@@ -18,6 +18,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `SinglePassCubemapRendering`
 6. [Viewport Arrays via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/ViewportArraysGeometry)
    - `ViewportArraysGeometry`
+7. [Billboarding with Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/BillboardingGeometryShader)
+   - `BillboardingGeometryShader`
 
 ## Architecture of the Subsection
 
