@@ -265,6 +265,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Single-Pass Cubemap Rendering](/Examples/AdvancedShaderProgramming/GeometryShaders/SinglePassCubemapRendering)
   - [Viewport Arrays via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/ViewportArraysGeometry)
   - [Billboarding with Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/BillboardingGeometryShader)
+  - [Grass Generation via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/GrassGenerationGeometry)
 
 ## Environment Support
 

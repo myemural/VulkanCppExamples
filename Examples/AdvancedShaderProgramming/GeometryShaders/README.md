@@ -20,6 +20,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ViewportArraysGeometry`
 7. [Billboarding with Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/BillboardingGeometryShader)
    - `BillboardingGeometryShader`
+8. [Grass Generation via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/GrassGenerationGeometry)
+   - `GrassGenerationGeometry`
 
 ## Architecture of the Subsection
 
