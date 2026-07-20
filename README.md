@@ -266,6 +266,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Viewport Arrays via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/ViewportArraysGeometry)
   - [Billboarding with Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/BillboardingGeometryShader)
   - [Grass Generation via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/GrassGenerationGeometry)
+- **[Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders)**
+  - [Basic Triangle Tessellation](/Examples/AdvancedShaderProgramming/TessellationShaders/BasicTriangleTessellation)
 
 ## Environment Support
 

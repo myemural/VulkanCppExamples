@@ -1,3 +1,4 @@
 set(CATEGORY_NAME AdvancedShaderProgramming)
 
 add_subdirectory(GeometryShaders)
+add_subdirectory(TessellationShaders)

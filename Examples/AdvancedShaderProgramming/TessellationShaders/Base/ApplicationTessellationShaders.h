@@ -1,9 +1,9 @@
 /**
- * @file    ApplicationGeometryShaders.h
- * @brief   This file contains Vulkan application base class implementation for examples that in "GeometryShaders"
+ * @file    ApplicationTessellationShaders.h
+ * @brief   This file contains Vulkan application base class implementation for examples that in "TessellationShaders"
  *          subcategory.
  * @author  Mustafa Yemural (myemural)
- * @date    09.07.2026
+ * @date    20.07.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -28,15 +28,15 @@
 #include "VulkanSwapChain.h"
 #include "Window.h"
 
-namespace examples::advanced_shader_programming::geometry_shaders::base
+namespace examples::advanced_shader_programming::tessellation_shaders::base
 {
 
-class ApplicationGeometryShaders : public common::vulkan_framework::VulkanApplicationBase
+class ApplicationTessellationShaders : public common::vulkan_framework::VulkanApplicationBase
 {
 public:
     using VulkanApplicationBase::VulkanApplicationBase;
 
-    ~ApplicationGeometryShaders() override = default;
+    ~ApplicationTessellationShaders() override = default;
 
     void SetWindow(const std::shared_ptr<common::window_wrapper::Window>& window);
 
@@ -99,4 +99,4 @@ protected:
     // Current frame index
     std::uint32_t currentFrameIndex_ = 0;
 };
-} // namespace examples::advanced_shader_programming::geometry_shaders::base
+} // namespace examples::advanced_shader_programming::tessellation_shaders::base
