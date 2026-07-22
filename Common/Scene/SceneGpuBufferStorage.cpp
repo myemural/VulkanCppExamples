@@ -132,7 +132,8 @@ MeshGpu SceneGpuBufferStorage::AllocateBuiltinMesh(const BuiltinMeshType& builti
             break;
         }
         case BuiltinMeshType::PLANE: {
-            const auto planePrimitive = PlanePrimitive{1.0f};
+            const auto planePrimitive =
+                    PlanePrimitive{1.0f, sceneConfig_.primitiveStackCount, sceneConfig_.primitiveSectorCount};
             meshGpu = AllocateMesh(planePrimitive.GetMeshPrimitive());
             break;
         }

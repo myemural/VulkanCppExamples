@@ -121,10 +121,7 @@ PointPrimitive::PointPrimitive()
 
     BuiltinPrimitive::CreateMeshPrimitive();
 }
-std::vector<glm::vec3> PointPrimitive::CreatePointPositions()
-{
-    return {{0.0f, 0.0f, 0.0f}};
-}
+std::vector<glm::vec3> PointPrimitive::CreatePointPositions() { return {{0.0f, 0.0f, 0.0f}}; }
 
 CubePrimitive::CubePrimitive(const float size)
 {
@@ -800,69 +797,94 @@ std::vector<uint16_t> CylinderPrimitive::CreateCylinderIndices(const std::uint32
     return indices;
 }
 
-PlanePrimitive::PlanePrimitive(const float size)
+PlanePrimitive::PlanePrimitive(const float size, const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     mesh_.name = kPlaneMeshName;
-    positions_ = CreatePlanePositions(size);
-    uvs_ = CreatePlaneUVs();
-    normals_ = CreatePlaneNormals();
-    tangents_ = CreatePlaneTangents();
-    indices_ = CreatePlaneIndices();
+    positions_ = CreatePlanePositions(size, stackCount, sectorCount);
+    uvs_ = CreatePlaneUVs(stackCount, sectorCount);
+    normals_ = CreatePlaneNormals(stackCount, sectorCount);
+    tangents_ = CreatePlaneTangents(stackCount, sectorCount);
+    indices_ = CreatePlaneIndices(stackCount, sectorCount);
 
     BuiltinPrimitive::CreateMeshPrimitive();
 }
 
-std::vector<glm::vec3> PlanePrimitive::CreatePlanePositions(const float size)
+std::vector<glm::vec3>
+PlanePrimitive::CreatePlanePositions(const float size, const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec3> positions;
-    positions.reserve(4);
+    positions.reserve((stackCount + 1) * (sectorCount + 1));
 
     const float half = size * 0.5f;
 
-    positions.emplace_back(-half, 0.0f, -half);
-    positions.emplace_back(half, 0.0f, -half);
-    positions.emplace_back(half, 0.0f, half);
-    positions.emplace_back(-half, 0.0f, half);
+    for (std::uint32_t i = 0; i <= stackCount; ++i) {
+        const float z = -half + size * static_cast<float>(i) / static_cast<float>(stackCount);
+
+        for (std::uint32_t j = 0; j <= sectorCount; ++j) {
+            const float x = -half + size * static_cast<float>(j) / static_cast<float>(sectorCount);
+            positions.emplace_back(x, 0.0f, z);
+        }
+    }
 
     return positions;
 }
 
-std::vector<glm::vec2> PlanePrimitive::CreatePlaneUVs()
+std::vector<glm::vec2> PlanePrimitive::CreatePlaneUVs(const std::uint32_t stackCount, const std::uint32_t sectorCount)
 {
     std::vector<glm::vec2> uvs;
-    uvs.reserve(4);
+    uvs.reserve((stackCount + 1) * (sectorCount + 1));
 
-    uvs.emplace_back(0.0f, 0.0f);
-    uvs.emplace_back(1.0f, 0.0f);
-    uvs.emplace_back(1.0f, 1.0f);
-    uvs.emplace_back(0.0f, 1.0f);
+    for (std::uint32_t i = 0; i <= stackCount; ++i) {
+        const float v = static_cast<float>(i) / static_cast<float>(stackCount);
+
+        for (std::uint32_t j = 0; j <= sectorCount; ++j) {
+            const float u = static_cast<float>(j) / static_cast<float>(sectorCount);
+            uvs.emplace_back(u, v);
+        }
+    }
 
     return uvs;
 }
 
-std::vector<glm::vec3> PlanePrimitive::CreatePlaneNormals()
+std::vector<glm::vec3> PlanePrimitive::CreatePlaneNormals(const std::uint32_t stackCount,
+                                                          const std::uint32_t sectorCount)
 {
-    std::vector<glm::vec3> normals;
-    normals.reserve(4);
+    const std::size_t vertexCount = (stackCount + 1) * (sectorCount + 1);
 
-    normals.emplace_back(0.0f, 1.0f, 0.0f);
-    normals.emplace_back(0.0f, 1.0f, 0.0f);
-    normals.emplace_back(0.0f, 1.0f, 0.0f);
-    normals.emplace_back(0.0f, 1.0f, 0.0f);
-
-    return normals;
+    return std::vector<glm::vec3>(vertexCount, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-std::vector<glm::vec4> PlanePrimitive::CreatePlaneTangents()
+std::vector<glm::vec4> PlanePrimitive::CreatePlaneTangents(const std::uint32_t stackCount,
+                                                           const std::uint32_t sectorCount)
 {
-    return {
-        {1.0f, 0.0f, 0.0f, -1.0f},
-        {1.0f, 0.0f, 0.0f, -1.0f},
-        {1.0f, 0.0f, 0.0f, -1.0f},
-        {1.0f, 0.0f, 0.0f, -1.0f},
-    };
+    const std::size_t vertexCount = (stackCount + 1) * (sectorCount + 1);
+
+    return std::vector<glm::vec4>(vertexCount, glm::vec4(1.0f, 0.0f, 0.0f, -1.0f));
 }
 
-std::vector<std::uint16_t> PlanePrimitive::CreatePlaneIndices() { return {0, 1, 2, 2, 3, 0}; }
+std::vector<std::uint16_t> PlanePrimitive::CreatePlaneIndices(const std::uint32_t stackCount,
+                                                              const std::uint32_t sectorCount)
+{
+    std::vector<std::uint16_t> indices;
+    const std::uint32_t ring = sectorCount + 1;
+    indices.reserve(stackCount * sectorCount * 6);
+
+    for (std::uint32_t i = 0; i < stackCount; ++i) {
+        const std::uint32_t k1 = i * ring;
+        const std::uint32_t k2 = k1 + ring;
+
+        for (std::uint32_t j = 0; j < sectorCount; ++j) {
+            indices.push_back(static_cast<std::uint16_t>(k1 + j));
+            indices.push_back(static_cast<std::uint16_t>(k2 + j));
+            indices.push_back(static_cast<std::uint16_t>(k1 + j + 1));
+
+            indices.push_back(static_cast<std::uint16_t>(k1 + j + 1));
+            indices.push_back(static_cast<std::uint16_t>(k2 + j));
+            indices.push_back(static_cast<std::uint16_t>(k2 + j + 1));
+        }
+    }
+
+    return indices;
+}
 
 } // namespace common::scene

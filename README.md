@@ -268,6 +268,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Grass Generation via Geometry Shader](/Examples/AdvancedShaderProgramming/GeometryShaders/GrassGenerationGeometry)
 - **[Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders)**
   - [Basic Triangle Tessellation](/Examples/AdvancedShaderProgramming/TessellationShaders/BasicTriangleTessellation)
+  - [Displacement Mapping with Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/DisplacementMappingTessellation)
 
 ## Environment Support
 

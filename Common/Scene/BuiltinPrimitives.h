@@ -138,20 +138,20 @@ private:
 class PlanePrimitive : public BuiltinPrimitive
 {
 public:
-    explicit PlanePrimitive(float size);
+    explicit PlanePrimitive(float size, std::uint32_t stackCount = 1, std::uint32_t sectorCount = 1);
 
     static constexpr auto kPlaneMeshName = "builtin_plane";
 
 private:
-    static std::vector<glm::vec3> CreatePlanePositions(float size);
+    static std::vector<glm::vec3> CreatePlanePositions(float size, std::uint32_t stackCount, std::uint32_t sectorCount);
 
-    static std::vector<glm::vec2> CreatePlaneUVs();
+    static std::vector<glm::vec2> CreatePlaneUVs(std::uint32_t stackCount, std::uint32_t sectorCount);
 
-    static std::vector<glm::vec3> CreatePlaneNormals();
+    static std::vector<glm::vec3> CreatePlaneNormals(std::uint32_t stackCount, std::uint32_t sectorCount);
 
-    static std::vector<glm::vec4> CreatePlaneTangents();
+    static std::vector<glm::vec4> CreatePlaneTangents(std::uint32_t stackCount, std::uint32_t sectorCount);
 
-    static std::vector<std::uint16_t> CreatePlaneIndices();
+    static std::vector<std::uint16_t> CreatePlaneIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 };
 
 } // namespace common::scene
