@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(BasicTriangleTessellation)
 add_subdirectory(DisplacementMappingTessellation)
+add_subdirectory(TerrainHeightmapTessellation)

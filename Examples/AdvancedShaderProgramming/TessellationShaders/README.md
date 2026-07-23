@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `BasicTriangleTessellation`
 2. [Displacement Mapping with Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/DisplacementMappingTessellation)
    - `DisplacementMappingTessellation`
+3. [Terrain Creation via Heightmap using Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/TerrainHeightmapTessellation)
+   - `TerrainHeightmapTessellation`
 
 ## Architecture of the Subsection
 
