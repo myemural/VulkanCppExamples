@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `DisplacementMappingTessellation`
 3. [Terrain Creation via Heightmap using Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/TerrainHeightmapTessellation)
    - `TerrainHeightmapTessellation`
+4. [Cubic Bézier Curve with Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/CubicBezierCurveTessellation)
+   - `CubicBezierCurveTessellation`
 
 ## Architecture of the Subsection
 
