@@ -114,6 +114,8 @@ VkSurfaceKHR Window::CreateVulkanSurface(VkInstance instance) const
     return surface;
 }
 
+void Window::EnableCursor() const { glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL); }
+
 void Window::DisableCursor() const { glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
 
 bool Window::CheckWindowCloseFlag() const { return static_cast<bool>(glfwWindowShouldClose(window_)); }

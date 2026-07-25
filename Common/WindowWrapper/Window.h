@@ -83,6 +83,11 @@ public:
     VkSurfaceKHR CreateVulkanSurface(VkInstance instance) const;
 
     /**
+     * @brief Enables cursor on the window.
+     */
+    void EnableCursor() const;
+
+    /**
      * @brief Disables cursor on the window.
      */
     void DisableCursor() const;
