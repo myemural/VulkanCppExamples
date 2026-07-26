@@ -29,6 +29,7 @@ namespace
             case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT:
                 return ComponentType::UNSIGNED_SHORT;
             case TINYGLTF_COMPONENT_TYPE_INT:
+            case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT:
                 return ComponentType::UNSIGNED_INT;
             case TINYGLTF_COMPONENT_TYPE_FLOAT:
             default:
@@ -172,9 +173,11 @@ SceneObjectBuilder GltfToSceneObjectConverter::CreateSceneObjectFromPrimitive(co
     sceneObjectBuilder.WithMesh(meshPrimitive);
 
     // Process material
-    const auto& currentGltfMaterial = gltfModel.materials[primitive.material];
-    const auto material = CreateMaterial(gltfModel, currentGltfMaterial);
-    sceneObjectBuilder.WithMaterial(material);
+    if (primitive.material != -1) {
+        const auto& currentGltfMaterial = gltfModel.materials[primitive.material];
+        const auto material = CreateMaterial(gltfModel, currentGltfMaterial);
+        sceneObjectBuilder.WithMaterial(material);
+    }
 
     return sceneObjectBuilder;
 }

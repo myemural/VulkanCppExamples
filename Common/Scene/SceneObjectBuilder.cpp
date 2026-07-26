@@ -17,6 +17,9 @@ SceneObjectBuilder::SceneObjectBuilder(Scene& scene, const std::string& name) : 
 SceneObjectBuilder& SceneObjectBuilder::WithTag(const std::string& tag)
 {
     sceneObject_->SetTag(tag);
+    for (auto& childBuilder: childBuilders_) {
+        childBuilder.WithTag(tag);
+    }
     return *this;
 }
 

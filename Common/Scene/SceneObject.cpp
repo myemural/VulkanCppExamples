@@ -17,7 +17,13 @@ SceneObject::SceneObject(Scene& scene, std::string name, const std::uint32_t obj
     UpdateTransformGpu();
 }
 
-void SceneObject::SetTag(const std::string& tag) { tag_ = tag; }
+void SceneObject::SetTag(const std::string& tag)
+{
+    tag_ = tag;
+    for (const auto& child: children_) {
+        child->SetTag(tag);
+    }
+}
 
 void SceneObject::SetPosition(const glm::vec3& position)
 {

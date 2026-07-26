@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `CubicBezierCurveTessellation`
 5. [Bézier Surface with Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/BezierSurfaceTessellation)
    - `BezierSurfaceTessellation`
+6. [Model Tessellation with Curved PN Triangles](/Examples/AdvancedShaderProgramming/TessellationShaders/CurvedPnTrianglesTessellation)
+   - `CurvedPnTrianglesTessellation`
 
 ## Architecture of the Subsection
 

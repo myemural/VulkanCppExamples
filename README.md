@@ -272,6 +272,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Terrain Creation via Heightmap using Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/TerrainHeightmapTessellation)
   - [Cubic Bézier Curve with Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/CubicBezierCurveTessellation)
   - [Bézier Surface with Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/BezierSurfaceTessellation)
+  - [Model Tessellation with Curved PN Triangles](/Examples/AdvancedShaderProgramming/TessellationShaders/CurvedPnTrianglesTessellation)
 
 ## Environment Support
 
