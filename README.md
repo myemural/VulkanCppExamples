@@ -273,6 +273,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Cubic Bézier Curve with Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/CubicBezierCurveTessellation)
   - [Bézier Surface with Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders/BezierSurfaceTessellation)
   - [Model Tessellation with Curved PN Triangles](/Examples/AdvancedShaderProgramming/TessellationShaders/CurvedPnTrianglesTessellation)
+  - [Tessellated Terrain Rendering with Dynamic LOD](/Examples/AdvancedShaderProgramming/TessellationShaders/TessellatedTerrainDynamicLod)
 
 ## Environment Support
 

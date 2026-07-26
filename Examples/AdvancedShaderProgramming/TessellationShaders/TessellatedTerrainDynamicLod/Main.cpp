@@ -1,10 +1,10 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, subdivision is applied to a loaded model using tessellation shaders with the curved PN
- *          triangles technique, and the number of triangles in the model has been increased to match the model's
- *          curved structure.
+ * @brief   This example demonstrates how to create a tessellated terrain using heightmap and tessellation shaders, and
+ *          how to apply dynamic LOD to the tessellated regions of this terrain based on camera distance. Also,
+ *          T-junction/Crack problem has been prevented.
  * @author  Mustafa Yemural (myemural)
- * @date    25.07.2026
+ * @date    26.07.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -20,7 +20,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::advanced_shader_programming::tessellation_shaders::curved_pn_triangles_tessellation;
+using namespace examples::advanced_shader_programming::tessellation_shaders::tessellated_terrain_dynamic_lod;
 
 inline ParameterSchema CreateParameterSchema()
 {
@@ -30,8 +30,12 @@ inline ParameterSchema CreateParameterSchema()
     // Register Customizable Settings
     schema.RegisterParam<VkClearColorValue>(AppSettings::ClearColor);
     schema.RegisterParam<float>(AppSettings::MouseSensitivity);
-    schema.RegisterParam<float>(AppSettings::CameraZoomSpeed);
+    schema.RegisterParam<float>(AppSettings::CameraSpeed);
     schema.RegisterParam<VkPolygonMode>(AppSettings::PolygonMode);
+    schema.RegisterParam<float>(AppSettings::MinTessDistance);
+    schema.RegisterParam<float>(AppSettings::MaxTessDistance);
+    schema.RegisterParam<float>(AppSettings::MinTessLevel);
+    schema.RegisterParam<float>(AppSettings::MaxTessLevel);
 
     return schema;
 }
@@ -51,8 +55,12 @@ bool SetParams(ParameterServer& params)
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.175f, 0.175f, 0.175f, 1.0f});
         params.Set(AppSettings::MouseSensitivity, 3.0f);
-        params.Set(AppSettings::CameraZoomSpeed, 0.4f);
+        params.Set(AppSettings::CameraSpeed, 3.0f);
         params.Set<VkPolygonMode>(AppSettings::PolygonMode, VK_POLYGON_MODE_LINE);
+        params.Set(AppSettings::MinTessDistance, 6.0f);
+        params.Set(AppSettings::MaxTessDistance, 40.0f);
+        params.Set(AppSettings::MinTessLevel, 1.0f);
+        params.Set(AppSettings::MaxTessLevel, 32.0f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

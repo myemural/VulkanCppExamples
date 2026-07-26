@@ -18,6 +18,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `BezierSurfaceTessellation`
 6. [Model Tessellation with Curved PN Triangles](/Examples/AdvancedShaderProgramming/TessellationShaders/CurvedPnTrianglesTessellation)
    - `CurvedPnTrianglesTessellation`
+7. [Tessellated Terrain Rendering with Dynamic LOD](/Examples/AdvancedShaderProgramming/TessellationShaders/TessellatedTerrainDynamicLod)
+   - `TessellatedTerrainDynamicLod`
 
 ## Architecture of the Subsection
 
