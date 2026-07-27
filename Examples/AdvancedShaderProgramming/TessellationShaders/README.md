@@ -20,6 +20,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `CurvedPnTrianglesTessellation`
 7. [Tessellated Terrain Rendering with Dynamic LOD](/Examples/AdvancedShaderProgramming/TessellationShaders/TessellatedTerrainDynamicLod)
    - `TessellatedTerrainDynamicLod`
+8. [Simple Water Surface Simulation via Tessellation Shader](/Examples/AdvancedShaderProgramming/TessellationShaders/WaterSurfaceTessellation)
+   - `WaterSurfaceTessellation`
 
 ## Architecture of the Subsection
 
