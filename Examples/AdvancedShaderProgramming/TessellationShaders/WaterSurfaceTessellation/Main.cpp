@@ -1,6 +1,6 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, a simple water wave simulation is performed using Gerstner waves (Trocoidal waves) on a
+ * @brief   In this example, a simple water wave simulation is performed using Gerstner waves (Trochoidal waves) on a
  *          plane tessellated with tessellation shaders.
  * @author  Mustafa Yemural (myemural)
  * @date    27.07.2026

@@ -21,4 +21,23 @@ This section contains Vulkan examples that related to advanced shader programmin
 
 ## [Tessellation Shaders](/Examples/AdvancedShaderProgramming/TessellationShaders)
 
-TBD
+- Learning how to use tessellation shaders in Vulkan
+- Understanding how tessellation control variables are working
+- Implementing basic tessellation evaluation shader
+- Understanding how triangle tessellation is working
+- Learning how to implement displacement mapping with tessellation shaders
+- Understanding the interaction between tessellation and displacement techniques
+- Creating terrains with using heightmaps
+- Understanding and applying quad tessellation in tessellation shaders
+- Visualizing lines that passing through patch points in terrain
+- Understanding how to implement cubic Bézier curves with using isolines tessellation
+- Understanding how isoline tessellation is working
+- Learning how to drag and drop any points with mouse in Vulkan applications
+- Learning how to implement Bézier surfaces with tessellation shaders
+- Learning how to manipulate control points for surface deformation
+- Understanding how patch topology is working on more than 4 patch vertices
+- Implementing curved PN triangles technique in Vulkan with using tessellation shaders
+- Implementing dynamic LOD on tessellated terrains in Vulkan
+- Change tessellation amount per patch according to camera distance in tessellation control shader
+- Implementing basic water (or ocean) surface simulation with using Gerstner waves on tessellated plane object
+- Implementing the water foam effect that appears when the wave height increases
