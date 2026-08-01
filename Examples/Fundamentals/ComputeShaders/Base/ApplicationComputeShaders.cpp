@@ -78,7 +78,6 @@ void ApplicationComputeShaders::CreateDefaultLogicalDevice()
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
         builder.AddExtendingStructure(&features11)
-                .AddLayer("VK_LAYER_KHRONOS_validation")
                 .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;

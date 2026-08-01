@@ -111,7 +111,6 @@ void ApplicationShadowFilteringAndSoftening::CreateDefaultLogicalDevice()
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
         builder.AddExtendingStructure(&descriptorIndexingFeatures)
-                .AddLayer("VK_LAYER_KHRONOS_validation")
                 .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
@@ -126,7 +125,10 @@ void ApplicationShadowFilteringAndSoftening::CreateDefaultLogicalDevice()
     }
 }
 
-void ApplicationShadowFilteringAndSoftening::CreateDefaultQueue() { queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0); }
+void ApplicationShadowFilteringAndSoftening::CreateDefaultQueue()
+{
+    queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0);
+}
 
 void ApplicationShadowFilteringAndSoftening::CreateDefaultSwapChain()
 {
@@ -160,7 +162,8 @@ void ApplicationShadowFilteringAndSoftening::CreateDefaultSwapChain()
     }
 }
 
-void ApplicationShadowFilteringAndSoftening::CreateDefaultFramebuffers(const std::shared_ptr<VulkanImageView>& depthImageView)
+void ApplicationShadowFilteringAndSoftening::CreateDefaultFramebuffers(
+        const std::shared_ptr<VulkanImageView>& depthImageView)
 {
     const auto windowWidth = window_->GetWindowWidth();
     const auto windowHeight = window_->GetWindowHeight();

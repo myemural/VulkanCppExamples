@@ -421,6 +421,11 @@ void VulkanDevice::WaitIdle() const
     }
 }
 
+PFN_vkVoidFunction VulkanDevice::GetDeviceProcAddr(const std::string& pName) const
+{
+    return vkGetDeviceProcAddr(handle_, pName.c_str());
+}
+
 VulkanDeviceBuilder::VulkanDeviceBuilder() : createInfo(GetDefaultDeviceCreateInfo()) {}
 
 VulkanDeviceBuilder& VulkanDeviceBuilder::AddExtendingStructure(const void* extendingStructure)
@@ -434,18 +439,6 @@ VulkanDeviceBuilder& VulkanDeviceBuilder::AddQueueInfo(const std::function<void(
     VkDeviceQueueCreateInfo queueCreateInfo = GetDefaultQueueCreateInfo();
     setterFunc(queueCreateInfo);
     queueCreateInfos_.push_back(queueCreateInfo);
-    return *this;
-}
-
-VulkanDeviceBuilder& VulkanDeviceBuilder::AddLayer(const std::string& layerName)
-{
-    layers_.emplace_back(layerName);
-    return *this;
-}
-
-VulkanDeviceBuilder& VulkanDeviceBuilder::AddLayers(const std::vector<std::string>& layerNames)
-{
-    layers_.insert(layers_.end(), layerNames.begin(), layerNames.end());
     return *this;
 }
 
@@ -474,12 +467,6 @@ std::shared_ptr<VulkanDevice> VulkanDeviceBuilder::Build(const std::shared_ptr<V
         createInfo.pQueueCreateInfos = queueCreateInfos_.data();
     }
 
-    if (!layers_.empty()) {
-        std::ranges::transform(layers_, std::back_inserter(layersStr_), [](const std::string& s) { return s.c_str(); });
-        createInfo.enabledLayerCount = layersStr_.size();
-        createInfo.ppEnabledLayerNames = layersStr_.data();
-    }
-
     if (!extensions_.empty()) {
         std::ranges::transform(extensions_, std::back_inserter(extensionsStr_),
                                [](const std::string& s) { return s.c_str(); });
@@ -490,6 +477,10 @@ std::shared_ptr<VulkanDevice> VulkanDeviceBuilder::Build(const std::shared_ptr<V
     if (deviceFeatures_.has_value()) {
         createInfo.pEnabledFeatures = &deviceFeatures_.value();
     }
+
+    // Device layers are deprecated; validation is enabled at the instance level
+    createInfo.enabledLayerCount = 0;
+    createInfo.ppEnabledLayerNames = nullptr;
 
     VkDevice device = VK_NULL_HANDLE;
     if (vkCreateDevice(physicalDevice->GetHandle(), &createInfo, nullptr, &device) != VK_SUCCESS) {

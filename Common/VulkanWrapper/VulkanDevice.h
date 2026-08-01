@@ -135,6 +135,8 @@ public:
     CreateSampler(const std::function<void(VulkanSamplerBuilder&)>& builderFunc);
 
     COMMON_API void WaitIdle() const;
+
+    COMMON_API PFN_vkVoidFunction GetDeviceProcAddr(const std::string& pName) const;
 };
 
 class COMMON_API VulkanDeviceBuilder
@@ -146,10 +148,6 @@ public:
 
     VulkanDeviceBuilder& AddQueueInfo(const std::function<void(VkDeviceQueueCreateInfo&)>& setterFunc);
 
-    VulkanDeviceBuilder& AddLayer(const std::string& layerName);
-
-    VulkanDeviceBuilder& AddLayers(const std::vector<std::string>& layerNames);
-
     VulkanDeviceBuilder& AddExtension(const std::string& extensionName);
 
     VulkanDeviceBuilder& AddExtensions(const std::vector<std::string>& extensionNames);
@@ -160,8 +158,6 @@ public:
 
 private:
     VkDeviceCreateInfo createInfo{};
-    std::vector<std::string> layers_;
-    std::vector<const char*> layersStr_;
     std::vector<std::string> extensions_;
     std::vector<const char*> extensionsStr_;
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos_;

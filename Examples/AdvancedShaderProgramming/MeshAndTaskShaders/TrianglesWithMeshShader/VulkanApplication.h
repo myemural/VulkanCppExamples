@@ -1,0 +1,69 @@
+/**
+ * @file    VulkanApplication.h
+ * @brief   This file contains VulkanApplication class declaration.
+ * @author  Mustafa Yemural (myemural)
+ * @date    31.07.2026
+ *
+ * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
+ * Released under the MIT License
+ * https://opensource.org/licenses/MIT
+ */
+
+#pragma once
+
+#include <memory>
+
+#include "ApplicationMeshAndTaskShaders.h"
+#include "AssetManager.h"
+#include "VulkanCommandBuffer.h"
+#include "VulkanPipeline.h"
+#include "VulkanPipelineLayout.h"
+#include "Window.h"
+
+namespace examples::advanced_shader_programming::mesh_and_task_shaders::triangles_with_mesh_shader
+{
+class VulkanApplication final : public base::ApplicationMeshAndTaskShaders
+{
+public:
+    explicit VulkanApplication(common::utility::ParameterServer&& params);
+
+    ~VulkanApplication() override = default;
+
+protected:
+    bool Init() override;
+
+    void DrawFrame() override;
+
+    void PreUpdate() override;
+
+private:
+    void InitAssetManager();
+
+    void CreateInitialResources() const;
+
+    void CreateRenderPass();
+
+    void CreatePipelines();
+
+    void CreateFramebuffers();
+
+    void CreateCommandBuffers();
+
+    void RecordPresentCommandBuffers(std::uint32_t currentImageIndex);
+
+    void ProcessInput();
+
+    // Pipelines
+    std::shared_ptr<common::vulkan_wrapper::VulkanPipelineLayout> pipelineLayout_;
+    std::shared_ptr<common::vulkan_wrapper::VulkanPipeline> scenePipeline_;
+
+    // Command buffers
+    std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
+
+    // Asset manager
+    std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
+
+    // Triangle count
+    std::uint32_t currentTriangleCount_ = 3;
+};
+} // namespace examples::advanced_shader_programming::mesh_and_task_shaders::triangles_with_mesh_shader

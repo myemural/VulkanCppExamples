@@ -41,3 +41,7 @@ This section contains Vulkan examples that related to advanced shader programmin
 - Change tessellation amount per patch according to camera distance in tessellation control shader
 - Implementing basic water (or ocean) surface simulation with using Gerstner waves on tessellated plane object
 - Implementing the water foam effect that appears when the wave height increases
+
+## [Mesh and Task Shaders](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders)
+
+TBD

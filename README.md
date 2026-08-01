@@ -275,6 +275,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Model Tessellation with Curved PN Triangles](/Examples/AdvancedShaderProgramming/TessellationShaders/CurvedPnTrianglesTessellation)
   - [Tessellated Terrain Rendering with Dynamic LOD](/Examples/AdvancedShaderProgramming/TessellationShaders/TessellatedTerrainDynamicLod)
   - [Simple Water Surface Simulation via Tessellation Shader](/Examples/AdvancedShaderProgramming/TessellationShaders/WaterSurfaceTessellation)
+- **[Mesh and Task Shaders](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders)**
+  - [Drawing Triangles Directly with Mesh Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/TrianglesWithMeshShader)
 
 ## Environment Support
 

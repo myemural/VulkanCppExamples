@@ -4,22 +4,22 @@
  * https://opensource.org/licenses/MIT
  */
 
-#include "ApplicationLightSoruces.h"
+#include "ApplicationMeshAndTaskShaders.h"
 
 #include "AppCommonConfig.h"
 #include "TimeUtils.h"
 #include "VulkanInstance.h"
 
-namespace examples::real_time_lighting::light_sources::base
+namespace examples::advanced_shader_programming::mesh_and_task_shaders::base
 {
 using namespace common::utility;
 using namespace common::vulkan_wrapper;
 using namespace common::vulkan_framework;
 using namespace common::window_wrapper;
 
-void ApplicationLightSoruces::SetWindow(const std::shared_ptr<Window>& window) { window_ = window; }
+void ApplicationMeshAndTaskShaders::SetWindow(const std::shared_ptr<Window>& window) { window_ = window; }
 
-bool ApplicationLightSoruces::Init()
+bool ApplicationMeshAndTaskShaders::Init()
 {
     try {
         currentWindowWidth_ = GetParamU32(WindowParams::Width);
@@ -47,7 +47,7 @@ bool ApplicationLightSoruces::Init()
     return true;
 }
 
-void ApplicationLightSoruces::PreUpdate()
+void ApplicationMeshAndTaskShaders::PreUpdate()
 {
     // Calculate delta time
     const double currentFrame = GetCurrentTime();
@@ -57,11 +57,11 @@ void ApplicationLightSoruces::PreUpdate()
     Window::PollEvents();
 }
 
-void ApplicationLightSoruces::PostUpdate() { window_->SwapBuffers(); }
+void ApplicationMeshAndTaskShaders::PostUpdate() { window_->SwapBuffers(); }
 
-bool ApplicationLightSoruces::ShouldClose() { return window_->CheckWindowCloseFlag(); }
+bool ApplicationMeshAndTaskShaders::ShouldClose() { return window_->CheckWindowCloseFlag(); }
 
-void ApplicationLightSoruces::CreateDefaultSurface()
+void ApplicationMeshAndTaskShaders::CreateDefaultSurface()
 {
     const auto vulkanSurface = window_->CreateVulkanSurface(instance_->GetHandle());
 
@@ -72,7 +72,7 @@ void ApplicationLightSoruces::CreateDefaultSurface()
     surface_ = std::make_shared<VulkanSurface>(instance_, vulkanSurface);
 }
 
-void ApplicationLightSoruces::SelectDefaultPhysicalDevice()
+void ApplicationMeshAndTaskShaders::SelectDefaultPhysicalDevice()
 {
     const auto physicalDevices = VulkanPhysicalDeviceSelector()
                                          .FilterByQueueTypes(VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_TRANSFER_BIT)
@@ -92,18 +92,33 @@ void ApplicationLightSoruces::SelectDefaultPhysicalDevice()
     }
 }
 
-void ApplicationLightSoruces::CreateDefaultLogicalDevice()
+void ApplicationMeshAndTaskShaders::CreateDefaultLogicalDevice()
 {
     std::vector queuePriorities = {1.0f};
 
     VkPhysicalDeviceFeatures deviceFeatures{};
     deviceFeatures.fillModeNonSolid = VK_TRUE;
     deviceFeatures.wideLines = VK_TRUE;
-    deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
-    deviceFeatures.multiDrawIndirect = VK_TRUE;
+
+    VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};
+    descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+    descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+    descriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
+    descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
+    descriptorIndexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
+
+    VkPhysicalDeviceMeshShaderFeaturesEXT meshShaderFeatures{};
+    meshShaderFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT;
+    meshShaderFeatures.pNext = &descriptorIndexingFeatures;
+    meshShaderFeatures.taskShader = VK_TRUE;
+    meshShaderFeatures.meshShader = VK_TRUE;
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
-        builder.AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
+        builder.AddExtendingStructure(&meshShaderFeatures)
+                .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
+                .AddExtension(VK_KHR_SPIRV_1_4_EXTENSION_NAME)
+                .AddExtension(VK_EXT_MESH_SHADER_EXTENSION_NAME)
+                .AddExtension(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME)
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
                     queueInfo.queueCount = 1;
@@ -117,9 +132,9 @@ void ApplicationLightSoruces::CreateDefaultLogicalDevice()
     }
 }
 
-void ApplicationLightSoruces::CreateDefaultQueue() { queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0); }
+void ApplicationMeshAndTaskShaders::CreateDefaultQueue() { queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0); }
 
-void ApplicationLightSoruces::CreateDefaultSwapChain()
+void ApplicationMeshAndTaskShaders::CreateDefaultSwapChain()
 {
     const auto windowWidth = window_->GetWindowWidth();
     const auto windowHeight = window_->GetWindowHeight();
@@ -151,7 +166,7 @@ void ApplicationLightSoruces::CreateDefaultSwapChain()
     }
 }
 
-void ApplicationLightSoruces::CreateDefaultFramebuffers(const std::shared_ptr<VulkanImageView>& depthImageView)
+void ApplicationMeshAndTaskShaders::CreateDefaultFramebuffers(const std::shared_ptr<VulkanImageView>& depthImageView)
 {
     const auto windowWidth = window_->GetWindowWidth();
     const auto windowHeight = window_->GetWindowHeight();
@@ -169,7 +184,7 @@ void ApplicationLightSoruces::CreateDefaultFramebuffers(const std::shared_ptr<Vu
     }
 }
 
-void ApplicationLightSoruces::CreateDefaultCommandPool()
+void ApplicationMeshAndTaskShaders::CreateDefaultCommandPool()
 {
     cmdPool_ = device_->CreateCommandPool(currentQueueFamilyIndex_, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -178,7 +193,7 @@ void ApplicationLightSoruces::CreateDefaultCommandPool()
     }
 }
 
-void ApplicationLightSoruces::CreateDefaultSyncObjects()
+void ApplicationMeshAndTaskShaders::CreateDefaultSyncObjects()
 {
     swapImagesFences_.resize(swapChainImageViews_.size(), nullptr);
 
@@ -196,7 +211,7 @@ void ApplicationLightSoruces::CreateDefaultSyncObjects()
     }
 }
 
-void ApplicationLightSoruces::CreateVulkanResources(const ResourceDescriptor& resourceCreateInfo) const
+void ApplicationMeshAndTaskShaders::CreateVulkanResources(const ResourceDescriptor& resourceCreateInfo) const
 {
     if (resourceCreateInfo.buffers.has_value()) {
         resources_->CreateBuffers(resourceCreateInfo.buffers.value());
@@ -218,4 +233,4 @@ void ApplicationLightSoruces::CreateVulkanResources(const ResourceDescriptor& re
         resources_->CreateDescriptorSets(resourceCreateInfo.descriptors.value());
     }
 }
-} // namespace examples::real_time_lighting::light_sources::base
+} // namespace examples::advanced_shader_programming::mesh_and_task_shaders::base

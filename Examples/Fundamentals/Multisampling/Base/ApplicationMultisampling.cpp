@@ -74,8 +74,7 @@ void ApplicationMultisampling::CreateDefaultLogicalDevice()
     deviceFeatures.sampleRateShading = VK_TRUE;
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
-        builder.AddLayer("VK_LAYER_KHRONOS_validation")
-                .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
+        builder.AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
                     queueInfo.queueCount = 1;

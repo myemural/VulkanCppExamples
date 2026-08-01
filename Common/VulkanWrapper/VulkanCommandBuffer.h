@@ -87,6 +87,9 @@ public:
                                 std::int32_t vertexOffset,
                                 std::uint32_t firstInstance) const;
 
+    COMMON_API void
+    DrawMeshTasksEXT(std::uint32_t groupCountX, std::uint32_t groupCountY, std::uint32_t groupCountZ) const;
+
     COMMON_API void PipelineBarrier(const VkPipelineStageFlags& srcStage,
                                     const VkPipelineStageFlags& dstStage,
                                     const std::vector<VkImageMemoryBarrier>& imageMemoryBarrier,
@@ -154,5 +157,8 @@ public:
                                VkDeviceSize dstOffset,
                                VkDeviceSize size,
                                std::uint32_t data) const;
+
+private:
+    PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT_;
 };
 } // namespace common::vulkan_wrapper

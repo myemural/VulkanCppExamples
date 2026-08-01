@@ -59,13 +59,11 @@ void ApplicationDescriptorSets::CreateDefaultLogicalDevice()
     std::vector queuePriorities = {1.0f};
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
-        builder.AddLayer("VK_LAYER_KHRONOS_validation")
-                .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
-                .AddQueueInfo([&](auto& queueInfo) {
-                    queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
-                    queueInfo.queueCount = 1;
-                    queueInfo.pQueuePriorities = queuePriorities.data();
-                });
+        builder.AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME).AddQueueInfo([&](auto& queueInfo) {
+            queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
+            queueInfo.queueCount = 1;
+            queueInfo.pQueuePriorities = queuePriorities.data();
+        });
     });
 
     if (!device_) {

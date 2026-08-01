@@ -36,8 +36,8 @@ bool ApplicationBasicLighting::Init()
         resources_ = std::make_unique<ResourceManager>(physicalDevice_, device_);
 
         depthImageFormat_ = physicalDevice_->FindSupportedFormat(
-            {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
-            VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+                {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+                VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
@@ -103,8 +103,7 @@ void ApplicationBasicLighting::CreateDefaultLogicalDevice()
     deviceFeatures.multiDrawIndirect = VK_TRUE;
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
-        builder.AddLayer("VK_LAYER_KHRONOS_validation")
-                .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
+        builder.AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
                     queueInfo.queueCount = 1;

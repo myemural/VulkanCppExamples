@@ -22,6 +22,14 @@ namespace common::vulkan_wrapper
 VulkanCommandBuffer::VulkanCommandBuffer(std::shared_ptr<VulkanCommandPool> cmdPool, VkCommandBuffer cmdBuffer)
     : VulkanObject(std::move(cmdPool), cmdBuffer)
 {
+    if (handle_ != VK_NULL_HANDLE) {
+        if (const auto pool = GetParent()) {
+            if (const auto device = pool->GetParent()) {
+                vkCmdDrawMeshTasksEXT_ =
+                        reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(device->GetDeviceProcAddr("vkCmdDrawMeshTasksEXT"));
+            }
+        }
+    }
 }
 
 VulkanCommandBuffer::~VulkanCommandBuffer()
@@ -162,6 +170,15 @@ void VulkanCommandBuffer::DrawIndexed(const std::uint32_t indexCount,
                                       const std::uint32_t firstInstance) const
 {
     vkCmdDrawIndexed(handle_, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+}
+
+void VulkanCommandBuffer::DrawMeshTasksEXT(const std::uint32_t groupCountX,
+                                           const std::uint32_t groupCountY,
+                                           const std::uint32_t groupCountZ) const
+{
+
+
+    vkCmdDrawMeshTasksEXT_(handle_, groupCountX, groupCountY, groupCountZ);
 }
 
 void VulkanCommandBuffer::PipelineBarrier(const VkPipelineStageFlags& srcStage,

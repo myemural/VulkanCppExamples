@@ -72,8 +72,7 @@ void ApplicationSwapChainsAndViewports::CreateDefaultLogicalDevice()
     deviceFeatures.multiViewport = VK_TRUE;
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
-        builder.AddLayer("VK_LAYER_KHRONOS_validation")
-                .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
+        builder.AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
                 .AddExtension("VK_EXT_shader_viewport_index_layer")
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
@@ -88,7 +87,10 @@ void ApplicationSwapChainsAndViewports::CreateDefaultLogicalDevice()
     }
 }
 
-void ApplicationSwapChainsAndViewports::CreateDefaultQueue() { queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0); }
+void ApplicationSwapChainsAndViewports::CreateDefaultQueue()
+{
+    queue_ = device_->CreateQueue(currentQueueFamilyIndex_, 0);
+}
 
 void ApplicationSwapChainsAndViewports::CreateDefaultCommandPool()
 {

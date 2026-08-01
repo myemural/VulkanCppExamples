@@ -42,6 +42,8 @@ Supported shader stages and their file name formats should be like this:
 | Tessellation Control / Hull Shader      | shader_name.tesc.glsl | shader_name.hs.hlsl | shader_name.tesc.slang | shader_name.tesc.spv |
 | Tessellation Evaluation / Domain Shader | shader_name.tese.glsl | shader_name.ds.hlsl | shader_name.tese.slang | shader_name.tese.spv |
 | Compute Shader                          | shader_name.comp.glsl | shader_name.cs.hlsl | shader_name.comp.slang | shader_name.comp.spv |
+| Mesh Shader                             | shader_name.mesh.glsl | shader_name.ms.hlsl | shader_name.mesh.slang | shader_name.mesh.spv |
+| Task Shader                             | shader_name.task.glsl | shader_name.as.hlsl | shader_name.task.slang | shader_name.task.spv |
 
 ### Directory Structure
 
