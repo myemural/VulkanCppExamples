@@ -28,6 +28,31 @@ struct COMMON_API NodeTransform
     glm::mat4 worldTransform;
 };
 
+struct COMMON_API MeshletDescriptor
+{
+    std::uint32_t vertexOffset;
+    std::uint32_t triangleOffset;
+    std::uint32_t vertexCount;
+    std::uint32_t triangleCount;
+};
+
+struct COMMON_API MeshletBounds
+{
+    glm::vec3 center;
+    float radius;
+    glm::vec3 coneAxis;
+    float coneCutoff;
+};
+
+struct COMMON_API MeshletData
+{
+    std::vector<utility::VertexPos3Uv2> vertices;
+    std::vector<std::uint32_t> meshletVertices;
+    std::vector<std::uint8_t> meshletTriangles; // Packed, needs to expand
+    std::vector<MeshletDescriptor> meshlets;
+    std::vector<MeshletBounds> bounds;
+};
+
 class COMMON_API GltfModelAsset
 {
 public:
@@ -53,6 +78,12 @@ public:
     [[nodiscard]] TextureAsset GetTexture(int textureIndex, const std::string& basePath = "") const;
 
     [[nodiscard]] glm::mat4 GetNodeWorldTransform(std::uint32_t nodeIndex);
+
+    [[nodiscard]] MeshletData BuildMeshlets(std::uint32_t meshIndex,
+                                            std::uint32_t primitiveIndex,
+                                            std::size_t maxVertices = 64,
+                                            std::size_t maxTriangles = 124,
+                                            float coneWeight = 0.5f) const;
 
 private:
     static glm::mat4 GetLocalTransform(const tinygltf::Node& node);

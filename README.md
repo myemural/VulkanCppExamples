@@ -277,6 +277,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Simple Water Surface Simulation via Tessellation Shader](/Examples/AdvancedShaderProgramming/TessellationShaders/WaterSurfaceTessellation)
 - **[Mesh and Task Shaders](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders)**
   - [Drawing Triangles Directly with Mesh Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/TrianglesWithMeshShader)
+  - [Drawing 3D Objects with Mesh Shader by Reading Data from Buffers](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/ObjectsMeshShaderBuffer)
+  - [Meshlet Rendering with Mesh Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/MeshletRendering)
 
 ## Environment Support
 

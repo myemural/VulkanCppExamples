@@ -8,6 +8,7 @@
 
 #include <stdexcept>
 
+#include <meshoptimizer.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -150,6 +151,56 @@ glm::mat4 GltfModelAsset::GetNodeWorldTransform(const std::uint32_t nodeIndex)
     }
 
     return nodeTransforms_[nodeIndex].worldTransform;
+}
+
+MeshletData GltfModelAsset::BuildMeshlets(const std::uint32_t meshIndex,
+                                          const std::uint32_t primitiveIndex,
+                                          const std::size_t maxVertices,
+                                          const std::size_t maxTriangles,
+                                          const float coneWeight) const
+{
+    const auto vertices = GetVertices(meshIndex, primitiveIndex);
+    const auto indices = GetIndices(meshIndex, primitiveIndex);
+
+    const std::size_t maxMeshlets = meshopt_buildMeshletsBound(indices.size(), maxVertices, maxTriangles);
+
+    std::vector<meshopt_Meshlet> rawMeshlets(maxMeshlets);
+    std::vector<unsigned int> rawMeshletVertices(maxMeshlets * maxVertices);
+    std::vector<unsigned char> rawMeshletTris(maxMeshlets * maxTriangles * 3);
+
+    const std::size_t meshletCount =
+            meshopt_buildMeshlets(rawMeshlets.data(), rawMeshletVertices.data(), rawMeshletTris.data(), indices.data(),
+                                  indices.size(), &vertices[0].Position.data.x, vertices.size(),
+                                  sizeof(utility::VertexPos3Uv2), maxVertices, maxTriangles, coneWeight);
+
+    rawMeshlets.resize(meshletCount);
+    const auto& lastRawMeshlet = rawMeshlets.back();
+    rawMeshletVertices.resize(lastRawMeshlet.vertex_offset + lastRawMeshlet.vertex_count);
+    rawMeshletTris.resize(lastRawMeshlet.triangle_offset + ((lastRawMeshlet.triangle_count * 3 + 3) & ~3u));
+
+    MeshletData result;
+    result.vertices = vertices;
+    result.meshletVertices.assign(rawMeshletVertices.begin(), rawMeshletVertices.end());
+    result.meshletTriangles.assign(rawMeshletTris.begin(), rawMeshletTris.end());
+    result.meshlets.reserve(meshletCount);
+    result.bounds.reserve(meshletCount);
+
+    // Calculate and assign each meshlet descriptor and bounds
+    for (const auto& meshlet: rawMeshlets) {
+        result.meshlets.push_back(
+                {meshlet.vertex_offset, meshlet.triangle_offset, meshlet.vertex_count, meshlet.triangle_count});
+
+        const auto b = meshopt_computeMeshletBounds(
+                &rawMeshletVertices[meshlet.vertex_offset], &rawMeshletTris[meshlet.triangle_offset],
+                meshlet.triangle_count, &vertices[0].Position.data.x, vertices.size(), sizeof(utility::VertexPos3Uv2));
+
+        result.bounds.push_back({{b.center[0], b.center[1], b.center[2]},
+                                 b.radius,
+                                 {b.cone_axis[0], b.cone_axis[1], b.cone_axis[2]},
+                                 b.cone_cutoff});
+    }
+
+    return result;
 }
 
 glm::mat4 GltfModelAsset::GetLocalTransform(const tinygltf::Node& node)

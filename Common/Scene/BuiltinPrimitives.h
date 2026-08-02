@@ -28,7 +28,7 @@ enum class BuiltinMeshType
 
 std::string GetBuiltinMeshName(const BuiltinMeshType& builtinMeshType);
 
-class BuiltinPrimitive
+class COMMON_API BuiltinPrimitive
 {
 public:
     virtual ~BuiltinPrimitive() = default;
@@ -46,7 +46,7 @@ protected:
     std::vector<std::uint16_t> indices_;
 };
 
-class PointPrimitive : public BuiltinPrimitive
+class COMMON_API PointPrimitive : public BuiltinPrimitive
 {
 public:
     explicit PointPrimitive();
@@ -57,7 +57,7 @@ private:
     static std::vector<glm::vec3> CreatePointPositions();
 };
 
-class CubePrimitive : public BuiltinPrimitive
+class COMMON_API CubePrimitive : public BuiltinPrimitive
 {
 public:
     explicit CubePrimitive(float size);
@@ -76,7 +76,7 @@ private:
     static std::vector<std::uint16_t> CreateCubeIndices();
 };
 
-class SpherePrimitive : public BuiltinPrimitive
+class COMMON_API SpherePrimitive : public BuiltinPrimitive
 {
 public:
     explicit SpherePrimitive(float size, std::uint32_t stackCount, std::uint32_t sectorCount);
@@ -96,7 +96,7 @@ private:
     static std::vector<std::uint16_t> CreateSphereIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 };
 
-class ConePrimitive : public BuiltinPrimitive
+class COMMON_API ConePrimitive : public BuiltinPrimitive
 {
 public:
     explicit ConePrimitive(float height, std::uint32_t stackCount, std::uint32_t sectorCount);
@@ -116,7 +116,7 @@ private:
     static std::vector<std::uint16_t> CreateConeIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 };
 
-class CylinderPrimitive : public BuiltinPrimitive
+class COMMON_API CylinderPrimitive : public BuiltinPrimitive
 {
 public:
     explicit CylinderPrimitive(float height, std::uint32_t stackCount, std::uint32_t sectorCount);
@@ -136,7 +136,7 @@ private:
     static std::vector<std::uint16_t> CreateCylinderIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 };
 
-class PlanePrimitive : public BuiltinPrimitive
+class COMMON_API PlanePrimitive : public BuiltinPrimitive
 {
 public:
     explicit PlanePrimitive(float size, std::uint32_t stackCount = 1, std::uint32_t sectorCount = 1);
@@ -155,7 +155,7 @@ private:
     static std::vector<std::uint16_t> CreatePlaneIndices(std::uint32_t stackCount, std::uint32_t sectorCount);
 };
 
-class TessellatedPlanePrimitive : public BuiltinPrimitive
+class COMMON_API TessellatedPlanePrimitive : public BuiltinPrimitive
 {
 public:
     explicit TessellatedPlanePrimitive(float size, std::uint32_t stackCount, std::uint32_t sectorCount);

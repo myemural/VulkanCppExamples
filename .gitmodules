@@ -7,3 +7,6 @@
 [submodule "ThirdParty/tinygltf"]
 	path = ThirdParty/tinygltf
 	url = https://github.com/syoyo/tinygltf.git
+[submodule "ThirdParty/meshoptimizer"]
+	path = ThirdParty/meshoptimizer
+	url = https://github.com/zeux/meshoptimizer.git

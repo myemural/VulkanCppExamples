@@ -4,3 +4,5 @@ add_subdirectory(Base)
 include_directories(Base)
 
 add_subdirectory(TrianglesWithMeshShader)
+add_subdirectory(ObjectsMeshShaderBuffer)
+add_subdirectory(MeshletRendering)

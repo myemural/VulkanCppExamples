@@ -40,6 +40,9 @@ set(TINYGLTF_BUILD_LOADER_EXAMPLE OFF CACHE INTERNAL "" FORCE)
 add_subdirectory(ThirdParty/tinygltf)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tinygltf")
 
+add_subdirectory(ThirdParty/meshoptimizer)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/meshoptimizer/src")
+
 include_directories("Common/AssetManager")
 include_directories("Common/Camera")
 include_directories("Common/Scene")
