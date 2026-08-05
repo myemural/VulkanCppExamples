@@ -279,6 +279,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Drawing Triangles Directly with Mesh Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/TrianglesWithMeshShader)
   - [Drawing 3D Objects with Mesh Shader by Reading Data from Buffers](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/ObjectsMeshShaderBuffer)
   - [Meshlet Rendering with Mesh Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/MeshletRendering)
+  - [Frustum Culling with Task Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/FrustumCullingTaskShader)
 
 ## Environment Support
 

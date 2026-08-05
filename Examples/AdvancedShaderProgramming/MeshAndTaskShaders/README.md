@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ObjectsMeshShaderBuffer`
 3. [Meshlet Rendering with Mesh Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/MeshletRendering)
    - `MeshletRendering`
+4. [Frustum Culling with Task Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/FrustumCullingTaskShader)
+   - `FrustumCullingTaskShader`
 
 ## Architecture of the Subsection
 
