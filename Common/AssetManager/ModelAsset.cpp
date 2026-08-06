@@ -15,6 +15,66 @@
 namespace common::asset_manager
 {
 
+namespace
+{
+    void BuildMeshletsForIndices(const std::vector<utility::VertexPos3Uv2>& vertices,
+                                 const std::vector<std::uint32_t>& indices,
+                                 const std::size_t maxVertices,
+                                 const std::size_t maxTriangles,
+                                 const float coneWeight,
+                                 std::vector<MeshletDescriptor>& outMeshlets,
+                                 std::vector<std::uint32_t>& outMeshletVertices,
+                                 std::vector<std::uint32_t>& outMeshletTriangles,
+                                 std::vector<MeshletBounds>& outBounds)
+    {
+        if (indices.empty()) {
+            return;
+        }
+
+        const std::size_t maxMeshlets = meshopt_buildMeshletsBound(indices.size(), maxVertices, maxTriangles);
+
+        std::vector<meshopt_Meshlet> rawMeshlets(maxMeshlets);
+        std::vector<unsigned int> rawMeshletVertices(maxMeshlets * maxVertices);
+        std::vector<unsigned char> rawMeshletTris(maxMeshlets * maxTriangles * 3);
+
+        const std::size_t meshletCount =
+                meshopt_buildMeshlets(rawMeshlets.data(), rawMeshletVertices.data(), rawMeshletTris.data(),
+                                      indices.data(), indices.size(), &vertices[0].Position.data.x, vertices.size(),
+                                      sizeof(utility::VertexPos3Uv2), maxVertices, maxTriangles, coneWeight);
+
+        rawMeshlets.resize(meshletCount);
+
+        outMeshlets.reserve(outMeshlets.size() + meshletCount);
+        outBounds.reserve(outBounds.size() + meshletCount);
+
+        for (const auto& meshlet: rawMeshlets) {
+            MeshletDescriptor descriptor{};
+            descriptor.vertexOffset = static_cast<std::uint32_t>(outMeshletVertices.size());
+            descriptor.triangleOffset = static_cast<std::uint32_t>(outMeshletTriangles.size());
+            descriptor.vertexCount = meshlet.vertex_count;
+            descriptor.triangleCount = meshlet.triangle_count;
+
+            for (std::uint32_t v = 0; v < meshlet.vertex_count; ++v) {
+                outMeshletVertices.push_back(rawMeshletVertices[meshlet.vertex_offset + v]);
+            }
+            for (std::uint32_t t = 0; t < static_cast<std::uint32_t>(meshlet.triangle_count) * 3U; ++t) {
+                outMeshletTriangles.push_back(static_cast<std::uint32_t>(rawMeshletTris[meshlet.triangle_offset + t]));
+            }
+
+            const auto b = meshopt_computeMeshletBounds(&rawMeshletVertices[meshlet.vertex_offset],
+                                                        &rawMeshletTris[meshlet.triangle_offset],
+                                                        meshlet.triangle_count, &vertices[0].Position.data.x,
+                                                        vertices.size(), sizeof(utility::VertexPos3Uv2));
+
+            outMeshlets.push_back(descriptor);
+            outBounds.push_back({{b.center[0], b.center[1], b.center[2]},
+                                 b.radius,
+                                 {b.cone_axis[0], b.cone_axis[1], b.cone_axis[2]},
+                                 b.cone_cutoff});
+        }
+    }
+} // namespace
+
 std::vector<utility::VertexPos3Uv2> GltfModelAsset::GetVertices(const std::uint32_t meshIndex,
                                                                 const std::uint32_t primitiveIndex) const
 {
@@ -198,6 +258,76 @@ MeshletData GltfModelAsset::BuildMeshlets(const std::uint32_t meshIndex,
                                  b.radius,
                                  {b.cone_axis[0], b.cone_axis[1], b.cone_axis[2]},
                                  b.cone_cutoff});
+    }
+
+    return result;
+}
+
+MeshletLodData GltfModelAsset::BuildMeshletWithLod(const std::uint32_t meshIndex,
+                                                   const std::uint32_t primitiveIndex,
+                                                   const std::vector<float>& lodTargetRatios,
+                                                   const float simplifyTargetError,
+                                                   const std::size_t maxVertices,
+                                                   const std::size_t maxTriangles,
+                                                   const float coneWeight) const
+{
+    if (lodTargetRatios.empty()) {
+        throw std::runtime_error("BuildMeshletWithLod requires at least one LOD ratio!");
+    }
+
+    const auto vertices = GetVertices(meshIndex, primitiveIndex);
+    const auto indices16 = GetIndices(meshIndex, primitiveIndex);
+
+    const std::vector<std::uint32_t> lod0Indices(indices16.begin(), indices16.end());
+
+    MeshletLodData result;
+    result.vertices = vertices; // Shared by every LOD level, simplification never adds vertices
+    result.lodRanges.resize(lodTargetRatios.size());
+
+    for (std::size_t lod = 0; lod < lodTargetRatios.size(); ++lod) {
+        const float ratio = lodTargetRatios[lod];
+
+        std::vector<std::uint32_t> lodIndices;
+        if (ratio >= 0.999f) {
+            // Full detail, reuse the original index buffer as-is, no simplification pass needed.
+            lodIndices = lod0Indices;
+        } else {
+            const std::size_t targetIndexCount = std::max<std::size_t>(
+                    3, static_cast<std::size_t>(static_cast<float>(lod0Indices.size()) * ratio) / 3 * 3);
+
+            lodIndices.resize(lod0Indices.size());
+            float resultError = 0.0f;
+            const std::size_t simplifiedCount =
+                    meshopt_simplify(lodIndices.data(), lod0Indices.data(), lod0Indices.size(),
+                                     &vertices[0].Position.data.x, vertices.size(), sizeof(utility::VertexPos3Uv2),
+                                     targetIndexCount, simplifyTargetError, 0, &resultError);
+            lodIndices.resize(simplifiedCount);
+        }
+
+        std::vector<MeshletDescriptor> lodMeshlets;
+        std::vector<std::uint32_t> lodMeshletVertices;
+        std::vector<std::uint32_t> lodMeshletTriangles;
+        std::vector<MeshletBounds> lodBounds;
+
+        BuildMeshletsForIndices(vertices, lodIndices, maxVertices, maxTriangles, coneWeight, lodMeshlets,
+                                lodMeshletVertices, lodMeshletTriangles, lodBounds);
+
+        const auto vertexIndexBase = static_cast<std::uint32_t>(result.meshletVertices.size());
+        const auto triangleIndexBase = static_cast<std::uint32_t>(result.meshletTriangles.size());
+        for (auto& descriptor: lodMeshlets) {
+            descriptor.vertexOffset += vertexIndexBase;
+            descriptor.triangleOffset += triangleIndexBase;
+        }
+
+        result.lodRanges[lod].meshletOffset = static_cast<std::uint32_t>(result.meshlets.size());
+        result.lodRanges[lod].meshletCount = static_cast<std::uint32_t>(lodMeshlets.size());
+
+        result.meshlets.insert(result.meshlets.end(), lodMeshlets.begin(), lodMeshlets.end());
+        result.bounds.insert(result.bounds.end(), lodBounds.begin(), lodBounds.end());
+        result.meshletVertices.insert(result.meshletVertices.end(), lodMeshletVertices.begin(),
+                                      lodMeshletVertices.end());
+        result.meshletTriangles.insert(result.meshletTriangles.end(), lodMeshletTriangles.begin(),
+                                       lodMeshletTriangles.end());
     }
 
     return result;

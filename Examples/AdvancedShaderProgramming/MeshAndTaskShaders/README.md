@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `MeshletRendering`
 4. [Frustum Culling with Task Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/FrustumCullingTaskShader)
    - `FrustumCullingTaskShader`
+5. [LOD Rendering with Task Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/LodTaskShader)
+   - `LodTaskShader`
 
 ## Architecture of the Subsection
 

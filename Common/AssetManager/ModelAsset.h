@@ -53,6 +53,22 @@ struct COMMON_API MeshletData
     std::vector<MeshletBounds> bounds;
 };
 
+struct COMMON_API LodRange
+{
+    std::uint32_t meshletOffset;
+    std::uint32_t meshletCount;
+};
+
+struct COMMON_API MeshletLodData
+{
+    std::vector<utility::VertexPos3Uv2> vertices;
+    std::vector<std::uint32_t> meshletVertices;
+    std::vector<std::uint32_t> meshletTriangles; // Packed, needs to expand
+    std::vector<MeshletDescriptor> meshlets;
+    std::vector<MeshletBounds> bounds;
+    std::vector<LodRange> lodRanges;             // Specifies LOD ranges per LOD level
+};
+
 class COMMON_API GltfModelAsset
 {
 public:
@@ -84,6 +100,26 @@ public:
                                             std::size_t maxVertices = 64,
                                             std::size_t maxTriangles = 124,
                                             float coneWeight = 0.5f) const;
+
+    /**
+     * @brief Builds several LOD levels of the same primitive and returns them pre-combined and ready to upload to a
+     * single set of GPU buffers.
+     * @param meshIndex Index of the mesh in glTF model.
+     * @param primitiveIndex Index of the primitive within the mesh.
+     * @param lodTargetRatios Vector of target triangle counts for each LOD level.
+     * @param simplifyTargetError Error tolerance for the simplification process.
+     * @param maxVertices Maximum number of vertices per meshlet.
+     * @param maxTriangles Maximum number of triangles per meshlet.
+     * @param coneWeight Weight for the cone culling algorithm.
+     * @return Meshlet data with LOD information.
+     */
+    [[nodiscard]] MeshletLodData BuildMeshletWithLod(std::uint32_t meshIndex,
+                                                     std::uint32_t primitiveIndex,
+                                                     const std::vector<float>& lodTargetRatios,
+                                                     float simplifyTargetError = 0.05f,
+                                                     std::size_t maxVertices = 64,
+                                                     std::size_t maxTriangles = 124,
+                                                     float coneWeight = 0.5f) const;
 
 private:
     static glm::mat4 GetLocalTransform(const tinygltf::Node& node);
