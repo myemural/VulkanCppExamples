@@ -1,22 +1,22 @@
-# Model Tessellation with Curved PN Triangles
+# Drawing 3D Objects with Mesh Shader by Reading Data from Buffers
 
-**Code Name:** CurvedPnTrianglesTessellation
+**Code Name:** ObjectsMeshShaderBuffer
 
 ## Description
 
-In this example, subdivision is applied to a loaded model using tessellation shaders with the curved PN triangles technique, and the number of triangles in the model has been increased to match the model's curved structure.
+This example demonstrates how to draw 3D objects on the screen using a mesh shader, similar to a normal pipeline flow, by retrieving position, normal, and index data from external buffers.
 
 ## Output
 
-![](/Docs/ExampleMedia/AdvancedShaderProgramming/TessellationShaders/CurvedPnTrianglesTessellation.png?raw=true)
+![](/Docs/ExampleMedia/AdvancedShaderProgramming/MeshAndTaskShaders/ObjectsMeshShaderBuffer.png?raw=true)
 
 ## Controls
 
-| Input        | Action                     |
-|--------------|----------------------------|
-| Mouse Move   | Rotataing the orbit camera |
-| Mouse Scroll | Zooming the orbit camera   |
-| Esc          | Close the window           |
+| Input   | Action                           |
+|---------|----------------------------------|
+| W/A/S/D | Move the camera                  |
+| Mouse   | Look around with the camera      |
+| Esc     | Close the window                 |
 
 ## Application Parameters
 
@@ -26,12 +26,11 @@ In this example, subdivision is applied to a loaded model using tessellation sha
 |-------------------------------|-------------------|--------------------------------|--------------------------------|---------------|
 | AppSettings.ClearColor        | VkClearColorValue | AppSettings::ClearColor        | Background color of the screen |               |
 | AppSettings.MouseSensitivity  | float             | AppSettings::MouseSensitivity  | Mouse sensitivity value        |               |
-| AppSettings.CameraZoomSpeed   | float             | AppSettings::CameraZoomSpeed   | Zoom speed of the camera       |               |
-| AppSettings.PolygonMode       | VkPolygonMode     | AppSettings::PolygonMode       | Polygon mode                   |               |
+| AppSettings.CameraSpeed       | float             | AppSettings::CameraSpeed       | Speed of the camera            |               |
 
 ## Learning Objectives
 
-- Implementing curved PN triangles technique in Vulkan with using tessellation shaders
+- Drawing 3D objects via mesh shader using external buffers
 
 ## Shader Status
 
@@ -56,3 +55,6 @@ Window system-dependent extensions:
 ### Device
 
 - VK_KHR_swapchain
+- VK_KHR_spirv_1_4
+- VK_EXT_mesh_shader
+- VK_KHR_shader_float_controls

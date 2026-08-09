@@ -44,4 +44,13 @@ This section contains Vulkan examples that related to advanced shader programmin
 
 ## [Mesh and Task Shaders](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders)
 
-TBD
+- How to implement and use mesh shaders in Vulkan
+- Using mesh/task pipeline instead of conventional graphics pipeline
+- Drawing triangles on the screen by providing data directly from the mesh shader itself
+- Drawing 3D objects via mesh shader using external buffers
+- Understanding meshlet-based rendering with mesh shaders
+- Loading and optimizing glTF models with meshlets
+- How to implement and use task shaders in Vulkan
+- Implementing frustum culling with task shaders
+- Using payload logic between mesh and task shaders
+- Showing the LOD of the model based on camera distance using task shaders

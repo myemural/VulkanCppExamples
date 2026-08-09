@@ -33,7 +33,9 @@ This example demonstrates how to create terrain using heightmaps with tessellati
 
 ## Learning Objectives
 
-TBD
+- Creating terrains with using heightmaps
+- Understanding and applying quad tessellation in tessellation shaders
+- Visualizing lines that passing through patch points in terrain
 
 ## Shader Status
 
@@ -45,9 +47,7 @@ TBD
 
 ## Theoretical Background
 
-- Creating terrains with using heightmaps
-- Understanding and applying quad tessellation in tessellation shaders
-- Visualizing lines that passing through patch points in terrain
+None
 
 ## Extensions Used
 

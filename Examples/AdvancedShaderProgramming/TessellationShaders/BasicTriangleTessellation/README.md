@@ -36,7 +36,10 @@ In this example, a simple triangle is drawn on the screen in wireframe mode, and
 
 ## Learning Objectives
 
-TBD
+- Learning how to use tessellation shaders in Vulkan
+- Understanding how tessellation control variables are working
+- Implementing basic tessellation evaluation shader
+- Understanding how triangle tessellation is working
 
 ## Shader Status
 
@@ -48,10 +51,7 @@ TBD
 
 ## Theoretical Background
 
-- Learning how to use tessellation shaders in Vulkan
-- Understanding how tessellation control variables are working
-- Implementing basic tessellation evaluation shader
-- Understanding how triangle tessellation is working
+None
 
 ## Extensions Used
 

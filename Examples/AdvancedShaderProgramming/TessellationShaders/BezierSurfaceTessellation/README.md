@@ -35,7 +35,9 @@ In this example, a Bézier surface is drawn with 16 control points using tessell
 
 ## Learning Objectives
 
-TBD
+- Learning how to implement Bézier surfaces with tessellation shaders
+- Learning how to manipulate control points for surface deformation
+- Understanding how patch topology is working on more than 4 patch vertices
 
 ## Shader Status
 
@@ -47,9 +49,7 @@ TBD
 
 ## Theoretical Background
 
-- Learning how to implement Bézier surfaces with tessellation shaders
-- Learning how to manipulate control points for surface deformation
-- Understanding how patch topology is working on more than 4 patch vertices
+None
 
 ## Extensions Used
 

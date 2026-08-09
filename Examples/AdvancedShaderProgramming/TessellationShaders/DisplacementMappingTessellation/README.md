@@ -31,7 +31,8 @@ In this example, displacement mapping technique is applied to an object tessella
 
 ## Learning Objectives
 
-TBD
+- Learning how to implement displacement mapping with tessellation shaders
+- Understanding the interaction between tessellation and displacement techniques
 
 ## Shader Status
 
@@ -43,8 +44,7 @@ TBD
 
 ## Theoretical Background
 
-- Learning how to implement displacement mapping with tessellation shaders
-- Understanding the interaction between tessellation and displacement techniques
+None
 
 ## Extensions Used
 

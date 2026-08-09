@@ -31,7 +31,9 @@ In this example, a cubic Bézier curve is drawn using tessellation shaders with 
 
 ## Learning Objectives
 
-TBD
+- Understanding how to implement cubic Bézier curves with using isolines tessellation
+- Understanding how isoline tessellation is working
+- Learning how to drag and drop any points with mouse in Vulkan applications
 
 ## Shader Status
 
@@ -43,9 +45,7 @@ TBD
 
 ## Theoretical Background
 
-- Understanding how to implement cubic Bézier curves with using isolines tessellation
-- Understanding how isoline tessellation is working
-- Learning how to drag and drop any points with mouse in Vulkan applications
+None
 
 ## Extensions Used
 
