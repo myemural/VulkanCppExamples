@@ -42,7 +42,7 @@ This example uses a clustered forward shading approach with depth binning (Z-bin
 | Shader Type | Status             | Notes                |
 |-------------|--------------------|----------------------|
 | GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
+| HLSL        | :white_check_mark: |                      |
 | Slang       | :x:                | Will be implemented. |
 
 ## Theoretical Background
