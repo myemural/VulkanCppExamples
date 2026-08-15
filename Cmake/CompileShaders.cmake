@@ -17,6 +17,8 @@ function(compile_shaders_for_target TARGET_NAME)
                 set(TARGET_SPV --target-spv=spv1.4)
             elseif(shader MATCHES "\\.task\\.")
                 set(TARGET_SPV --target-spv=spv1.4)
+            else()
+                set(TARGET_SPV --target-spv=spv1.3)
             endif()
         endforeach()
 

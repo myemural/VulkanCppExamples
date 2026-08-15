@@ -281,6 +281,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Meshlet Rendering with Mesh Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/MeshletRendering)
   - [Frustum Culling with Task Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/FrustumCullingTaskShader)
   - [LOD Rendering with Task Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/LodTaskShader)
+- **[Advanced Compute Shaders](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders)**
+  - [Conway's Game of Life with Subgroup Operations](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/GameOfLifeSubgroup)
 
 ## Environment Support
 

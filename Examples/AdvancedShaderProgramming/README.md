@@ -54,3 +54,7 @@ This section contains Vulkan examples that related to advanced shader programmin
 - Implementing frustum culling with task shaders
 - Using payload logic between mesh and task shaders
 - Showing the LOD of the model based on camera distance using task shaders
+
+## [Advanced Compute Shaders](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders)
+
+TBD
