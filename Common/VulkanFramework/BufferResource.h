@@ -56,6 +56,12 @@ public:
     void MapMemory(VkDeviceSize mapSize = VK_WHOLE_SIZE, VkDeviceSize mapOffset = 0);
 
     /**
+     * @brief Returns mapped data memory location.
+     * @return Returns mapped data memory location.
+     */
+    [[nodiscard]] void* GetMappedData() const;
+
+    /**
      * @brief Flushes data to the mapped memory area.
      * @param data The data that will be flushed to the mapped area.
      * @param dataSize Flushing data size.

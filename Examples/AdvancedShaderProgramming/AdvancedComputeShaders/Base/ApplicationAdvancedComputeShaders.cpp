@@ -55,6 +55,20 @@ void ApplicationAdvancedComputeShaders::PreUpdate()
     lastFrame_ = currentFrame;
 
     Window::PollEvents();
+
+    // FPS calculation
+    fpsTimer_ += deltaTime_;
+    frameCounter_++;
+
+    if (fpsTimer_ >= 1.0) // Print every second
+    {
+        const int fps = static_cast<int>(static_cast<double>(frameCounter_) / fpsTimer_);
+        const auto newWindowTitle = GetParamStr(WindowParams::Title) + std::string(" - FPS: ") + std::to_string(fps);
+        window_->SetWindowTitle(newWindowTitle);
+
+        frameCounter_ = 0;
+        fpsTimer_ = 0.0;
+    }
 }
 
 void ApplicationAdvancedComputeShaders::PostUpdate() { window_->SwapBuffers(); }

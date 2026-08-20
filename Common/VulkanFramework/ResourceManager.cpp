@@ -148,6 +148,12 @@ void ResourceManager::SetBuffer(const std::string& name,
     }
 }
 
+void* ResourceManager::MapAndGetBufferMemory(const std::string& name)
+{
+    buffers_[name]->MapMemory();
+    return buffers_[name]->GetMappedData();
+}
+
 void ResourceManager::SetBufferAlignedWithoutUnmap(const std::string& name,
                                                    const void* data,
                                                    const std::size_t dataUnitSize,

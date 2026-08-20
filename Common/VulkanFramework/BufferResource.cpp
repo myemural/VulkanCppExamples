@@ -73,6 +73,11 @@ void BufferResource::MapMemory(const VkDeviceSize mapSize, const VkDeviceSize ma
     }
 }
 
+void* BufferResource::GetMappedData() const
+{
+    return mappedData_;
+}
+
 void BufferResource::FlushData(const void* data,
                                const std::uint64_t dataSize,
                                const std::uint64_t memoryOffset,

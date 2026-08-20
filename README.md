@@ -283,6 +283,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [LOD Rendering with Task Shader](/Examples/AdvancedShaderProgramming/MeshAndTaskShaders/LodTaskShader)
 - **[Advanced Compute Shaders](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders)**
   - [Conway's Game of Life with Subgroup Operations](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/GameOfLifeSubgroup)
+  - [Hierarchical Z-Buffer Occlusion Culling with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/OcclusionCullingCompute)
 
 ## Environment Support
 

@@ -149,6 +149,13 @@ public:
                    bool needUnmap = true);
 
     /**
+     * @brief Maps and gets the pointer to the mapped memory of a buffer resource.
+     * @param name Name of the buffer resource.
+     * @return Pointer to the mapped memory.
+     */
+    void* MapAndGetBufferMemory(const std::string& name);
+
+    /**
      * @brief Sets a buffer resource with aligned sized raw data without unmap.
      * @param name Name of the buffer resource.
      * @param data Data to be copied to buffer.

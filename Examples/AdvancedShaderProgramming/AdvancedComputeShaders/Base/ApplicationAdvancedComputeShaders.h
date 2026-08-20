@@ -95,6 +95,8 @@ protected:
     // Delta time related values
     double deltaTime_ = 0.0f;
     double lastFrame_ = 0.0f;
+    double fpsTimer_ = 0.0;
+    uint32_t frameCounter_ = 0;
 
     // Current frame index
     std::uint32_t currentFrameIndex_ = 0;
