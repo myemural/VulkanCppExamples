@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(GameOfLifeSubgroup)
 add_subdirectory(OcclusionCullingCompute)
+add_subdirectory(BodyParticleCompute)

@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `GameOfLifeSubgroup`
 2. [Hierarchical Z-Buffer Occlusion Culling with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/OcclusionCullingCompute)
    - `OcclusionCullingCompute`
+3. [N-body Gravitational Particle Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/BodyParticleCompute)
+   - `BodyParticleCompute`
 
 ## Architecture of the Subsection
 
