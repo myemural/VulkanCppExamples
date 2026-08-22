@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `OcclusionCullingCompute`
 3. [N-body Gravitational Particle Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/BodyParticleCompute)
    - `BodyParticleCompute`
+4. [Wind Simulation on Foliage](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/WindSimulationFoliage)
+   - `WindSimulationFoliage`
 
 ## Architecture of the Subsection
 

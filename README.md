@@ -285,6 +285,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Conway's Game of Life with Subgroup Operations](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/GameOfLifeSubgroup)
   - [Hierarchical Z-Buffer Occlusion Culling with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/OcclusionCullingCompute)
   - [N-body Gravitational Particle Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/BodyParticleCompute)
+  - [Wind Simulation on Foliage](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/WindSimulationFoliage)
 
 ## Environment Support
 
