@@ -286,6 +286,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Hierarchical Z-Buffer Occlusion Culling with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/OcclusionCullingCompute)
   - [N-body Gravitational Particle Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/BodyParticleCompute)
   - [Wind Simulation on Foliage](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/WindSimulationFoliage)
+  - [Cloth Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/ClothSimulationCompute)
 
 ## Environment Support
 

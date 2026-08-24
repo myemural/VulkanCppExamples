@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `BodyParticleCompute`
 4. [Wind Simulation on Foliage](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/WindSimulationFoliage)
    - `WindSimulationFoliage`
+5. [Cloth Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/ClothSimulationCompute)
+   - `ClothSimulationCompute`
 
 ## Architecture of the Subsection
 
