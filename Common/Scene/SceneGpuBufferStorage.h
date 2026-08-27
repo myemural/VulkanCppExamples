@@ -123,7 +123,7 @@ private:
     static constexpr auto kGeometryBufferName = "SceneGeometryBuffer";
     static constexpr auto kTransformStorageBufferName = "SceneTransformStorageBuffer";
     static constexpr auto kMaterialStorageBufferName = "SceneMaterialStorageBuffer";
-    static constexpr auto kBufferSizeInBytes = 2'000'000UL;
+    static constexpr auto kBufferSizeInBytes = 4'000'000UL;
 
     vulkan_framework::ResourceManager& resourceManager_;
     SceneConfig sceneConfig_;

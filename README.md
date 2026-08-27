@@ -287,6 +287,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [N-body Gravitational Particle Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/BodyParticleCompute)
   - [Wind Simulation on Foliage](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/WindSimulationFoliage)
   - [Cloth Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/ClothSimulationCompute)
+  - [FFT Ocean Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FftOceanCompute)
 
 ## Environment Support
 

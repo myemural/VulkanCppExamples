@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `WindSimulationFoliage`
 5. [Cloth Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/ClothSimulationCompute)
    - `ClothSimulationCompute`
+6. [FFT Ocean Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FftOceanCompute)
+   - `FftOceanCompute`
 
 ## Architecture of the Subsection
 
