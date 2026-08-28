@@ -18,6 +18,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ClothSimulationCompute`
 6. [FFT Ocean Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FftOceanCompute)
    - `FftOceanCompute`
+7. [Fluid Simulation with Lattice Boltzmann Method (LBM)](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FluidSimulationLbm)
+   - `FluidSimulationLbm`
 
 ## Architecture of the Subsection
 
