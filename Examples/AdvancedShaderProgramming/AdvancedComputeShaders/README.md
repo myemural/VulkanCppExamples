@@ -20,6 +20,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `FftOceanCompute`
 7. [Fluid Simulation with Lattice Boltzmann Method (LBM)](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FluidSimulationLbm)
    - `FluidSimulationLbm`
+8. [Fluid Simulation with Navier-Stokes](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FluidSimulationNavierStokes)
+   - `FluidSimulationNavierStokes`
 
 ## Architecture of the Subsection
 

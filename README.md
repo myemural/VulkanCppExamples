@@ -289,6 +289,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Cloth Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/ClothSimulationCompute)
   - [FFT Ocean Simulation with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FftOceanCompute)
   - [Fluid Simulation with Lattice Boltzmann Method (LBM)](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FluidSimulationLbm)
+  - [Fluid Simulation with Navier-Stokes](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FluidSimulationNavierStokes)
 
 ## Environment Support
 
