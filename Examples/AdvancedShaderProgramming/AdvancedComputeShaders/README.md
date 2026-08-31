@@ -22,6 +22,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `FluidSimulationLbm`
 8. [Fluid Simulation with Navier-Stokes](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FluidSimulationNavierStokes)
    - `FluidSimulationNavierStokes`
+9. [Real-Time Ray Tracing using BVH Traversing with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/RayTracingCompute)
+   - `RayTracingCompute`
 
 ## Architecture of the Subsection
 
