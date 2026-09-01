@@ -39,11 +39,11 @@ In this example, objects of various colors are drawn on the screen, and a rotati
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                     | Status             | Notes                |
+|-----------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/BasicLighting/BlinnPhong/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/BasicLighting/BlinnPhong/hlsl) | :white_check_mark: |                      |
+| Slang                                                           | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
