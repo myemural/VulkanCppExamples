@@ -44,11 +44,11 @@ In this example, objects of different colors are drawn on the scene, and lightin
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                   | Status             | Notes                |
+|---------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/LightSources/Spotlight/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/LightSources/Spotlight/hlsl) | :white_check_mark: |                      |
+| Slang                                                         | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
