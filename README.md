@@ -16,6 +16,7 @@ This repository contains Vulkan examples written in modern C++20, structured in 
   - [Real-Time Shadows](#real-time-shadows)
   - [Physically Based Rendering](#physically-based-rendering)
   - [Advanced Shader Programming](#advanced-shader-programming)
+  - [Post-Processing Effects](#post-processing-effects)
 - [Environment Support](#environment-support)
 - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
@@ -291,6 +292,11 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Fluid Simulation with Lattice Boltzmann Method (LBM)](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FluidSimulationLbm)
   - [Fluid Simulation with Navier-Stokes](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/FluidSimulationNavierStokes)
   - [Real-Time Ray Tracing using BVH Traversing with Compute Shader](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders/RayTracingCompute)
+
+### [Post-Processing Effects](/Examples/PostProcessingEffects)
+
+- **[Ambient Occlusion](/Examples/PostProcessingEffects/AmbientOcclusion)**
+  - [Screen-Space Ambient Occlusion (SSAO)](/Examples/PostProcessingEffects/AmbientOcclusion/ScreenSpaceAo)
 
 ## Environment Support
 
