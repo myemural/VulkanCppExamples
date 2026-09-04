@@ -297,6 +297,7 @@ Every example has its own directory and CMake target. You can build what you wan
 
 - **[Ambient Occlusion](/Examples/PostProcessingEffects/AmbientOcclusion)**
   - [Screen-Space Ambient Occlusion (SSAO)](/Examples/PostProcessingEffects/AmbientOcclusion/ScreenSpaceAo)
+  - [Horizon-Based Ambient Occlusion (HBAO)](/Examples/PostProcessingEffects/AmbientOcclusion/HorizonBasedAo)
 
 ## Environment Support
 
