@@ -67,11 +67,6 @@ private:
     // Command buffers
     std::vector<std::shared_ptr<common::vulkan_wrapper::VulkanCommandBuffer>> cmdBuffersPresent_;
 
-    // Mouse related values
-    bool firstMouseTriggered_ = true;
-    float lastX_ = 0.0f;
-    float lastY_ = 0.0f;
-
     // Camera
     std::shared_ptr<common::camera::PerspectiveCamera> camera_ = nullptr;
 
