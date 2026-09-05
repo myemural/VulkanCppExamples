@@ -42,3 +42,7 @@
 # CMake
 bin/
 cmake-build-*/
+
+# SPIR-V Generated Files
+/Shaders/**/spirv/
+*.spv
