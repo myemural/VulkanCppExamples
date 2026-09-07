@@ -41,11 +41,11 @@ In this example, diffuse map texture is used instead of diffuse color in the lig
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                             | Status             | Notes                |
+|-------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/TexturedMaterials/DiffuseMapping/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/TexturedMaterials/DiffuseMapping/hlsl) | :white_check_mark: |                      |
+| Slang                                                                   | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

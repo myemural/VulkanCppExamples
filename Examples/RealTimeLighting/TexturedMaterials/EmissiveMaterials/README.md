@@ -43,11 +43,11 @@ In this example, diffuse and emissive maps are used to draw objects with materia
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                | Status             | Notes                |
+|----------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/TexturedMaterials/EmissiveMaterials/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/TexturedMaterials/EmissiveMaterials/hlsl) | :white_check_mark: |                      |
+| Slang                                                                      | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

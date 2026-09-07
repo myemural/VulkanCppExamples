@@ -43,11 +43,11 @@ In this example, specular map texture is used instead of specular color in the l
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                              | Status             | Notes                |
+|--------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/TexturedMaterials/SpecularMapping/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/TexturedMaterials/SpecularMapping/hlsl) | :white_check_mark: |                      |
+| Slang                                                                    | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
