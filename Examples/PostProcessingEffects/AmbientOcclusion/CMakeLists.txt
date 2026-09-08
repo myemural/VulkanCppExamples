@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(ScreenSpaceAo)
 add_subdirectory(HorizonBasedAo)
+add_subdirectory(GroundTruthAo)

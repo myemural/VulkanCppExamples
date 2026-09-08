@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ScreenSpaceAo`
 2. [Horizon-Based Ambient Occlusion (HBAO)](/Examples/PostProcessingEffects/AmbientOcclusion/HorizonBasedAo)
    - `HorizonBasedAo`
+3. [Ground-Truth Ambient Occlusion (GTAO)](/Examples/PostProcessingEffects/AmbientOcclusion/GroundTruthAo)
+   - `GroundTruthAo`
 
 ## Architecture of the Subsection
 
