@@ -38,11 +38,11 @@ In this example, basic mipmapping is applied to the diffuse texture of the objec
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                        | Status             | Notes                |
+|------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/TextureSamplingAndFiltering/BasicMipmapping/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/TextureSamplingAndFiltering/BasicMipmapping/hlsl) | :white_check_mark: |                      |
+| Slang                                                                              | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

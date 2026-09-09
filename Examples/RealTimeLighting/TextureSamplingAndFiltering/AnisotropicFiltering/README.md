@@ -37,11 +37,11 @@ In this example, the diffuse texture coordinates of the objects drawn on the scr
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                             | Status             | Notes                |
+|-----------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/TextureSamplingAndFiltering/AnisotropicFiltering/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/TextureSamplingAndFiltering/AnisotropicFiltering/hlsl) | :white_check_mark: |                      |
+| Slang                                                                                   | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

@@ -37,11 +37,11 @@ In this example, gradient-based manual LOD control is applied via shader to obje
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                | Status             | Notes                |
+|--------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/TextureSamplingAndFiltering/GradientBasedMipmapping/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/TextureSamplingAndFiltering/GradientBasedMipmapping/hlsl) | :white_check_mark: |                      |
+| Slang                                                                                      | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
