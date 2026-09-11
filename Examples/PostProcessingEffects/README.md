@@ -4,4 +4,9 @@ This section contains Vulkan examples that related to post-processing effects. T
 
 ## [Ambient Occlusion](/Examples/PostProcessingEffects/AmbientOcclusion)
 
-TBD
+- Understanding how to implement Screen-Space Ambient Occlusion (SSAO)
+- Implementing SSAO and SSAO Blur passes in Vulkan
+- Understanding how to implement Horizon-Based Ambient Occlusion (HBAO)
+- Implementing HBAO and HBAO Blur passes in Vulkan
+- Understanding how to implement Ground-Truth Ambient Occlusion (GTAO)
+- Implementing GTAO and GTAO Blur passes in Vulkan

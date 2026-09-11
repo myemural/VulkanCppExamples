@@ -57,4 +57,22 @@ This section contains Vulkan examples that related to advanced shader programmin
 
 ## [Advanced Compute Shaders](/Examples/AdvancedShaderProgramming/AdvancedComputeShaders)
 
-TBD
+- Understanding how to enable device feature for shader subgroup operations in Vulkan
+- Learning how to use subgroup ballot and vote operations in shaders
+- Implementing Conway's Game of Life using compute shaders
+- Learning how to implement ping-pong buffering
+- Understanding how to implement frustum culling and occlusion culling using compute shaders
+- Implementing Hierarchical Z-Buffer Occlusion Culling technique in Vulkan
+- Understanding how to implement real-time N-body gravitational simulation using compute shaders
+- Understanding how to implement wind volume simulation using compute shaders
+- Learning how to apply updated vertex data from compute shader to geometry shader
+- Learning how to draw debug box for wind volume and how to show tile-based wind vectors
+- Understanding how to implement cloth simulation on GPU using compute shaders
+- Learning how to apply updated vertex data from compute shader to vertex shader
+- Understanding how to implement ocean simulation using FFT technique with compute shaders
+- Understanding how to implement 2D Kármán vortex street example in Vulkan
+- Understanding how to implement fluid simulation using Lattice Boltzmann Method (LBM) with compute shaders
+- Observing 2D fluid dynamics with 4 debug display modes (velocity magnitude, vorticity, density, dye)
+- Understanding how to implement 3D smoke simulation with Navier-Stokes technique using compute shaders
+- Creating Bounding Volume Hierarchy (BVH) in Vulkan
+- Implementing GPU-based real-time ray-tracing using compute shaders
