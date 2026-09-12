@@ -35,11 +35,11 @@ In this example, displacement mapping technique is implemented on the vertex sha
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                               | Status             | Notes                |
+|---------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/SurfaceDetailing/BasicDisplacement/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/SurfaceDetailing/BasicDisplacement/hlsl) | :white_check_mark: |                      |
+| Slang                                                                     | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

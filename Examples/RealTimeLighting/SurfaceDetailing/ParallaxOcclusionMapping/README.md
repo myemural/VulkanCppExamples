@@ -35,11 +35,11 @@ In this example, in addition to normal mapping, parallax occlusion mapping techn
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                      | Status             | Notes                |
+|----------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/SurfaceDetailing/ParallaxOcclusionMapping/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/SurfaceDetailing/ParallaxOcclusionMapping/hlsl) | :white_check_mark: |                      |
+| Slang                                                                            | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
