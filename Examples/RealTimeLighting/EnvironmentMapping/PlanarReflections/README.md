@@ -35,11 +35,11 @@ In this example, dynamic planar reflection is applied to a mirror-like wall, all
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                 | Status             | Notes                |
+|-----------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/EnvironmentMapping/PlanarReflections/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/EnvironmentMapping/PlanarReflections/hlsl) | :white_check_mark: |                      |
+| Slang                                                                       | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

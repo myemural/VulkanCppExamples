@@ -37,11 +37,11 @@ In this example, a skybox is placed on the scene using a cubemap texture. It is 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                             | Status             | Notes                |
+|-------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/EnvironmentMapping/CubemapSkybox/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/EnvironmentMapping/CubemapSkybox/hlsl) | :white_check_mark: |                      |
+| Slang                                                                   | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

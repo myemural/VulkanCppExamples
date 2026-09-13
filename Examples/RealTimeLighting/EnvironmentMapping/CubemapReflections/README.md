@@ -34,11 +34,11 @@ In this example, the cubemap used for the skybox is also used for the object's r
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                  | Status             | Notes                |
+|------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/EnvironmentMapping/CubemapReflections/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/EnvironmentMapping/CubemapReflections/hlsl) | :white_check_mark: |                      |
+| Slang                                                                        | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
