@@ -301,6 +301,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Ground-Truth Ambient Occlusion (GTAO)](/Examples/PostProcessingEffects/AmbientOcclusion/GroundTruthAo)
 - **[Color Processing and Tone Mapping](/Examples/PostProcessingEffects/ColorProcessingToneMapping)**
   - [Color Filter Effects (Grayscale, Invert Colors, Sepia, Duotone, Channel Swap)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/ColorFilterEffects)
+  - [Color Adjustments (Brightness, Contrast, Saturation, Hue Shift, Color Temperature, White Balance)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/ColorAdjustments)
 
 ## Environment Support
 
