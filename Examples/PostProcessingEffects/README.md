@@ -10,3 +10,7 @@ This section contains Vulkan examples that related to post-processing effects. T
 - Implementing HBAO and HBAO Blur passes in Vulkan
 - Understanding how to implement Ground-Truth Ambient Occlusion (GTAO)
 - Implementing GTAO and GTAO Blur passes in Vulkan
+- 
+## [Color Processing and Tone Mapping](/Examples/PostProcessingEffects/ColorProcessingToneMapping)
+
+TBD

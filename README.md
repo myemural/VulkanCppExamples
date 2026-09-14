@@ -299,6 +299,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Screen-Space Ambient Occlusion (SSAO)](/Examples/PostProcessingEffects/AmbientOcclusion/ScreenSpaceAo)
   - [Horizon-Based Ambient Occlusion (HBAO)](/Examples/PostProcessingEffects/AmbientOcclusion/HorizonBasedAo)
   - [Ground-Truth Ambient Occlusion (GTAO)](/Examples/PostProcessingEffects/AmbientOcclusion/GroundTruthAo)
+- **[Color Processing and Tone Mapping](/Examples/PostProcessingEffects/ColorProcessingToneMapping)**
+  - [Color Filter Effects (Grayscale, Invert Colors, Sepia, Duotone, Channel Swap)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/ColorFilterEffects)
 
 ## Environment Support
 
