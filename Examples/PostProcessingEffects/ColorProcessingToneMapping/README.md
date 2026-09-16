@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `ColorFilterEffects`
 2. [Color Adjustments (Brightness, Contrast, Saturation, Hue Shift, Color Temperature, White Balance)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/ColorAdjustments)
    - `ColorAdjustments`
+3. [HDR Tone Mapping Operations with Manual Exposure (Reinhard, ACES, Uchimura, AgX, Parametric Filmic)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/HdrToneMapping)
+   - `HdrToneMapping`
 
 ## Architecture of the Subsection
 
