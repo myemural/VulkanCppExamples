@@ -1,6 +1,7 @@
 /**
  * @file    Main.cpp
- * @brief   TODO
+ * @brief   In this example, tone mapping operations (Reinhard, ACES, Uchimura, AgX, Parametric Filmic) have been
+ *          applied using a separate post-processing pass to the final scene.
  * @author  Mustafa Yemural (myemural)
  * @date    16.09.2026
  *
@@ -47,8 +48,8 @@ bool SetParams(ParameterServer& params)
 
         // Project customizable settings
         params.Set(AppSettings::ClearColor, VkClearColorValue{0.005f, 0.005f, 0.005f, 0.0f});
-        params.Set(AppSettings::MouseSensitivity, 3.0f);
-        params.Set(AppSettings::CameraSpeed, 3.0f);
+        params.Set(AppSettings::MouseSensitivity, 3.5f);
+        params.Set(AppSettings::CameraSpeed, 4.0f);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return false;

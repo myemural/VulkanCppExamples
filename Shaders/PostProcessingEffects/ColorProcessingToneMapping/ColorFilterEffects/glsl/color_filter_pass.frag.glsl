@@ -12,7 +12,7 @@ layout(location = 0) out vec4 outColor;
 
 layout(set = 0, binding = 0) uniform sampler2D gLightPassOutput;
 
-layout(push_constant) uniform LightingPushConstants {
+layout(push_constant) uniform ColorFilterPushConstants {
     vec4 duoToneDarkColor;
     vec4 duoToneBrightColor;
     // Filter mode for output
