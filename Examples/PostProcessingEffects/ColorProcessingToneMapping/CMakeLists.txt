@@ -4,5 +4,6 @@ add_subdirectory(Base)
 include_directories(Base)
 
 add_subdirectory(ColorFilterEffects)
-add_subdirectory(ColorAdjustments)
+add_subdirectory(PrimaryColorCorrections)
 add_subdirectory(HdrToneMapping)
+add_subdirectory(HdrTemperatureAdjustment)

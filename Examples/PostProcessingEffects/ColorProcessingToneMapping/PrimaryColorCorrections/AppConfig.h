@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::post_processing_effects::color_processing_tone_mapping::color_adjustments
+namespace examples::post_processing_effects::color_processing_tone_mapping::primary_color_corrections
 {
 namespace constants
 {
@@ -19,7 +19,7 @@ namespace constants
     inline constexpr auto kGeometryFragmentShaderFile = "geometry_pass.frag.spv";
     inline constexpr auto kFullscreenVertexShaderFile = "fullscreen_quad.vert.spv";
     inline constexpr auto kLightFragmentShaderFile = "light_pass.frag.spv";
-    inline constexpr auto kPostProcessingFragmentShaderFile = "color_adjustment_pass.frag.spv";
+    inline constexpr auto kPostProcessingFragmentShaderFile = "color_correction_pass.frag.spv";
     inline constexpr auto kGeometryVertexShaderKey = "vertGeometry";
     inline constexpr auto kGeometryFragmentShaderKey = "fragGeometry";
     inline constexpr auto kFullscreenVertexShaderKey = "vertFullscreen";
@@ -100,4 +100,4 @@ namespace AppSettings
     constexpr auto MouseSensitivity = "AppSettings.MouseSensitivity";
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
 } // namespace AppSettings
-} // namespace examples::post_processing_effects::color_processing_tone_mapping::color_adjustments
+} // namespace examples::post_processing_effects::color_processing_tone_mapping::primary_color_corrections

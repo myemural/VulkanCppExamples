@@ -18,7 +18,7 @@
 #include "MathUtils.h"
 #include "SceneConfig.h"
 
-namespace examples::post_processing_effects::color_processing_tone_mapping::color_adjustments
+namespace examples::post_processing_effects::color_processing_tone_mapping::primary_color_corrections
 {
 
 inline const std::vector enabledMaterialComponents{
@@ -51,14 +51,13 @@ struct LightingPushConstants
     std::uint32_t lightCount;
 };
 
-struct ColorAdjustmentPushConstants
+struct ColorCorrectionPushConstants
 {
-    float brightness;       // Additive, range: [-0.5, 0.5], default 0.0
-    float contrast;         // Range: [0.0, 2.0], default 1.0
-    float saturation;       // Range:[0.0, 2.0], default 1.0
-    float hueShift;         // Degree, range: [-180, 180], default 0.0
-    float colorTemperature; // Range: [-1.0, 1.0], default 0.0
-    float whiteBalance;     // Range: [-1.0, 1.0], default 0.0
+    float brightness;                     // Range: [-0.5, 0.5], Default 0.0 (additive offset)
+    float contrast;                       // Range: [0.0, 2.0], Default 1.0
+    float saturation;                     // Range:[0.0, 2.0], Default 1.0
+    float hueShift;                       // Range: [-180, 180], default 0.0 (in degrees)
+    std::uint32_t applyInDisplayEncoding; // 0 = Linear, 1 = sRGB-encoded space
 };
 
 struct TextureAssetDesc
@@ -192,4 +191,4 @@ inline const std::vector<ModelDesc> suzanneInstances{
 };
 // clang-format on
 
-} // namespace examples::post_processing_effects::color_processing_tone_mapping::color_adjustments
+} // namespace examples::post_processing_effects::color_processing_tone_mapping::primary_color_corrections

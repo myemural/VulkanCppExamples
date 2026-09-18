@@ -8,10 +8,12 @@ The examples in this subsection, listed from easy to complex, are as follows:
 
 1. [Color Filter Effects (Grayscale, Invert Colors, Sepia, Duotone, Channel Swap)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/ColorFilterEffects)
    - `ColorFilterEffects`
-2. [Color Adjustments (Brightness, Contrast, Saturation, Hue Shift, Color Temperature, White Balance)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/ColorAdjustments)
-   - `ColorAdjustments`
+2. [Primary Color Corrections on LDR (Brightness, Contrast, Saturation, Hue Shift)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/PrimaryColorCorrections)
+   - `PrimaryColorCorrections`
 3. [HDR Tone Mapping Operations with Manual Exposure (Reinhard, ACES, Uchimura, AgX, Parametric Filmic)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/HdrToneMapping)
    - `HdrToneMapping`
+4. [HDR White Balance and Color Temperature Adjustment](/Examples/PostProcessingEffects/ColorProcessingToneMapping/HdrTemperatureAdjustment)
+   - `HdrTemperatureAdjustment`
 
 ## Architecture of the Subsection
 

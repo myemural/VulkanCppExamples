@@ -79,9 +79,9 @@ vec3 tonemapUchimura(vec3 color)
 }
 
 const mat3 kAgXInsetMatrix = mat3(
-        0.856627153315983, 0.0951212405381588, 0.0482516061458583,
-        0.137318972929847, 0.761241990602591,  0.101439036467562,
-        0.11189821299995,  0.0767994186031903, 0.811302368396859);
+        0.856627153315983, 0.137318972929847, 0.11189821299995,
+        0.0951212405381588, 0.761241990602591,  0.0767994186031903,
+        0.0482516061458583,  0.101439036467562, 0.811302368396859);
 
 const mat3 kAgXOutsetMatrix = mat3(
         1.1271005818144368, -0.1413297634984383,  -0.14132976349843826,
@@ -99,6 +99,7 @@ vec3 agxDefaultContrastApprox(vec3 x)
 }
 
 // AgX (fast approximation)
+// Returns a display-encoded value, so the result still has to be linearized before it is written to sRGB render target
 // Reference: https://iolite-engine.com/blog_posts/minimal_agx_implementation
 vec3 tonemapAgx(vec3 color)
 {
@@ -115,6 +116,12 @@ vec3 tonemapAgx(vec3 color)
     val = kAgXOutsetMatrix * val;
 
     return clamp(val, 0.0, 1.0);
+}
+
+// Linearize the display-encoded AgX output
+vec3 agxEotf(vec3 color)
+{
+    return pow(max(color, vec3(0.0)), vec3(2.2));
 }
 
 vec3 tonemapFilmicCurve(vec3 x, float shoulderStrength, float linearStrength, float linearAngle,
@@ -161,7 +168,7 @@ void main()
     } else if (pc.toneMappingMode == 3) {
         outColor = vec4(tonemapUchimura(exposedColor), 1.0);
     } else if (pc.toneMappingMode == 4) {
-        outColor = vec4(tonemapAgx(exposedColor), 1.0);
+        outColor = vec4(agxEotf(tonemapAgx(exposedColor)), 1.0);
     } else if (pc.toneMappingMode == 5) {
         outColor = vec4(tonemapParametricFilmic(exposedColor), 1.0);
     } else {

@@ -2,7 +2,7 @@
  * @file    VulkanApplication.h
  * @brief   This file contains VulkanApplication class declaration.
  * @author  Mustafa Yemural (myemural)
- * @date    15.09.2026
+ * @date    18.09.2026
  *
  * Copyright (c) 2025 Mustafa Yemural - www.mustafayemural.com
  * Released under the MIT License
@@ -24,7 +24,7 @@
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 
-namespace examples::post_processing_effects::color_processing_tone_mapping::color_adjustments
+namespace examples::post_processing_effects::color_processing_tone_mapping::hdr_temperature_adjustment
 {
 class VulkanApplication final : public base::ApplicationColorProcessingToneMapping
 {
@@ -103,12 +103,12 @@ private:
     // Material registry
     std::unordered_map<std::string, common::scene::Material> materialRegistry_;
 
-    // Current color adjustment values
-    float brightness_ = 0.0f;
-    float contrast_ = 1.0f;
-    float saturation_ = 1.0f;
-    float hueShift_ = 0.0f;
-    float colorTemperature_ = 0.0f;
-    float whiteBalance_ = 0.0f;
+    // Current temperature mode value
+    TemperatureMode mode_ = TemperatureMode::OFF;
+
+    // Current settings
+    float exposure_ = 1.0f;
+    float temperature_ = 6500.0f;
+    float tint_ = 0.0f;
 };
-} // namespace examples::post_processing_effects::color_processing_tone_mapping::color_adjustments
+} // namespace examples::post_processing_effects::color_processing_tone_mapping::hdr_temperature_adjustment

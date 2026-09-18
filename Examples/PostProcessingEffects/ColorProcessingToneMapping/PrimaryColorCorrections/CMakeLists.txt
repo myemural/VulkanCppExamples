@@ -1,5 +1,5 @@
-set(CURRENT_TARGET_NAME ColorAdjustments)
-set(CURRENT_EXAMPLE_NAME "Color Adjustments (Brightness, Contrast, Saturation, Hue Shift, Color Temperature, White Balance)")
+set(CURRENT_TARGET_NAME PrimaryColorCorrections)
+set(CURRENT_EXAMPLE_NAME "Primary Color Corrections on LDR (Brightness, Contrast, Saturation, Hue Shift)")
 set(CURRENT_LIB_NAMES Common ColorProcessingToneMappingBase)
 
 include(BuildTarget)

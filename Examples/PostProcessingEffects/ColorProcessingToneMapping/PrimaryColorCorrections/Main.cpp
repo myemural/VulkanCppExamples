@@ -1,7 +1,7 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, real-time color adjustments (Brightness, Contrast, Saturation, Hue Shift, Color
- *          Temperature, White Balance) have been applied using separate post-processing pass to the final scene color.
+ * @brief   In this example, real-time primary color adjustments (Brightness, Contrast, Saturation, Hue Shift) have
+ *          been applied using separate post-processing pass to the final LDR scene color.
  * @author  Mustafa Yemural (myemural)
  * @date    15.09.2026
  *
@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::post_processing_effects::color_processing_tone_mapping::color_adjustments;
+using namespace examples::post_processing_effects::color_processing_tone_mapping::primary_color_corrections;
 
 inline ParameterSchema CreateParameterSchema()
 {

@@ -19,7 +19,7 @@
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::post_processing_effects::color_processing_tone_mapping::color_adjustments
+namespace examples::post_processing_effects::color_processing_tone_mapping::hdr_temperature_adjustment
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -101,7 +101,6 @@ void VulkanApplication::InitAssetManager()
     assetManager_ = std::make_unique<AssetManager>();
     assetManager_->RegisterLoader<ShaderAsset>(std::make_unique<ShaderLoader>(SHADERS_DIR, SHADER_TYPE));
     assetManager_->RegisterLoader<TextureAsset>(std::make_unique<TextureLoader>(ASSETS_DIR));
-    assetManager_->RegisterLoader<GltfModelAsset>(std::make_unique<ModelLoader>(ASSETS_DIR));
 }
 
 void VulkanApplication::CreateInitialResources() const
@@ -160,11 +159,11 @@ void VulkanApplication::CreateInitialResources() const
                                                               .format = VK_FORMAT_R8G8B8A8_UNORM}}},
         ImageResourceCreateInfo{.name = kLightingOutputImage,
                                 .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                .format = VK_FORMAT_R16G16B16A16_UNORM,
+                                .format = VK_FORMAT_R16G16B16A16_SFLOAT,
                                 .dimensions = {currentWindowWidth_, currentWindowHeight_, 1},
                                 .usageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                                 .views = {ImageViewCreateInfo{.viewName = kLightingOutputImageView,
-                                                              .format = VK_FORMAT_R16G16B16A16_UNORM}}},
+                                                              .format = VK_FORMAT_R16G16B16A16_SFLOAT}}},
         ImageResourceCreateInfo{
             .name = kDepthImage,
             .memProperties = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -258,20 +257,6 @@ void VulkanApplication::BuildScene()
                                            .WithPosition(position)
                                            .WithEulerAngles(eulerAngles)
                                            .WithScale(scale));
-    }
-
-    // Load and convert models
-    const auto suzanneModelHandle = assetManager_->Load<GltfModelAsset>(kSuzanneModelPath);
-    const auto suzanneModel = std::make_unique<GltfModelAsset>(assetManager_->Get(suzanneModelHandle));
-
-    GltfToSceneObjectConverter converter{*scene_, kMainSampler};
-
-    index = 0;
-    for (const auto& [position, eulerAngles, scale]: suzanneInstances) {
-        auto suzanneBuilder = converter.ConvertToBuilder(kSuzanneModelName + std::to_string(index++), *suzanneModel);
-
-        rootObjectBuilder.AddChild(
-                suzanneBuilder.WithPosition(position).WithEulerAngles(eulerAngles).WithScale(glm::vec3(scale)));
     }
 
     const auto& rootObject = rootObjectBuilder.Build();
@@ -445,70 +430,52 @@ void VulkanApplication::InitInputSystem()
             return;
         }
 
-        constexpr float kBrightnessStep = 0.05f;
-        constexpr float kContrastStep = 0.1f;
-        constexpr float kSaturationStep = 0.1f;
-        constexpr float kHueShiftStep = 10.0f;
-        constexpr float kTemperatureStep = 0.1f;
-        constexpr float kWhiteBalanceStep = 0.1f;
+        constexpr float kExposureStep = 0.5f;
+        constexpr float kTemperatureStep = 500.0f;
+        constexpr float kTintStep = 0.1f;
 
         switch (event.key) {
             case GLFW_KEY_SPACE:
-                brightness_ = 0.0f;
-                contrast_ = 1.0f;
-                saturation_ = 1.0f;
-                hueShift_ = 0.0f;
-                colorTemperature_ = 0.0f;
-                whiteBalance_ = 0.0f;
+                exposure_ = 1.0f;
+                temperature_ = 6500.0f;
+                tint_ = 0.0f;
                 std::cout << "All values have been reset to default!" << std::endl;
                 break;
+            case GLFW_KEY_0:
+                mode_ = TemperatureMode::OFF;
+                std::cout << "Current mode: Bypass" << std::endl;
+                break;
+            case GLFW_KEY_1:
+                mode_ = TemperatureMode::WHITE_BALANCE;
+                std::cout << "Current mode: White Balance" << std::endl;
+                break;
+            case GLFW_KEY_2:
+                mode_ = TemperatureMode::COLOR_TEMPERATURE;
+                std::cout << "Current mode: Color Temperature" << std::endl;
+                break;
+            case GLFW_KEY_Q:
+                exposure_ = std::min(exposure_ + kExposureStep, 5.0f);
+                std::cout << "Current exposure: " << exposure_ << std::endl;
+                break;
+            case GLFW_KEY_E:
+                exposure_ = std::max(exposure_ - kExposureStep, -5.0f);
+                std::cout << "Current exposure: " << exposure_ << std::endl;
+                break;
             case GLFW_KEY_R:
-                brightness_ = std::min(brightness_ + kBrightnessStep, 0.5f);
-                std::cout << "Current brightness: " << brightness_ << std::endl;
+                temperature_ = std::min(temperature_ + kTemperatureStep, 12000.0f);
+                std::cout << "Current temperature: " << temperature_ << std::endl;
                 break;
             case GLFW_KEY_F:
-                brightness_ = std::max(brightness_ - kBrightnessStep, -0.5f);
-                std::cout << "Current brightness: " << brightness_ << std::endl;
+                temperature_ = std::max(temperature_ - kTemperatureStep, 2000.0f);
+                std::cout << "Current temperature: " << temperature_ << std::endl;
                 break;
             case GLFW_KEY_T:
-                contrast_ = std::min(contrast_ + kContrastStep, 2.0f);
-                std::cout << "Current contrast: " << contrast_ << std::endl;
+                tint_ = std::min(tint_ + kTintStep, 1.0f);
+                std::cout << "Current tint: " << tint_ << std::endl;
                 break;
             case GLFW_KEY_G:
-                contrast_ = std::max(contrast_ - kContrastStep, 0.0f);
-                std::cout << "Current contrast: " << contrast_ << std::endl;
-                break;
-            case GLFW_KEY_Y:
-                saturation_ = std::min(saturation_ + kSaturationStep, 2.0f);
-                std::cout << "Current saturation: " << saturation_ << std::endl;
-                break;
-            case GLFW_KEY_H:
-                saturation_ = std::max(saturation_ - kSaturationStep, 0.0f);
-                std::cout << "Current saturation: " << saturation_ << std::endl;
-                break;
-            case GLFW_KEY_U:
-                hueShift_ = std::min(hueShift_ + kHueShiftStep, 180.0f);
-                std::cout << "Current hue shift: " << hueShift_ << std::endl;
-                break;
-            case GLFW_KEY_J:
-                hueShift_ = std::max(hueShift_ - kHueShiftStep, -180.0f);
-                std::cout << "Current hue shift: " << hueShift_ << std::endl;
-                break;
-            case GLFW_KEY_I:
-                colorTemperature_ = std::min(colorTemperature_ + kTemperatureStep, 1.0f);
-                std::cout << "Current color temperature: " << colorTemperature_ << std::endl;
-                break;
-            case GLFW_KEY_K:
-                colorTemperature_ = std::max(colorTemperature_ - kTemperatureStep, -1.0f);
-                std::cout << "Current color temperature: " << colorTemperature_ << std::endl;
-                break;
-            case GLFW_KEY_O:
-                whiteBalance_ = std::min(whiteBalance_ + kWhiteBalanceStep, 1.0f);
-                std::cout << "Current color white balance: " << whiteBalance_ << std::endl;
-                break;
-            case GLFW_KEY_L:
-                whiteBalance_ = std::max(whiteBalance_ - kWhiteBalanceStep, -1.0f);
-                std::cout << "Current color white balance: " << whiteBalance_ << std::endl;
+                tint_ = std::max(tint_ - kTintStep, -1.0f);
+                std::cout << "Current tint: " << tint_ << std::endl;
                 break;
             default:
                 break;
@@ -601,7 +568,7 @@ void VulkanApplication::CreateRenderPass()
 
     lightingRenderPass_ = device_->CreateRenderPass([&](auto& builder) {
         builder.AddAttachment([](auto& attachmentCreateInfo) {
-                   attachmentCreateInfo.format = VK_FORMAT_R16G16B16A16_UNORM;
+                   attachmentCreateInfo.format = VK_FORMAT_R16G16B16A16_SFLOAT;
                    attachmentCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
                    attachmentCreateInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
                    attachmentCreateInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -756,13 +723,13 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create graphics pipeline (for light)!");
     }
 
-    VkPushConstantRange colorAdjustmentPushConstant;
-    colorAdjustmentPushConstant.offset = 0;
-    colorAdjustmentPushConstant.size = sizeof(ColorAdjustmentPushConstants);
-    colorAdjustmentPushConstant.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    VkPushConstantRange temperaturePushConstant;
+    temperaturePushConstant.offset = 0;
+    temperaturePushConstant.size = sizeof(TemperaturePushConstants);
+    temperaturePushConstant.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     postProcessingPipelineLayout_ = device_->CreatePipelineLayout(
-            {resources_->GetDescriptorLayout(kPostProcessingDescSetLayout)}, {colorAdjustmentPushConstant});
+            {resources_->GetDescriptorLayout(kPostProcessingDescSetLayout)}, {temperaturePushConstant});
 
     if (!postProcessingPipelineLayout_) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -962,15 +929,13 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                                              postProcessingDescSets);
         currentCmdBuffer->BindPipeline(postProcessingPassPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
-        ColorAdjustmentPushConstants colorAdjustmentPushConstants{};
-        colorAdjustmentPushConstants.brightness = brightness_;
-        colorAdjustmentPushConstants.contrast = contrast_;
-        colorAdjustmentPushConstants.saturation = saturation_;
-        colorAdjustmentPushConstants.hueShift = hueShift_;
-        colorAdjustmentPushConstants.colorTemperature = colorTemperature_;
-        colorAdjustmentPushConstants.whiteBalance = whiteBalance_;
+        TemperaturePushConstants temperaturePushConstants{};
+        temperaturePushConstants.exposure = exposure_;
+        temperaturePushConstants.temperature = temperature_;
+        temperaturePushConstants.tint = tint_;
+        temperaturePushConstants.mode = static_cast<std::uint32_t>(mode_);
         currentCmdBuffer->PushConstants(postProcessingPipelineLayout_, VK_SHADER_STAGE_FRAGMENT_BIT, 0,
-                                        sizeof(colorAdjustmentPushConstants), &colorAdjustmentPushConstants);
+                                        sizeof(temperaturePushConstants), &temperaturePushConstants);
 
         // Draw fullscreen quad
         currentCmdBuffer->Draw(6, 1, 0, 0);
@@ -1013,4 +978,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::post_processing_effects::color_processing_tone_mapping::color_adjustments
+} // namespace examples::post_processing_effects::color_processing_tone_mapping::hdr_temperature_adjustment
