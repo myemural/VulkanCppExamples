@@ -38,11 +38,11 @@ In this example, clustered forward shading is implemented without limiting the a
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                            | Status             | Notes                |
+|----------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/LightingArchitectures/ClusteredForwardUnlimited/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/LightingArchitectures/ClusteredForwardUnlimited/hlsl) | :white_check_mark: |                      |
+| Slang                                                                                  | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

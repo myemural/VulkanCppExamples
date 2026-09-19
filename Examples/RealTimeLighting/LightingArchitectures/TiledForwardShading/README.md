@@ -37,11 +37,11 @@ This example uses a tiled forward (forward+) shading approach to apply lighting 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                      | Status             | Notes                |
+|----------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/LightingArchitectures/TiledForwardShading/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/LightingArchitectures/TiledForwardShading/hlsl) | :white_check_mark: |                      |
+| Slang                                                                            | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

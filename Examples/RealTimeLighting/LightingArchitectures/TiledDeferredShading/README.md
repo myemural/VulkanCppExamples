@@ -36,11 +36,11 @@ This example demonstrates the tiled deferred shading approach to apply lighting 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                       | Status             | Notes                |
+|-----------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/LightingArchitectures/TiledDeferredShading/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/LightingArchitectures/TiledDeferredShading/hlsl) | :white_check_mark: |                      |
+| Slang                                                                             | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

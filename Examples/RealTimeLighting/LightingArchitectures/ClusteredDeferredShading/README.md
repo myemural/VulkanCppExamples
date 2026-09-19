@@ -38,11 +38,11 @@ This example demonstrates the clustered deferred shading approach without limiti
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                           | Status             | Notes                |
+|---------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/LightingArchitectures/ClusteredDeferredShading/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/LightingArchitectures/ClusteredDeferredShading/hlsl) | :white_check_mark: |                      |
+| Slang                                                                                 | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
