@@ -35,11 +35,11 @@ This example demonstrates the use of alpha blending transparency in hybrid archi
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                       | Status             | Notes                |
+|-----------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/TransparencyTechniques/HybridAlphaBlending/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/TransparencyTechniques/HybridAlphaBlending/hlsl) | :white_check_mark: |                      |
+| Slang                                                                             | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

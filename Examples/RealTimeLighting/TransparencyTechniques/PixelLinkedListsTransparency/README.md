@@ -35,11 +35,11 @@ This example demonstrates Order-Independent Transparency (OIT) using the Per-Pix
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :white_check_mark: |                      |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                | Status             | Notes                |
+|--------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/TransparencyTechniques/PixelLinkedListsTransparency/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/TransparencyTechniques/PixelLinkedListsTransparency/hlsl) | :white_check_mark: |                      |
+| Slang                                                                                      | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

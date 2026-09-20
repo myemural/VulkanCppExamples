@@ -36,11 +36,11 @@ In this example, four objects are drawn consecutively on the scene, three of whi
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                             | Status             | Notes                |
+|-----------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeLighting/TransparencyTechniques/AlphaBlendingTransparency/glsl) | :white_check_mark: |                      |
+| [HLSL](/Shaders/RealTimeLighting/TransparencyTechniques/AlphaBlendingTransparency/hlsl) | :white_check_mark: |                      |
+| Slang                                                                                   | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
