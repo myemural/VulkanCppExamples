@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `HdrToneMapping`
 4. [HDR White Balance and Color Temperature Adjustment](/Examples/PostProcessingEffects/ColorProcessingToneMapping/HdrTemperatureAdjustment)
    - `HdrTemperatureAdjustment`
+5. [HDR Lift Gamma Gain Color Grading](/Examples/PostProcessingEffects/ColorProcessingToneMapping/HdrLiftGammaGain)
+   - `HdrLiftGammaGain`
 
 ## Architecture of the Subsection
 
