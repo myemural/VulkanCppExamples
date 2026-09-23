@@ -96,28 +96,12 @@ void ApplicationBasicPbr::CreateDefaultLogicalDevice()
 {
     std::vector queuePriorities = {1.0f};
 
-    VkPhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.fillModeNonSolid = VK_TRUE;
-    deviceFeatures.wideLines = VK_TRUE;
-    deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
-    deviceFeatures.multiDrawIndirect = VK_TRUE;
-
-    VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};
-    descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
-    descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
-    descriptorIndexingFeatures.runtimeDescriptorArray = VK_TRUE;
-    descriptorIndexingFeatures.descriptorBindingVariableDescriptorCount = VK_TRUE;
-    descriptorIndexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
-
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
-        builder.AddExtendingStructure(&descriptorIndexingFeatures)
-                .AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
-                .AddQueueInfo([&](auto& queueInfo) {
-                    queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
-                    queueInfo.queueCount = 1;
-                    queueInfo.pQueuePriorities = queuePriorities.data();
-                })
-                .SetDeviceFeatures(deviceFeatures);
+        builder.AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME).AddQueueInfo([&](auto& queueInfo) {
+            queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
+            queueInfo.queueCount = 1;
+            queueInfo.pQueuePriorities = queuePriorities.data();
+        });
     });
 
     if (!device_) {
