@@ -96,20 +96,13 @@ void ApplicationBasicLighting::CreateDefaultLogicalDevice()
 {
     std::vector queuePriorities = {1.0f};
 
-    VkPhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.fillModeNonSolid = VK_TRUE;
-    deviceFeatures.wideLines = VK_TRUE;
-    deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
-    deviceFeatures.multiDrawIndirect = VK_TRUE;
-
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
         builder.AddExtension(VK_KHR_SWAPCHAIN_EXTENSION_NAME)
                 .AddQueueInfo([&](auto& queueInfo) {
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
                     queueInfo.queueCount = 1;
                     queueInfo.pQueuePriorities = queuePriorities.data();
-                })
-                .SetDeviceFeatures(deviceFeatures);
+                });
     });
 
     if (!device_) {

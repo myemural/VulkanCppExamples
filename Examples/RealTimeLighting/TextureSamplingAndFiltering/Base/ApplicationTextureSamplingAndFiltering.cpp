@@ -97,10 +97,6 @@ void ApplicationTextureSamplingAndFiltering::CreateDefaultLogicalDevice()
     std::vector queuePriorities = {1.0f};
 
     VkPhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.fillModeNonSolid = VK_TRUE;
-    deviceFeatures.wideLines = VK_TRUE;
-    deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
-    deviceFeatures.multiDrawIndirect = VK_TRUE;
     deviceFeatures.samplerAnisotropy = VK_TRUE;
 
     VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};

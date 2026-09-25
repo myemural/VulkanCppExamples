@@ -110,12 +110,6 @@ void ApplicationLightingArchitectures::CreateDefaultLogicalDevice()
 {
     std::vector queuePriorities = {1.0f};
 
-    VkPhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.fillModeNonSolid = VK_TRUE;
-    deviceFeatures.wideLines = VK_TRUE;
-    deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
-    deviceFeatures.multiDrawIndirect = VK_TRUE;
-
     VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};
     descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
     descriptorIndexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
@@ -130,8 +124,7 @@ void ApplicationLightingArchitectures::CreateDefaultLogicalDevice()
                     queueInfo.queueFamilyIndex = currentQueueFamilyIndex_;
                     queueInfo.queueCount = 1;
                     queueInfo.pQueuePriorities = queuePriorities.data();
-                })
-                .SetDeviceFeatures(deviceFeatures);
+                });
     });
 
     if (!device_) {
