@@ -305,6 +305,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [HDR Tone Mapping Operations with Manual Exposure (Reinhard, ACES, Uchimura, AgX, Parametric Filmic)](/Examples/PostProcessingEffects/ColorProcessingToneMapping/HdrToneMapping)
   - [HDR White Balance and Color Temperature Adjustment](/Examples/PostProcessingEffects/ColorProcessingToneMapping/HdrTemperatureAdjustment)
   - [HDR Lift Gamma Gain Color Grading](/Examples/PostProcessingEffects/ColorProcessingToneMapping/HdrLiftGammaGain)
+  - [Color Grading with Using 3D LUT](/Examples/PostProcessingEffects/ColorProcessingToneMapping/ColorGradingLut)
 
 ## Environment Support
 

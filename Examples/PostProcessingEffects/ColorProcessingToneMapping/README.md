@@ -16,6 +16,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `HdrTemperatureAdjustment`
 5. [HDR Lift Gamma Gain Color Grading](/Examples/PostProcessingEffects/ColorProcessingToneMapping/HdrLiftGammaGain)
    - `HdrLiftGammaGain`
+6. [Color Grading with Using 3D LUT](/Examples/PostProcessingEffects/ColorProcessingToneMapping/ColorGradingLut)
+   - `ColorGradingLut`
 
 ## Architecture of the Subsection
 
