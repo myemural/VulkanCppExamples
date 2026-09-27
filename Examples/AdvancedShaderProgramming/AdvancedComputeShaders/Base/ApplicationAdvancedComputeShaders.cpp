@@ -111,10 +111,6 @@ void ApplicationAdvancedComputeShaders::CreateDefaultLogicalDevice()
     std::vector queuePriorities = {1.0f};
 
     VkPhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.fillModeNonSolid = VK_TRUE;
-    deviceFeatures.wideLines = VK_TRUE;
-    deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
-    deviceFeatures.multiDrawIndirect = VK_TRUE;
     deviceFeatures.geometryShader = VK_TRUE;
 
     VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};

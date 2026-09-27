@@ -99,8 +99,6 @@ void ApplicationTessellationShaders::CreateDefaultLogicalDevice()
     VkPhysicalDeviceFeatures deviceFeatures{};
     deviceFeatures.fillModeNonSolid = VK_TRUE;
     deviceFeatures.wideLines = VK_TRUE;
-    deviceFeatures.pipelineStatisticsQuery = VK_TRUE;
-    deviceFeatures.multiDrawIndirect = VK_TRUE;
     deviceFeatures.tessellationShader = VK_TRUE;
 
     VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};
