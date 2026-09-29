@@ -14,3 +14,7 @@ This section contains Vulkan examples that related to post-processing effects. T
 ## [Color Processing and Tone Mapping](/Examples/PostProcessingEffects/ColorProcessingToneMapping)
 
 TBD
+
+## [Exposure and Adaptation](/Examples/PostProcessingEffects/ExposureAndAdaptation)
+
+TBD
