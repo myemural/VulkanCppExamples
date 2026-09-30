@@ -19,7 +19,7 @@
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::post_processing_effects::exposure_and_adaptation::simple_auto_exposure
+namespace examples::post_processing_effects::exposure_and_adaptation::histogram_based_auto_exposure
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -109,6 +109,8 @@ void VulkanApplication::CreateInitialResources() const
         {kLightStorageBuffer, static_cast<std::uint32_t>(sizeof(PointLightGpuData) * pointLights.size()),
          VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT},
+        {kLuminanceHistogramStorageBuffer, static_cast<std::uint32_t>(sizeof(std::uint32_t) * kHistogramBinCount),
+         VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT},
         {kAutoExposureStorageBuffer, static_cast<std::uint32_t>(sizeof(AutoExposureGpuData)),
          VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT}};
 
@@ -117,18 +119,23 @@ void VulkanApplication::CreateInitialResources() const
     const auto geometryFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kGeometryFragmentShaderFile);
     const auto fullscreenVertexShaderAsset = assetManager_->Load<ShaderAsset>(kFullscreenVertexShaderFile);
     const auto lightFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kLightFragmentShaderFile);
-    const auto autoExposureComputeShaderAsset = assetManager_->Load<ShaderAsset>(kAutoExposureComputeShaderFile);
+    const auto luminanceHistogramComputeShaderAsset =
+            assetManager_->Load<ShaderAsset>(kLuminanceHistogramComputeShaderFile);
+    const auto histogramAverageComputeShaderAsset =
+            assetManager_->Load<ShaderAsset>(kHistogramAverageComputeShaderFile);
     const auto postProcessingFragmentShaderAsset = assetManager_->Load<ShaderAsset>(kPostProcessingFragmentShaderFile);
 
     resourceCreateInfo.shaders = {
-        .modules = {
-            {.name = kGeometryVertexShaderKey, .asset = assetManager_->Get(geometryVertexShaderAsset)},
-            {.name = kGeometryFragmentShaderKey, .asset = assetManager_->Get(geometryFragmentShaderAsset)},
-            {.name = kFullscreenVertexShaderKey, .asset = assetManager_->Get(fullscreenVertexShaderAsset)},
-            {.name = kLightFragmentShaderKey, .asset = assetManager_->Get(lightFragmentShaderAsset)},
-            {.name = kAutoExposureComputeShaderKey, .asset = assetManager_->Get(autoExposureComputeShaderAsset)},
-            {.name = kPostProcessingFragmentShaderKey,
-             .asset = assetManager_->Get(postProcessingFragmentShaderAsset)}}};
+        .modules = {{.name = kGeometryVertexShaderKey, .asset = assetManager_->Get(geometryVertexShaderAsset)},
+                    {.name = kGeometryFragmentShaderKey, .asset = assetManager_->Get(geometryFragmentShaderAsset)},
+                    {.name = kFullscreenVertexShaderKey, .asset = assetManager_->Get(fullscreenVertexShaderAsset)},
+                    {.name = kLightFragmentShaderKey, .asset = assetManager_->Get(lightFragmentShaderAsset)},
+                    {.name = kLuminanceHistogramComputeShaderKey,
+                     .asset = assetManager_->Get(luminanceHistogramComputeShaderAsset)},
+                    {.name = kHistogramAverageComputeShaderKey,
+                     .asset = assetManager_->Get(histogramAverageComputeShaderAsset)},
+                    {.name = kPostProcessingFragmentShaderKey,
+                     .asset = assetManager_->Get(postProcessingFragmentShaderAsset)}}};
 
     resourceCreateInfo.images = {
         ImageResourceCreateInfo{
@@ -271,7 +278,7 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     const auto combinedImageSamplerCount = scene_->GetGpuImageStorage().GetTextureCount();
     const DescriptorResourceCreateInfo descriptorResourceCreateInfo = {
         .maxSets = 4,
-        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 5},
+        .poolSizes = {{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 6},
                       {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1},
                       {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, combinedImageSamplerCount + 6}},
         .layouts =
@@ -291,7 +298,8 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
                     {.name = kAutoExposureDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_COMPUTE_BIT,
                                    nullptr},
-                                  {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr}}},
+                                  {1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr},
+                                  {2, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_COMPUTE_BIT, nullptr}}},
                     {.name = kPostProcessingDescSetLayout,
                      .bindings = {{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT,
                                    nullptr},
@@ -312,6 +320,10 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
 
     std::vector<VkDescriptorBufferInfo> storageLightBufferInfos;
     storageLightBufferInfos.emplace_back(resources_->GetBuffer(kLightStorageBuffer)->GetHandle(), 0, VK_WHOLE_SIZE);
+
+    std::vector<VkDescriptorBufferInfo> storageHistogramBufferInfos;
+    storageHistogramBufferInfos.emplace_back(resources_->GetBuffer(kLuminanceHistogramStorageBuffer)->GetHandle(), 0,
+                                             VK_WHOLE_SIZE);
 
     std::vector<VkDescriptorBufferInfo> storageExposureBufferInfos;
     storageExposureBufferInfos.emplace_back(resources_->GetBuffer(kAutoExposureStorageBuffer)->GetHandle(), 0,
@@ -400,9 +412,15 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
     computeLightingOutputUpdateRequest.images = lightingOutputImageInfos;
     computeLightingOutputUpdateRequest.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 
+    BufferWriteRequest computeHistogramUpdateRequest;
+    computeHistogramUpdateRequest.descriptorSetName = kAutoExposureDescSet;
+    computeHistogramUpdateRequest.bindingIndex = 1;
+    computeHistogramUpdateRequest.buffers = storageHistogramBufferInfos;
+    computeHistogramUpdateRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+
     BufferWriteRequest computeExposureUpdateRequest;
     computeExposureUpdateRequest.descriptorSetName = kAutoExposureDescSet;
-    computeExposureUpdateRequest.bindingIndex = 1;
+    computeExposureUpdateRequest.bindingIndex = 2;
     computeExposureUpdateRequest.buffers = storageExposureBufferInfos;
     computeExposureUpdateRequest.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
@@ -420,7 +438,8 @@ void VulkanApplication::CreateAndUpdateDescriptorSets() const
 
     const DescriptorUpdateInfo descriptorSetUpdateInfo = {
         .bufferWriteRequests = {transformStorageBufferRequest, transformMaterialBufferRequest, lightUpdateRequest,
-                                computeExposureUpdateRequest, postProcessingExposureUpdateRequest},
+                                computeHistogramUpdateRequest, computeExposureUpdateRequest,
+                                postProcessingExposureUpdateRequest},
         .imageWriteRequests = {textureUpdateRequest, positionUpdateRequest, albedoUpdateRequest, normalUpdateRequest,
                                roughnessMetallicUpdateRequest, computeLightingOutputUpdateRequest,
                                postProcessingLightingOutputUpdateRequest}};
@@ -462,7 +481,7 @@ void VulkanApplication::InitInputSystem()
             return;
         }
 
-        constexpr float kExposureStep = 0.5f;
+        constexpr float kPercentileStep = 0.05f;
 
         switch (event.key) {
             case GLFW_KEY_1:
@@ -481,13 +500,22 @@ void VulkanApplication::InitInputSystem()
                 toneMappingMode_ = ToneMappingMode::AGX;
                 std::cout << "Current selected tone mapping: AgX" << std::endl;
                 break;
-            case GLFW_KEY_Q:
-                exposureCompensation_ = std::min(exposureCompensation_ + kExposureStep, 5.0f);
-                std::cout << "Current exposure compensation: " << exposureCompensation_ << std::endl;
+            case GLFW_KEY_Z:
+                lowPercentile_ = std::max(lowPercentile_ - kPercentileStep, 0.0f);
+                std::cout << "Percentiles: [" << lowPercentile_ << ", " << highPercentile_ << "]" << std::endl;
                 break;
-            case GLFW_KEY_E:
-                exposureCompensation_ = std::max(exposureCompensation_ - kExposureStep, -5.0f);
-                std::cout << "Current exposure compensation: " << exposureCompensation_ << std::endl;
+
+            case GLFW_KEY_X:
+                lowPercentile_ = std::min(lowPercentile_ + kPercentileStep, highPercentile_ - 0.05f);
+                std::cout << "Percentiles: [" << lowPercentile_ << ", " << highPercentile_ << "]" << std::endl;
+                break;
+            case GLFW_KEY_C:
+                highPercentile_ = std::max(highPercentile_ - kPercentileStep, lowPercentile_ + 0.05f);
+                std::cout << "Percentiles: [" << lowPercentile_ << ", " << highPercentile_ << "]" << std::endl;
+                break;
+            case GLFW_KEY_V:
+                highPercentile_ = std::min(highPercentile_ + kPercentileStep, 1.0f);
+                std::cout << "Percentiles: [" << lowPercentile_ << ", " << highPercentile_ << "]" << std::endl;
                 break;
             default:
                 break;
@@ -757,15 +785,27 @@ void VulkanApplication::CreatePipelines()
         throw std::runtime_error("Failed to create compute pipeline layout!");
     }
 
-    autoExposurePipeline_ = device_->CreateComputePipeline(autoExposurePipelineLayout_, [&](auto& builder) {
+    luminanceHistogramPipeline_ = device_->CreateComputePipeline(autoExposurePipelineLayout_, [&](auto& builder) {
         builder.SetShaderStage([&](auto& shaderStageCreateInfo) {
             shaderStageCreateInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-            shaderStageCreateInfo.module = resources_->GetShaderModule(kAutoExposureComputeShaderKey)->GetHandle();
+            shaderStageCreateInfo.module =
+                    resources_->GetShaderModule(kLuminanceHistogramComputeShaderKey)->GetHandle();
         });
     });
 
-    if (!autoExposurePipeline_) {
-        throw std::runtime_error("Failed to create compute pipeline (for auto exposure calculation)!");
+    if (!luminanceHistogramPipeline_) {
+        throw std::runtime_error("Failed to create compute pipeline (for luminance histogram calculation)!");
+    }
+
+    histogramAveragePipeline_ = device_->CreateComputePipeline(autoExposurePipelineLayout_, [&](auto& builder) {
+        builder.SetShaderStage([&](auto& shaderStageCreateInfo) {
+            shaderStageCreateInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+            shaderStageCreateInfo.module = resources_->GetShaderModule(kHistogramAverageComputeShaderKey)->GetHandle();
+        });
+    });
+
+    if (!histogramAveragePipeline_) {
+        throw std::runtime_error("Failed to create compute pipeline (for histogram average calculation)!");
     }
 
     VkPushConstantRange toneMappingPushConstant;
@@ -956,25 +996,52 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->EndRenderPass();
     }
 
-    // Compute Pass: Auto Exposure Calculation
+    // Compute Pass: Auto Exposure Calculation (Histogram-based)
     {
-        currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                                          {});
+        currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                                          VK_PIPELINE_STAGE_TRANSFER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, {});
+
+        const auto histogramBuffer = resources_->GetBuffer(kLuminanceHistogramStorageBuffer);
+
+        // Clear the histogram
+        currentCmdBuffer->FillBuffer(histogramBuffer, 0, VK_WHOLE_SIZE, 0U);
+
+        VkMemoryBarrier clearBarrier{};
+        clearBarrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+        clearBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        clearBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
+        currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, {}, {},
+                                          {clearBarrier});
 
         const std::vector computeDescSets{resources_->GetDescriptorSet(kAutoExposureDescSet)};
-        currentCmdBuffer->BindPipeline(autoExposurePipeline_, VK_PIPELINE_BIND_POINT_COMPUTE);
         currentCmdBuffer->BindDescriptorSets(VK_PIPELINE_BIND_POINT_COMPUTE, autoExposurePipelineLayout_, 0,
                                              computeDescSets);
 
         AutoExposurePushConstants autoExposurePushConstants{};
+        autoExposurePushConstants.minLogLuminance = kHistogramMinLogLuminance;
+        autoExposurePushConstants.logLuminanceRange = kHistogramMaxLogLuminance - kHistogramMinLogLuminance;
+        autoExposurePushConstants.lowPercentile = lowPercentile_;
+        autoExposurePushConstants.highPercentile = highPercentile_;
         autoExposurePushConstants.keyValue = kAutoExposureKeyValue;
         autoExposurePushConstants.minExposureEv = kAutoExposureMinEv;
         autoExposurePushConstants.maxExposureEv = kAutoExposureMaxEv;
-        autoExposurePushConstants.sampleStep = kAutoExposureSampleStep;
+
+        // Build histogram
+        currentCmdBuffer->BindPipeline(luminanceHistogramPipeline_, VK_PIPELINE_BIND_POINT_COMPUTE);
         currentCmdBuffer->PushConstants(autoExposurePipelineLayout_, VK_SHADER_STAGE_COMPUTE_BIT, 0,
                                         sizeof(autoExposurePushConstants), &autoExposurePushConstants);
+        currentCmdBuffer->Dispatch(CeilDiv(currentWindowWidth_, kHistogramThreadCount),
+                                   CeilDiv(currentWindowHeight_, kHistogramThreadCount), 1);
 
-        // Single workgroup, reduction happens inside the shader
+        VkMemoryBarrier histogramBarrier{};
+        histogramBarrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
+        histogramBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+        histogramBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+        currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                                          {}, {}, {histogramBarrier});
+
+        // Percentile-filtered average exposure
+        currentCmdBuffer->BindPipeline(histogramAveragePipeline_, VK_PIPELINE_BIND_POINT_COMPUTE);
         currentCmdBuffer->Dispatch(1, 1, 1);
 
         const auto exposureStorageReadBarrier =
@@ -1003,7 +1070,6 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         currentCmdBuffer->BindPipeline(postProcessingPassPipeline_, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
         ToneMappingPushConstants toneMappingPushConstants{};
-        toneMappingPushConstants.exposureCompensation = exposureCompensation_;
         toneMappingPushConstants.toneMappingMode = static_cast<std::uint32_t>(toneMappingMode_);
         currentCmdBuffer->PushConstants(postProcessingPipelineLayout_, VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                         sizeof(toneMappingPushConstants), &toneMappingPushConstants);
@@ -1033,7 +1099,7 @@ void VulkanApplication::UpdateSceneTransforms() const
                           pointLightInfos.size() * sizeof(PointLightGpuData));
 }
 
-void VulkanApplication::ProcessInput()
+void VulkanApplication::ProcessInput() const
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {
@@ -1049,4 +1115,4 @@ void VulkanApplication::ProcessInput()
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::post_processing_effects::exposure_and_adaptation::simple_auto_exposure
+} // namespace examples::post_processing_effects::exposure_and_adaptation::histogram_based_auto_exposure

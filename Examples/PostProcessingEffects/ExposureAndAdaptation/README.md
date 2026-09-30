@@ -8,6 +8,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
 
 1. [Simple Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/SimpleAutoExposure)
    - `SimpleAutoExposure`
+2. [Histogram-based Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/HistogramBasedAutoExposure)
+   - `HistogramBasedAutoExposure`
 
 ## Architecture of the Subsection
 

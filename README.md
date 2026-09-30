@@ -308,6 +308,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Color Grading with Using 3D LUT](/Examples/PostProcessingEffects/ColorProcessingToneMapping/ColorGradingLut)
 - **[Exposure and Adaptation](/Examples/PostProcessingEffects/ExposureAndAdaptation)**
   - [Simple Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/SimpleAutoExposure)
+  - [Histogram-based Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/HistogramBasedAutoExposure)
 
 ## Environment Support
 
