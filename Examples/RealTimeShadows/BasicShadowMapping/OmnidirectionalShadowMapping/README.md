@@ -35,11 +35,11 @@ This example demonstrates an omnidirectional shadow created by a point light rot
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                           | Status             | Notes                |
+|---------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeShadows/BasicShadowMapping/OmnidirectionalShadowMapping/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                  | :x:                | Will be implemented. |
+| Slang                                                                                 | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

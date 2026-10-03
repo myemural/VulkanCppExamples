@@ -35,11 +35,11 @@ In this example, perspective projection is used on the camera for lighting, appl
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                     | Status             | Notes                |
+|---------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeShadows/BasicShadowMapping/SpotlightShadowMapping/glsl) | :white_check_mark: |                      |
+| HLSL                                                                            | :x:                | Will be implemented. |
+| Slang                                                                           | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

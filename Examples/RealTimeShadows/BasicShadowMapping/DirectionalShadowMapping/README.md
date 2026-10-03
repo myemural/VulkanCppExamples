@@ -36,11 +36,11 @@ In this example, directional shadow mapping is applied to objects in the scene, 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                       | Status             | Notes                |
+|-----------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeShadows/BasicShadowMapping/DirectionalShadowMapping/glsl) | :white_check_mark: |                      |
+| HLSL                                                                              | :x:                | Will be implemented. |
+| Slang                                                                             | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
