@@ -22,7 +22,7 @@
 #include "VulkanPipelineLayout.h"
 #include "Window.h"
 
-namespace examples::advanced_shader_programming::tessellation_shaders::basic_displacement_tessellation
+namespace examples::advanced_shader_programming::tessellation_shaders::displacement_mapping_tessellation
 {
 class VulkanApplication final : public base::ApplicationTessellationShaders
 {
@@ -82,4 +82,4 @@ private:
     // Asset manager
     std::unique_ptr<common::asset_manager::AssetManager> assetManager_;
 };
-} // namespace examples::advanced_shader_programming::tessellation_shaders::basic_displacement_tessellation
+} // namespace examples::advanced_shader_programming::tessellation_shaders::displacement_mapping_tessellation

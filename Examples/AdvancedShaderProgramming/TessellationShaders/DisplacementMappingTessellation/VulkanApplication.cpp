@@ -17,7 +17,7 @@
 #include "TextureLoader.h"
 #include "VulkanShaderModule.h"
 
-namespace examples::advanced_shader_programming::tessellation_shaders::basic_displacement_tessellation
+namespace examples::advanced_shader_programming::tessellation_shaders::displacement_mapping_tessellation
 {
 using namespace constants;
 using namespace common::asset_manager;
@@ -540,4 +540,4 @@ void VulkanApplication::ProcessInput() const
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
     }
 }
-} // namespace examples::advanced_shader_programming::tessellation_shaders::basic_displacement_tessellation
+} // namespace examples::advanced_shader_programming::tessellation_shaders::displacement_mapping_tessellation

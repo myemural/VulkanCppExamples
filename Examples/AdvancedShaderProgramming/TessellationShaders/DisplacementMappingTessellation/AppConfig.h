@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace examples::advanced_shader_programming::tessellation_shaders::basic_displacement_tessellation
+namespace examples::advanced_shader_programming::tessellation_shaders::displacement_mapping_tessellation
 {
 namespace constants
 {
@@ -72,4 +72,4 @@ namespace AppSettings
     constexpr auto CameraSpeed = "AppSettings.CameraSpeed";
     constexpr auto PolygonMode = "AppSettings.PolygonMode";
 } // namespace AppSettings
-} // namespace examples::advanced_shader_programming::tessellation_shaders::basic_displacement_tessellation
+} // namespace examples::advanced_shader_programming::tessellation_shaders::displacement_mapping_tessellation

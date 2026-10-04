@@ -19,7 +19,7 @@
 using namespace common::utility;
 using namespace common::window_wrapper;
 using namespace common::vulkan_framework;
-using namespace examples::advanced_shader_programming::tessellation_shaders::basic_displacement_tessellation;
+using namespace examples::advanced_shader_programming::tessellation_shaders::displacement_mapping_tessellation;
 
 inline ParameterSchema CreateParameterSchema()
 {

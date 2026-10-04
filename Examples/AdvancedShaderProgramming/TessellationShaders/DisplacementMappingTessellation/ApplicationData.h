@@ -12,7 +12,7 @@
 
 #include <glm/glm.hpp>
 
-namespace examples::advanced_shader_programming::tessellation_shaders::basic_displacement_tessellation
+namespace examples::advanced_shader_programming::tessellation_shaders::displacement_mapping_tessellation
 {
 
 inline const std::vector enabledMaterialComponents{
@@ -48,4 +48,4 @@ struct MeshPushConstants
     float displacementLevel;
 };
 
-} // namespace examples::advanced_shader_programming::tessellation_shaders::basic_displacement_tessellation
+} // namespace examples::advanced_shader_programming::tessellation_shaders::displacement_mapping_tessellation
