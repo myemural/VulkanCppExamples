@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `HistogramBasedAutoExposure`
 3. [Eye (Temporal) Adaptation on Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/EyeAdaptationAutoExposure)
    - `EyeAdaptationAutoExposure`
+4. [Local Exposure with Bilateral Grid and Blurred Luminance](/Examples/PostProcessingEffects/ExposureAndAdaptation/LocalExposure)
+   - `LocalExposure`
 
 ## Architecture of the Subsection
 

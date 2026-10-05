@@ -310,6 +310,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Simple Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/SimpleAutoExposure)
   - [Histogram-based Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/HistogramBasedAutoExposure)
   - [Eye (Temporal) Adaptation on Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/EyeAdaptationAutoExposure)
+  - [Local Exposure with Bilateral Grid and Blurred Luminance](/Examples/PostProcessingEffects/ExposureAndAdaptation/LocalExposure)
 
 ## Environment Support
 
