@@ -1,6 +1,6 @@
 /**
  * @file    Main.cpp
- * @brief   Description: In this example, local exposure has been applied by compressing the contrast of a base layer
+ * @brief   In this example, local exposure has been applied by compressing the contrast of a base layer
  *          (a blend of a bilateral grid and a blurred luminance) around middle grey while preserving the per-pixel
  *          detail against it.
  * @author  Mustafa Yemural (myemural)
