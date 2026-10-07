@@ -311,6 +311,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Histogram-based Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/HistogramBasedAutoExposure)
   - [Eye (Temporal) Adaptation on Auto Exposure](/Examples/PostProcessingEffects/ExposureAndAdaptation/EyeAdaptationAutoExposure)
   - [Local Exposure with Bilateral Grid and Blurred Luminance](/Examples/PostProcessingEffects/ExposureAndAdaptation/LocalExposure)
+- **[Lens and Camera Effects](/Examples/PostProcessingEffects/LensAndCameraEffects)**
+  - [Film Grain Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/FilmGrainEffect)
 
 ## Environment Support
 
