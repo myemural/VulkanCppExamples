@@ -313,6 +313,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Local Exposure with Bilateral Grid and Blurred Luminance](/Examples/PostProcessingEffects/ExposureAndAdaptation/LocalExposure)
 - **[Lens and Camera Effects](/Examples/PostProcessingEffects/LensAndCameraEffects)**
   - [Film Grain Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/FilmGrainEffect)
+  - [Vignette Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/VignetteEffect)
 
 ## Environment Support
 
