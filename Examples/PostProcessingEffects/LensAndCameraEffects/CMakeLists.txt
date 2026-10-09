@@ -5,3 +5,5 @@ include_directories(Base)
 
 add_subdirectory(FilmGrainEffect)
 add_subdirectory(VignetteEffect)
+add_subdirectory(RadialLensDistortion)
+add_subdirectory(BasicChromaticAberration)

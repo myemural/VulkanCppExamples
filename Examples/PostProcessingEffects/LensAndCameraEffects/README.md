@@ -10,6 +10,10 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `FilmGrainEffect`
 2. [Vignette Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/VignetteEffect)
    - `VignetteEffect`
+3. [Radial Lens Distortion Effects (Barrel, Pincushion, Fisheye)](/Examples/PostProcessingEffects/LensAndCameraEffects/RadialLensDistortion)
+   - `RadialLensDistortion`
+4. [Basic Chromatic Aberration Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/BasicChromaticAberration)
+   - `BasicChromaticAberration`
 
 ## Architecture of the Subsection
 

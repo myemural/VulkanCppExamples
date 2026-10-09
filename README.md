@@ -314,6 +314,8 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Lens and Camera Effects](/Examples/PostProcessingEffects/LensAndCameraEffects)**
   - [Film Grain Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/FilmGrainEffect)
   - [Vignette Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/VignetteEffect)
+  - [Radial Lens Distortion Effects (Barrel, Pincushion, Fisheye)](/Examples/PostProcessingEffects/LensAndCameraEffects/RadialLensDistortion)
+  - [Basic Chromatic Aberration Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/BasicChromaticAberration)
 
 ## Environment Support
 
