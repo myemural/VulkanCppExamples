@@ -316,6 +316,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Vignette Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/VignetteEffect)
   - [Radial Lens Distortion Effects (Barrel, Pincushion, Fisheye)](/Examples/PostProcessingEffects/LensAndCameraEffects/RadialLensDistortion)
   - [Basic Chromatic Aberration Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/BasicChromaticAberration)
+  - [Procedural Lens Flare Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/ProceduralLensFlare)
 
 ## Environment Support
 

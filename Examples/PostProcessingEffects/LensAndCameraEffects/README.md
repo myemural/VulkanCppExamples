@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `RadialLensDistortion`
 4. [Basic Chromatic Aberration Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/BasicChromaticAberration)
    - `BasicChromaticAberration`
+5. [Procedural Lens Flare Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/ProceduralLensFlare)
+   - `ProceduralLensFlare`
 
 ## Architecture of the Subsection
 
