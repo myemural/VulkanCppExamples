@@ -52,3 +52,7 @@ This section contains Vulkan examples that related to physically based rendering
 - Adding sheen layer to the PBR material system
 - Implementing Disney BRDF's sheen and sheen tint parameters with IBL in Vulkan
 - Implementing Disney BRDF's anisotropic parameter with IBL in Vulkan
+
+## [Disney BSDF and Transmission](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission)
+
+TBD

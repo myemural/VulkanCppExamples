@@ -255,6 +255,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Clear Coat Layer in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfClearCoat)
   - [Sheen Layer in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfSheen)
   - [Anisotropic Specular in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfAnisotropy)
+- **[Disney BSDF and Transmission](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission)**
+  - [Specular Transmission and IOR in Disney BSDF](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneyBsdfTransmissionIor)
 
 ### [Advanced Shader Programming](/Examples/AdvancedShaderProgramming)
 

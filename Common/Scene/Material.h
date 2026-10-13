@@ -25,6 +25,7 @@ enum class MaterialComponent : std::uint8_t
     DIFFUSE_COLOR_VEC4 = 0,
     ALBEDO_COLOR_VEC4,
     SPECULAR_COLOR_VEC4,
+    TRANSMITTANCE_COLOR_VEC4,
 
     AMBIENT_STRENGTH_FLOAT,
     SHININESS_FLOAT,
@@ -38,6 +39,10 @@ enum class MaterialComponent : std::uint8_t
     SHEEN_TINT_FLOAT,
     CLEARCOAT_FLOAT,
     CLEARCOAT_GLOSS_FLOAT,
+    IOR_FLOAT,
+    SPEC_TRANS_FLOAT,
+    AT_DISTANCE_FLOAT,
+    THICKNESS_FLOAT,
     REFLECTIVITY_FLOAT,
     OPACITY_FLOAT,
     UV_SCALE_FLOAT,
@@ -63,6 +68,7 @@ struct COMMON_API Material
     glm::vec4 diffuseColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
     glm::vec4 albedoColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
     glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    glm::vec4 transmittanceColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
 
     // Float values
     float ambientStrength = 0.05f;
@@ -77,6 +83,10 @@ struct COMMON_API Material
     float sheenTint = 0.0f;
     float clearcoat = 0.0f;
     float clearcoatGloss = 1.0f;
+    float ior = 1.5f;
+    float specTrans = 0.0f;
+    float atDistance = 0.0f;
+    float thickness = 0.0f;
     float reflectivity = 0.0f;
     float opacity = 1.0f;
     float uvScale = 1.0f;
@@ -115,6 +125,10 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::SPECULAR_COLOR_VEC4:
                 utility::AppendBytes(buffer, material.specularColor);
+                break;
+
+            case MaterialComponent::TRANSMITTANCE_COLOR_VEC4:
+                utility::AppendBytes(buffer, material.transmittanceColor);
                 break;
 
             case MaterialComponent::AMBIENT_STRENGTH_FLOAT:
@@ -163,6 +177,22 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::CLEARCOAT_GLOSS_FLOAT:
                 utility::AppendBytes(buffer, material.clearcoatGloss);
+                break;
+
+            case MaterialComponent::IOR_FLOAT:
+                utility::AppendBytes(buffer, material.ior);
+                break;
+
+            case MaterialComponent::SPEC_TRANS_FLOAT:
+                utility::AppendBytes(buffer, material.specTrans);
+                break;
+
+            case MaterialComponent::AT_DISTANCE_FLOAT:
+                utility::AppendBytes(buffer, material.atDistance);
+                break;
+
+            case MaterialComponent::THICKNESS_FLOAT:
+                utility::AppendBytes(buffer, material.thickness);
                 break;
 
             case MaterialComponent::REFLECTIVITY_FLOAT:
