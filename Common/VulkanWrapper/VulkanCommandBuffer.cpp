@@ -155,6 +155,14 @@ void VulkanCommandBuffer::CopyBufferToImage(const std::shared_ptr<VulkanBuffer>&
                            regions.empty() ? nullptr : regions.data());
 }
 
+void VulkanCommandBuffer::UpdateBuffer(const std::shared_ptr<VulkanBuffer>& dstBuffer,
+                                       VkDeviceSize dstOffset,
+                                       VkDeviceSize dataSize,
+                                       const void* data) const
+{
+    vkCmdUpdateBuffer(handle_, dstBuffer->GetHandle(), dstOffset, dataSize, data);
+}
+
 void VulkanCommandBuffer::Draw(const std::uint32_t vertexCount,
                                const std::uint32_t instanceCount,
                                const std::uint32_t firstVertex,

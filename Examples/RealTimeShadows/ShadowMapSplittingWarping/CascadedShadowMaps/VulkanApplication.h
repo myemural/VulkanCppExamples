@@ -63,7 +63,7 @@ private:
 
     void UpdateSceneTransforms();
 
-    void ProcessInput();
+    void ProcessInput() const;
 
     void UpdateCascades();
 
@@ -103,6 +103,9 @@ private:
     std::array<CascadeInfo, kNoOfCascades> cascades_{};
 
     // Debug values
-    DebugMode debugMode_ = DebugMode::OFF;
+    bool isDebugModeEnabled_ = false;
+
+    // Updated light UBO data
+    LightUbo lightUbo_{};
 };
 } // namespace examples::real_time_shadows::shadow_map_splitting_warping::cascaded_shadow_maps

@@ -12,13 +12,12 @@ In this example, shadows are generated using the Cascaded Shadow Maps (CSM) tech
 
 ## Controls
 
-| Input   | Action                      |
-|---------|-----------------------------|
-| W/A/S/D | Move the camera             |
-| Mouse   | Look around with the camera |
-| Esc     | Close the window            |
-| 0       | Cascade debug mode off      |
-| 1       | Cascade debug mode on       |
+| Input   | Action                            |
+|---------|-----------------------------------|
+| W/A/S/D | Move the camera                   |
+| Mouse   | Look around with the camera       |
+| Esc     | Close the window                  |
+| Space   | Enable/disable cascade debug mode |
 
 ## Application Parameters
 

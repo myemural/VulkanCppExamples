@@ -133,7 +133,8 @@ void VulkanApplication::CreateInitialResources() const
     ResourceDescriptor resourceCreateInfo;
 
     // Fill buffer create infos
-    resourceCreateInfo.buffers = {{kLightUniformBuffer, sizeof(LightUbo), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+    resourceCreateInfo.buffers = {{kLightUniformBuffer, sizeof(LightUbo),
+                                   VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT}};
 
     // Fill shader module create infos
@@ -401,6 +402,21 @@ void VulkanApplication::InitInputSystem()
         yOffset *= sensitivity;
 
         camera_->Rotate(xOffset, yOffset);
+    });
+
+    window_->OnKey([&](const KeyEvent& event) {
+        if (event.action != GLFW_PRESS) {
+            return;
+        }
+
+        switch (event.key) {
+            case GLFW_KEY_SPACE:
+                isDebugModeEnabled_ = !isDebugModeEnabled_;
+                std::cout << "Debug mode: " << (isDebugModeEnabled_ ? "ON" : "OFF") << std::endl;
+                break;
+            default:
+                break;
+        }
     });
 }
 
@@ -683,6 +699,24 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
         }
     }
 
+    // Updating light uniform buffer
+    {
+        const std::vector beforeWriteBarriers{
+            resources_->GetBuffer(kLightUniformBuffer)
+                    ->CreateBufferMemoryBarrier(VK_ACCESS_UNIFORM_READ_BIT, VK_ACCESS_TRANSFER_WRITE_BIT)};
+        currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                                          VK_PIPELINE_STAGE_TRANSFER_BIT, {}, beforeWriteBarriers);
+
+        currentCmdBuffer->UpdateBuffer(resources_->GetBuffer(kLightUniformBuffer), 0, sizeof(LightUbo), &lightUbo_);
+
+        const std::vector afterWriteBarriers{
+            resources_->GetBuffer(kLightUniformBuffer)
+                    ->CreateBufferMemoryBarrier(VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_UNIFORM_READ_BIT)};
+        currentCmdBuffer->PipelineBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                          VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                                          {}, afterWriteBarriers);
+    }
+
     // Draw scene pass
     {
         currentCmdBuffer->BeginRenderPass(
@@ -712,7 +746,7 @@ void VulkanApplication::RecordPresentCommandBuffers(const std::uint32_t currentI
                 scenePushConstant.view = camera_->GetViewMatrix();
                 scenePushConstant.projection = camera_->GetProjectionMatrix();
                 scenePushConstant.cameraPosition = glm::vec4(camera_->GetPosition(), 1.0f);
-                scenePushConstant.debugMode = static_cast<std::uint32_t>(debugMode_);
+                scenePushConstant.debugMode = isDebugModeEnabled_ ? 1U : 0U;
                 currentCmdBuffer->PushConstants(pipelineLayout_,
                                                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0,
                                                 sizeof(scenePushConstant), &scenePushConstant);
@@ -795,21 +829,18 @@ void VulkanApplication::UpdateSceneTransforms()
 {
     UpdateCascades();
 
-    LightUbo lightUbo{};
-    lightUbo.lightDirection = glm::vec4(kLightDirection, 1.0f);
-    lightUbo.lightColor = glm::vec4(kLightColor, 1.0f);
+    lightUbo_.lightDirection = glm::vec4(kLightDirection, 1.0f);
+    lightUbo_.lightColor = glm::vec4(kLightColor, 1.0f);
 
     for (uint32_t i = 0; i < kNoOfCascades; i++) {
-        lightUbo.lightSpaceMatrices[i] = cascades_[i].lightSpaceMatrix;
+        lightUbo_.lightSpaceMatrices[i] = cascades_[i].lightSpaceMatrix;
     }
 
-    lightUbo.cascadeSplits = glm::vec4(cascades_[0].cascadeSplit, cascades_[1].cascadeSplit, cascades_[2].cascadeSplit,
-                                       cascades_[3].cascadeSplit);
-
-    resources_->SetBuffer(kLightUniformBuffer, &lightUbo, sizeof(lightUbo));
+    lightUbo_.cascadeSplits = glm::vec4(cascades_[0].cascadeSplit, cascades_[1].cascadeSplit, cascades_[2].cascadeSplit,
+                                        cascades_[3].cascadeSplit);
 }
 
-void VulkanApplication::ProcessInput()
+void VulkanApplication::ProcessInput() const
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {
@@ -823,14 +854,6 @@ void VulkanApplication::ProcessInput()
     }
     if (window_->IsKeyPressed(GLFW_KEY_D)) {
         camera_->Move(camera_->GetRightVector() * cameraSpeed);
-    }
-
-    // Set output debug mode via num keys
-    if (window_->IsKeyPressed(GLFW_KEY_0)) {
-        debugMode_ = DebugMode::OFF;
-    }
-    if (window_->IsKeyPressed(GLFW_KEY_1)) {
-        debugMode_ = DebugMode::ON;
     }
 }
 } // namespace examples::real_time_shadows::shadow_map_splitting_warping::cascaded_shadow_maps

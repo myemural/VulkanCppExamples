@@ -41,12 +41,6 @@ inline constexpr auto kSpecularShininess = 128.0f;
 inline constexpr auto kShadowMapSize = 1024U;
 inline constexpr auto kNoOfCascades = 4U;
 
-enum class DebugMode : std::uint32_t
-{
-    OFF = 0U, // Off
-    ON,       // On
-};
-
 struct alignas(16) LightUbo
 {
     glm::vec4 lightDirection;                    // xyz = Light Direction

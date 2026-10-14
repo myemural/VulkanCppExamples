@@ -76,6 +76,11 @@ public:
                                       const VkImageLayout& imageLayout,
                                       const std::vector<VkBufferImageCopy>& regions) const;
 
+    COMMON_API void UpdateBuffer(const std::shared_ptr<VulkanBuffer>& dstBuffer,
+                                 VkDeviceSize dstOffset,
+                                 VkDeviceSize dataSize,
+                                 const void* data) const;
+
     COMMON_API void Draw(std::uint32_t vertexCount,
                          std::uint32_t instanceCount,
                          std::uint32_t firstVertex,

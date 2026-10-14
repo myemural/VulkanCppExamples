@@ -88,7 +88,7 @@ float calculateShadow(vec3 normalWorldSpace, vec3 normalizedLightDir)
         return 0.0;
     }
 
-    float closestDepth = texture(uShadowMap[cascadeIndex], shadowUV).r;
+    float closestDepth = texture(uShadowMap[nonuniformEXT(cascadeIndex)], shadowUV).r;
 
     // Applying bias based on cascades
     float bias = max(0.005 * (1.0 - dot(normalWorldSpace, normalizedLightDir)), 0.0005);
