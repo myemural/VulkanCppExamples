@@ -69,8 +69,6 @@ void ApplicationMultisampling::CreateDefaultLogicalDevice()
     std::vector queuePriorities = {1.0f};
 
     VkPhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.fillModeNonSolid = VK_TRUE;
-    deviceFeatures.wideLines = VK_TRUE;
     deviceFeatures.sampleRateShading = VK_TRUE;
 
     device_ = physicalDevice_->CreateDevice([&](auto& builder) {
