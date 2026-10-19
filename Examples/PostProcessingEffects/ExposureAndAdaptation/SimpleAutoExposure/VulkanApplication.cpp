@@ -1033,7 +1033,7 @@ void VulkanApplication::UpdateSceneTransforms() const
                           pointLightInfos.size() * sizeof(PointLightGpuData));
 }
 
-void VulkanApplication::ProcessInput()
+void VulkanApplication::ProcessInput() const
 {
     const float cameraSpeed = GetParamFloat(AppSettings::CameraSpeed) * static_cast<float>(deltaTime_);
     if (window_->IsKeyPressed(GLFW_KEY_W)) {

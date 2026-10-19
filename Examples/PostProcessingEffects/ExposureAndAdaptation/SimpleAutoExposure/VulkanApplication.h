@@ -63,7 +63,7 @@ private:
 
     void UpdateSceneTransforms() const;
 
-    void ProcessInput();
+    void ProcessInput() const;
 
     // Render Passes
     std::shared_ptr<common::vulkan_wrapper::VulkanRenderPass> geometryRenderPass_;

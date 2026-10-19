@@ -1,6 +1,6 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, a simple auto exposure has been applied by computing the log-avegare luminance of the HDR
+ * @brief   In this example, a simple auto exposure has been applied by computing the log-average luminance of the HDR
  *          scene in a compute pass and deriving the exposure value from it before the tone mapping pass.
  * @author  Mustafa Yemural (myemural)
  * @date    29.09.2026
