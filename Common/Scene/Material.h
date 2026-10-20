@@ -26,6 +26,7 @@ enum class MaterialComponent : std::uint8_t
     ALBEDO_COLOR_VEC4,
     SPECULAR_COLOR_VEC4,
     TRANSMITTANCE_COLOR_VEC4,
+    SCATTER_DISTANCE_VEC4,
 
     AMBIENT_STRENGTH_FLOAT,
     SHININESS_FLOAT,
@@ -69,6 +70,7 @@ struct COMMON_API Material
     glm::vec4 albedoColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
     glm::vec4 specularColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
     glm::vec4 transmittanceColor = glm::vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    glm::vec4 scatterDistance = glm::vec4{0.0f};
 
     // Float values
     float ambientStrength = 0.05f;
@@ -129,6 +131,10 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::TRANSMITTANCE_COLOR_VEC4:
                 utility::AppendBytes(buffer, material.transmittanceColor);
+                break;
+
+            case MaterialComponent::SCATTER_DISTANCE_VEC4:
+                utility::AppendBytes(buffer, material.scatterDistance);
                 break;
 
             case MaterialComponent::AMBIENT_STRENGTH_FLOAT:

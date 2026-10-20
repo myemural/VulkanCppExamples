@@ -257,6 +257,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Anisotropic Specular in Disney BRDF](/Examples/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfAnisotropy)
 - **[Disney BSDF and Transmission](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission)**
   - [Specular Transmission and IOR in Disney BSDF](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneyBsdfTransmissionIor)
+  - [Subsurface Scattering in Disney BSDF](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneySubsurfaceScattering)
 
 ### [Advanced Shader Programming](/Examples/AdvancedShaderProgramming)
 

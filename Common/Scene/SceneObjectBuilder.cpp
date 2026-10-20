@@ -71,6 +71,8 @@ SceneObjectBuilder& SceneObjectBuilder::AddChild(const SceneObjectBuilder& child
     return *this;
 }
 
+std::vector<SceneObjectBuilder>& SceneObjectBuilder::GetChildBuilders() { return childBuilders_; }
+
 std::shared_ptr<SceneObject> SceneObjectBuilder::Build()
 {
     for (auto& childBuilder: childBuilders_) {

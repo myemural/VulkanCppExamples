@@ -37,6 +37,8 @@ public:
 
     COMMON_API SceneObjectBuilder& AddChild(const SceneObjectBuilder& childBuilder);
 
+    COMMON_API std::vector<SceneObjectBuilder>& GetChildBuilders();
+
     [[nodiscard]] COMMON_API std::shared_ptr<SceneObject> Build();
 
 private:
