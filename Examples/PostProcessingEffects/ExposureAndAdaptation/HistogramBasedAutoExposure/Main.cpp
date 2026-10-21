@@ -1,6 +1,6 @@
 /**
  * @file    Main.cpp
- * @brief   In this example, a histogram based auto exposure has been applied by building a luminance histogram of the
+ * @brief   In this example, a histogram-based auto exposure has been applied by building a luminance histogram of the
  *          HDR scene and deriving the exposure value from its percentile-filtered average before the tone mapping pass.
  * @author  Mustafa Yemural (myemural)
  * @date    30.09.2026
