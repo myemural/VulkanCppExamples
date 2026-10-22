@@ -34,7 +34,12 @@ This section contains Vulkan examples that related to post-processing effects. T
 
 ## [Exposure and Adaptation](/Examples/PostProcessingEffects/ExposureAndAdaptation)
 
-TBD
+- Auto exposure value calculation with log-average luminance of the HDR scene
+- Histogram-based auto exposure calculation
+- Applying eye adaptation on histogram-based auto exposure
+- Observing instantaneous light changes on eye adaptation technique
+- Applying local exposure technique using a blend of a bilateral grid and a blurred luminance
+- Integrating eye adaptation on local exposure
 
 ## [Lens and Camera Effects](/Examples/PostProcessingEffects/LensAndCameraEffects)
 
