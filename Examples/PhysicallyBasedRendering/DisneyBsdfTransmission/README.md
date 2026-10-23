@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
     - `DisneyBsdfTransmissionIor`
 2. [Subsurface Scattering in Disney BSDF](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneySubsurfaceScattering)
    - `DisneySubsurfaceScattering`
+3. [Thin Surface Approximation in Disney BSDF](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneyBsdfThinSurface)
+   - `DisneyBsdfThinSurface`
 
 ## Architecture of the Subsection
 

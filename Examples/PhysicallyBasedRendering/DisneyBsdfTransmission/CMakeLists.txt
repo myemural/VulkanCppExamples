@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(DisneyBsdfTransmissionIor)
 add_subdirectory(DisneySubsurfaceScattering)
+add_subdirectory(DisneyBsdfThinSurface)

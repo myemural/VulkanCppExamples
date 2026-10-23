@@ -44,6 +44,8 @@ enum class MaterialComponent : std::uint8_t
     SPEC_TRANS_FLOAT,
     AT_DISTANCE_FLOAT,
     THICKNESS_FLOAT,
+    DIFF_TRANS_FLOAT,
+    FLATNESS_FLOAT,
     REFLECTIVITY_FLOAT,
     OPACITY_FLOAT,
     UV_SCALE_FLOAT,
@@ -61,6 +63,7 @@ enum class MaterialComponent : std::uint8_t
     AMBIENT_OCCLUSION_MAP_TEXTURE,
 
     FLIP_NORMALS_INT,
+    THIN_SURFACE_INT,
 };
 
 struct COMMON_API Material
@@ -89,6 +92,8 @@ struct COMMON_API Material
     float specTrans = 0.0f;
     float atDistance = 0.0f;
     float thickness = 0.0f;
+    float diffTrans = 0.0f; // Thin surface parameter, range: [0, 2]
+    float flatness = 0.0f;  // Thin surface parameter, range: [0, 1]
     float reflectivity = 0.0f;
     float opacity = 1.0f;
     float uvScale = 1.0f;
@@ -108,6 +113,7 @@ struct COMMON_API Material
 
     // Flag values
     int flipNormals = 0; // 0: False, 1: True
+    int thinSurface = 0; // 0: Solid, 1: Thin Surface
 };
 
 inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
@@ -201,6 +207,14 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
                 utility::AppendBytes(buffer, material.thickness);
                 break;
 
+            case MaterialComponent::DIFF_TRANS_FLOAT:
+                utility::AppendBytes(buffer, material.diffTrans);
+                break;
+
+            case MaterialComponent::FLATNESS_FLOAT:
+                utility::AppendBytes(buffer, material.flatness);
+                break;
+
             case MaterialComponent::REFLECTIVITY_FLOAT:
                 utility::AppendBytes(buffer, material.reflectivity);
                 break;
@@ -259,6 +273,9 @@ inline std::vector<std::uint8_t> SerializeMaterial(const Material& material,
 
             case MaterialComponent::FLIP_NORMALS_INT:
                 utility::AppendBytes(buffer, material.flipNormals);
+                break;
+            case MaterialComponent::THIN_SURFACE_INT:
+                utility::AppendBytes(buffer, material.thinSurface);
                 break;
         }
     }

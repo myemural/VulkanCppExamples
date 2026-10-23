@@ -258,6 +258,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Disney BSDF and Transmission](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission)**
   - [Specular Transmission and IOR in Disney BSDF](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneyBsdfTransmissionIor)
   - [Subsurface Scattering in Disney BSDF](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneySubsurfaceScattering)
+  - [Thin Surface Approximation in Disney BSDF](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneyBsdfThinSurface)
 
 ### [Advanced Shader Programming](/Examples/AdvancedShaderProgramming)
 
