@@ -43,4 +43,17 @@ This section contains Vulkan examples that related to post-processing effects. T
 
 ## [Lens and Camera Effects](/Examples/PostProcessingEffects/LensAndCameraEffects)
 
-TBD
+- Understanding how to implement film grain post-processing effect
+- Adjusting intensity, size and luminance response values of the film grain effect
+- Turning on/off colored film grain effect
+- Understanding how to implement vignette post-processing effect
+- Adjusting intensity, smoothness and roundness values of the vignette effect
+- Applying different kind of vignette theme presets
+- Understanding how to implement lens distortion (barrel, pincushion, fisheye) post-processing effects
+- Adjusting strength and zoom values of the distortion effects
+- Enabling or disabling auto-fit feature of the barrel distortion effect
+- Understanding how to implement chromatic aberration post-processing effect
+- Adjusting intensity and falloff values of the chromatic aberration effect
+- Understanding how to implement procedural lens flare post-processing effect
+- Enabling or disabling glow, starburst, streak, ghosts and halo components of the lens flare effect
+- Adjusting intensity value of the lens flare effect

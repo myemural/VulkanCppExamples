@@ -55,4 +55,8 @@ This section contains Vulkan examples that related to physically based rendering
 
 ## [Disney BSDF and Transmission](/Examples/PhysicallyBasedRendering/DisneyBsdfTransmission)
 
-TBD
+- Implementing specular transmission in Disney BSDF material model
+- Implementing real IOR parameter in Disney BSDF material model
+- Implementing subsurface scattering approach in Disney BSDF material model
+- Implementing thin surface approximation approach in Disney BSDF material model
+- Implementing flatness parameter in Disney BSDF material model
