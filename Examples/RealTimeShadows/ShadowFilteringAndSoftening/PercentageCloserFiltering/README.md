@@ -40,11 +40,11 @@ In this example, shadows in the scene are smoothed using Percentage Closer Filte
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                 | Status             | Notes                |
+|---------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeShadows/ShadowFilteringAndSoftening/PercentageCloserFiltering/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                        | :x:                | Will be implemented. |
+| Slang                                                                                       | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

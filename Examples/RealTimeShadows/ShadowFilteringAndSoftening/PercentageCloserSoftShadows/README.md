@@ -35,11 +35,11 @@ In this example, the shadows in the scene are created using Percentage Closer So
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                   | Status             | Notes                |
+|-----------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeShadows/ShadowFilteringAndSoftening/PercentageCloserSoftShadows/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                          | :x:                | Will be implemented. |
+| Slang                                                                                         | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
