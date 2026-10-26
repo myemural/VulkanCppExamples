@@ -36,11 +36,11 @@ In this example, shadows are generated using the Cascaded Shadow Maps (CSM) tech
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                        | Status             | Notes                |
+|------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeShadows/ShadowMapSplittingWarping/CascadedShadowMaps/glsl) | :white_check_mark: |                      |
+| HLSL                                                                               | :x:                | Will be implemented. |
+| Slang                                                                              | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
