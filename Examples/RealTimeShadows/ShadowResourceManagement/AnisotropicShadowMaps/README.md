@@ -36,11 +36,11 @@ In this example, the mipmaps of the generated variance shadow map are created, a
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                          | Status             | Notes                |
+|--------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeShadows/ShadowResourceManagement/AnisotropicShadowMaps/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                 | :x:                | Will be implemented. |
+| Slang                                                                                | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

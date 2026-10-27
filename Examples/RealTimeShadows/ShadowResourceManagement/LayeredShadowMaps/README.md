@@ -34,11 +34,11 @@ In this example, the shadow maps created by the various light sources added to t
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                      | Status             | Notes                |
+|----------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/RealTimeShadows/ShadowResourceManagement/LayeredShadowMaps/glsl) | :white_check_mark: |                      |
+| HLSL                                                                             | :x:                | Will be implemented. |
+| Slang                                                                            | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
