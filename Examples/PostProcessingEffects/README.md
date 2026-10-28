@@ -57,3 +57,8 @@ This section contains Vulkan examples that related to post-processing effects. T
 - Understanding how to implement procedural lens flare post-processing effect
 - Enabling or disabling glow, starburst, streak, ghosts and halo components of the lens flare effect
 - Adjusting intensity value of the lens flare effect
+
+## [Bloom and Glow](/Examples/PostProcessingEffects/BloomAndGlow)
+
+TBD
+
