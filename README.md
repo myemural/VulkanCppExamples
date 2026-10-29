@@ -323,6 +323,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Procedural Lens Flare Effect](/Examples/PostProcessingEffects/LensAndCameraEffects/ProceduralLensFlare)
 - **[Bloom and Glow](/Examples/PostProcessingEffects/BloomAndGlow)**
   - [Thresholded Bloom with Separable Gaussian Blur](/Examples/PostProcessingEffects/BloomAndGlow/ThresholdedGaussianBloom)
+  - [Mip-Chain Bloom (Physically Based, Downsample/Upsample)](/Examples/PostProcessingEffects/BloomAndGlow/MipChainBloom)
 
 ## Environment Support
 
