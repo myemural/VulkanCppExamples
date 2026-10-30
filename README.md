@@ -324,6 +324,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Bloom and Glow](/Examples/PostProcessingEffects/BloomAndGlow)**
   - [Thresholded Bloom with Separable Gaussian Blur](/Examples/PostProcessingEffects/BloomAndGlow/ThresholdedGaussianBloom)
   - [Mip-Chain Bloom (Physically Based, Downsample/Upsample)](/Examples/PostProcessingEffects/BloomAndGlow/MipChainBloom)
+  - [Bloom with Lens Dirt and Anamorphic Stretch](/Examples/PostProcessingEffects/BloomAndGlow/BloomLensDirt)
 
 ## Environment Support
 

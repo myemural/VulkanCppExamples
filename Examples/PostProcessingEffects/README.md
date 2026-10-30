@@ -60,5 +60,11 @@ This section contains Vulkan examples that related to post-processing effects. T
 
 ## [Bloom and Glow](/Examples/PostProcessingEffects/BloomAndGlow)
 
-TBD
-
+- Understanding how to implement a thresholded bloom post-processing effect on HDR screen color
+- Extracting bright areas with a soft-l-knee threshold into a half-resolution image
+- Implementing a separable gaussian blur with linear sampling and ping-pong render targets
+- Understanding how to implement a physically based (threshold-less) bloom effect with a mip chain
+- Downsampling with the 13-tap filter and suppressing fireflies with Karis average
+- Upsampling with a 3x3 tent filter and accumulating the mip chain with additive blending
+- Understanding how to apply a lens dirt texture to the bloom effect
+- Understanding how to create an anamorphic (horizontally stretched) bloom by scaling the upsample filter

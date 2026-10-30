@@ -27,7 +27,7 @@ void main()
     // 3x3 tent filter
     vec3 result = texture(uSourceImage, uv).rgb * 4.0;
     result += (texture(uSourceImage, uv + vec2(0.0, t.y)).rgb + texture(uSourceImage, uv - vec2(0.0, t.y)).rgb +
-               texture(uSourceImage, uv + vec2(t.x, 0.0)).rgb + texture(uSourceImage, uv - vec2(t.x, 0.0)).rgb);
+               texture(uSourceImage, uv + vec2(t.x, 0.0)).rgb + texture(uSourceImage, uv - vec2(t.x, 0.0)).rgb) * 2.0;
     result += texture(uSourceImage, uv + t).rgb + texture(uSourceImage, uv - t).rgb +
               texture(uSourceImage, uv + vec2(t.x, -t.y)).rgb + texture(uSourceImage, uv + vec2(-t.x, t.y)).rgb;
     result *= 1.0 / 16.0;
