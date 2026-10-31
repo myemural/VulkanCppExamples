@@ -325,6 +325,9 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Thresholded Bloom with Separable Gaussian Blur](/Examples/PostProcessingEffects/BloomAndGlow/ThresholdedGaussianBloom)
   - [Mip-Chain Bloom (Physically Based, Downsample/Upsample)](/Examples/PostProcessingEffects/BloomAndGlow/MipChainBloom)
   - [Bloom with Lens Dirt and Anamorphic Stretch](/Examples/PostProcessingEffects/BloomAndGlow/BloomLensDirt)
+- **[Analog Display Effects](/Examples/PostProcessingEffects/AnalogDisplayEffects)**
+  - [CRT Scanlines and Phosphor Masks](/Examples/PostProcessingEffects/AnalogDisplayEffects/CrtScanlinesPhosphorMask)
+  - [CRT Screen Simulation (Curvature, Halation, Interlacing)](/Examples/PostProcessingEffects/AnalogDisplayEffects/CrtScreenSimulation)
 
 ## Environment Support
 
