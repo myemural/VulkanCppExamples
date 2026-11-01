@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(CrtScanlinesPhosphorMask)
 add_subdirectory(CrtScreenSimulation)
+add_subdirectory(VhsTapeEffect)

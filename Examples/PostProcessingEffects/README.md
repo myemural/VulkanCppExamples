@@ -71,4 +71,16 @@ This section contains Vulkan examples that related to post-processing effects. T
 
 ## [Analog Display Effects](/Examples/PostProcessingEffects/AnalogDisplayEffects)
 
+- Understanding how to simulate a CRT display with a low-resolution virtual image
+- Drawing scanlines with a brightness dependent gaussian beam profile without losing the average brightness
+- Implementing aperture grille, slot mask and shadow mask phosphor patterns
+- Understanding how to simulate the curved tube of a CRT with rounded corners
+- Implementing halation with a separate gaussian blur of the low-res virtual image
+- Implementing interlacing with a persistent render target, blending and phosphor persistence
+- Understanding how to simulate the limited luma and chroma bandwidth of a VHS tape in the YIQ color space
+- Implementing time dependent line displacements (wobble, jitter, tracking error, head switching)
+- Generating tape noise and dropouts procedurally with has functions
+
+## [Blur and Motion Effects](/Examples/PostProcessingEffects/BlurAndMotionEffects)
+
 TBD

@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `CrtScanlinesPhosphorMask`
 2. [CRT Screen Simulation (Curvature, Halation, Interlacing)](/Examples/PostProcessingEffects/AnalogDisplayEffects/CrtScreenSimulation)
    - `CrtScreenSimulation`
+3. [VHS Tape Effect](/Examples/PostProcessingEffects/AnalogDisplayEffects/VhsTapeEffect)
+   - `VhsTapeEffect`
 
 ## Architecture of the Subsection
 

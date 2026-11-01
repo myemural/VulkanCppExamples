@@ -328,6 +328,9 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Analog Display Effects](/Examples/PostProcessingEffects/AnalogDisplayEffects)**
   - [CRT Scanlines and Phosphor Masks](/Examples/PostProcessingEffects/AnalogDisplayEffects/CrtScanlinesPhosphorMask)
   - [CRT Screen Simulation (Curvature, Halation, Interlacing)](/Examples/PostProcessingEffects/AnalogDisplayEffects/CrtScreenSimulation)
+  - [VHS Tape Effect](/Examples/PostProcessingEffects/AnalogDisplayEffects/VhsTapeEffect)
+- **[Blur and Motion Effects](/Examples/PostProcessingEffects/BlurAndMotionEffects)**
+  - [Blur Techniques Comparison (Box, Gaussian, Kawase, Dual Kawase)](/Examples/PostProcessingEffects/BlurAndMotionEffects/BlurTechniquesComparison)
 
 ## Environment Support
 
