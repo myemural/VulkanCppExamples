@@ -35,11 +35,11 @@ This example demonstrates a basic PBR implementation using the Cook-Torrance BRD
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                    | Status             | Notes                |
+|--------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/BasicPbr/CookTorranceMicrofacet/glsl) | :white_check_mark: |                      |
+| HLSL                                                                           | :x:                | Will be implemented. |
+| Slang                                                                          | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

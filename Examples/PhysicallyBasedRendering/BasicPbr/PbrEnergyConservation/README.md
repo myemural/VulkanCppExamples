@@ -35,11 +35,11 @@ In this example, the energy conservation principle, which forms the basis of the
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                   | Status             | Notes                |
+|-------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/BasicPbr/PbrEnergyConservation/glsl) | :white_check_mark: |                      |
+| HLSL                                                                          | :x:                | Will be implemented. |
+| Slang                                                                         | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
