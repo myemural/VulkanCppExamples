@@ -331,6 +331,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [VHS Tape Effect](/Examples/PostProcessingEffects/AnalogDisplayEffects/VhsTapeEffect)
 - **[Blur and Motion Effects](/Examples/PostProcessingEffects/BlurAndMotionEffects)**
   - [Blur Techniques Comparison (Box, Gaussian, Kawase, Dual Kawase)](/Examples/PostProcessingEffects/BlurAndMotionEffects/BlurTechniquesComparison)
+  - [Depth of Field (Gather-Based, Thin Lens CoC)](/Examples/PostProcessingEffects/BlurAndMotionEffects/GatherDepthOfField)
 
 ## Environment Support
 
