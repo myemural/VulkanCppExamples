@@ -34,11 +34,11 @@ This example demonstrates the use of metallic textures in a PBR metallic/roughne
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                               | Status             | Notes                |
+|---------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/TexturedPbr/MetallicMapPbr/glsl) | :white_check_mark: |                      |
+| HLSL                                                                      | :x:                | Will be implemented. |
+| Slang                                                                     | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
