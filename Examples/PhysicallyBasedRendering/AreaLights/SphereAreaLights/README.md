@@ -39,11 +39,11 @@ This example demonstrates the implementation of sphere area lights with using Re
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                | Status             | Notes                |
+|----------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/AreaLights/SphereAreaLights/glsl) | :white_check_mark: |                      |
+| HLSL                                                                       | :x:                | Will be implemented. |
+| Slang                                                                      | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
