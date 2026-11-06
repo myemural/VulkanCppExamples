@@ -35,11 +35,11 @@ In this example, Image Based Lighting (IBL), including emissive and ambient occl
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                          | Status             | Notes                |
+|--------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/IblAndReflections/CompleteIblTextured/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                 | :x:                | Will be implemented. |
+| Slang                                                                                | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

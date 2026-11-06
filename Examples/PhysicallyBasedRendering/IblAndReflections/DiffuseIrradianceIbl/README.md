@@ -35,11 +35,11 @@ In this example, the cubemap used for the skybox is convoluted to obtain an irra
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                           | Status             | Notes                |
+|---------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/IblAndReflections/DiffuseIrradianceIbl/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                  | :x:                | Will be implemented. |
+| Slang                                                                                 | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

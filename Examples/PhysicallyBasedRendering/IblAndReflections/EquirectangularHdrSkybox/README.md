@@ -36,11 +36,11 @@ In this example, an equirectangular HDR image is first loaded, then converted in
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                               | Status             | Notes                |
+|-------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/IblAndReflections/EquirectangularHdrSkybox/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                      | :x:                | Will be implemented. |
+| Slang                                                                                     | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

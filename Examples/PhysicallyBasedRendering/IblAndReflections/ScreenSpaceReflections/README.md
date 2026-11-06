@@ -41,11 +41,11 @@ In this example, the PBR material system is first implemented using deferred sha
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                             | Status             | Notes                |
+|-----------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/IblAndReflections/ScreenSpaceReflections/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                    | :x:                | Will be implemented. |
+| Slang                                                                                   | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
