@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `BlurTechniquesComparison`
 2. [Depth of Field (Gather-Based, Thin Lens CoC)](/Examples/PostProcessingEffects/BlurAndMotionEffects/GatherDepthOfField)
    - `GatherDepthOfField`
+3. [Bokeh Depth of Field](/Examples/PostProcessingEffects/BlurAndMotionEffects/BokehDepthOfField)
+   - `BokehDepthOfField`
 
 ## Architecture of the Subsection
 

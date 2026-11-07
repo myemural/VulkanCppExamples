@@ -5,3 +5,4 @@ include_directories(Base)
 
 add_subdirectory(BlurTechniquesComparison)
 add_subdirectory(GatherDepthOfField)
+add_subdirectory(BokehDepthOfField)

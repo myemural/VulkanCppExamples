@@ -54,7 +54,7 @@ inline constexpr auto kMinFocusDistance = 0.5f;
 inline constexpr auto kMaxFocusDistance = 40.0f;
 inline constexpr auto kFocusDistanceStep = 1.2f;  // Multiplier (focus distance changes logarithmically)
 
-inline constexpr auto kMaxCocRadiusRatio = 0.045; // Maximum CoC radius, it is also the radius of the gather kernel
+inline constexpr auto kMaxCocRadiusRatio = 0.045f; // Maximum CoC radius, it is also the radius of the gather kernel
 
 struct alignas(16) PointLightGpuData
 {

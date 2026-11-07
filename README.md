@@ -332,6 +332,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Blur and Motion Effects](/Examples/PostProcessingEffects/BlurAndMotionEffects)**
   - [Blur Techniques Comparison (Box, Gaussian, Kawase, Dual Kawase)](/Examples/PostProcessingEffects/BlurAndMotionEffects/BlurTechniquesComparison)
   - [Depth of Field (Gather-Based, Thin Lens CoC)](/Examples/PostProcessingEffects/BlurAndMotionEffects/GatherDepthOfField)
+  - [Bokeh Depth of Field](/Examples/PostProcessingEffects/BlurAndMotionEffects/BokehDepthOfField)
 
 ## Environment Support
 
