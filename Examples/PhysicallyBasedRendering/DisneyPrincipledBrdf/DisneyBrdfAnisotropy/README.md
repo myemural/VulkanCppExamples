@@ -36,11 +36,11 @@ In this example, the anisotropic specular property of Disney BRDF is implemented
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                              | Status             | Notes                |
+|------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfAnisotropy/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                     | :x:                | Will be implemented. |
+| Slang                                                                                    | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

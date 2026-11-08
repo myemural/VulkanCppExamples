@@ -37,11 +37,11 @@ In this example, the sheen layer of Disney BRDF is implemented along with IBL mo
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                         | Status             | Notes                |
+|-------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfSheen/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                | :x:                | Will be implemented. |
+| Slang                                                                               | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

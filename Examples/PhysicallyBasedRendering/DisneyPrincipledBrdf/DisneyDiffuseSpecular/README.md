@@ -38,11 +38,11 @@ In this example, Disney BRDF's basic diffuse and specular models are implemented
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                               | Status             | Notes                |
+|-------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyDiffuseSpecular/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                      | :x:                | Will be implemented. |
+| Slang                                                                                     | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

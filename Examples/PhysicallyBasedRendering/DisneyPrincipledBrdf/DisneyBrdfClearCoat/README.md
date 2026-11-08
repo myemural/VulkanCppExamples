@@ -37,11 +37,11 @@ In this example, Disney BRDF's clear coat layer is implemented along with IBL mo
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                             | Status             | Notes                |
+|-----------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/DisneyPrincipledBrdf/DisneyBrdfClearCoat/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                    | :x:                | Will be implemented. |
+| Slang                                                                                   | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
