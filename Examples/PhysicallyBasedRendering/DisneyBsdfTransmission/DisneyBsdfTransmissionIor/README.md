@@ -37,11 +37,11 @@ In this example, fundamental BSDF material system has been implemented and Disne
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                     | Status             | Notes                |
+|-------------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneyBsdfTransmissionIor/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                            | :x:                | Will be implemented. |
+| Slang                                                                                           | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

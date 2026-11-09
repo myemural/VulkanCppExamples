@@ -36,11 +36,11 @@ In this example, a per-channel scatterDistance (RGB) parameter has been added to
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                      | Status             | Notes                |
+|--------------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PhysicallyBasedRendering/DisneyBsdfTransmission/DisneySubsurfaceScattering/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                             | :x:                | Will be implemented. |
+| Slang                                                                                            | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
