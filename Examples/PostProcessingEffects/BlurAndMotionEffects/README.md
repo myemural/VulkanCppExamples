@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `GatherDepthOfField`
 3. [Bokeh Depth of Field](/Examples/PostProcessingEffects/BlurAndMotionEffects/BokehDepthOfField)
    - `BokehDepthOfField`
+4. [Camera Motion Blur via Depth Reprojection](/Examples/PostProcessingEffects/BlurAndMotionEffects/CameraMotionBlur)
+   - `CameraMotionBlur`
 
 ## Architecture of the Subsection
 
