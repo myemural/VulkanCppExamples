@@ -334,6 +334,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Depth of Field (Gather-Based, Thin Lens CoC)](/Examples/PostProcessingEffects/BlurAndMotionEffects/GatherDepthOfField)
   - [Bokeh Depth of Field](/Examples/PostProcessingEffects/BlurAndMotionEffects/BokehDepthOfField)
   - [Camera Motion Blur via Depth Reprojection](/Examples/PostProcessingEffects/BlurAndMotionEffects/CameraMotionBlur)
+  - [Per-Object Motion Blur with Velocity Buffer](/Examples/PostProcessingEffects/BlurAndMotionEffects/PerObjectMotionBlur)
 
 ## Environment Support
 

@@ -14,6 +14,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `BokehDepthOfField`
 4. [Camera Motion Blur via Depth Reprojection](/Examples/PostProcessingEffects/BlurAndMotionEffects/CameraMotionBlur)
    - `CameraMotionBlur`
+5. [Per-Object Motion Blur with Velocity Buffer](/Examples/PostProcessingEffects/BlurAndMotionEffects/PerObjectMotionBlur)
+   - `PerObjectMotionBlur`
 
 ## Architecture of the Subsection
 

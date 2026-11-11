@@ -437,8 +437,6 @@ void VulkanApplication::InitInputSystem()
         }
 
         constexpr float kExposureStep = 0.5f;
-        constexpr float kIntensityStep = 1.0f;
-        constexpr float kFalloffStep = 0.25f;
 
         switch (event.key) {
             case GLFW_KEY_SPACE:
