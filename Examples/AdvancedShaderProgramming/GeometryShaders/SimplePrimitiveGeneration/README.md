@@ -35,11 +35,11 @@ In this example, points drawn on the scene in the shape of a sine wave are rende
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                               | Status             | Notes                |
+|-------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/GeometryShaders/SimplePrimitiveGeneration/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                      | :x:                | Will be implemented. |
+| Slang                                                                                     | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

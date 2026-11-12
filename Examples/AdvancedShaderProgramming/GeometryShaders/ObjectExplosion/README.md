@@ -35,11 +35,11 @@ In this example, the 3D model rendered in the scene is broken down and reassembl
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                     | Status             | Notes                |
+|---------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/GeometryShaders/ObjectExplosion/glsl) | :white_check_mark: |                      |
+| HLSL                                                                            | :x:                | Will be implemented. |
+| Slang                                                                           | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
