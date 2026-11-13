@@ -38,11 +38,11 @@ In this example, a simple water wave simulation is performed using Gerstner wave
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                  | Status             | Notes                |
+|----------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/TessellationShaders/WaterSurfaceTessellation/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                         | :x:                | Will be implemented. |
+| Slang                                                                                        | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

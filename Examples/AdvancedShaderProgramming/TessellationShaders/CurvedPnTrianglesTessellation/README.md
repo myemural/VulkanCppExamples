@@ -35,11 +35,11 @@ In this example, subdivision is applied to a loaded model using tessellation sha
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                       | Status             | Notes                |
+|---------------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/TessellationShaders/CurvedPnTrianglesTessellation/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                              | :x:                | Will be implemented. |
+| Slang                                                                                             | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

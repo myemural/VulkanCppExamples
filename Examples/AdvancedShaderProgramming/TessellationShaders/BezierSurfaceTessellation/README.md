@@ -41,11 +41,11 @@ In this example, a Bézier surface is drawn with 16 control points using tessell
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                   | Status             | Notes                |
+|-----------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/TessellationShaders/BezierSurfaceTessellation/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                          | :x:                | Will be implemented. |
+| Slang                                                                                         | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

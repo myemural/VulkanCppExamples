@@ -43,11 +43,11 @@ In this example, a simple triangle is drawn on the screen in wireframe mode, and
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                   | Status             | Notes                |
+|-----------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/TessellationShaders/BasicTriangleTessellation/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                          | :x:                | Will be implemented. |
+| Slang                                                                                         | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
