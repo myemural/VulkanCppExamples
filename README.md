@@ -335,6 +335,8 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Bokeh Depth of Field](/Examples/PostProcessingEffects/BlurAndMotionEffects/BokehDepthOfField)
   - [Camera Motion Blur via Depth Reprojection](/Examples/PostProcessingEffects/BlurAndMotionEffects/CameraMotionBlur)
   - [Per-Object Motion Blur with Velocity Buffer](/Examples/PostProcessingEffects/BlurAndMotionEffects/PerObjectMotionBlur)
+- **[Stylization and Image Effects](/Examples/PostProcessingEffects/StylizationAndImageEffects)**
+  - [Pixelation, Posterization and Ordered Dithering](/Examples/PostProcessingEffects/StylizationAndImageEffects/PixelationDithering)
 
 ## Environment Support
 

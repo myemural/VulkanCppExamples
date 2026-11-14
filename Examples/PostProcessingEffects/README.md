@@ -84,3 +84,7 @@ This section contains Vulkan examples that related to post-processing effects. T
 ## [Blur and Motion Effects](/Examples/PostProcessingEffects/BlurAndMotionEffects)
 
 TBD
+
+## [Stylization and Image Effects](/Examples/PostProcessingEffects/StylizationAndImageEffects)
+
+TBD
