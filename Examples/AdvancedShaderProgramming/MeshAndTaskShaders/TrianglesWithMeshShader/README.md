@@ -35,11 +35,11 @@ In this example, a maximum of 3 triangles are drawn on the screen using a mesh s
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                | Status             | Notes                |
+|--------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/MeshAndTaskShaders/TrianglesWithMeshShader/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                       | :x:                | Will be implemented. |
+| Slang                                                                                      | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

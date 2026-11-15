@@ -35,11 +35,11 @@ This example demonstrates how to apply LOD using a task shader, based on the dis
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                      | Status             | Notes                |
+|----------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/MeshAndTaskShaders/LodTaskShader/glsl) | :white_check_mark: |                      |
+| HLSL                                                                             | :x:                | Will be implemented. |
+| Slang                                                                            | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
