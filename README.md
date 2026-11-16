@@ -337,6 +337,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Per-Object Motion Blur with Velocity Buffer](/Examples/PostProcessingEffects/BlurAndMotionEffects/PerObjectMotionBlur)
 - **[Stylization and Image Effects](/Examples/PostProcessingEffects/StylizationAndImageEffects)**
   - [Pixelation, Posterization and Ordered Dithering](/Examples/PostProcessingEffects/StylizationAndImageEffects/PixelationDithering)
+  - [Edge Detection and Screen Space Outlines](/Examples/PostProcessingEffects/StylizationAndImageEffects/EdgeDetectionOutline)
 
 ## Environment Support
 

@@ -12,7 +12,7 @@ layout(location = 0) out vec4 outColor;
 
 layout(set = 0, binding = 0) uniform sampler2D gLightPassOutput;
 
-layout(push_constant) uniform ChromaticAberrationPushConstants {
+layout(push_constant) uniform PixelationDitheringPushConstants {
     float exposure;                     // Manual exposure in EV
     uint pixelSize;                     // Size of the pixel blocks in screen pixels (1: No pixelation)
     uint colorLevels;                   // Color levels per channel (for example 4: 4 x 4 x 4 = 64 colors)

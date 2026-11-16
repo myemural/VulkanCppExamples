@@ -4,3 +4,4 @@ add_subdirectory(Base)
 include_directories(Base)
 
 add_subdirectory(PixelationDithering)
+add_subdirectory(EdgeDetectionOutline)
