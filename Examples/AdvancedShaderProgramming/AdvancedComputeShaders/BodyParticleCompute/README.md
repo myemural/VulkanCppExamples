@@ -30,11 +30,11 @@ This example demonstrates a real-time N-body gravitational simulation of two col
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                | Status             | Notes                |
+|--------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/AdvancedComputeShaders/BodyParticleCompute/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                       | :x:                | Will be implemented. |
+| Slang                                                                                      | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

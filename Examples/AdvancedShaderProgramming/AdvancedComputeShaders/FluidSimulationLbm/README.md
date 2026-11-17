@@ -38,11 +38,11 @@ In this example, a 2D Kármán vortex street is simulated with the Lattice Boltz
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                               | Status             | Notes                |
+|-------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/AdvancedComputeShaders/FluidSimulationLbm/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                      | :x:                | Will be implemented. |
+| Slang                                                                                     | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

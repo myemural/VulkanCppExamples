@@ -33,11 +33,11 @@ In this example, Conway's Game of Life mathematical model is visually implemente
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                               | Status             | Notes                |
+|-------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/AdvancedComputeShaders/GameOfLifeSubgroup/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                      | :x:                | Will be implemented. |
+| Slang                                                                                     | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

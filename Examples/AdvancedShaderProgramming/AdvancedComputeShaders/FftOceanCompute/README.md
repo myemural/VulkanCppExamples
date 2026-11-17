@@ -36,11 +36,11 @@ This example demonstrates FFT ocean simulation with using compute shaders. 3 com
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                            | Status             | Notes                |
+|----------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/AdvancedComputeShaders/FftOceanCompute/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                   | :x:                | Will be implemented. |
+| Slang                                                                                  | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

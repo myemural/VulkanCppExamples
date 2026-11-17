@@ -37,11 +37,11 @@ This example demonstrates GPU cloth simulation in Vulkan using a ping-pong compu
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                   | Status             | Notes                |
+|-----------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/AdvancedComputeShaders/ClothSimulationCompute/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                          | :x:                | Will be implemented. |
+| Slang                                                                                         | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

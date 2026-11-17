@@ -35,11 +35,11 @@ In this example, the whole scene is rendered by a compute shader that traverses 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                              | Status             | Notes                |
+|------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/AdvancedShaderProgramming/AdvancedComputeShaders/RayTracingCompute/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                     | :x:                | Will be implemented. |
+| Slang                                                                                    | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
