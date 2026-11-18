@@ -10,6 +10,10 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `PixelationDithering`
 2. [Edge Detection and Screen Space Outlines](/Examples/PostProcessingEffects/StylizationAndImageEffects/EdgeDetectionOutline)
    - `EdgeDetectionOutline`
+3. [Cel Shading with Toon Ramp](/Examples/PostProcessingEffects/StylizationAndImageEffects/CelShading)
+   - `CelShading`
+4. [Kuwahara Filter (Basic, Generalized, Anisotropic)](/Examples/PostProcessingEffects/StylizationAndImageEffects/KuwaharaFilter)
+   - `KuwaharaFilter`
 
 ## Architecture of the Subsection
 

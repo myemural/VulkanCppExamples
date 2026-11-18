@@ -338,6 +338,8 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Stylization and Image Effects](/Examples/PostProcessingEffects/StylizationAndImageEffects)**
   - [Pixelation, Posterization and Ordered Dithering](/Examples/PostProcessingEffects/StylizationAndImageEffects/PixelationDithering)
   - [Edge Detection and Screen Space Outlines](/Examples/PostProcessingEffects/StylizationAndImageEffects/EdgeDetectionOutline)
+  - [Cel Shading with Toon Ramp](/Examples/PostProcessingEffects/StylizationAndImageEffects/CelShading)
+  - [Kuwahara Filter (Basic, Generalized, Anisotropic)](/Examples/PostProcessingEffects/StylizationAndImageEffects/KuwaharaFilter)
 
 ## Environment Support
 

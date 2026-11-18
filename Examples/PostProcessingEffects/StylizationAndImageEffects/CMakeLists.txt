@@ -5,3 +5,5 @@ include_directories(Base)
 
 add_subdirectory(PixelationDithering)
 add_subdirectory(EdgeDetectionOutline)
+add_subdirectory(CelShading)
+add_subdirectory(KuwaharaFilter)
