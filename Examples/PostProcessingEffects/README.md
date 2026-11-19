@@ -83,8 +83,37 @@ This section contains Vulkan examples that related to post-processing effects. T
 
 ## [Blur and Motion Effects](/Examples/PostProcessingEffects/BlurAndMotionEffects)
 
-TBD
+- Understanding how separable box and gaussian blurs work and how linear sampling halves the texture fetches
+- Understanding how Kawase blur approximates a wide gaussian with a few cheap iterations
+- Understanding how Dual Kawase blur uses a downsample/upsample chain to get very wide blurs
+- Calculating the circle of confusion (CoC) with the thin lens model from focal length, f-stop and focus distance
+- Separating the near and far fields with a signed CoC and gathering them as different layers
+- Using depth-aware weighting to prevent bleeding of the in-focus objects onto the blurred background
+- Spreading the near field over the in-focus areas with scatter-as-gatter and calculating its coverage
+- Running the expensive gather pass in half resolution and mixing the result with the full-res image
+- Understanding how bokeh shapes are formed by the aperture of a real lens
+- Separating the energy of bright highlights from the gathered image without losing or duplicating energy
+- Scattering sprites with an instanced draw call without vertex buffers and culling them in the vertex shader
+- Using additive blending to accumulate the sprites and occluding far field sprites with the CoC
+- Reconstructing the screen space velocity of the camera motion from the depth (view-space position) and the previous view-projection matrix
+- Averaging the color along the velocity and hiding the banding with a per-pixel jitter
+- Scaling the blur length with the shutter speed and the frame time
+- Writing a velocity buffer in the geometry pass with the current and the previous frame's matrices
+- Understanding the TileMax and NeighborMax passes and why the blur needs the velocities of the neighbor tiles
+- Implementing the reconstruction filter (McGuire et al. 2012) with soft depth comparisons, cone and cylinder weights
 
 ## [Stylization and Image Effects](/Examples/PostProcessingEffects/StylizationAndImageEffects)
 
-TBD
+- Implementing pixelation y averaging the colors of screen-space blocks
+- Understanding why the quantization (posterization) is done after tone mapping and in the display (sRGB) space
+- Constructing a Bayer 8x8 matrix with bit operations and using it for ordered dithering
+- Hiding the banding of the posterization with ordered dithering
+- Understanding how the Sobel operator finds the edges with the gradient of an image
+- Detecting silhouettes with linear depth and creases with normals from the G-Buffer
+- Using relative depth differences and a grazing angle correction to avoid false edges
+- Implementing cel shading in a deferred light pass
+- Quantizing the brightness of the total diffuse light with a toon ramp while keeping the light color
+- Adding hard-edged specular highlights and rim light for the toon look
+- Understanding the Kuwahara filter as an edge-preserving smoothing filter
+- Removing the blocky artifacts of the basic filter with smoothly weighted sectors (polynomial weights)
+- Finding the local orientation and anisotropy with the structure tensor
