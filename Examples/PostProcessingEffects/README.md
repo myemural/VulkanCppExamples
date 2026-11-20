@@ -117,3 +117,7 @@ This section contains Vulkan examples that related to post-processing effects. T
 - Understanding the Kuwahara filter as an edge-preserving smoothing filter
 - Removing the blocky artifacts of the basic filter with smoothly weighted sectors (polynomial weights)
 - Finding the local orientation and anisotropy with the structure tensor
+
+## [Anti-Aliasing Techniques](/Examples/PostProcessingEffects/AntiAliasingTechniques)
+
+TBD
