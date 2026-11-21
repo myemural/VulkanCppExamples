@@ -34,6 +34,11 @@ This directory contains several texture files that taken from different free sou
 
 The images used may have been resized.
 
+For `SubpixelMorphologicalAntiAliasing` example, I produced these precomputed search and area textures using code at [SMAA: Subpixel Morphological Antialiasing](https://github.com/iryoku/smaa) repository:
+
+- SmaaAreaTex.png
+- SmaaSearchTex.png
+
 ## License
 
 You can access all licenses for the textures via their respective links. There have generally preferred open-source or publicly licensed images as much as possible.

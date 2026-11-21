@@ -342,6 +342,7 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Kuwahara Filter (Basic, Generalized, Anisotropic)](/Examples/PostProcessingEffects/StylizationAndImageEffects/KuwaharaFilter)
 - **[Anti-Aliasing Techniques](/Examples/PostProcessingEffects/AntiAliasingTechniques)**
   - [Fast Approximate Anti-Aliasing (FXAA)](/Examples/PostProcessingEffects/AntiAliasingTechniques/FastApproximateAntiAliasing)
+  - [Subpixel Morphological Anti-Aliasing (SMAA 1x)](/Examples/PostProcessingEffects/AntiAliasingTechniques/SubpixelMorphologicalAntiAliasing)
 
 ## Environment Support
 
