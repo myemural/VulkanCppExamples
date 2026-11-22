@@ -48,11 +48,11 @@ This example implements Horizon-Based Ambient Occlusion (HBAO) on top of a defer
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                 | Status             | Notes                |
+|-----------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/AmbientOcclusion/HorizonBasedAo/glsl) | :white_check_mark: |                      |
+| HLSL                                                                        | :x:                | Will be implemented. |
+| Slang                                                                       | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

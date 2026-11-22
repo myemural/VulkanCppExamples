@@ -48,11 +48,11 @@ This example implements Ground-Truth Ambient Occlusion (GTAO) on top of a deferr
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                | Status             | Notes                |
+|----------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/AmbientOcclusion/GroundTruthAo/glsl) | :white_check_mark: |                      |
+| HLSL                                                                       | :x:                | Will be implemented. |
+| Slang                                                                      | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
