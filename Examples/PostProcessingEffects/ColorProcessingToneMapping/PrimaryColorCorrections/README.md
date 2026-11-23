@@ -47,11 +47,11 @@ In this example, real-time primary color adjustments (Brightness, Contrast, Satu
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                    | Status             | Notes                |
+|------------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/ColorProcessingToneMapping/PrimaryColorCorrections/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                           | :x:                | Will be implemented. |
+| Slang                                                                                          | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

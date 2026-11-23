@@ -48,11 +48,11 @@ This example demonstrates scene-referred lift/gamma/gain applied to the linear H
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                             | Status             | Notes                |
+|-----------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/ColorProcessingToneMapping/HdrLiftGammaGain/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                    | :x:                | Will be implemented. |
+| Slang                                                                                   | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

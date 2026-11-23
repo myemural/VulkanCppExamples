@@ -44,11 +44,11 @@ This example demonstrates scene-referred chromatic adaptation applied to the lin
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                     | Status             | Notes                |
+|-------------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/ColorProcessingToneMapping/HdrTemperatureAdjustment/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                            | :x:                | Will be implemented. |
+| Slang                                                                                           | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
