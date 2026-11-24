@@ -49,11 +49,11 @@ In this example, local exposure has been applied by compressing the contrast of 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                     | Status             | Notes                |
+|---------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/ExposureAndAdaptation/LocalExposure/glsl) | :white_check_mark: |                      |
+| HLSL                                                                            | :x:                | Will be implemented. |
+| Slang                                                                           | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

@@ -45,11 +45,11 @@ In this example, eye (temporal) adaptation has been applied on top of the histog
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                 | Status             | Notes                |
+|---------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/ExposureAndAdaptation/EyeAdaptationAutoExposure/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                        | :x:                | Will be implemented. |
+| Slang                                                                                       | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

@@ -40,11 +40,11 @@ In this example, a simple auto exposure has been applied by computing the log-av
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                          | Status             | Notes                |
+|--------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/ExposureAndAdaptation/SimpleAutoExposure/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                 | :x:                | Will be implemented. |
+| Slang                                                                                | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

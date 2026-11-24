@@ -42,11 +42,11 @@ In this example, a histogram-based auto exposure has been applied by building a 
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                                  | Status             | Notes                |
+|----------------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/ExposureAndAdaptation/HistogramBasedAutoExposure/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                         | :x:                | Will be implemented. |
+| Slang                                                                                        | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
