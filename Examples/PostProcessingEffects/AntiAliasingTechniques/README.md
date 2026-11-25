@@ -10,6 +10,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `FastApproximateAntiAliasing`
 2. [Subpixel Morphological Anti-Aliasing (SMAA 1x)](/Examples/PostProcessingEffects/AntiAliasingTechniques/SubpixelMorphologicalAntiAliasing)
    - `SubpixelMorphologicalAntiAliasing`
+3. [Temporal Anti-Aliasing (TAA)](/Examples/PostProcessingEffects/AntiAliasingTechniques/TemporalAntiAliasing)
+   - `TemporalAntiAliasing`
 
 ## Architecture of the Subsection
 

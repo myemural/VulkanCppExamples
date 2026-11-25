@@ -343,6 +343,7 @@ Every example has its own directory and CMake target. You can build what you wan
 - **[Anti-Aliasing Techniques](/Examples/PostProcessingEffects/AntiAliasingTechniques)**
   - [Fast Approximate Anti-Aliasing (FXAA)](/Examples/PostProcessingEffects/AntiAliasingTechniques/FastApproximateAntiAliasing)
   - [Subpixel Morphological Anti-Aliasing (SMAA 1x)](/Examples/PostProcessingEffects/AntiAliasingTechniques/SubpixelMorphologicalAntiAliasing)
+  - [Temporal Anti-Aliasing (TAA)](/Examples/PostProcessingEffects/AntiAliasingTechniques/TemporalAntiAliasing)
 
 ## Environment Support
 
