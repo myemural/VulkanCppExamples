@@ -50,11 +50,11 @@ In this example, a vignette effect has been applied to the exposed HDR scene bef
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                     | Status             | Notes                |
+|---------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/LensAndCameraEffects/VignetteEffect/glsl) | :white_check_mark: |                      |
+| HLSL                                                                            | :x:                | Will be implemented. |
+| Slang                                                                           | :x:                | Will be implemented. |
 
 ## Theoretical Background
 

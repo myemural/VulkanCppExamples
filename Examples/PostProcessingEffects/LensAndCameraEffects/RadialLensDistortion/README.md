@@ -47,11 +47,11 @@ In this example, radial lens distortion effects (Barrel, Pincushion, Fisheye) ha
 
 ## Shader Status
 
-| Shader Type | Status             | Notes                |
-|-------------|--------------------|----------------------|
-| GLSL        | :white_check_mark: |                      |
-| HLSL        | :x:                | Will be implemented. |
-| Slang       | :x:                | Will be implemented. |
+| Shader Type                                                                           | Status             | Notes                |
+|---------------------------------------------------------------------------------------|--------------------|----------------------|
+| [GLSL](/Shaders/PostProcessingEffects/LensAndCameraEffects/RadialLensDistortion/glsl) | :white_check_mark: |                      |
+| HLSL                                                                                  | :x:                | Will be implemented. |
+| Slang                                                                                 | :x:                | Will be implemented. |
 
 ## Theoretical Background
 
