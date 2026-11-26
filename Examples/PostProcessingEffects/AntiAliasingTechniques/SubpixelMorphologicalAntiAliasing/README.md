@@ -42,7 +42,7 @@ In this example, Subpixel Morphological Anti-Aliasing (SMAA 1x) has been impleme
 - Detecting the edges with the luma differences and the local contrast adaptation
 - Searching the lines with bilinear fetches and decoding their ends with the search texture
 - Using the precomputed area texture to find the blending weights of the line patterns
-- Handling diagonal lines and sharp corners
+- Handling diagonal lines and sharp corners in SMAA
 
 ## Shader Status
 

@@ -120,4 +120,19 @@ This section contains Vulkan examples that related to post-processing effects. T
 
 ## [Anti-Aliasing Techniques](/Examples/PostProcessingEffects/AntiAliasingTechniques)
 
-TBD
+- Detecting the edges with the local luma contrast and finding the edge direction
+- Following the edges to their ends and computing the sub-pixel blend offset
+- Comparing the quality presets for FXAA (search steps and edge threshold)
+- Understanding the 3 passes of the SMAA (edge detection, blending weight calculation, neighborhood blending)
+- Detecting the edges with the luma differences and the local contrast adaptation
+- Searching the lines with bilinear fetches and decoding their ends with the search texture
+- Using the precomputed area texture to find the blending weights of the line patterns
+- Handling diagonal lines and sharp corners in SMAA
+- Jittering the projection with a sub-pixel offset from the Halton sequence
+- Using the velocity of the closest pixel in the neighborhood for sharp moving edges
+- Sampling the history with a Catmull-Rom filter to reduce the blur
+- Removing the ghosting with the neighborhood clamp and understanding its limitations
+- Understanding why the RGB min/max clamp leaves colored ghost trails along high contrast edges
+- Building the neighborhood box in the YCoCg color space (separated luma and chroma)
+- Calculation the variance box from the mean and the standard deviation of the neighborhood
+- Clipping the history towards the box center instead of the per-channel clamp

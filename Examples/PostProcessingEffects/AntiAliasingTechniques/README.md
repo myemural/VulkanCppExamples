@@ -12,6 +12,8 @@ The examples in this subsection, listed from easy to complex, are as follows:
    - `SubpixelMorphologicalAntiAliasing`
 3. [Temporal Anti-Aliasing (TAA)](/Examples/PostProcessingEffects/AntiAliasingTechniques/TemporalAntiAliasing)
    - `TemporalAntiAliasing`
+4. [Improved TAA with Variance Clipping](/Examples/PostProcessingEffects/AntiAliasingTechniques/TemporalAntiAliasingVariance)
+   - `TemporalAntiAliasingVariance`
 
 ## Architecture of the Subsection
 
