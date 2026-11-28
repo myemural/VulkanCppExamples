@@ -82,6 +82,23 @@ VkBufferMemoryBarrier VulkanBuffer::CreateBufferMemoryBarrier(const VkAccessFlag
     return barrier;
 }
 
+VkDeviceAddress VulkanBuffer::GetDeviceAddress() const
+{
+    const auto device = GetParent();
+    if (!device) {
+        throw std::runtime_error("Device is null!");
+    }
+
+    // Buffer must be created with VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT and its memory must be allocated with
+    // VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT flag
+    VkBufferDeviceAddressInfo addressInfo{};
+    addressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+    addressInfo.pNext = nullptr;
+    addressInfo.buffer = handle_;
+
+    return vkGetBufferDeviceAddress(device->GetHandle(), &addressInfo);
+}
+
 VulkanBufferBuilder::VulkanBufferBuilder() : createInfo_{GetDefaultBufferCreateInfo()} {}
 
 VulkanBufferBuilder& VulkanBufferBuilder::SetCreateFlags(const VkBufferCreateFlags& createFlags)

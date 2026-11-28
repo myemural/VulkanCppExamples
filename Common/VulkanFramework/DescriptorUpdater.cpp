@@ -62,6 +62,33 @@ void DescriptorUpdater::ApplyUpdates()
         writes.push_back(write);
     }
 
+    // Acceleration structure write requests
+    std::vector<VkWriteDescriptorSetAccelerationStructureKHR> accelerationStructureWrites;
+    accelerationStructureWrites.reserve(accelerationStructureRequests_.size());
+
+    for (auto& req: accelerationStructureRequests_) {
+        const auto set = registry_.GetDescriptorSet(req.descriptorSetName);
+
+        VkWriteDescriptorSetAccelerationStructureKHR accelerationStructureWrite{};
+        accelerationStructureWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR;
+        accelerationStructureWrite.pNext = nullptr;
+        accelerationStructureWrite.accelerationStructureCount =
+                static_cast<uint32_t>(req.accelerationStructures.size());
+        accelerationStructureWrite.pAccelerationStructures =
+                req.accelerationStructures.empty() ? nullptr : req.accelerationStructures.data();
+        accelerationStructureWrites.push_back(accelerationStructureWrite);
+
+        VkWriteDescriptorSet write{};
+        write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        write.pNext = &accelerationStructureWrites.back();
+        write.dstSet = set->GetHandle();
+        write.dstBinding = req.bindingIndex;
+        write.dstArrayElement = req.arrayElement;
+        write.descriptorCount = static_cast<uint32_t>(req.accelerationStructures.size());
+        write.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR;
+        writes.push_back(write);
+    }
+
     // Copy requests
     for (auto& req: copyRequests_) {
         VkCopyDescriptorSet copy{};
@@ -83,5 +110,6 @@ void DescriptorUpdater::ApplyUpdates()
     imageRequests_.clear();
     texelRequests_.clear();
     copyRequests_.clear();
+    accelerationStructureRequests_.clear();
 }
 } // namespace common::vulkan_framework

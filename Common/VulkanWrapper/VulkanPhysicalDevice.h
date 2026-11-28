@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <functional>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include <vulkan/vulkan_core.h>
@@ -40,6 +41,8 @@ public:
 
     COMMON_API VkPhysicalDeviceProperties GetProperties() const;
 
+    COMMON_API VkPhysicalDeviceProperties2 GetProperties2(void* extendingStructure = nullptr) const;
+
     COMMON_API std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const;
 
     COMMON_API std::uint32_t GetSurfaceSupportedQueueFamilyIndex(const VkSurfaceKHR& surface) const;
@@ -47,14 +50,20 @@ public:
     COMMON_API std::optional<VkSurfaceCapabilitiesKHR> GetSurfaceCapabilities(VkSurfaceKHR surface) const;
 
     COMMON_API std::optional<VkSurfaceFormatKHR> GetSurfaceFormat(const VkSurfaceKHR& surface,
-                                                       const VkFormat& selectedFormat,
-                                                       const VkColorSpaceKHR& selectedColorSpace) const;
+                                                                  const VkFormat& selectedFormat,
+                                                                  const VkColorSpaceKHR& selectedColorSpace) const;
 
     COMMON_API VkPhysicalDeviceFeatures GetSupportedFeatures() const;
 
+    COMMON_API VkPhysicalDeviceFeatures2 GetSupportedFeatures2(void* extendingStructure = nullptr) const;
+
+    COMMON_API std::vector<VkExtensionProperties> GetSupportedExtensions() const;
+
+    COMMON_API bool IsExtensionSupported(const std::string& extensionName) const;
+
     COMMON_API VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidateFormats,
-                                 const VkFormatFeatureFlags& features,
-                                 const VkImageTiling& tiling = VK_IMAGE_TILING_OPTIMAL) const;
+                                            const VkFormatFeatureFlags& features,
+                                            const VkImageTiling& tiling = VK_IMAGE_TILING_OPTIMAL) const;
 
     COMMON_API VkSampleCountFlagBits GetMaxUsableSampleCount() const;
 
@@ -72,6 +81,10 @@ public:
 
     VulkanPhysicalDeviceSelector& FilterBySurfaceSupport(std::shared_ptr<VulkanSurface> surface);
 
+    VulkanPhysicalDeviceSelector& FilterByExtensionSupport(const std::vector<std::string>& extensionNames);
+
+    VulkanPhysicalDeviceSelector& FilterByMinApiVersion(std::uint32_t minApiVersion);
+
     [[nodiscard]] std::vector<std::shared_ptr<VulkanPhysicalDevice>>
     Select(const std::shared_ptr<VulkanInstance>& instance) const;
 
@@ -79,5 +92,7 @@ private:
     VkPhysicalDeviceType deviceType_ = VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM;
     VkQueueFlags queueTypeFlags_ = VK_QUEUE_FLAG_BITS_MAX_ENUM;
     std::shared_ptr<VulkanSurface> surface_ = nullptr;
+    std::vector<std::string> requiredExtensions_;
+    std::uint32_t minApiVersion_ = 0;
 };
 } // namespace common::vulkan_wrapper

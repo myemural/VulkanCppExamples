@@ -30,6 +30,14 @@ namespace common::utility
 COMMON_API std::uint32_t CeilDiv(std::uint32_t value, std::uint32_t divisor);
 
 /**
+ * @brief Rounds value up to the nearest multiple of the alignment.
+ * @param value The value to be aligned.
+ * @param alignment The alignment value. Must be greater than 0.
+ * @return Returns the smaller multiple of alignment that is greater than or equal to value.
+ */
+COMMON_API std::uint64_t AlignUp(std::uint64_t value, std::uint64_t alignment);
+
+/**
  * @brief Generates random position for certain amount of objects within specific scene bounds and min distance.
  * @param count Number of objects.
  * @param minBounds Minimum bounds of the scene.

@@ -40,6 +40,8 @@ public:
                                                                              const VkAccessFlags& dstAccessMask,
                                                                              VkDeviceSize offset = 0,
                                                                              VkDeviceSize size = VK_WHOLE_SIZE) const;
+
+    [[nodiscard]] COMMON_API VkDeviceAddress GetDeviceAddress() const;
 };
 
 class COMMON_API VulkanBufferBuilder

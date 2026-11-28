@@ -17,6 +17,7 @@ This repository contains Vulkan examples written in modern C++20, structured in 
   - [Physically Based Rendering](#physically-based-rendering)
   - [Advanced Shader Programming](#advanced-shader-programming)
   - [Post-Processing Effects](#post-processing-effects)
+  - [Hardware-Accelerated Ray Tracing](#hardware-accelerated-ray-tracing)
 - [Environment Support](#environment-support)
 - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
@@ -345,6 +346,11 @@ Every example has its own directory and CMake target. You can build what you wan
   - [Subpixel Morphological Anti-Aliasing (SMAA 1x)](/Examples/PostProcessingEffects/AntiAliasingTechniques/SubpixelMorphologicalAntiAliasing)
   - [Temporal Anti-Aliasing (TAA)](/Examples/PostProcessingEffects/AntiAliasingTechniques/TemporalAntiAliasing)
   - [Improved TAA with Variance Clipping](/Examples/PostProcessingEffects/AntiAliasingTechniques/TemporalAntiAliasingVariance)
+
+### [Hardware-Accelerated Ray Tracing](/Examples/HardwareRayTracing)
+
+- **[Ray Tracing Fundamentals](/Examples/HardwareRayTracing/RayTracingFundamentals)**
+  - [Drawing a Triangle with Ray Tracing Pipeline](/Examples/HardwareRayTracing/RayTracingFundamentals/RayTracedTriangle)
 
 ## Environment Support
 

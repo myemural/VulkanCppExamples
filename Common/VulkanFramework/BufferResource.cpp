@@ -40,6 +40,15 @@ void BufferResource::CreateBuffer(const BufferResourceCreateInfo& createInfo)
     AllocateBufferMemory();
 }
 
+VkDeviceAddress BufferResource::GetDeviceAddress() const
+{
+    if (!(createInfo_.usageFlags & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT)) {
+        throw std::runtime_error("Buffer \"" + createInfo_.name + "\" was not created with device address usage!");
+    }
+
+    return buffer_->GetDeviceAddress();
+}
+
 void BufferResource::AllocateBufferMemory()
 {
     const auto devicePtr = device_.lock();
@@ -57,7 +66,8 @@ void BufferResource::AllocateBufferMemory()
     const uint32_t memoryTypeIndex =
             physicalDevicePtr->FindMemoryType(memoryReq.memoryTypeBits, createInfo_.memoryProperties);
 
-    deviceMemory_ = devicePtr->AllocateMemory(memoryReq.size, memoryTypeIndex);
+    const bool isDeviceAddressAllowed = createInfo_.usageFlags & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+    deviceMemory_ = devicePtr->AllocateMemory(memoryReq.size, memoryTypeIndex, isDeviceAddressAllowed);
 
     if (!deviceMemory_) {
         throw std::runtime_error("Failed to allocate buffer memory!");
@@ -73,10 +83,7 @@ void BufferResource::MapMemory(const VkDeviceSize mapSize, const VkDeviceSize ma
     }
 }
 
-void* BufferResource::GetMappedData() const
-{
-    return mappedData_;
-}
+void* BufferResource::GetMappedData() const { return mappedData_; }
 
 void BufferResource::FlushData(const void* data,
                                const std::uint64_t dataSize,

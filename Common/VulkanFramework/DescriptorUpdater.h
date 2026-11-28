@@ -42,6 +42,14 @@ struct COMMON_API TexelBufferWriteRequest
     std::uint32_t arrayElement = 0;
 };
 
+struct COMMON_API AccelerationStructureWriteRequest
+{
+    std::string descriptorSetName;
+    std::uint32_t bindingIndex = UINT32_MAX;
+    std::vector<VkAccelerationStructureKHR> accelerationStructures; // Top-level acceleration structures
+    std::uint32_t arrayElement = 0;
+};
+
 struct COMMON_API CopySetRequest
 {
     std::shared_ptr<vulkan_wrapper::VulkanDescriptorSet> sourceSet;
@@ -59,6 +67,7 @@ struct COMMON_API DescriptorUpdateInfo
     std::vector<ImageWriteRequest> imageWriteRequests;
     std::vector<TexelBufferWriteRequest> texelBufferWriteRequests;
     std::vector<CopySetRequest> copySetRequests;
+    std::vector<AccelerationStructureWriteRequest> accelerationStructureWriteRequests;
 };
 
 class COMMON_API DescriptorUpdater
@@ -89,6 +98,15 @@ public:
     void AddTexelBufferUpdate(const TexelBufferWriteRequest& request) { texelRequests_.push_back(request); }
 
     /**
+     * @brief Add an acceleration structure write request to the update query.
+     * @param request Acceleration structure write request.
+     */
+    void AddAccelerationStructureUpdate(const AccelerationStructureWriteRequest& request)
+    {
+        accelerationStructureRequests_.push_back(request);
+    }
+
+    /**
      * @brief Add a copy request to the update query.
      * @param request Copy request.
      */
@@ -106,5 +124,6 @@ private:
     std::vector<ImageWriteRequest> imageRequests_;
     std::vector<TexelBufferWriteRequest> texelRequests_;
     std::vector<CopySetRequest> copyRequests_;
+    std::vector<AccelerationStructureWriteRequest> accelerationStructureRequests_;
 };
 } // namespace common::vulkan_framework

@@ -29,6 +29,27 @@ void ResourceManager::CreateBuffers(const std::vector<BufferResourceCreateInfo>&
     }
 }
 
+void ResourceManager::CreateAccelerationStructures(
+        const std::vector<AccelerationStructureResourceCreateInfo>& accelerationStructureCreateInfos)
+{
+    for (const auto& createInfo: accelerationStructureCreateInfos) {
+        accelerationStructures_[createInfo.name] =
+                std::make_unique<AccelerationStructureResource>(physicalDevice_, device_);
+        accelerationStructures_[createInfo.name]->CreateAccelerationStructure(createInfo);
+    }
+}
+
+void ResourceManager::BuildAccelerationStructure(const std::shared_ptr<vulkan_wrapper::VulkanCommandBuffer>& cmdBuffer,
+                                                 const std::string& accelerationStructureName,
+                                                 const VkBuildAccelerationStructureModeKHR mode) const
+{
+    if (!accelerationStructures_.contains(accelerationStructureName)) {
+        throw std::runtime_error("Cannot get acceleration structure \"" + accelerationStructureName + "\"");
+    }
+
+    accelerationStructures_.at(accelerationStructureName)->RecordBuild(cmdBuffer, mode);
+}
+
 void ResourceManager::CreateImages(const std::vector<ImageResourceCreateInfo>& imageCreateInfos)
 {
     for (const auto& createInfo: imageCreateInfos) {
@@ -77,6 +98,10 @@ void ResourceManager::UpdateDescriptorSet(const DescriptorUpdateInfo& descriptor
         descriptorUpdater_->AddCopyRequest(copyInfo);
     }
 
+    for (const auto& accelerationStructureUpdateInfo: descriptorSetUpdateInfo.accelerationStructureWriteRequests) {
+        descriptorUpdater_->AddAccelerationStructureUpdate(accelerationStructureUpdateInfo);
+    }
+
     descriptorUpdater_->ApplyUpdates();
 }
 
@@ -87,6 +112,25 @@ std::shared_ptr<vulkan_wrapper::VulkanBuffer> ResourceManager::GetBuffer(const s
     }
 
     return buffers_.at(bufferName)->GetBuffer();
+}
+
+VkDeviceAddress ResourceManager::GetBufferDeviceAddress(const std::string& bufferName) const
+{
+    if (!buffers_.contains(bufferName)) {
+        throw std::runtime_error("Cannot get buffer \"" + bufferName + "\"");
+    }
+
+    return buffers_.at(bufferName)->GetDeviceAddress();
+}
+
+std::shared_ptr<vulkan_wrapper::VulkanAccelerationStructure>
+ResourceManager::GetAccelerationStructure(const std::string& accelerationStructureName) const
+{
+    if (!accelerationStructures_.contains(accelerationStructureName)) {
+        throw std::runtime_error("Cannot get acceleration structure \"" + accelerationStructureName + "\"");
+    }
+
+    return accelerationStructures_.at(accelerationStructureName)->GetAccelerationStructure();
 }
 
 std::shared_ptr<vulkan_wrapper::VulkanImage> ResourceManager::GetImage(const std::string& imageName) const
@@ -415,6 +459,11 @@ void ResourceManager::GenerateMipmaps(const std::shared_ptr<vulkan_wrapper::Vulk
 }
 
 void ResourceManager::DeleteBuffer(const std::string& bufferName) { buffers_.erase(bufferName); }
+
+void ResourceManager::DeleteAccelerationStructure(const std::string& accelerationStructureName)
+{
+    accelerationStructures_.erase(accelerationStructureName);
+}
 
 void ResourceManager::DeleteImage(const std::string& imageName) { images_.erase(imageName); }
 

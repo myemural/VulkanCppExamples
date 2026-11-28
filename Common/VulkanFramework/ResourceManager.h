@@ -11,6 +11,7 @@
  */
 #pragma once
 
+#include "AccelerationStructureResource.h"
 #include "BufferResource.h"
 #include "CoreDefines.h"
 #include "DescriptorRegistry.h"
@@ -51,6 +52,25 @@ public:
     void CreateBuffers(const std::vector<BufferResourceCreateInfo>& bufferCreateInfos);
 
     /**
+     * @brief Creates acceleration structures (BLAS or TLAS). Input buffers of the acceleration structures must be
+     *        created before. Acceleration structures are not built until BuildAccelerationStructure is called.
+     * @param accelerationStructureCreateInfos Create information for acceleration structures.
+     */
+    void CreateAccelerationStructures(
+            const std::vector<AccelerationStructureResourceCreateInfo>& accelerationStructureCreateInfos);
+
+    /**
+     * @brief Records the build (or update) command of an acceleration structure into the command buffer.
+     * @param cmdBuffer Command buffer that the build command will be recorded.
+     * @param accelerationStructureName Name of the acceleration structure resource.
+     * @param mode Build mode of the acceleration structure (build from scratch or update).
+     */
+    void BuildAccelerationStructure(
+            const std::shared_ptr<vulkan_wrapper::VulkanCommandBuffer>& cmdBuffer,
+            const std::string& accelerationStructureName,
+            VkBuildAccelerationStructureModeKHR mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR) const;
+
+    /**
      * @brief Creates images.
      * @param imageCreateInfos Create information for images.
      */
@@ -86,6 +106,22 @@ public:
      * @return Returns the buffer resource.
      */
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanBuffer> GetBuffer(const std::string& bufferName) const;
+
+    /**
+     * @brief Returns the device address of the buffer resource. Buffer must be created with
+     *        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT usage flag.
+     * @param bufferName Name of the buffer resource.
+     * @return Returns the device address of the buffer resource.
+     */
+    [[nodiscard]] VkDeviceAddress GetBufferDeviceAddress(const std::string& bufferName) const;
+
+    /**
+     * @brief Returns the acceleration structure resource.
+     * @param accelerationStructureName Name of the acceleration structure resource.
+     * @return Returns the acceleration structure resource.
+     */
+    [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanAccelerationStructure>
+    GetAccelerationStructure(const std::string& accelerationStructureName) const;
 
     /**
      * @brief Returns the image resource.
@@ -238,6 +274,12 @@ public:
     void DeleteBuffer(const std::string& bufferName);
 
     /**
+     * @brief Deletes acceleration structure resource from resource manager.
+     * @param accelerationStructureName Name of the acceleration structure resource.
+     */
+    void DeleteAccelerationStructure(const std::string& accelerationStructureName);
+
+    /**
      * @brief Deletes image resource from resource manager.
      * @param imageName Name of the image resource.
      */
@@ -272,6 +314,7 @@ private:
     std::shared_ptr<vulkan_wrapper::VulkanDevice> device_;
 
     std::unordered_map<std::string, std::unique_ptr<BufferResource>> buffers_;
+    std::unordered_map<std::string, std::unique_ptr<AccelerationStructureResource>> accelerationStructures_;
     std::unordered_map<std::string, std::unique_ptr<ImageResource>> images_;
     std::unordered_map<std::string, std::unique_ptr<SamplerResource>> samplers_;
     std::unique_ptr<ShaderResource> shaderResources_;

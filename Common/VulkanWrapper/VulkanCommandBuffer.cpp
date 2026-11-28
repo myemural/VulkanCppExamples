@@ -27,6 +27,10 @@ VulkanCommandBuffer::VulkanCommandBuffer(std::shared_ptr<VulkanCommandPool> cmdP
             if (const auto device = pool->GetParent()) {
                 vkCmdDrawMeshTasksEXT_ =
                         reinterpret_cast<PFN_vkCmdDrawMeshTasksEXT>(device->GetDeviceProcAddr("vkCmdDrawMeshTasksEXT"));
+                vkCmdTraceRaysKHR_ =
+                        reinterpret_cast<PFN_vkCmdTraceRaysKHR>(device->GetDeviceProcAddr("vkCmdTraceRaysKHR"));
+                vkCmdBuildAccelerationStructuresKHR_ = reinterpret_cast<PFN_vkCmdBuildAccelerationStructuresKHR>(
+                        device->GetDeviceProcAddr("vkCmdBuildAccelerationStructuresKHR"));
             }
         }
     }
@@ -184,9 +188,43 @@ void VulkanCommandBuffer::DrawMeshTasksEXT(const std::uint32_t groupCountX,
                                            const std::uint32_t groupCountY,
                                            const std::uint32_t groupCountZ) const
 {
-
+    if (vkCmdDrawMeshTasksEXT_ == nullptr) {
+        throw std::runtime_error("vkCmdDrawMeshTasksEXT is not available!");
+    }
 
     vkCmdDrawMeshTasksEXT_(handle_, groupCountX, groupCountY, groupCountZ);
+}
+
+void VulkanCommandBuffer::TraceRaysKHR(const VkStridedDeviceAddressRegionKHR& rayGenRegion,
+                                       const VkStridedDeviceAddressRegionKHR& missRegion,
+                                       const VkStridedDeviceAddressRegionKHR& hitRegion,
+                                       const VkStridedDeviceAddressRegionKHR& callableRegion,
+                                       std::uint32_t width,
+                                       std::uint32_t height,
+                                       std::uint32_t depth) const
+{
+    if (vkCmdTraceRaysKHR_ == nullptr) {
+        throw std::runtime_error("vkCmdTraceRaysKHR is not available!");
+    }
+
+    vkCmdTraceRaysKHR_(handle_, &rayGenRegion, &missRegion, &hitRegion, &callableRegion, width, height, depth);
+}
+
+void VulkanCommandBuffer::BuildAccelerationStructuresKHR(
+        const std::vector<VkAccelerationStructureBuildGeometryInfoKHR>& buildGeometryInfos,
+        const std::vector<const VkAccelerationStructureBuildRangeInfoKHR*>& buildRangeInfos) const
+{
+    if (vkCmdBuildAccelerationStructuresKHR_ == nullptr) {
+        throw std::runtime_error("vkCmdBuildAccelerationStructuresKHR is not available!");
+    }
+
+    if (buildGeometryInfos.size() != buildRangeInfos.size()) {
+        throw std::runtime_error("Each acceleration structure build info must have its own build range infos!");
+    }
+
+    vkCmdBuildAccelerationStructuresKHR_(handle_, static_cast<std::uint32_t>(buildGeometryInfos.size()),
+                                         buildGeometryInfos.empty() ? nullptr : buildGeometryInfos.data(),
+                                         buildRangeInfos.empty() ? nullptr : buildRangeInfos.data());
 }
 
 void VulkanCommandBuffer::PipelineBarrier(const VkPipelineStageFlags& srcStage,

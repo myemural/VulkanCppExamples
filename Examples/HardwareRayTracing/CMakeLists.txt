@@ -1,0 +1,3 @@
+set(CATEGORY_NAME HardwareRayTracing)
+
+add_subdirectory(RayTracingFundamentals)

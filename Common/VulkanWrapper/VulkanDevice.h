@@ -21,6 +21,7 @@
 
 namespace common::vulkan_wrapper
 {
+class VulkanAccelerationStructure;
 class VulkanBuffer;
 class VulkanBufferBuilder;
 class VulkanCommandPool;
@@ -42,6 +43,7 @@ class VulkanPipelineCache;
 class VulkanPipelineLayout;
 class VulkanQueryPool;
 class VulkanQueue;
+class VulkanRayTracingPipelineBuilder;
 class VulkanRenderPass;
 class VulkanRenderPassBuilder;
 class VulkanSampler;
@@ -120,13 +122,29 @@ public:
                           const std::function<void(VulkanComputePipelineBuilder&)>& builderFunc,
                           const std::shared_ptr<VulkanPipelineCache>& pipelineCache = nullptr);
 
+    COMMON_API std::shared_ptr<VulkanPipeline>
+    CreateRayTracingPipeline(const std::shared_ptr<VulkanPipelineLayout>& layout,
+                             const std::function<void(VulkanRayTracingPipelineBuilder&)>& builderFunc,
+                             const std::shared_ptr<VulkanPipelineCache>& pipelineCache = nullptr);
+
+    COMMON_API std::shared_ptr<VulkanAccelerationStructure>
+    CreateAccelerationStructure(const std::shared_ptr<VulkanBuffer>& buffer,
+                                const VkAccelerationStructureTypeKHR& type,
+                                VkDeviceSize size,
+                                VkDeviceSize offset = 0,
+                                const VkAccelerationStructureCreateFlagsKHR& createFlags = 0);
+
+    [[nodiscard]] COMMON_API VkAccelerationStructureBuildSizesInfoKHR
+    GetAccelerationStructureBuildSizes(const VkAccelerationStructureBuildGeometryInfoKHR& buildInfo,
+                                       const std::vector<std::uint32_t>& maxPrimitiveCounts) const;
+
     COMMON_API std::shared_ptr<VulkanPipelineCache> CreatePipelineCache(
             size_t initialDataSize, const void* initialData, const VkPipelineCacheCreateFlags& createFlags = 0);
 
     COMMON_API std::shared_ptr<VulkanBuffer> CreateBuffer(const std::function<void(VulkanBufferBuilder&)>& builderFunc);
 
-    COMMON_API std::shared_ptr<VulkanDeviceMemory> AllocateMemory(const VkDeviceSize& size,
-                                                                  std::uint32_t memoryTypeIndex);
+    COMMON_API std::shared_ptr<VulkanDeviceMemory>
+    AllocateMemory(const VkDeviceSize& size, std::uint32_t memoryTypeIndex, bool isDeviceAddressAllowed = false);
 
     COMMON_API void UpdateDescriptorSets(const std::vector<VkWriteDescriptorSet>& writeDescriptorSets,
                                          const std::vector<VkCopyDescriptorSet>& copyDescriptorSets = {}) const;

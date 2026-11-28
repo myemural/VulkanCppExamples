@@ -25,7 +25,7 @@ namespace common::vulkan_framework
 struct COMMON_API BufferResourceCreateInfo
 {
     std::string name;
-    std::uint32_t bufferSizeInBytes;
+    VkDeviceSize bufferSizeInBytes;
     VkBufferUsageFlags usageFlags;
     VkMemoryPropertyFlags memoryProperties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 };
@@ -83,6 +83,13 @@ public:
      * @return Returns VulkanBuffer object that held from this class.
      */
     [[nodiscard]] std::shared_ptr<vulkan_wrapper::VulkanBuffer> GetBuffer() const { return buffer_; }
+
+    /**
+     * @brief Returns the GPU virtual address of the buffer. Buffer must be created with
+     *        VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT usage flag.
+     * @return Returns device address of the buffer.
+     */
+    [[nodiscard]] VkDeviceAddress GetDeviceAddress() const;
 
 private:
     /**

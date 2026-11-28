@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "VulkanAccelerationStructure.h"
 #include "VulkanBuffer.h"
 #include "VulkanCommandPool.h"
 #include "VulkanDescriptorPool.h"
@@ -344,6 +345,78 @@ VulkanDevice::CreateComputePipeline(const std::shared_ptr<VulkanPipelineLayout>&
     return computePipelineBuilder.Build(device, layout, pipelineCache);
 }
 
+std::shared_ptr<VulkanPipeline>
+VulkanDevice::CreateRayTracingPipeline(const std::shared_ptr<VulkanPipelineLayout>& layout,
+                                       const std::function<void(VulkanRayTracingPipelineBuilder&)>& builderFunc,
+                                       const std::shared_ptr<VulkanPipelineCache>& pipelineCache)
+{
+    const auto device = shared_from_this();
+
+    VulkanRayTracingPipelineBuilder rayTracingPipelineBuilder;
+    builderFunc(rayTracingPipelineBuilder);
+
+    return rayTracingPipelineBuilder.Build(device, layout, pipelineCache);
+}
+
+std::shared_ptr<VulkanAccelerationStructure>
+VulkanDevice::CreateAccelerationStructure(const std::shared_ptr<VulkanBuffer>& buffer,
+                                          const VkAccelerationStructureTypeKHR& type,
+                                          const VkDeviceSize size,
+                                          const VkDeviceSize offset,
+                                          const VkAccelerationStructureCreateFlagsKHR& createFlags)
+{
+    auto device = shared_from_this();
+
+    const auto pfnCreateAccelerationStructure = reinterpret_cast<PFN_vkCreateAccelerationStructureKHR>(
+            GetDeviceProcAddr("vkCreateAccelerationStructureKHR"));
+    if (pfnCreateAccelerationStructure == nullptr) {
+        std::cerr << "vkCreateAccelerationStructureKHR couldn't be loaded!" << std::endl;
+        return nullptr;
+    }
+
+    VkAccelerationStructureCreateInfoKHR createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
+    createInfo.pNext = nullptr;
+    createInfo.createFlags = createFlags;
+    createInfo.buffer = buffer->GetHandle();
+    createInfo.offset = offset;   // Must be a multiple of 256 bytes
+    createInfo.size = size;
+    createInfo.type = type;
+    createInfo.deviceAddress = 0; // Only used with capture/replay feature
+
+    VkAccelerationStructureKHR accelerationStructure = VK_NULL_HANDLE;
+    if (pfnCreateAccelerationStructure(handle_, &createInfo, nullptr, &accelerationStructure) != VK_SUCCESS) {
+        std::cerr << "Failed to create acceleration structure!" << std::endl;
+        return nullptr;
+    }
+
+    return std::make_shared<VulkanAccelerationStructure>(device, accelerationStructure, type);
+}
+
+VkAccelerationStructureBuildSizesInfoKHR
+VulkanDevice::GetAccelerationStructureBuildSizes(const VkAccelerationStructureBuildGeometryInfoKHR& buildInfo,
+                                                 const std::vector<std::uint32_t>& maxPrimitiveCounts) const
+{
+    const auto pfnGetAccelerationStructureBuildSizes = reinterpret_cast<PFN_vkGetAccelerationStructureBuildSizesKHR>(
+            GetDeviceProcAddr("vkGetAccelerationStructureBuildSizesKHR"));
+    if (pfnGetAccelerationStructureBuildSizes == nullptr) {
+        throw std::runtime_error("vkGetAccelerationStructureBuildSizesKHR couldn't be loaded!");
+    }
+
+    if (maxPrimitiveCounts.size() != buildInfo.geometryCount) {
+        throw std::runtime_error("Max primitive count must be provided for each geometry of the build!");
+    }
+
+    VkAccelerationStructureBuildSizesInfoKHR buildSizes{};
+    buildSizes.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
+    buildSizes.pNext = nullptr;
+
+    pfnGetAccelerationStructureBuildSizes(handle_, VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR, &buildInfo,
+                                          maxPrimitiveCounts.data(), &buildSizes);
+
+    return buildSizes;
+}
+
 std::shared_ptr<VulkanPipelineCache> VulkanDevice::CreatePipelineCache(const size_t initialDataSize,
                                                                        const void* initialData,
                                                                        const VkPipelineCacheCreateFlags& createFlags)
@@ -377,7 +450,8 @@ std::shared_ptr<VulkanBuffer> VulkanDevice::CreateBuffer(const std::function<voi
 }
 
 std::shared_ptr<VulkanDeviceMemory> VulkanDevice::AllocateMemory(const VkDeviceSize& size,
-                                                                 const std::uint32_t memoryTypeIndex)
+                                                                 const std::uint32_t memoryTypeIndex,
+                                                                 const bool isDeviceAddressAllowed)
 {
     auto device = shared_from_this();
 
@@ -386,6 +460,15 @@ std::shared_ptr<VulkanDeviceMemory> VulkanDevice::AllocateMemory(const VkDeviceS
     allocateInfo.pNext = nullptr;
     allocateInfo.allocationSize = size;
     allocateInfo.memoryTypeIndex = memoryTypeIndex;
+
+    if (isDeviceAddressAllowed) {
+        VkMemoryAllocateFlagsInfo flagInfo;
+        flagInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
+        flagInfo.pNext = nullptr;
+        flagInfo.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT;
+
+        allocateInfo.pNext = &flagInfo;
+    }
 
     VkDeviceMemory deviceMemory = VK_NULL_HANDLE;
     if (vkAllocateMemory(device->GetHandle(), &allocateInfo, nullptr, &deviceMemory) != VK_SUCCESS) {

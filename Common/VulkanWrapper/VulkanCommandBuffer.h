@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include <vulkan/vulkan_core.h>
 
@@ -95,6 +96,18 @@ public:
     COMMON_API void
     DrawMeshTasksEXT(std::uint32_t groupCountX, std::uint32_t groupCountY, std::uint32_t groupCountZ) const;
 
+    COMMON_API void TraceRaysKHR(const VkStridedDeviceAddressRegionKHR& rayGenRegion,
+                                 const VkStridedDeviceAddressRegionKHR& missRegion,
+                                 const VkStridedDeviceAddressRegionKHR& hitRegion,
+                                 const VkStridedDeviceAddressRegionKHR& callableRegion,
+                                 std::uint32_t width,
+                                 std::uint32_t height,
+                                 std::uint32_t depth = 1) const;
+
+    COMMON_API void BuildAccelerationStructuresKHR(
+            const std::vector<VkAccelerationStructureBuildGeometryInfoKHR>& buildGeometryInfos,
+            const std::vector<const VkAccelerationStructureBuildRangeInfoKHR*>& buildRangeInfos) const;
+
     COMMON_API void PipelineBarrier(const VkPipelineStageFlags& srcStage,
                                     const VkPipelineStageFlags& dstStage,
                                     const std::vector<VkImageMemoryBarrier>& imageMemoryBarrier,
@@ -165,5 +178,7 @@ public:
 
 private:
     PFN_vkCmdDrawMeshTasksEXT vkCmdDrawMeshTasksEXT_;
+    PFN_vkCmdTraceRaysKHR vkCmdTraceRaysKHR_;
+    PFN_vkCmdBuildAccelerationStructuresKHR vkCmdBuildAccelerationStructuresKHR_;
 };
 } // namespace common::vulkan_wrapper

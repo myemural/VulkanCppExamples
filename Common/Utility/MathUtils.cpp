@@ -16,6 +16,11 @@ std::uint32_t CeilDiv(const std::uint32_t value, const std::uint32_t divisor)
     return (value + (divisor - 1)) / divisor;
 }
 
+std::uint64_t AlignUp(const std::uint64_t value, const std::uint64_t alignment)
+{
+    return (value + alignment - 1) / alignment * alignment;
+}
+
 std::vector<glm::vec3> GenerateRandomPositions(const size_t count,
                                                const glm::vec3 minBounds,
                                                const glm::vec3 maxBounds,

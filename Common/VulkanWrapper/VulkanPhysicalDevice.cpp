@@ -7,6 +7,7 @@
 #include "VulkanPhysicalDevice.h"
 
 #include <algorithm>
+#include <cstring>
 #include <iostream>
 #include <utility>
 
@@ -37,6 +38,15 @@ VkPhysicalDeviceProperties VulkanPhysicalDevice::GetProperties() const
 {
     VkPhysicalDeviceProperties props;
     vkGetPhysicalDeviceProperties(handle_, &props);
+    return props;
+}
+
+VkPhysicalDeviceProperties2 VulkanPhysicalDevice::GetProperties2(void* extendingStructure) const
+{
+    VkPhysicalDeviceProperties2 props{};
+    props.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+    props.pNext = extendingStructure;
+    vkGetPhysicalDeviceProperties2(handle_, &props);
     return props;
 }
 
@@ -117,6 +127,40 @@ VkPhysicalDeviceFeatures VulkanPhysicalDevice::GetSupportedFeatures() const
     return supportedFeatures;
 }
 
+VkPhysicalDeviceFeatures2 VulkanPhysicalDevice::GetSupportedFeatures2(void* extendingStructure) const
+{
+    VkPhysicalDeviceFeatures2 features{};
+    features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    features.pNext = extendingStructure;
+    vkGetPhysicalDeviceFeatures2(handle_, &features);
+    return features;
+}
+
+std::vector<VkExtensionProperties> VulkanPhysicalDevice::GetSupportedExtensions() const
+{
+    std::uint32_t extensionCount = 0;
+    if (vkEnumerateDeviceExtensionProperties(handle_, nullptr, &extensionCount, nullptr) != VK_SUCCESS) {
+        std::cerr << "Failed to get device extension count!" << std::endl;
+        return {};
+    }
+
+    std::vector<VkExtensionProperties> extensions(extensionCount);
+    if (vkEnumerateDeviceExtensionProperties(handle_, nullptr, &extensionCount, extensions.data()) != VK_SUCCESS) {
+        std::cerr << "Failed to get device extensions!" << std::endl;
+        return {};
+    }
+
+    return extensions;
+}
+
+bool VulkanPhysicalDevice::IsExtensionSupported(const std::string& extensionName) const
+{
+    const auto extensions = GetSupportedExtensions();
+    return std::ranges::any_of(extensions, [&](const VkExtensionProperties& extension) {
+        return std::strcmp(extension.extensionName, extensionName.c_str()) == 0;
+    });
+}
+
 VkFormat VulkanPhysicalDevice::FindSupportedFormat(const std::vector<VkFormat>& candidateFormats,
                                                    const VkFormatFeatureFlags& features,
                                                    const VkImageTiling& tiling) const
@@ -195,6 +239,19 @@ VulkanPhysicalDeviceSelector::FilterBySurfaceSupport(std::shared_ptr<VulkanSurfa
     return *this;
 }
 
+VulkanPhysicalDeviceSelector&
+VulkanPhysicalDeviceSelector::FilterByExtensionSupport(const std::vector<std::string>& extensionNames)
+{
+    requiredExtensions_.insert(requiredExtensions_.end(), extensionNames.begin(), extensionNames.end());
+    return *this;
+}
+
+VulkanPhysicalDeviceSelector& VulkanPhysicalDeviceSelector::FilterByMinApiVersion(const std::uint32_t minApiVersion)
+{
+    minApiVersion_ = minApiVersion;
+    return *this;
+}
+
 std::vector<std::shared_ptr<VulkanPhysicalDevice>>
 VulkanPhysicalDeviceSelector::Select(const std::shared_ptr<VulkanInstance>& instance) const
 {
@@ -262,6 +319,32 @@ VulkanPhysicalDeviceSelector::Select(const std::shared_ptr<VulkanInstance>& inst
                 ++queueFamilyIndex;
             }
             return true;
+        });
+    }
+
+    // Filter by API Version
+    if (minApiVersion_ != 0) {
+        std::erase_if(devices, [&](auto& device) {
+            VkPhysicalDeviceProperties properties;
+            vkGetPhysicalDeviceProperties(device, &properties);
+            return properties.apiVersion < minApiVersion_;
+        });
+    }
+
+    // Filter by Extension Support
+    if (!requiredExtensions_.empty()) {
+        std::erase_if(devices, [&](auto& device) {
+            std::uint32_t extensionCount = 0;
+            vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+            std::vector<VkExtensionProperties> extensions(extensionCount);
+            vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, extensions.data());
+
+            return !std::ranges::all_of(requiredExtensions_, [&](const std::string& requiredExtension) {
+                return std::ranges::any_of(extensions, [&](const VkExtensionProperties& extension) {
+                    return std::strcmp(extension.extensionName, requiredExtension.c_str()) == 0;
+                });
+            });
         });
     }
 
